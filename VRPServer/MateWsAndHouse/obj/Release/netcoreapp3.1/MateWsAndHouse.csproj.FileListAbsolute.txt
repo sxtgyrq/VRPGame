@@ -28,3 +28,6 @@ F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\ob
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\obj\Release\netcoreapp3.1\MateWsAndHouse.dll
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\obj\Release\netcoreapp3.1\MateWsAndHouse.pdb
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\obj\Release\netcoreapp3.1\MateWsAndHouse.genruntimeconfig.cache
+F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\bin\Release\netcoreapp3.1\SuperSocket.ClientEngine.dll
+F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\bin\Release\netcoreapp3.1\TcpFunction.dll
+F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\MateWsAndHouse\bin\Release\netcoreapp3.1\TcpFunction.pdb

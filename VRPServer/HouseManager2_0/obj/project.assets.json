@@ -6339,9 +6339,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\HouseManager2_0.csproj",
-      "projectName": "HouseManager2_0",
-      "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\HouseManager2_0.csproj",
+      "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\HouseManager3_0.csproj",
+      "projectName": "HouseManager3_0",
+      "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\HouseManager3_0.csproj",
       "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
       "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\obj\\",
       "projectStyle": "PackageReference",

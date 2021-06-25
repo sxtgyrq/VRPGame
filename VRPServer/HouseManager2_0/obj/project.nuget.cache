@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "YQAGUWxrAmv/9L9IDGYUfunk7Kn0l51jDNBqxUf0MMUfExpcToh54fOZ9J4dGFfZxFweCBsHLgK3+/y3fMGjiA==",
+  "dgSpecHash": "cccaYxG+19DrJw142kjkW3G+9tSAszWzC4DaEegKYCAhj4GUSoptfZVxN+pJZi0kuPoTBPANiD6m+sH+DzLtOA==",
   "success": true,
-  "projectFilePath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\HouseManager2_0.csproj",
+  "projectFilePath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\HouseManager2_0\\HouseManager3_0.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sxtgy\\.nuget\\packages\\bouncycastle.netcore\\1.8.5\\bouncycastle.netcore.1.8.5.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\google.protobuf\\3.11.4\\google.protobuf.3.11.4.nupkg.sha512",

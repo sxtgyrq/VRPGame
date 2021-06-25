@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MateWsAndHouse
 {
@@ -17,15 +18,26 @@ namespace MateWsAndHouse
             allTeams = new Dictionary<int, Team>();
             rm = new Random(DateTime.Now.GetHashCode());
             Console.WriteLine("你好！此服务为匹配用户和房间的服务！");
-            var ip = "http://127.0.0.1:11200";
+            var ip = "127.0.0.1:11200";
             Console.WriteLine("输入ip和端口");
             var input = Console.ReadLine();
             if (string.IsNullOrEmpty(input)) { }
             else
             {
-                input = ip;
+                ip = input;
             }
-            CreateWebHostBuilder(new string[] { ip }).Build().Run();
+
+            Thread startTcpServer = new Thread(() => Listen.IpAndPort(ip.Split(':')[0], int.Parse(ip.Split(':')[1])));
+            startTcpServer.Start();
+
+            while (true)
+            {
+                if (Console.ReadLine().ToLower() == "exit")
+                {
+                    break;
+                }
+            }
+            //CreateWebHostBuilder(new string[] { ip }).Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

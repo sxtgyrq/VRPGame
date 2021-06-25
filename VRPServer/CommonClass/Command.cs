@@ -100,7 +100,9 @@ namespace CommonClass
     }
     public class SingleRoadPathData : CommandNotify
     {
-        public List<double[]> meshPoints { get; set; }
+        //  public List<double[]> meshPoints { get; set; }
+        public List<int> meshPoints { get; set; }
+        public List<int> basePoint { get; set; }
     }
     public class SupportNotify : CommandNotify
     {
@@ -118,7 +120,7 @@ namespace CommonClass
 
         public object Animate { get; set; }
     }
-    public class BradCastAnimateOfOthersCar : CommandNotify
+    public class BradCastAnimateOfOthersCar2 : CommandNotify
     {
         public string carID;
 
@@ -213,6 +215,16 @@ namespace CommonClass
         public int collectIndex { get; set; }
     }
 
+    public class BradCastMusicTheme : CommandNotify
+    {
+        public string theme { get; set; }
+    }
+
+    public class BradCastBackground : CommandNotify
+    {
+        public string path { get; set; }
+    }
+
     public class PlayerAdd : Command
     {
         public string Key { get; set; }
@@ -264,6 +276,9 @@ namespace CommonClass
         public string cType { get; set; }
 
         public string fastenpositionID { get; set; }
+        /// <summary>
+        /// 取值0~38
+        /// </summary>
         public int collectIndex { get; set; }
         //public string car { get; set; }
     }

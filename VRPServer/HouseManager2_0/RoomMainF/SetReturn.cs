@@ -15,7 +15,7 @@ namespace HouseManager2_0.RoomMainF
         /// </summary>
         /// <param name="startT"></param>
         /// <param name="cmp"></param>
-        private async void setReturn(int startT, commandWithTime.returnning cmp)
+        private void setReturn(int startT, commandWithTime.returnning cmp)
         {
             Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setReturn");
             Thread.Sleep(startT + 1);
@@ -91,26 +91,26 @@ namespace HouseManager2_0.RoomMainF
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //  Console.WriteLine($"url:{url}");
 
-                await Startup.sendMsg(url, sendMsg);
+                Startup.sendMsg(url, sendMsg);
             }
             Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
             if (needUpdatePromoteState)
             {
-                await CheckAllPlayersPromoteState(cmp.changeType);
+                CheckAllPlayersPromoteState(cmp.changeType);
             }
         }
 
 
-        private void ReturnThenSetComeBack(Player player, Car car, commandWithTime.returnning cmp, ref List<string> notifyMsg)
+        private void ReturnThenSetComeBack(RoleInGame player, Car car, commandWithTime.returnning cmp, ref List<string> notifyMsg)
         {
             var speed = car.ability.Speed;
             int startT = 0;
-            var result = new List<Data.PathResult>();
+            var result = new List<int>();
             Program.dt.GetAFromBPoint(cmp.returnPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT);
             getEndPositon(Program.dt.GetFpByIndex(this._Players[cmp.key].StartFPIndex), this._Players[cmp.key].positionInStation, ref result, ref startT);
-            result.RemoveAll(item => item.t0 == item.t1);
+            // result.RemoveAll(item => item.t == 0);
 
             car.setState(this._Players[cmp.key], ref notifyMsg, CarState.returning);
             // car.state = CarState.returning;
@@ -121,10 +121,12 @@ namespace HouseManager2_0.RoomMainF
                 key = cmp.key
             }));
             th.Start();
-
+            Data.PathStartPoint2 startPosition;
+            this.getStartPositionByGoPath(out startPosition, cmp.returnPath);
             //var player = this._Players[cmp.key];
-            car.setAnimateData(player, ref notifyMsg, new AnimateData()
+            car.setAnimateData(player, ref notifyMsg, new AnimateData2()
             {
+                start = startPosition,
                 animateData = result,
                 recordTime = DateTime.Now
             });
@@ -138,7 +140,7 @@ namespace HouseManager2_0.RoomMainF
             //getAllCarInfomations(cmp.key, ref notifyMsg);
         }
 
-        private async void setBack(int startT, commandWithTime.comeBack comeBack)
+        private void setBack(int startT, commandWithTime.comeBack comeBack)
         {
             Thread.Sleep(startT);
             List<string> notifyMsg = new List<string>();
@@ -162,7 +164,8 @@ namespace HouseManager2_0.RoomMainF
                     if (!string.IsNullOrEmpty(car.ability.diamondInCar))
                     {
                         player.PromoteDiamondCount[car.ability.diamondInCar]++;
-                        SendPromoteCountOfPlayer(car.ability.diamondInCar, player, ref notifyMsg);
+                        if (player.playerType == RoleInGame.PlayerType.player)
+                            SendPromoteCountOfPlayer(car.ability.diamondInCar, (Player)player, ref notifyMsg);
                     }
                     car.ability.Refresh(player, car, ref notifyMsg);
                     car.Refresh(player, ref notifyMsg);
@@ -177,6 +180,10 @@ namespace HouseManager2_0.RoomMainF
                     {
                         // MoneyCanSaveChanged(player, moneyCanSave2, ref notifyMsg);
                     }
+                    if (player.playerType == RoleInGame.PlayerType.NPC)
+                    {
+                        this.SetNPCToDoSomeThing((NPC)player, NPCAction.Bust);
+                    }
                 }
                 else
                 {
@@ -190,14 +197,14 @@ namespace HouseManager2_0.RoomMainF
                 var sendMsg = notifyMsg[i + 1];
                 Console.WriteLine($"url:{url}");
 
-                await Startup.sendMsg(url, sendMsg);
+                Startup.sendMsg(url, sendMsg);
             }
         }
 
         /// <summary>
         /// 调用此方法，说明角色已出局！
         /// </summary>
-        internal async void SetReturn()
+        internal void SetReturn()
         {
             List<string> notifyMsg = new List<string>();
             lock (this.PlayerLock)
@@ -239,12 +246,11 @@ namespace HouseManager2_0.RoomMainF
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
-                await Startup.sendMsg(url, sendMsg);
+                Startup.sendMsg(url, sendMsg);
             }
         }
 
-        internal async Task<string> OrderToReturn(OrderToReturn otr)
+        internal string OrderToReturn(OrderToReturn otr)
         {
             //if (string.IsNullOrEmpty(otr.car))
             //{
@@ -292,9 +298,7 @@ namespace HouseManager2_0.RoomMainF
                 {
                     var url = notifyMsg[i];
                     var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
-
-                    await Startup.sendMsg(url, sendMsg);
+                    Startup.sendMsg(url, sendMsg);
                 }
                 return "";
             }
