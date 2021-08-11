@@ -33,7 +33,7 @@ namespace HouseManager4_0
                 c = "diamondOwner",
                 key = sp.Key,
                 target = car.targetFpIndex,//新的起点
-                changeType = commandWithTime.returnning.ChangeType.GetDiamond,
+                changeType = commandWithTime.returnning.ChangeType.BeforeTax,
                 costMile = goMile,
                 returningOjb = ro,
                 diamondType = sp.pType
@@ -57,8 +57,7 @@ namespace HouseManager4_0
                 var player = that._Players[dor.key];
                 var car = that._Players[dor.key].getCar();
                 {
-                    if ((dor.changeType == commandWithTime.returnning.ChangeType.GetDiamond)
-                     && car.state == CarState.working)
+                    if (car.state == CarState.working)
                     {
                         if (car.targetFpIndex == -1)
                         {
@@ -72,7 +71,7 @@ namespace HouseManager4_0
                             that.retutnE.SetReturnT(0, new commandWithTime.returnning()
                             {
                                 c = "returnning",
-                                changeType = commandWithTime.returnning.ChangeType.AfterPromote,
+                                changeType = commandWithTime.returnning.ChangeType.BeforeTax,
                                 key = dor.key,
                                 returningOjb = dor.returningOjb,
                                 target = dor.target
@@ -111,7 +110,7 @@ namespace HouseManager4_0
                             that.retutnE.SetReturnT(0, new commandWithTime.returnning()
                             {
                                 c = "returnning",
-                                changeType = commandWithTime.returnning.ChangeType.AfterPromote,
+                                changeType = commandWithTime.returnning.ChangeType.BeforeTax,
                                 key = dor.key,
                                 returningOjb = dor.returningOjb,
                                 target = dor.target
@@ -124,6 +123,8 @@ namespace HouseManager4_0
                             carParkOnRoad(dor.target, ref car, player, ref notifyMsg);
                             car.setState(player, ref notifyMsg, CarState.waitOnRoad);
                             that._Players[dor.key].returningOjb = dor.returningOjb;
+
+                            //player.
 
                         }
 

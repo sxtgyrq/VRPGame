@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using static HouseManager4_0.Car;
 using static HouseManager4_0.RoomMainF.RoomMain;
+using OssModel = Model;
 
 namespace HouseManager4_0
 {
@@ -109,8 +110,8 @@ namespace HouseManager4_0
                                 case CarState.waitAtBaseStation:
                                     {
                                         // if(player.Money<)
-                                        int collectIndex;
-                                        var distanceIsEnoughToStart = that.theNearestIsDiamondNotCar(player, car, sp.pType, out collectIndex);
+                                        OssModel.FastonPosition fpResult;
+                                        var distanceIsEnoughToStart = that.theNearestToDiamondIsCarNotMoney(player, car, sp.pType, out fpResult);
                                         if (distanceIsEnoughToStart)
                                         {
                                             var from = this.getFromWhenAction(player, car);
@@ -157,13 +158,14 @@ namespace HouseManager4_0
                                         else
                                         {
                                             mrr = MileResultReason.NearestIsMoneyWhenPromote;
+                                            this.WebNotify(player, $"离宝石最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车。请离宝石再近点儿！");
                                             return player.returningOjb;
                                         }
                                     };
                                 case CarState.waitOnRoad:
                                     {
-                                        int collectIndex;
-                                        var distanceIsEnoughToStart = that.theNearestIsDiamondNotCar(player, car, sp.pType, out collectIndex);
+                                        OssModel.FastonPosition fpResult;
+                                        var distanceIsEnoughToStart = that.theNearestToDiamondIsCarNotMoney(player, car, sp.pType, out fpResult);
                                         if (distanceIsEnoughToStart)
                                         {
                                             var from = this.getFromWhenAction(player, car);
@@ -207,6 +209,7 @@ namespace HouseManager4_0
                                         else
                                         {
                                             mrr = MileResultReason.NearestIsMoneyWhenPromote;
+                                            this.WebNotify(player, $"离宝石最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车。请离宝石再近点儿！");
                                             return player.returningOjb;
                                         }
                                     };
@@ -239,8 +242,9 @@ namespace HouseManager4_0
                             case CarState.waitAtBaseStation:
                                 {
                                     // if(player.Money<)
-                                    int collectIndex;
-                                    var distanceIsEnoughToStart = that.theNearestIsDiamondNotCar(player, car, sp.pType, out collectIndex);
+                                    //int collectIndex;
+                                    OssModel.FastonPosition fpResult;
+                                    var distanceIsEnoughToStart = that.theNearestToDiamondIsCarNotMoney(player, car, sp.pType, out fpResult);
                                     if (distanceIsEnoughToStart)
                                     {
                                         var from = this.getFromWhenAction(player, car);
@@ -287,14 +291,15 @@ namespace HouseManager4_0
                                     else
                                     {
                                         mrr = MileResultReason.NearestIsMoneyWhenPromote;
+                                        this.WebNotify(player, $"离宝石最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车。请离宝石再近点儿！");
                                         return player.returningOjb;
                                         //printState(player, car, "钱不够了,由于本身待在基地，不用返回。");
                                     }
                                 };
                             case CarState.waitOnRoad:
                                 {
-                                    int collectIndex;
-                                    var distanceIsEnoughToStart = that.theNearestIsDiamondNotCar(player, car, sp.pType, out collectIndex);
+                                    OssModel.FastonPosition fpResult;
+                                    var distanceIsEnoughToStart = that.theNearestToDiamondIsCarNotMoney(player, car, sp.pType, out fpResult);
                                     if (distanceIsEnoughToStart)
                                     {
                                         var from = this.getFromWhenAction(player, car);
@@ -341,6 +346,7 @@ namespace HouseManager4_0
                                     else
                                     {
                                         mrr = MileResultReason.NearestIsMoneyWhenPromote;
+                                        this.WebNotify(player, $"离宝石最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车。请离宝石再近点儿！");
                                         return player.returningOjb;
                                     }
                                 };

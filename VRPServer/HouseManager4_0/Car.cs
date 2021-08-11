@@ -61,6 +61,13 @@ namespace HouseManager4_0
             if (player.playerType == RoleInGame.PlayerType.player)
                 SendStateAndPurpose((Player)player, this, ref notifyMsg);
 
+            if (s == CarState.waitOnRoad)
+            {
+                if (player.playerType == RoleInGame.PlayerType.NPC)
+                {
+                    ((NPC)player).dealWithWaitedNPC(ref notifyMsg);
+                }
+            }
         }
         /// <summary>
         /// 汽车的目标地点。
@@ -110,10 +117,18 @@ namespace HouseManager4_0
 
         public class AnimateData2
         {
-            public Data.PathStartPoint2 start { get; internal set; }
+            public AnimateData2(Data.PathStartPoint2 _start, List<int> _animateData, DateTime _recordTime, bool _isParking)
+            {
+                this.start = _start;
+                this.animateData = _animateData;
+                this.recordTime = _recordTime;
+                this.isParking = _isParking;
+            }
+            public Data.PathStartPoint2 start { get; private set; }
             //public List<Data.PathResult3> animateData { get; internal set; }
-            public List<int> animateData { get; internal set; }
-            public DateTime recordTime { get; internal set; }
+            public List<int> animateData { get; private set; }
+            public DateTime recordTime { get; private set; }
+            public bool isParking { get; private set; }
         }
     }
 

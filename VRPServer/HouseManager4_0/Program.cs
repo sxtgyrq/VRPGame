@@ -80,6 +80,14 @@ namespace HouseManager4_0
 
         private static void PlayersSysOperate()
         {
+            while (true)
+            {
+                ;
+                Program.rm.SetReturn();
+                Program.rm.ClearPlayers();
+                Program.rm.SetNPC();
+                Thread.Sleep(30 * 1000);
+            }
             //  throw new NotImplementedException();
         }
     }

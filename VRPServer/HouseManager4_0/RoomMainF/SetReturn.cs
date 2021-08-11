@@ -14,6 +14,47 @@ namespace HouseManager4_0.RoomMainF
             return this.retutnE.OrderToReturn(otr);
         }
 
+        /// <summary>
+        /// 调用此方法，说明角色已出局！
+        /// </summary>
+        internal void SetReturn()
+        {
+            List<string> notifyMsg = new List<string>();
+            lock (this.PlayerLock)
+            {
+                List<string> keysNeedToSetReturn = new List<string>();
+                foreach (var item in this._Players)
+                {
+                    if (item.Value.Bust)
+                    {
+                        keysNeedToSetReturn.Add(item.Key);
+                    }
+                }
+                for (var i = 0; i < keysNeedToSetReturn.Count; i++)
+                {
+                    if (this._Players[keysNeedToSetReturn[i]].getCar().state == CarState.waitOnRoad)
+                    {
+
+                        var key = keysNeedToSetReturn[i];
+
+                        this.retutnE.OrderToReturn(new CommonClass.OrderToReturnBySystem()
+                        {
+                            c = "OrderToReturnBySystem",
+                            Key = keysNeedToSetReturn[i]
+                        });
+                    }
+                }
+
+            }
+
+            for (var i = 0; i < notifyMsg.Count; i += 2)
+            {
+                var url = notifyMsg[i];
+                var sendMsg = notifyMsg[i + 1];
+                Startup.sendMsg(url, sendMsg);
+            }
+        }
+
         //        /// <summary>
         //        /// set return 本身自带广播功能
         //        /// </summary>

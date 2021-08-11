@@ -39,4 +39,10 @@ namespace HouseManager4_0.interfaceOfEngine
         void startNewThread(int timeC, baseC baseObj, startNewThread self);
         void newThreadDo(baseC dObj);
     }
+
+    public interface startNewCommandThread
+    {
+        void startNewCommandThread(int timeC, CommonClass.Command c, startNewCommandThread self);
+        void newThreadDo(CommonClass.Command c);
+    }
 }

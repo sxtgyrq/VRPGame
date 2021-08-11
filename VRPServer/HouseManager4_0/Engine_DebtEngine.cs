@@ -34,7 +34,7 @@ namespace HouseManager4_0
                 //  car = sa.car,
                 // returnPath = returnPath,
                 target = car.targetFpIndex,//新的起点
-                changeType = returnning.ChangeType.Attack,
+                changeType = returnning.ChangeType.BeforeTax,
                 victim = sa.targetOwner,
                 costMile = goMile,
                 returningOjb = ro
@@ -51,8 +51,7 @@ namespace HouseManager4_0
                 var player = that._Players[dOwner.key];
                 var car = that._Players[dOwner.key].getCar();
                 // car.targetFpIndex = this._Players[dor.key].StartFPIndex;
-                if (dOwner.changeType == returnning.ChangeType.Attack
-                    && car.state == CarState.working)
+                if (car.state == CarState.working)
                 {
                     if (car.targetFpIndex == -1)
                     {
@@ -67,21 +66,35 @@ namespace HouseManager4_0
                          * 这三种情况都要考虑到。
                          */
 
-                        var attackMoney = car.ability.leftBusiness;
+                        var attackMoney = car.ability.Business;
                         if (that._Players.ContainsKey(dOwner.victim))
                         {
                             var victim = that._Players[dOwner.victim];
                             if (!victim.Bust)
                             {
                                 var percentValue = getAttackPercentValue(player, victim);
+
+                                //if(victim.Money*100/ car.ability.Business)
                                 var m = victim.Money;
-                                var reduce = Math.Min(m, attackMoney);
+                                // var reduce = Math.Min(m, attackMoney);
+                                var reduce = attackMoney * percentValue / 100;
+                                if (reduce > victim.Money) 
+                                {
+                                    reduce = victim.Money;
+                                }
                                 victim.MoneySet(m - reduce, ref notifyMsg);
-                                car.ability.setCostBusiness(car.ability.costBusiness + attackMoney, player, car, ref notifyMsg);
+                                car.ability.setCostBusiness(car.ability.costBusiness + reduce, player, car, ref notifyMsg);
+                                this.WebNotify(player, $"你对【{victim.PlayerName}】执行了攻击，攻击效率为{percentValue}%，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money/100.00).ToString("f2")}金币。");
+                                this.WebNotify(victim, $"【{player.PlayerName}】对你执行了攻击，攻击效率为{percentValue}%，损失{(reduce / 100.00).ToString("f2")}金币 ");
                                 if (victim.Money == 0)
                                 {
                                     victim.SetBust(true, ref notifyMsg);
                                 }
+                                if (victim.playerType == RoleInGame.PlayerType.NPC)
+                                {
+                                    ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg);
+                                }
+                                
                             }
                             else
                             {
@@ -135,20 +148,24 @@ namespace HouseManager4_0
 
         private long getAttackPercentValue(RoleInGame player, RoleInGame victim)
         {
-            //RoleInGame bossOfPlayer;
-            //if (player.HasTheBoss(this.that._Players, out bossOfPlayer))
-            //{
-            //    if (bossOfPlayer.Key == victim.Key)
-            //    {
-            //        return 10;
-            //    }
-            //    else 
-            //    {
-            //        var result=player.lev
-            //    }
-            //}
-
-            //throw new NotImplementedException();
+            if (player.TheLargestHolderKey == victim.Key)
+            {
+                //Msg = $"[{victim.PlayerName}]是你的老大，只能发挥出攻击效率的10%";
+                return 10;
+            }
+            else if (victim.TheLargestHolderKey == player.Key)
+            {
+                //Msg = $"[{victim.PlayerName}]是你的小弟，只能发挥出攻击效率的10%";
+                return 10;
+            }
+            else if (victim.TheLargestHolderKey == player.TheLargestHolderKey)
+            {
+                return 20;
+            }
+            else 
+            {
+                return 100;
+            } 
         }
     }
 }

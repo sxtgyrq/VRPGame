@@ -1,9 +1,11 @@
 ﻿using CommonClass;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using static HouseManager4_0.Car;
+using OssModel = Model;
 
 namespace HouseManager4_0.RoomMainF
 {
@@ -57,127 +59,147 @@ namespace HouseManager4_0.RoomMainF
 
 
 
-        private void EditCarStateWhenPromoteStartOK(RoleInGame role, ref Car car, int to, Model.FastonPosition fp1, int to2, SetPromote sp, List<Model.MapGo.nyrqPosition> goPath, ref List<string> nofityMsgs, out int startT)
+        //private void EditCarStateWhenPromoteStartOK(RoleInGame role, ref Car car, int to, Model.FastonPosition fp1, int to2, SetPromote sp, List<Model.MapGo.nyrqPosition> goPath, ref List<string> nofityMsgs, out int startT)
+        //{
+        //    car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
+        //                           //  car.changeState++;//B.更改状态用去前台更新动画    
+
+        //    /*
+        //     * C.更新小车动画参数
+        //     */
+        //    var speed = car.ability.Speed;
+        //    startT = 0;
+        //    List<int> result;
+        //    Data.PathStartPoint2 startPosition;
+        //    if (car.state == CarState.waitOnRoad)
+        //    {
+        //        result = new List<int>();
+        //        getStartPositionByGoPath(out startPosition, goPath);
+        //        //startPosition = new Data.PathStartPoint()
+        //        //{
+        //        //    x = goPath.First().BDlongitude,
+        //        //    y = goPath.First().BDlatitude
+        //        //};
+        //    }
+        //    else if (car.state == CarState.waitAtBaseStation)
+        //    {
+        //        result = getStartPositon(fp1, role.positionInStation, ref startT);
+        //        getStartPositionByFp(out startPosition, fp1);
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
+        //        throw new Exception("错误的汽车类型！！！");
+        //    }
+        //    Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
+        //    // result.RemoveAll(item => item.t == 0);
+
+        //    var animateData = new AnimateData2()
+        //    {
+        //        start = startPosition,
+        //        animateData = result,
+        //        recordTime = DateTime.Now,
+                    
+        //    };
+        //    car.setAnimateData(role, ref nofityMsgs, animateData);
+        //    //car.animateData = new AnimateData()
+        //    //{
+        //    //    animateData = result,
+        //    //    recordTime = DateTime.Now
+        //    //};
+        //    car.setState(role, ref nofityMsgs, CarState.working);
+        //    //  car.state = CarState.buying;//更改汽车状态
+
+        //    //Thread th = new Thread(() => setDiamondOwner(startT, new commandWithTime.diamondOwner()
+        //    //{
+        //    //    c = "diamondOwner",
+        //    //    key = sp.Key,
+        //    //    car = sp.car,
+        //    //    returnPath = returnPath,
+        //    //    target = to,//新的起点
+        //    //    changeType = sp.pType,
+        //    //    costMile = goMile
+        //    //}));
+        //    //th.Start();
+        //    //car.changeState++;//更改状态
+
+        //    //getAllCarInfomations(sp.Key, ref notifyMsg);
+        //}
+
+        public class PromoteObj : interfaceOfHM.GetFPIndex
         {
-            car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
-                                   //  car.changeState++;//B.更改状态用去前台更新动画    
-
-            /*
-             * C.更新小车动画参数
-             */
-            var speed = car.ability.Speed;
-            startT = 0;
-            List<int> result;
-            Data.PathStartPoint2 startPosition;
-            if (car.state == CarState.waitOnRoad)
+            string _pType;
+            public PromoteObj(string pType)
             {
-                result = new List<int>();
-                getStartPositionByGoPath(out startPosition, goPath);
-                //startPosition = new Data.PathStartPoint()
-                //{
-                //    x = goPath.First().BDlongitude,
-                //    y = goPath.First().BDlatitude
-                //};
+                this._pType = pType;
             }
-            else if (car.state == CarState.waitAtBaseStation)
+            public int GetFPIndex()
             {
-                result = getStartPositon(fp1, role.positionInStation, ref startT);
-                getStartPositionByFp(out startPosition, fp1);
+                return Program.rm.GetPromotePositionTo(this._pType);
+                //  throw new NotImplementedException();
             }
-            else
-            {
-                Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
-                throw new Exception("错误的汽车类型！！！");
-            }
-            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
-            // result.RemoveAll(item => item.t == 0);
-
-            var animateData = new AnimateData2()
-            {
-                start = startPosition,
-                animateData = result,
-                recordTime = DateTime.Now
-            };
-            car.setAnimateData(role, ref nofityMsgs, animateData);
-            //car.animateData = new AnimateData()
-            //{
-            //    animateData = result,
-            //    recordTime = DateTime.Now
-            //};
-            car.setState(role, ref nofityMsgs, CarState.working);
-            //  car.state = CarState.buying;//更改汽车状态
-
-            //Thread th = new Thread(() => setDiamondOwner(startT, new commandWithTime.diamondOwner()
-            //{
-            //    c = "diamondOwner",
-            //    key = sp.Key,
-            //    car = sp.car,
-            //    returnPath = returnPath,
-            //    target = to,//新的起点
-            //    changeType = sp.pType,
-            //    costMile = goMile
-            //}));
-            //th.Start();
-            //car.changeState++;//更改状态
-
-            //getAllCarInfomations(sp.Key, ref notifyMsg);
         }
-
-        internal bool theNearestIsDiamondNotCar(RoleInGame player, Car car, string pType, out int collectIndex)
+        public bool theNearestToDiamondIsCarNotMoney(RoleInGame player, Car car, string pType, out OssModel.FastonPosition fp)
         {
+
+            return theNearestToObjIsCarNotMoney(player, car, new PromoteObj(pType), out fp);
+        }
+        bool theNearestToObjIsCarNotMoney(RoleInGame player, Car car, interfaceOfHM.GetFPIndex getF, out OssModel.FastonPosition fp)
+        {
+            fp = null;
             if (car.state == CarState.waitAtBaseStation)
             {
                 double distanceToDiamond;
+                var from = Program.dt.GetFpByIndex(getF.GetFPIndex());
                 {
-                    var from = Program.dt.GetFpByIndex(player.StartFPIndex);
-                    var to = this.GetPromotePositionTo(pType);
-                    var fpTo = Program.dt.GetFpByIndex(to);
+                    var fpTo = Program.dt.GetFpByIndex(player.StartFPIndex); ;//this.GetPromotePositionTo(pType);
+
                     distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
                 }
                 foreach (var item in this._collectPosition)
                 {
-                    var from = Program.dt.GetFpByIndex(player.StartFPIndex);
+                    //  var from = Program.dt.GetFpByIndex(player.StartFPIndex);
                     var fpTo = Program.dt.GetFpByIndex(item.Value);
                     var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
                     if (distanceToMoney <= distanceToDiamond)
                     {
-                        collectIndex = item.Key;
-                        return false;
+                        distanceToDiamond = distanceToMoney;
+                        fp = fpTo;
+                        //  return false;
                     }
                 }
-                collectIndex = -1;
-                return true;
+                return fp == null;
             }
             else if (car.state == CarState.waitOnRoad)
             {
+                var from = Program.dt.GetFpByIndex(getF.GetFPIndex());
                 double distanceToDiamond;
                 {
-                    var from = Program.dt.GetFpByIndex(car.targetFpIndex);
-                    var to = this.GetPromotePositionTo(pType);
-                    var fpTo = Program.dt.GetFpByIndex(to);
+                    var fpTo = Program.dt.GetFpByIndex(car.targetFpIndex);
                     distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
                 }
                 foreach (var item in this._collectPosition)
                 {
-                    var from = Program.dt.GetFpByIndex(car.targetFpIndex);
                     var fpTo = Program.dt.GetFpByIndex(item.Value);
                     var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
                     if (distanceToMoney <= distanceToDiamond)
                     {
-                        collectIndex = item.Key;
-                        return false;
+                        distanceToDiamond = distanceToMoney;
+                        fp = fpTo;
                     }
                 }
-                collectIndex = -1;
-                return true;
+                return fp == null;
             }
             else
             {
-                collectIndex = -2;
-                return false;
+                throw new Exception("非法调用");
             }
         }
 
+        public bool theNearestToPlayerIsCarNotMoney(RoleInGame player, Car car, RoleInGame victim, out OssModel.FastonPosition fp)
+        {
+            return theNearestToObjIsCarNotMoney(player, car, victim, out fp);
+        }
         public int GetPromotePositionTo(string pType)
         {
             switch (pType)

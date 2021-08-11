@@ -107,37 +107,6 @@ var objMain =
 
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
-
-
-            //  cc.multiply(6);
-            // object.rotateY(-cc.toAngle() + Math.PI / 2);
-
-            //var positon1 = cc.multiply(new Complex(-0.309016994, 0.951056516));
-            //var positon2 = positon1.multiply(new Complex(0.809016994, 0.587785252));
-            //var positon3 = positon2.multiply(new Complex(0.809016994, 0.587785252));
-            //var positon4 = positon3.multiply(new Complex(0.809016994, 0.587785252));
-            //var positon5 = positon4.multiply(new Complex(0.809016994, 0.587785252));
-
-            //var positons = [positon1, positon2, positon3, positon4, positon5];
-            //var names = ['carA', 'carB', 'carC', 'carD', 'carE'];
-            //console.log('positons', positons);
-            //var percentOfPosition = 0.25;
-            //for (var i = 0; i < positons.length; i++) {
-            //    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-            //    var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, 0, start.z + positons[i].i * percentOfPosition);
-            //    var lineGeometry = new THREE.Geometry();
-            //    lineGeometry.vertices.push(start);
-            //    lineGeometry.vertices.push(end);
-            //    var lineMaterial = new THREE.LineBasicMaterial({ color: color });
-            //    var line = new THREE.Line(lineGeometry, lineMaterial);
-            //    objMain.scene.add(line);
-
-            //    var model = objMain.cars[names[i]].clone();
-            //    model.position.set(end.x, 0, end.z);
-            //    model.scale.set(0.002, 0.002, 0.002);
-            //    model.rotateY(-positons[i].toAngle());
-            //    objMain.roadGroup.add(model);
-            //}
             var minDistance = objMain.controls.minDistance * 1.1;
             var maxPolarAngle = objMain.controls.maxPolarAngle - Math.PI / 30;
             {
@@ -226,119 +195,6 @@ var objMain =
         },
         getLength: function (p1, p2) {
             return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y) + (p1.z - p2.z) * (p1.z - p2.z));
-        },
-        drawPanelOfPromotion: function (type, endF) {
-
-            var lengthOfObjs = objMain.groupOfOperatePanle.children.length;
-            for (var i = lengthOfObjs - 1; i >= 0; i--) {
-                objMain.groupOfOperatePanle.remove(objMain.groupOfOperatePanle.children[i]);
-            }
-            var element = document.createElement('div');
-            element.style.width = '10em';
-            //element.style.marginLeft = 'calc(5em + 20px)';
-            element.style.marginTop = '3em';
-            var color = '#ff0000';
-            var colorName = '红';
-            switch (type) {
-                case 'mile':
-                    {
-                        color = '#ff0000';
-                        colorName = '红';
-                    }; break;
-                case 'business': {
-                    color = '#00ff00';
-                    colorName = '绿';
-                }; break;
-                case 'volume': {
-
-                    color = '#0000ff';
-                    colorName = '蓝';
-                }; break;
-                case 'speed': {
-
-                    color = '#000000';
-                    colorName = '黑';
-                }; break;
-            }
-            element.style.border = '2px solid ' + color;
-            element.style.borderTopLeftRadius = '0.5em';
-            element.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-            element.style.color = '#1504f6';
-
-            var div2 = document.createElement('div');
-
-            var b = document.createElement('b');
-            b.innerHTML = '到[<span style="color:#05ffba">' + objMain.PromotePositions[type].Fp.FastenPositionName + '</span>]花费<span style="color:#05ffba">' + (objMain.PromotePositions[type].Price / 100).toFixed(2) + '</span>现金或汇兑购买' + colorName + '宝石。';
-            div2.appendChild(b);
-
-            var div3 = document.createElement('div');
-            div3.style.textAlign = 'center';
-            div3.style.width = '3em';
-            div3.style.border = '2px inset #ffc403';
-            div3.style.borderRadius = '0.3em';
-            div3.style.marginTop = '4px';
-            div3.style.marginBottom = '4px';
-            div3.style.position = 'relative';
-            div3.style.left = 'calc(100% - 3em - 4px)';
-
-            var span = document.createElement('span');
-            span.innerText = '执行';
-
-            //div3.onclick = function () {
-            //    if (objMain.Task.state == '') {
-            //        throw 'task not select';
-            //    }
-            //    else if (objMain.Task.carSelect == '') {
-            //        alert('请选择要执行此任务的车辆');
-            //    }
-            //    else {
-            //        objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state, 'car': objMain.Task.carSelect }));
-            //        objMain.Task.state = '';
-            //        objMain.Task.carSelect = '';
-            //        objMain.mainF.removeF.removePanle('carsSelectionPanel');
-            //        carAbility.clear();
-
-            //        objMain.mainF.removeF.clearGroup(objMain.promoteDiamond);
-            //        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //        endF();
-            //    }
-            //}
-            //div3.addEventListener("click", function () {
-            //    if (objMain.Task.state == '') {
-            //        throw 'task not select';
-            //    }
-            //    else if (objMain.Task.carSelect == '') {
-            //        alert('请选择要执行此任务的车辆');
-            //    }
-            //    else {
-            //        objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state, 'car': objMain.Task.carSelect }));
-            //        objMain.Task.state = '';
-            //        objMain.Task.carSelect = '';
-            //        objMain.mainF.removeF.removePanle('carsSelectionPanel');
-            //        carAbility.clear();
-
-            //        objMain.mainF.removeF.clearGroup(objMain.promoteDiamond);
-            //        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //        endF();
-            //    }
-            //}, false);
-            // div3.addEventListener('',
-            //['click', 'touchmove'].forEach(function (e) {
-            //    div3.addEventListener(e, mouseMoveHandler);
-            //});
-
-            //div3.appendChild(span);
-
-            element.appendChild(div2);
-            element.appendChild(div3);
-
-            var object = new THREE.CSS2DObject(element);
-            var fp = objMain.PromotePositions[type].Fp;
-            object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-            objMain.groupOfOperatePanle.add(object);
-
-
         },
         removeF:
         {
@@ -605,523 +461,6 @@ var objMain =
 
 
         },
-        refreshAttackPanel: function () {
-            if (objMain.state == "OnLine") {
-                objMain.mainF.drawPanelOfAttackPanel();
-            }
-        },
-        drawPanelOfAttackPanel: function () {
-            var lengthOfObjs = objMain.groupOfOperatePanle.children.length;
-            for (var i = lengthOfObjs - 1; i >= 0; i--) {
-                objMain.groupOfOperatePanle.remove(objMain.groupOfOperatePanle.children[i]);
-            }
-            for (var key in objMain.othersBasePoint) {
-                console.log(key, objMain.othersBasePoint[key]);
-                //Websitelogo = Websitelogo + '&' + '' + Key + '=' + Statistics_Website_logo[Key] + '';
-
-                var element = document.createElement('div');
-                element.style.width = '10em';
-                element.style.marginTop = '3em';
-                var color = '#ff0000';
-
-                element.style.border = '2px solid ' + color;
-                element.style.borderTopLeftRadius = '0.5em';
-                element.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                element.style.color = '#1504f6';
-
-                var div2 = document.createElement('div');
-
-                var b = document.createElement('b');
-                b.innerHTML = '到[<span style="color:#05ffba">' + objMain.othersBasePoint[key].basePoint.FastenPositionName + '</span>]打压<span style="color:#05ffba">' + objMain.othersBasePoint[key].playerName + '</span>。' + function () {
-                    if (objMain.rightAndDuty.data[key] == undefined) {
-                        return "";
-                    }
-                    else {
-                        if (objMain.rightAndDuty.data[key].right > 0) {
-                            return '其欠你<span style="color:#05ffba">' + (objMain.rightAndDuty.data[key].right / 100).toFixed(2) + '</span>,你在此有<span style="color:#05ffba">' + (objMain.rightAndDuty.data[key].rightPercent / 10).toFixed(1) + '%</span>股份';
-                        }
-                        else if (objMain.rightAndDuty.data[key].duty > 0) {
-                            return '你欠其<span style="color:#05ffba">' + (objMain.rightAndDuty.data[key].duty / 100).toFixed(2) + '</span>,其在此有<span style="color:#05ffba">' + (objMain.rightAndDuty.data[key].dutyPercent / 10).toFixed(1) + '%</span>股份';
-                        }
-                        else return "";
-                    }
-                }();
-                div2.appendChild(b);
-                element.appendChild(div2);
-
-                if (theLagestHoderKey.data[key] != undefined && theLagestHoderKey.data[key].ChangeTo == objMain.indexKey) {
-                    var div4 = document.createElement('div');
-                    div4.style.textAlign = 'center';
-                    div4.style.width = '5em';
-                    div4.style.border = '2px inset #ffc403';
-                    div4.style.borderRadius = '0.3em';
-                    div4.style.marginTop = '4px';
-                    div4.style.marginBottom = '4px';
-                    div4.style.position = 'relative';
-                    div4.style.left = 'calc(100% - 5em - 4px)';
-                    var spanText = document.createElement('span');
-                    spanText.innerText = '令其出场';
-                    div4.CustomTag = objMain.othersBasePoint[key];
-                    div4.onclick = function () {
-                        if (objMain.Task.state == '') {
-                            throw 'task not select';
-                        }
-                        else if (objMain.Task.carSelect == '') {
-                            alert('请选择要执行此任务的车辆');
-                        }
-                        else {
-                            objMain.ws.send(JSON.stringify({ 'c': 'Bust', 'car': objMain.Task.carSelect, 'TargetOwner': this.CustomTag.indexKey, 'Target': this.CustomTag.fPIndex }));
-                            // objMain.ws.send(JSON.stringify({ 'c': 'Donate', 'car': objMain.Task.carSelect, 'TargetOwner': this.CustomTag.indexKey, 'Target': this.CustomTag.fPIndex }));
-                            objMain.Task.state = '';
-                            objMain.Task.carSelect = '';
-                            carBtns.clearBtnInFrame();
-                            //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                            //   carAbility.clear();
-                            // objMain.mainF.removeF.clearGroup(objMain.collectGroup);
-                            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-
-                        }
-                    }
-                    div4.appendChild(spanText);
-                    element.appendChild(div4);
-                }
-                var object = new THREE.CSS2DObject(element);
-                var fp = objMain.othersBasePoint[key].basePoint;
-                object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-                objMain.groupOfOperatePanle.add(object);
-            }
-        },
-        refreshTaxPanel: function () {
-            if (objMain.state == "OnLine") {
-                objMain.mainF.drawPanelOfTaxPanel();
-            }
-        },
-        drawPanelOfTaxPanel: function () {
-            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            // return;
-            for (var key in objMain.Tax) {
-                console.log(key, objMain.Tax[key]);
-                //Websitelogo = Websitelogo + '&' + '' + Key + '=' + Statistics_Website_logo[Key] + '';
-
-                var element = document.createElement('div');
-                element.style.width = '10em';
-                element.style.marginTop = '3em';
-                var color = '#ff0000';
-                //var colorName = '红';
-                //switch (type) {
-                //    case 'mile':
-                //        {
-                //            color = '#ff0000';
-                //            colorName = '红';
-                //        }; break;
-                //    case 'business': {
-                //        color = '#00ff00';
-                //        colorName = '绿';
-                //    }; break;
-                //    case 'volume': { 
-                //        color = '#0000ff';
-                //        colorName = '蓝';
-                //    }; break;
-                //    case 'speed': { 
-                //        color = '#000000';
-                //        colorName = '黑';
-                //    }; break; 
-                //}
-                element.style.border = '2px solid ' + color;
-                element.style.borderTopLeftRadius = '0.5em';
-                element.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                element.style.color = '#1504f6';
-
-                var div2 = document.createElement('div');
-
-                var b = document.createElement('b');
-                b.innerHTML = '到[<span style="color:#05ffba">' + objMain.Tax[key].fp.FastenPositionName + '</span>]收取<span style="color:#05ffba">' + objMain.Tax[key].tax + '保护费！</span>。';
-                div2.appendChild(b);
-
-                var div3 = document.createElement('div');
-                div3.style.textAlign = 'center';
-                div3.style.width = '3em';
-                div3.style.border = '2px inset #ffc403';
-                div3.style.borderRadius = '0.3em';
-                div3.style.marginTop = '4px';
-                div3.style.marginBottom = '4px';
-                div3.style.position = 'relative';
-                div3.style.left = 'calc(100% - 3em - 4px)';
-
-                var span = document.createElement('span');
-                span.innerText = '收取';
-                div3.CustomTag = objMain.Tax[key];
-                div3.onclick = function () {
-                    if (objMain.Task.state == '') {
-                        throw 'task not select';
-                    }
-                    else if (objMain.Task.carSelect == '') {
-                        alert('请选择要执行此任务的车辆');
-                    }
-                    else {
-                        objMain.ws.send(JSON.stringify({ 'c': 'Tax', 'car': objMain.Task.carSelect, 'Target': this.CustomTag.target }));
-                        objMain.Task.state = '';
-                        objMain.Task.carSelect = '';
-                        carBtns.clearBtnInFrame();
-                        // objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                        // carAbility.clear();
-
-                        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                    }
-                }
-
-                div3.appendChild(span);
-
-                element.appendChild(div2);
-                element.appendChild(div3);
-
-                var object = new THREE.CSS2DObject(element);
-                var fp = objMain.Tax[key].fp;
-                object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-                objMain.groupOfOperatePanle.add(object);
-            }
-
-        },
-        refreshPromotePanel: function () {
-            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //for (var key in objMain.PromoteDiamondCount)
-            {
-                //var AddBtnOfCommandReturn = function (element) {
-                //    var div3 = document.createElement('div');
-                //    div3.style.textAlign = 'center';
-                //    div3.style.width = 'calc(100% - 4px)';
-                //    div3.style.border = '2px inset #ffc403';
-                //    div3.style.borderRadius = '0.3em';
-                //    div3.style.marginTop = '4px';
-                //    div3.style.marginBottom = '4px';
-                //    div3.style.position = 'relative';
-                //    div3.style.left = 'calc(0%)';
-
-                //    var span = document.createElement('span');
-                //    span.innerText = '召回';
-                //    // div3.CustomTag = 'mile';
-                //    div3.onclick = function () {
-                //        if (objMain.Task.state == '') {
-                //            throw 'task not select';
-                //        }
-                //        else if (objMain.Task.carSelect == '') {
-                //            alert('请选择要执行此任务的车辆');
-                //        }
-                //        else {
-                //            objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn', 'car': objMain.Task.carSelect }));
-                //            objMain.Task.state = '';
-                //            objMain.Task.carSelect = '';
-                //            objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                //            carAbility.clear();
-                //            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                //        }
-                //    }
-
-                //    div3.appendChild(span);
-                //    element.appendChild(div3);
-                //}
-
-                if (objMain.PromoteDiamondCount.mile + objMain.PromoteDiamondCount.business + objMain.PromoteDiamondCount.volume + objMain.PromoteDiamondCount.speed < 0.5) {
-                    var element = document.createElement('div');
-
-                    element.style.width = '10em';
-                    element.style.marginTop = '3em';
-                    var color = '#ff0000';
-                    //var colorName = '红';
-                    //switch (type) {
-                    //    case 'mile':
-                    //        {
-                    //            color = '#ff0000';
-                    //            colorName = '红';
-                    //        }; break;
-                    //    case 'business': {
-                    //        color = '#00ff00';
-                    //        colorName = '绿';
-                    //    }; break;
-                    //    case 'volume': { 
-                    //        color = '#0000ff';
-                    //        colorName = '蓝';
-                    //    }; break;
-                    //    case 'speed': { 
-                    //        color = '#000000';
-                    //        colorName = '黑';
-                    //    }; break; 
-                    //}
-                    element.style.border = '2px solid ' + color;
-                    element.style.borderTopLeftRadius = '0.5em';
-                    element.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                    element.style.color = '#1504f6';
-
-                    var div2 = document.createElement('div');
-
-                    var b = document.createElement('b');
-                    b.innerHTML = '你没有宝石';
-                    div2.appendChild(b);
-
-
-
-                    element.appendChild(div2);
-                    // element.appendChild(div3);
-                    //  AddBtnOfCommandReturn(element);
-
-                    var object = new THREE.CSS2DObject(element);
-                    var fp = objMain.basePoint;
-                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-                    objMain.groupOfOperatePanle.add(object);
-                }
-                else {
-                    var element = document.createElement('div');
-
-                    element.style.width = '10em';
-                    element.style.marginTop = '3em';
-                    var color = '#ff0000';
-                    //var colorName = '红';
-                    //switch (type) {
-                    //    case 'mile':
-                    //        {
-                    //            color = '#ff0000';
-                    //            colorName = '红';
-                    //        }; break;
-                    //    case 'business': {
-                    //        color = '#00ff00';
-                    //        colorName = '绿';
-                    //    }; break;
-                    //    case 'volume': { 
-                    //        color = '#0000ff';
-                    //        colorName = '蓝';
-                    //    }; break;
-                    //    case 'speed': { 
-                    //        color = '#000000';
-                    //        colorName = '黑';
-                    //    }; break; 
-                    //}
-                    element.style.border = '2px solid ' + color;
-                    element.style.borderTopLeftRadius = '0.5em';
-                    element.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                    element.style.color = '#1504f6';
-
-                    var div2 = document.createElement('div');
-
-                    var b = document.createElement('b');
-                    b.innerHTML = '你现在有xx红石，xx蓝宝石，xx蓝宝石，xx黑宝石！点击柱状仓库，提升能力！';
-                    div2.appendChild(b);
-
-
-
-                    element.appendChild(div2);
-                    // element.appendChild(div3);
-                    if (false) {
-                        var clickBtn = function (that) {
-                            if (objMain.Task.state == '') {
-                                throw 'task not select';
-                            }
-                            else if (objMain.Task.carSelect == '') {
-                                alert('请选择要执行此任务的车辆');
-                            }
-                            else {
-                                objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'car': objMain.Task.carSelect, 'pType': that.CustomTag }));
-                                objMain.Task.state = '';
-                                objMain.Task.carSelect = '';
-                                carBtns.clearBtnInFrame();
-                                //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                                //  carAbility.clear();
-                                objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                            }
-                        }
-
-                        if (objMain.PromoteDiamondCount.mile > 0) {
-                            var div3 = document.createElement('div');
-                            div3.style.textAlign = 'center';
-                            div3.style.width = 'calc(100% - 4px)';
-                            div3.style.border = '2px inset #ffc403';
-                            div3.style.borderRadius = '0.3em';
-                            div3.style.marginTop = '4px';
-                            div3.style.marginBottom = '4px';
-                            div3.style.position = 'relative';
-                            div3.style.left = 'calc(0%)';
-
-                            var span = document.createElement('span');
-                            span.innerText = '提升续航';
-                            div3.CustomTag = 'mile';
-                            div3.onclick = function () {
-                                clickBtn(this);
-                            }
-
-                            div3.appendChild(span);
-                            element.appendChild(div3);
-                        }
-                        if (objMain.PromoteDiamondCount.business > 0) {
-                            var div3 = document.createElement('div');
-                            div3.style.textAlign = 'center';
-                            div3.style.width = 'calc(100% - 4px)';
-                            div3.style.border = '2px inset #ffc403';
-                            div3.style.borderRadius = '0.3em';
-                            div3.style.marginTop = '4px';
-                            div3.style.marginBottom = '4px';
-                            div3.style.position = 'relative';
-                            div3.style.left = 'calc(0%)';
-
-                            var span = document.createElement('span');
-                            span.innerText = '提升业务';
-                            div3.CustomTag = 'business';
-                            div3.onclick = function () {
-                                clickBtn(this);
-                            }
-
-                            div3.appendChild(span);
-                            element.appendChild(div3);
-                        }
-                        if (objMain.PromoteDiamondCount.volume > 0) {
-                            var div3 = document.createElement('div');
-                            div3.style.textAlign = 'center';
-                            div3.style.width = 'calc(100% - 4px)';
-                            div3.style.border = '2px inset #ffc403';
-                            div3.style.borderRadius = '0.3em';
-                            div3.style.marginTop = '4px';
-                            div3.style.marginBottom = '4px';
-                            div3.style.position = 'relative';
-                            div3.style.left = 'calc(0%)';
-
-                            var span = document.createElement('span');
-                            span.innerText = '提升容量';
-                            div3.CustomTag = 'volume';
-                            div3.onclick = function () {
-                                clickBtn(this);
-                            }
-
-                            div3.appendChild(span);
-                            element.appendChild(div3);
-                        }
-                        if (objMain.PromoteDiamondCount.speed > 0) {
-                            var div3 = document.createElement('div');
-                            div3.style.textAlign = 'center';
-                            div3.style.width = 'calc(100% - 4px)';
-                            div3.style.border = '2px inset #ffc403';
-                            div3.style.borderRadius = '0.3em';
-                            div3.style.marginTop = '4px';
-                            div3.style.marginBottom = '4px';
-                            div3.style.position = 'relative';
-                            div3.style.left = 'calc(0%)';
-
-                            var span = document.createElement('span');
-                            span.innerText = '提升速度';
-                            div3.CustomTag = 'speed';
-                            div3.onclick = function () {
-                                clickBtn(this);
-                            }
-
-                            div3.appendChild(span);
-                            element.appendChild(div3);
-                        }
-                    }
-                    //   AddBtnOfCommandReturn(element);
-
-                    var object = new THREE.CSS2DObject(element);
-                    var fp = objMain.basePoint;
-                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-                    objMain.groupOfOperatePanle.add(object);
-                }
-
-
-            }
-        },
-        refreshSetReturnPanel: function () {
-            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //for (var key in objMain.PromoteDiamondCount)
-            {
-                var AddBtnOfCommandReturn = function (element) {
-                    var div3 = document.createElement('div');
-                    div3.style.textAlign = 'center';
-                    div3.style.width = 'calc(100% - 4px)';
-                    div3.style.border = '2px inset #ffc403';
-                    div3.style.borderRadius = '0.3em';
-                    div3.style.marginTop = '4px';
-                    div3.style.marginBottom = '4px';
-                    div3.style.position = 'relative';
-                    div3.style.left = 'calc(0%)';
-
-                    var span = document.createElement('span');
-                    span.innerText = '召回';
-                    // div3.CustomTag = 'mile';
-                    div3.onclick = function () {
-                        if (objMain.Task.state == '') {
-                            throw 'task not select';
-                        }
-                        else if (objMain.Task.carSelect == '') {
-                            alert('请选择要执行此任务的车辆');
-                        }
-                        else {
-                            objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn', 'car': objMain.Task.carSelect }));
-                            objMain.Task.state = '';
-                            objMain.Task.carSelect = '';
-                            carBtns.clearBtnInFrame();
-                            //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                            //  carAbility.clear();
-                            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                        }
-                    }
-
-                    div3.appendChild(span);
-                    element.appendChild(div3);
-                }
-
-                {
-                    var element = document.createElement('div');
-
-                    element.style.width = '10em';
-                    element.style.marginTop = '3em';
-                    var color = '#ff0000';
-                    //var colorName = '红';
-                    //switch (type) {
-                    //    case 'mile':
-                    //        {
-                    //            color = '#ff0000';
-                    //            colorName = '红';
-                    //        }; break;
-                    //    case 'business': {
-                    //        color = '#00ff00';
-                    //        colorName = '绿';
-                    //    }; break;
-                    //    case 'volume': { 
-                    //        color = '#0000ff';
-                    //        colorName = '蓝';
-                    //    }; break;
-                    //    case 'speed': { 
-                    //        color = '#000000';
-                    //        colorName = '黑';
-                    //    }; break; 
-                    //}
-                    element.style.border = '2px solid ' + color;
-                    element.style.borderTopLeftRadius = '0.5em';
-                    element.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                    element.style.color = '#1504f6';
-
-                    var div2 = document.createElement('div');
-
-                    var b = document.createElement('b');
-                    b.innerHTML = '你没有宝石';
-                    div2.appendChild(b);
-
-
-
-                    element.appendChild(div2);
-                    // element.appendChild(div3);
-                    AddBtnOfCommandReturn(element);
-
-                    var object = new THREE.CSS2DObject(element);
-                    var fp = objMain.basePoint;
-                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-                    objMain.groupOfOperatePanle.add(object);
-                }
-
-
-            }
-        },
         removeRole: function (roleID) {
             var carRoad_ID = 'carRoad_' + roleID;
 
@@ -1262,7 +601,6 @@ var objMain =
         }
     },
     Task: new TaskClass('', ''),
-
     animation:
     {
         animateCameraByCarAndTask: function () {
@@ -1284,6 +622,8 @@ var objMain =
             objMain.carsNames = objInput.carsNames;
             objMain.indexKey = objInput.key;
             objMain.displayName = objInput.PlayerName;
+
+            objMain.positionInStation = objInput.positionInStation;
             //if (objMain.receivedState == 'WaitingToGetTeam') {
             //    objMain.ws.send(received_msg);
             //}
@@ -1311,7 +651,6 @@ var objMain =
     {
 
     },
-    FrequencyOfCollectReward: 0,
     panOrRotate: 'rotate',
     carState: {},
     music:
@@ -1409,33 +748,8 @@ var objMain =
     {
         data: {},
         update: function () { }
-    }
-};
-var startA = function () {
-    var connected = false;
-    var wsConnect = '';
-    if (objMain.debug)
-        wsConnect = 'ws://127.0.0.1:11001/websocket';
-    else
-        wsConnect = 'wss://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + '/';
-    var ws = new WebSocket(wsConnect);
-    ws.onopen = function () {
-        {
-            var session = '';
-            if (sessionStorage['session'] == undefined) {
-
-            }
-            else {
-                session = sessionStorage['session'];
-            }
-            ws.send(JSON.stringify({ c: 'CheckSession', session: session }));
-        }
-        //   alert("数据发送中...");
-    };
-    ws.onmessage = function (evt) {
-        var received_msg = evt.data;
-        console.log(evt.data);
-        var received_obj = JSON.parse(evt.data);
+    },
+    dealWithReceivedObj: function (received_obj, evt, received_msg) {
         switch (received_obj.c) {
             case 'setState':
                 {
@@ -1523,7 +837,19 @@ var startA = function () {
                     var PlayerName = objInput.PlayerName;
                     var fPIndex = objInput.fPIndex;
                     var positionInStation = objInput.positionInStation;
-                    objMain.othersBasePoint[indexKey] = { 'basePoint': basePoint, 'indexKey': indexKey, 'playerName': PlayerName, 'fPIndex': fPIndex };
+                    var isNPC = objInput.isNPC;
+                    var isPlayer = objInput.isPlayer;
+                    var Level = objInput.Level;
+                    objMain.othersBasePoint[indexKey] =
+                    {
+                        'basePoint': basePoint,
+                        'indexKey': indexKey,
+                        'playerName': PlayerName,
+                        'fPIndex': fPIndex,
+                        'isNPC': isNPC,
+                        'isPlayer': isPlayer,
+                        'Level': Level
+                    };
                     if (objMain.state == "OnLine") {
                         drawPoint('orange', basePoint, indexKey);
                         /*画引线*/
@@ -1729,17 +1055,6 @@ var startA = function () {
                      */
                 }; break;
             case 'BradCastAnimateOfSelfCar':
-            case 'BradCastAnimateOfOthersCar':
-            //{
-            //    //var passObj = JSON.parse(evt.data);
-            //    //var animateData = passObj.Animate.animateData;
-            //    //var deltaT = passObj.Animate.deltaT;
-            //    //var carId = passObj.carID;
-
-            //    //var recordTime = Date.now() - deltaT;
-            //    //objMain.carsAnimateData[carId] = { 'recordTime': recordTime, 'animateData': animateData };
-            //}; break;
-
             case 'BradCastAnimateOfOthersCar2':
                 {
                     var passObj = JSON.parse(evt.data);
@@ -1752,6 +1067,7 @@ var startA = function () {
                     start.x /= 256;
                     start.y /= 256;
                     var startT = 0;
+                    var isParking = passObj.Animate.isParking;
                     for (var i = 0; i < passObj.Animate.animateData.length; i += 3) {
                         animateData.push(
                             {
@@ -1765,8 +1081,16 @@ var startA = function () {
                         start.x += passObj.Animate.animateData[i] / 256;
                         start.y += passObj.Animate.animateData[i + 1] / 256;
                         startT += passObj.Animate.animateData[i + 2];
+                    };
+                    if (objMain.carsAnimateData[carId] == undefined) {
+                        objMain.carsAnimateData[carId] = { 'recordTime': recordTime, 'animateData': animateData };
                     }
-                    objMain.carsAnimateData[carId] = { 'recordTime': recordTime, 'animateData': animateData };
+                    else {
+                        if (isParking) { }
+                        else {
+                            objMain.carsAnimateData[carId] = { 'recordTime': recordTime, 'animateData': animateData };
+                        }
+                    }
                     return;
                     //var animateData = passObj.Animate.animateData;
                     //var deltaT = passObj.Animate.deltaT;
@@ -1807,22 +1131,8 @@ var startA = function () {
 
                     objMain.ws.send('SetDiamond');
                 }; break;
-            case 'TaxNotify':
-                {
-                    var fp = received_obj.fp;
-                    var tax = received_obj.tax;
-                    var target = received_obj.target;
-                    objMain.Tax[fp.FastenPositionID] = { 'tax': tax, 'fp': fp, 'target': target };
-                    if (tax === 0) {
-                        Tax.removeData(fp.FastenPositionID);
-                    }
-                    else {
-                        Tax.updateTaxGroup();
-                    }
-                }; break;
             case 'DialogMsg':
                 {
-                    //  alert(received_obj.Msg);
                     dialogSys.dealWithMsg(received_obj);
                 }; break;
             case 'BradCastMoneyForSave':
@@ -1840,6 +1150,7 @@ var startA = function () {
                     carAbility.setData(received_obj);
 
                     carAbility.drawChanel(received_obj.carIndexStr);
+                    carAbility.refreshPosition();
                     //carAbility.updateNotify();
                 }; break;
             case 'MoneyForSaveNotify':
@@ -1870,14 +1181,6 @@ var startA = function () {
                     delete SocialResponsibility.data[received_obj.othersKey];
                     delete objMain.rightAndDuty.data[received_obj.othersKey];
                     // SocialResponsibility.data[received_obj.otherKey] = received_obj.socialResponsibility;
-                }; break;
-            case 'FrequencyNotify':
-                {
-                    //alert('接收到OthersRemove');
-                    // removeRole(received_obj.othersKey);
-                    //objMain.mainF.removeRole(received_obj.othersKey);
-                    objMain.FrequencyOfCollectReward = received_obj.frequency;
-                    frequencyShow.show();
                 }; break;
             case 'SingleRoadPathData':
                 {
@@ -2068,6 +1371,8 @@ var startA = function () {
                 {
                     objMain.carState[received_obj.carID] = received_obj.State;
                     objNotify.notifyCar(received_obj.carID, received_obj.State);
+                    operatePanel.refresh();
+                    //  marketOperate.refresh();
                 }; break;
             case 'BradCastCollectInfoDetail_v2':
                 {
@@ -2101,17 +1406,81 @@ var startA = function () {
                     objMain.background.path = received_obj.path;
                     objMain.background.change();
                 }; break;
+            case 'WMsg':
+                {
+                    $.notify(received_obj.Msg, { style: "happyblue" })
+                }; break;
+            case 'BradDiamondPrice':
+                {
+                    objMain.diamondPrice[received_obj.priceType] = received_obj.price;
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
                 }; break;
         }
+    },
+    diamondPrice:
+    {
+        'mile': 0,
+        'business': 0,
+        'volume': 0,
+        'speed': 0
+    }
+};
+var startA = function () {
+    var connected = false;
+    var wsConnect = '';
+    if (objMain.debug)
+        wsConnect = 'ws://127.0.0.1:11001/websocket';
+    else
+        wsConnect = 'wss://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + '/';
+    var ws = new WebSocket(wsConnect);
+    ws.onopen = function () {
+        {
+            var session = '';
+            if (sessionStorage['session'] == undefined) {
+
+            }
+            else {
+                session = sessionStorage['session'];
+            }
+            ws.send(JSON.stringify({ c: 'CheckSession', session: session }));
+        }
+        //   alert("数据发送中...");
+    };
+    ws.onmessage = function (evt) {
+        var received_msg = evt.data;
+        //console.log(evt.data);
+        var received_obj = JSON.parse(evt.data);
+        objMain.dealWithReceivedObj(received_obj, evt, received_msg);
     };
     ws.onclose = function () {
         // 关闭 websocket
         alert("连接已关闭...");
     };
     objMain.ws = ws;
+    $.notify.addStyle('happyblue', {
+        html: "<div><span data-notify-text/></div>",
+        classes: {
+            base: {
+                "opacity": "0.85",
+                "width": "90%",
+                "max-width": "90%",
+                "background": "#F5F5F5",
+                "padding": "5px",
+                "border- radius": "10px"
+            },
+            superblue: {
+                "opacity": "0.85",
+                "width": "90%",
+                "max-width": "90%",
+                "background": "#F5F5F5",
+                "padding": "5px",
+                "border- radius": "10px"
+            }
+        }
+    });
 }
 startA();
 
@@ -2242,6 +1611,19 @@ function animate() {
                                         scale = Math.max(scale, 0.0015);
                                     }
                             }
+                            else {
+                                var position = objMain.playerGroup.children[i].position;
+                                var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                                var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                                if (cosA > 0.984807753)
+                                    if (cosA > maxCosA) {
+                                        maxCosA = cosA;
+                                        objMain.Task.state = 'attack';
+                                        selectObj = objMain.playerGroup.children[i];
+                                        scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
+                                        scale = Math.max(scale, 0.0015);
+                                    }
+                            }
                         }
                     }
 
@@ -2320,54 +1702,6 @@ function animate() {
                             }
                         }
                     }
-                    //{
-
-                    //case 'ability':
-                    //    {
-                    //        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                    //        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                    //        //alert(mouse.x + ',' + mouse.y);
-                    //        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                    //        {
-                    //            //  var names = ['BatteryMile', 'BatteryBusiness', 'BatteryVolume', 'BatterySpeed'];
-                    //            var intersects = objMain.raycaster.intersectObjects(objMain.columnGroup.children);
-                    //            if (intersects.length > 0) {
-                    //                for (var i = 0; i < intersects.length; i++) {
-                    //                    var selectObj = intersects[i].object;
-                    //                    switch (selectObj.name) {
-                    //                        case 'BatteryMile':
-                    //                        case 'BatteryBusiness':
-                    //                        case 'BatteryVolume':
-                    //                        case 'BatterySpeed':
-                    //                            {
-                    //                                if (objMain.Task.state == '') {
-                    //                                    throw 'task not select';
-                    //                                }
-                    //                                else {
-                    //                                    if (objMain.PromoteDiamondCount[selectObj.userData.index] > 0) {
-                    //                                        objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': selectObj.userData.index }));
-                    //                                    }
-                    //                                }
-                    //                                return;
-                    //                            }; break;
-                    //                    }
-                    //                }
-                    //            }
-                    //            //name: "diamond_mile"
-                    //            //if (intersects.length > 0) {
-                    //            //    for (var i = 0; i < intersects.length; i++) {
-                    //            //        if (intersects[i].distance < minLength) {
-                    //            //            selectObj = intersects[i].object;
-                    //            //            selectType = 'peibian';
-                    //            //            minLength = intersects[i].distance;
-                    //            //        }
-                    //            //    }
-                    //            //}
-                    //            //
-                    //        }
-                    //    }; break;
-                    //}
-
                     switch (objMain.Task.state) {
                         case 'collect':
                             {
@@ -2383,14 +1717,14 @@ function animate() {
                                     var color = '#ff0000';
                                     element.style.border = '2px solid ' + color;
                                     element.style.borderTopLeftRadius = '0.5em';
-                                    element.style.backgroundColor = 'rgba(155, 55, 255, 0.3)';
+                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
                                     element.style.color = '#1504f6';
 
                                     var div2 = document.createElement('div');
                                     div2.style.fontSize = '0.5em';
 
                                     var b = document.createElement('b');
-                                    b.innerHTML = '到[<span style="color:#05ffba">' + collectPosition.Fp.FastenPositionName + '</span>]回收<span style="color:#05ffba">' + (collectPosition.collectMoney).toFixed(2) + '元</span>现金。';
+                                    b.innerHTML = '到' + collectPosition.Fp.region + '[<span style="color:#05ffba">' + collectPosition.Fp.FastenPositionName + '</span>]回收<span style="color:#05ffba">' + (collectPosition.collectMoney).toFixed(2) + '元</span>现金。';
                                     div2.appendChild(b);
 
                                     element.appendChild(div2);
@@ -2415,14 +1749,72 @@ function animate() {
                                     var color = '#ff0000';
                                     element.style.border = '2px solid ' + color;
                                     element.style.borderTopLeftRadius = '0.5em';
-                                    element.style.backgroundColor = 'rgba(155, 55, 255, 0.3)';
+                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
                                     element.style.color = '#1504f6';
 
                                     var div2 = document.createElement('div');
                                     div2.style.fontSize = '0.5em';
 
                                     var b = document.createElement('b');
-                                    b.innerHTML = '召回';
+                                    b.innerHTML = '回到基地->' + objMain.basePoint.FastenPositionName + '(' + objMain.basePoint.Longitude.toFixed(2) + ',' + objMain.basePoint.Latitde.toFixed(2) + ')';
+                                    div2.appendChild(b);
+
+                                    element.appendChild(div2);
+
+                                    var object = new THREE.CSS2DObject(element);
+                                    //  var fp = collectPosition.Fp;
+                                    object.position.set(selectObj.position.x, 0, selectObj.position.z);
+
+                                    objMain.groupOfOperatePanle.add(object);
+                                }
+                            }; break;
+                        case 'attack':
+                            {
+                                selectObj.scale.set(scale, scale, scale);
+                                objMain.selectObj.obj = selectObj;
+                                objMain.selectObj.type = objMain.Task.state;
+                                selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 300 / 300 * Math.PI * 2);
+                                {
+                                    var element = document.createElement('div');
+                                    element.style.width = '10em';
+                                    element.style.marginTop = '3em';
+                                    var color = '#ff0000';
+                                    element.style.border = '2px solid ' + color;
+                                    element.style.borderTopLeftRadius = '0.5em';
+                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
+                                    element.style.color = '#1504f6';
+
+                                    var div2 = document.createElement('div');
+                                    div2.style.fontSize = '0.5em';
+
+                                    var b = document.createElement('b');
+
+                                    var customTagIndexKey = selectObj.name.substring(5);
+                                    if (objMain.othersBasePoint[customTagIndexKey] == undefined)
+                                        b.innerHTML = '攻击';
+                                    else {
+                                        if (objMain.othersBasePoint[customTagIndexKey].isNPC) {
+                                            //b.innerHTML = '[NPC]->到';
+                                            b.innerHTML = b.innerHTML = '到(' + objMain.othersBasePoint[customTagIndexKey].basePoint.region + ')'
+                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.FastenPositionName
+                                                + '(' + objMain.othersBasePoint[customTagIndexKey].basePoint.Longitude.toFixed(2) + ','
+                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.Latitde.toFixed(2) + ')攻击NPC'
+                                                + '【' + objMain.othersBasePoint[customTagIndexKey].playerName + '】'
+                                                + '(' + objMain.othersBasePoint[customTagIndexKey].Level + '级)';
+
+                                        }
+                                        else if (objMain.othersBasePoint[customTagIndexKey].isPlayer) {
+                                            b.innerHTML = '到(' + objMain.othersBasePoint[customTagIndexKey].basePoint.region + ')'
+                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.FastenPositionName
+                                                + '(' + objMain.othersBasePoint[customTagIndexKey].basePoint.Longitude.toFixed(2) + ','
+                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.Latitde.toFixed(2) + ')攻击玩家'
+                                                + '【' + objMain.othersBasePoint[customTagIndexKey].playerName + '】'
+                                                + '(' + objMain.othersBasePoint[customTagIndexKey].Level + '级)';
+                                        }
+                                        else {
+                                            b.innerHTML = '攻击';
+                                        }
+                                    }
                                     div2.appendChild(b);
 
                                     element.appendChild(div2);
@@ -2444,6 +1836,8 @@ function animate() {
                                 // objMain.promoteDiamond.getChildByName('diamond_' + objMain.Task.state).scale.set(scale, scale * 1.1, scale);
                                 //
                                 selectObj.scale.set(scale, scale * 1.1, scale);
+
+
                                 //objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state }));
                             }; break;
                         case 'ability':
@@ -2452,60 +1846,59 @@ function animate() {
                                 objMain.selectObj.type = objMain.Task.state;
                                 selectObj.scale.setX((Date.now() % 2000 / 2000) + 1);
                                 selectObj.scale.setZ((Date.now() % 2000 / 2000) + 1);
+
+                                {
+                                    var element = document.createElement('div');
+                                    element.style.width = '10em';
+                                    element.style.marginTop = '3em';
+                                    var color = '#ff0000';
+                                    element.style.border = '2px solid ' + color;
+                                    element.style.borderTopLeftRadius = '0.5em';
+                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
+                                    element.style.color = '#1504f6';
+
+                                    var div2 = document.createElement('div');
+                                    div2.style.fontSize = '0.5em';
+
+                                    var b = document.createElement('b');
+                                    switch (selectObj.name) {
+                                        case 'BatteryMile':
+                                            {
+                                                b.innerHTML = '红宝石市价:' + (objMain.diamondPrice.mile / 100.0).toFixed(2) + "银两。用其提升最大里程。你有"
+                                                    + objMain.PromoteDiamondCount.mile + '块';
+
+                                            }; break;
+                                        case 'BatteryBusiness':
+                                            {
+                                                b.innerHTML = '绿宝石市价:' + (objMain.diamondPrice.business / 100.0).toFixed(2) + "银两。用其提升最大业务能力。你有"
+                                                    + objMain.PromoteDiamondCount.business + '块';
+                                            }; break;
+                                        case 'BatteryVolume':
+                                            {
+                                                b.innerHTML = '蓝宝石市价:' + (objMain.diamondPrice.volume / 100.0).toFixed(2) + "银两。用其提升最大收集能力。你有"
+                                                    + objMain.PromoteDiamondCount.volume + '块';
+                                            }; break;
+                                        case 'BatterySpeed':
+                                            {
+                                                b.innerHTML = '黑宝石市价:' + (objMain.diamondPrice.speed / 100.0).toFixed(2) + "银两。用其提升速度。你有"
+                                                    + objMain.PromoteDiamondCount.speed + '块';
+                                            }; break;
+                                    }
+
+                                    div2.appendChild(b);
+
+                                    element.appendChild(div2);
+
+                                    var object = new THREE.CSS2DObject(element);
+                                    //  var fp = collectPosition.Fp;
+                                    object.position.set(selectObj.position.x, 0, selectObj.position.z);
+
+                                    objMain.groupOfOperatePanle.add(object);
+                                }
                             }; break;
                     }
                 }
-
-
-                //if (selectObj != null) {
-                //    console.log('selectObj', selectObj.userData.collectPosition.Fp.FastenPositionID);
-                //    objMain.ws.send(JSON.stringify({ 'c': 'Collect', 'cType': 'findWork', 'fastenpositionID': selectObj.userData.collectPosition.Fp.FastenPositionID, 'collectIndex': selectObj.userData.collectPosition.collectIndex }));
-                //    objMain.Task.state = '';
-                //    //carBtns.clearBtnInFrame();
-                //    //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                //    // carAbility.clear();
-                //    // objMain.mainF.removeF.clearGroup(objMain.collectGroup);
-                //    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                //    var endF = objMain.collectGroup.userData.endF;
-                //    endF();
-                //}
             }
-            //{
-            //    objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            //    objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            //    //alert(mouse.x + ',' + mouse.y);
-            //    objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-            //    {
-            //        var selectObj = null;
-            //        var distance = 100000000;
-            //        for (var i = 0; i < objMain.collectGroup.children.length; i++) {
-            //            if (objMain.collectGroup.children[i].isGroup) {
-            //                var intersects = objMain.raycaster.intersectObjects(objMain.collectGroup.children[i].children);
-            //                if (intersects.length > 0) {
-            //                    //   console.log('intersects', intersects);
-            //                    //alert('相交');
-            //                    if (intersects[0].distance < distance) {
-            //                        distance = intersects[0].distance;
-            //                        selectObj = objMain.collectGroup.children[i];
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        if (selectObj != null) {
-            //            console.log('selectObj', selectObj.userData.collectPosition.Fp.FastenPositionID);
-            //            objMain.ws.send(JSON.stringify({ 'c': 'Collect', 'cType': 'findWork', 'fastenpositionID': selectObj.userData.collectPosition.Fp.FastenPositionID, 'collectIndex': selectObj.userData.collectPosition.collectIndex }));
-            //            objMain.Task.state = '';
-            //            //carBtns.clearBtnInFrame();
-            //            //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-            //            // carAbility.clear();
-            //            // objMain.mainF.removeF.clearGroup(objMain.collectGroup);
-            //            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //            var endF = objMain.collectGroup.userData.endF;
-            //            endF();
-            //        }
-            //        return;
-            //    }
-            //}
             for (var i = 0; i < objMain.playerGroup.children.length; i++) {
                 if (objMain.playerGroup.children[i].isMesh) {
                     objMain.playerGroup.children[i].userData.animateDataYrq.simulate(Date.now());
@@ -2585,7 +1978,8 @@ function animate() {
                     var isSelf = (key == 'car_' + objMain.indexKey);
                     var isAnimation = false;
                     if (isSelf) {
-                        isAnimation = objMain.carState['car'] == 'working' || objMain.carState['car'] == 'returning'
+                        isAnimation = true;
+                        //isAnimation = objMain.carState['car'] == 'working' || objMain.carState['car'] == 'waitAtBaseStation'
                     }
                     //var angleOfCamara = 0;
                     //if (isSelf)
@@ -2617,7 +2011,15 @@ function animate() {
                                         if (isAnimation) {
                                             objMain.controls.target.set(x, 0, -y);
                                             var angle = objMain.controls.getPolarAngle();
+                                            //if(
+                                            var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
                                             var distance = 32;
+                                            if (dCal >= 33) {
+                                                distance = dCal * 0.99 - 0.01;
+                                            }
+                                            else if (dCal <= 31) {
+                                                distance = dCal * 1.01 + 0.01;
+                                            }
                                             var unitY = distance * Math.cos(angle);
                                             var unitZX = distance * Math.sin(angle);
 
@@ -2666,7 +2068,6 @@ function animate() {
             objMain.animation.animateCameraByCarAndTask();
 
             theLagestHoderKey.animate();
-            Tax.animate(lengthOfCC);
             objMain.renderer.render(objMain.scene, objMain.camera);
             objMain.labelRenderer.render(objMain.scene, objMain.camera);
             objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
@@ -2810,10 +2211,10 @@ var set3DHtml = function () {
     {
         //objMain.controls.minDistance = 3;
         // objMain.controls.maxPolarAngle = Math.PI;
-        objMain.controls.minPolarAngle = Math.PI / 6;
+        objMain.controls.minPolarAngle = Math.PI / 600;
         objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 36;
         objMain.controls.minDistance = 2;
-        objMain.controls.maxDistance = 128;
+        objMain.controls.maxDistance = 256;
     }
 
     objMain.raycaster = new THREE.Raycaster();
@@ -2825,595 +2226,19 @@ var set3DHtml = function () {
     objMain.mouse = new THREE.Vector2();
 
     //objMain.labelRenderer.domElement.addEventListener
-    var fuckF = function (event) {
-        objMain.music.change();
 
-        //if (mouseClickInterviewState.click()) {
-        //    mouseClickInterviewState.init()
-        //}
-        //else {
-        //    return;
-        //}
-
-        // if(
-        //  alert('document点击！');
-        if (objMain.Task.state == '') {
-            // throw 'task not select';
-        }
-        //else if (objMain.Task.carSelect == '') {
-        //    alert('请选择要执行此任务的车辆');
-        //}
-        else {
-            switch (objMain.Task.state) {
-                case 'mile':
-                case 'business':
-                case 'volume':
-                case 'speed':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            var intersects = objMain.raycaster.intersectObjects(objMain.promoteDiamond.children);
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    var selectObj = intersects[i].object;
-                                    switch (selectObj.name) {
-                                        case 'diamond_mile':
-                                        case 'diamond_business':
-                                        case 'diamond_volume':
-                                        case 'diamond_speed':
-                                            {
-                                                //  alert('选择了红宝石');
-
-                                                if (objMain.Task.state == '') {
-                                                    throw 'task not select';
-                                                }
-                                                //else if (objMain.Task.carSelect == '') {
-                                                //    alert('请选择要执行此任务的车辆');
-                                                //}
-                                                else {
-                                                    objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state }));
-                                                    objMain.Task.state = '';
-                                                    // objMain.Task.carSelect = '';
-                                                    carBtns.clearBtnInFrame();
-                                                    //  objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                                                    carAbility.clear();
-
-                                                    objMain.mainF.removeF.clearGroup(objMain.promoteDiamond);
-                                                    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                                    selectObj.userData.endF();
-                                                }
-                                                return;
-                                            }; break;
-                                    }
-                                }
-                            }
-                            //name: "diamond_mile"
-                            //if (intersects.length > 0) {
-                            //    for (var i = 0; i < intersects.length; i++) {
-                            //        if (intersects[i].distance < minLength) {
-                            //            selectObj = intersects[i].object;
-                            //            selectType = 'peibian';
-                            //            minLength = intersects[i].distance;
-                            //        }
-                            //    }
-                            //}
-                            //
-                        }
-                    }; break;
-                case 'ability':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            //  var names = ['BatteryMile', 'BatteryBusiness', 'BatteryVolume', 'BatterySpeed'];
-                            var intersects = objMain.raycaster.intersectObjects(objMain.columnGroup.children);
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    var selectObj = intersects[i].object;
-                                    switch (selectObj.name) {
-                                        case 'BatteryMile':
-                                        case 'BatteryBusiness':
-                                        case 'BatteryVolume':
-                                        case 'BatterySpeed':
-                                            {
-                                                if (objMain.Task.state == '') {
-                                                    throw 'task not select';
-                                                }
-                                                else {
-                                                    if (objMain.PromoteDiamondCount[selectObj.userData.index] > 0) {
-                                                        objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': selectObj.userData.index }));
-                                                    }
-                                                }
-                                                return;
-                                            }; break;
-                                    }
-                                }
-                            }
-                            //name: "diamond_mile"
-                            //if (intersects.length > 0) {
-                            //    for (var i = 0; i < intersects.length; i++) {
-                            //        if (intersects[i].distance < minLength) {
-                            //            selectObj = intersects[i].object;
-                            //            selectType = 'peibian';
-                            //            minLength = intersects[i].distance;
-                            //        }
-                            //    }
-                            //}
-                            //
-                        }
-                    }; break;
-                case 'collect':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            var selectObj = null;
-                            var distance = 100000000;
-                            for (var i = 0; i < objMain.collectGroup.children.length; i++) {
-                                if (objMain.collectGroup.children[i].isGroup) {
-                                    var intersects = objMain.raycaster.intersectObjects(objMain.collectGroup.children[i].children);
-                                    if (intersects.length > 0) {
-                                        //   console.log('intersects', intersects);
-                                        //alert('相交');
-                                        if (intersects[0].distance < distance) {
-                                            distance = intersects[0].distance;
-                                            selectObj = objMain.collectGroup.children[i];
-                                        }
-                                    }
-                                }
-                            }
-                            if (selectObj != null) {
-                                console.log('selectObj', selectObj.userData.collectPosition.Fp.FastenPositionID);
-                                objMain.ws.send(JSON.stringify({ 'c': 'Collect', 'cType': 'findWork', 'fastenpositionID': selectObj.userData.collectPosition.Fp.FastenPositionID, 'collectIndex': selectObj.userData.collectPosition.collectIndex }));
-                                objMain.Task.state = '';
-                                //carBtns.clearBtnInFrame();
-                                //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                                // carAbility.clear();
-                                // objMain.mainF.removeF.clearGroup(objMain.collectGroup);
-                                objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                var endF = objMain.collectGroup.userData.endF;
-                                endF();
-                            }
-                            return;
-                        }
-                    }; break;
-                case 'setReturn':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            var intersects = objMain.raycaster.intersectObjects(objMain.playerGroup.children);
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    var selectObj = intersects[i].object;
-                                    if (selectObj.name == 'flag_' + objMain.indexKey) {
-                                        if (objMain.Task.state == '') {
-                                            throw 'task not select';
-                                        }
-                                        else {
-                                            objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn' }));
-                                            objMain.Task.state = '';
-                                            objMain.Task.carSelect = '';
-                                            //   carBtns.clearBtnInFrame(); 
-                                            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                        }
-                                        return;
-                                    }
-                                }
-
-                            }
-
-                            //name: "diamond_mile"
-                            //if (intersects.length > 0) {
-                            //    for (var i = 0; i < intersects.length; i++) {
-                            //        if (intersects[i].distance < minLength) {
-                            //            selectObj = intersects[i].object;
-                            //            selectType = 'peibian';
-                            //            minLength = intersects[i].distance;
-                            //        }
-                            //    }
-                            //}
-                            //
-                        }
-                        //objMain.playerGroup.getObjectByName('flag_'+objMain.indexKey)
-                    }; break;
-                case 'attack':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            var selectObj = null;
-                            var minLength = 100000000;
-                            //var  for (var j = 0; j < intersects.length; j++) {
-                            //    if (intersects[j].distance < minLength) {
-                            //        selectObj = intersects[j].object.parent;
-                            //        selectType = 'transformer';
-                            //        minLength = intersects[j].distance;
-                            //    }
-                            //}
-                            var state = '';
-                            var intersects = objMain.raycaster.intersectObjects(objMain.playerGroup.children);
-                            var intersect_SetExit = objMain.raycaster.intersectObjects(objMain.getOutGroup.children);
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    if (intersects[i].name != 'flag_' + objMain.indexKey) {
-                                        var r = /^flag_[a-f0-9]{32}$/;
-                                        if (r.test(intersects[i].object.name)) {
-                                            if (intersects[i].distance < minLength) {
-                                                selectObj = intersects[i].object;
-                                                minLength = intersects[i].distance;
-                                                state = 'selectFlag';
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-
-                            if (intersect_SetExit.length > 0) {
-                                for (var i = 0; i < intersect_SetExit.length; i++) {
-                                    if (intersect_SetExit[i].name != 'collect_' + objMain.indexKey) {
-                                        var r = /^collect_[a-f0-9]{32}$/;
-                                        if (r.test(intersect_SetExit[i].object.name)) {
-                                            if (intersect_SetExit[i].distance < minLength) {
-                                                selectObj = intersect_SetExit[i].object;
-                                                minLength = intersect_SetExit[i].distance;
-                                                state = 'selectArrow';
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (selectObj != null) {
-                                if (objMain.Task.state == '') {
-                                    throw 'task not select';
-                                }
-                                //else if (objMain.Task.carSelect == '') {
-                                //    alert('请选择要执行此任务的车辆');
-                                //}
-                                else {
-                                    switch (state) {
-                                        case 'selectFlag':
-                                            {
-                                                var customTagIndexKey = selectObj.name.substring(5);
-                                                if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
-                                                    var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
-                                                    objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
-                                                    objMain.Task.state = '';
-                                                    objMain.Task.carSelect = '';
-                                                    carBtns.clearBtnInFrame();
-                                                    // objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                                                    //  carAbility.clear();
-                                                    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                                    return;
-                                                }
-                                            }; break;
-                                        case 'selectArrow':
-                                            {
-                                                var indexKey = selectObj.userData['key'];
-                                                if (indexKey == undefined) {
-                                                    //return;
-                                                }
-                                                else {
-                                                    if (objMain.othersBasePoint[indexKey] != undefined) {
-                                                        objMain.ws.send(JSON.stringify({ 'c': 'Bust', 'TargetOwner': indexKey, 'Target': objMain.othersBasePoint[indexKey].fPIndex }));
-                                                    }
-                                                }
-                                                objMain.Task.state = '';
-                                                objMain.Task.carSelect = '';
-                                                carBtns.clearBtnInFrame();
-                                                // objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                                                //  carAbility.clear();
-                                                objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                                return;
-                                            }; break;
-                                    }
-
-                                }
-                            }
-                        }
-
-
-                    }; break;
-                case 'getTax':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            var selectObj = null;
-                            var minLength = 100000000;
-                            //var  for (var j = 0; j < intersects.length; j++) {
-                            //    if (intersects[j].distance < minLength) {
-                            //        selectObj = intersects[j].object.parent;
-                            //        selectType = 'transformer';
-                            //        minLength = intersects[j].distance;
-                            //    }
-                            //}
-                            var state = '';
-                            var intersects = objMain.raycaster.intersectObjects(objMain.taxGroup.children);
-
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    //if (intersects[i].name != 'flag_' + objMain.indexKey)
-                                    {
-                                        var r = /^fp_[A-Z]{10}$/;
-                                        if (r.test(intersects[i].object.name)) {
-                                            if (intersects[i].distance < minLength) {
-                                                selectObj = intersects[i].object;
-                                                minLength = intersects[i].distance;
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-                            if (selectObj != null) {
-                                if (objMain.Task.state == '') {
-                                    throw 'task not select';
-                                }
-                                else {
-                                    var name = selectObj.name;
-                                    var fpCode = name.substring(3);
-                                    if (objMain.Tax[fpCode] != undefined) {
-                                        objMain.ws.send(JSON.stringify({ 'c': 'Tax', 'Target': objMain.Tax[fpCode].target }));
-                                        objMain.Task.state = '';
-                                        objMain.Task.carSelect = '';
-                                        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }; break;
-                case 'buyDiamond':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            var intersects = objMain.raycaster.intersectObjects(objMain.columnGroup.children);
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    var selectObj = intersects[i].object;
-                                    switch (selectObj.name) {
-                                        case 'BatteryMile':
-                                        case 'BatteryBusiness':
-                                        case 'BatteryVolume':
-                                        case 'BatterySpeed':
-                                            {
-                                                objMain.ws.send(JSON.stringify({ 'c': 'BuyDiamond', 'pType': selectObj.userData.index }));
-                                                return;
-                                            }; break;
-                                    }
-                                }
-                            }
-                            //name: "diamond_mile"
-                            //if (intersects.length > 0) {
-                            //    for (var i = 0; i < intersects.length; i++) {
-                            //        if (intersects[i].distance < minLength) {
-                            //            selectObj = intersects[i].object;
-                            //            selectType = 'peibian';
-                            //            minLength = intersects[i].distance;
-                            //        }
-                            //    }
-                            //}
-                            //
-                        }
-                    }; break;
-                case 'sellDiamond':
-                    {
-                        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                        //alert(mouse.x + ',' + mouse.y);
-                        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-                        {
-                            //  var names = ['BatteryMile', 'BatteryBusiness', 'BatteryVolume', 'BatterySpeed'];
-                            var intersects = objMain.raycaster.intersectObjects(objMain.columnGroup.children);
-                            if (intersects.length > 0) {
-                                for (var i = 0; i < intersects.length; i++) {
-                                    var selectObj = intersects[i].object;
-                                    switch (selectObj.name) {
-                                        case 'BatteryMile':
-                                        case 'BatteryBusiness':
-                                        case 'BatteryVolume':
-                                        case 'BatterySpeed':
-                                            {
-                                                if (objMain.Task.state == '') {
-                                                    throw 'task not select';
-                                                }
-                                                else {
-                                                    if (objMain.PromoteDiamondCount[selectObj.userData.index] > 0) {
-                                                        objMain.ws.send(JSON.stringify({ 'c': 'SellDiamond', 'pType': selectObj.userData.index }));
-                                                        objMain.PromoteDiamondCount[selectObj.userData.index]--;
-                                                        //if (objMain.PromoteDiamondCount[selectObj.userData.index] == 0) {
-                                                        //    objMain.Task.state = '';
-                                                        //    objMain.Task.carSelect = '';
-                                                        //    carBtns.clearBtnInFrame();
-                                                        //    //  objMain.mainF.removeF.removePanle('carsSelectionPanel');
-                                                        //    carAbility.clear();
-                                                        //    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                                                        //}
-                                                        //else {
-
-                                                        //}
-                                                    }
-                                                }
-                                                return;
-                                            }; break;
-                                    }
-                                }
-                            }
-                            //name: "diamond_mile"
-                            //if (intersects.length > 0) {
-                            //    for (var i = 0; i < intersects.length; i++) {
-                            //        if (intersects[i].distance < minLength) {
-                            //            selectObj = intersects[i].object;
-                            //            selectType = 'peibian';
-                            //            minLength = intersects[i].distance;
-                            //        }
-                            //    }
-                            //}
-                            //
-                        }
-                    }; break;
-            }
-            //objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'car': objMain.Task.carSelect, 'TargetOwner': this.CustomTag.indexKey, 'Target': this.CustomTag.fPIndex }));
-            //objMain.Task.state = '';
-            //objMain.Task.carSelect = '';
-            //objMain.mainF.removeF.removePanle('carsSelectionPanel');
-            //carAbility.clear();
-            //// objMain.mainF.removeF.clearGroup(objMain.collectGroup);
-            //objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-
-        }
-
-        // objMain.raycasterOfSelector.setFromCamera(objMain.selectorPosition, objMain.camera);
-        return;
-    }
     var operateEnd = function (event) {
+        operatePanel.refresh();
+        return;
         objMain.canSelect = false;
-        if (objMain.selectObj.type == 'collect') {
-            if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
-                var selectObj = objMain.selectObj.obj;
-                // console.log('selectObj', selectObj.userData.collectPosition.Fp.FastenPositionID);
-                objMain.ws.send(JSON.stringify({ 'c': 'Collect', 'cType': 'findWork', 'fastenpositionID': selectObj.userData.collectPosition.Fp.FastenPositionID, 'collectIndex': selectObj.userData.collectPosition.collectIndex }));
-                objMain.selectObj.obj = null;
-                objMain.selectObj.type = '';
-            }
-        }
-        else if (objMain.selectObj.type == 'setReturn') {
-            if (objMain.carState["car"] == 'waitOnRoad') {
-                objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn' }));
-                objMain.selectObj.obj = null;
-                objMain.selectObj.type = '';
-            }
-        }
-        else if (["mile", "business", "volume", "speed"].indexOf(objMain.selectObj.type) >= 0) {
-            if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
-                objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.selectObj.type }));
-                objMain.selectObj.obj = null;
-                objMain.selectObj.type = '';
-                // alert('开始寻找宝石');
-            }
-        }
-        else if (objMain.selectObj.type == 'ability') {
-            if (objMain.carState["car"] == 'waitAtBaseStation') {
-                if (objMain.PromoteDiamondCount[objMain.selectObj.obj.userData.index] > 0) {
-                    objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': objMain.selectObj.obj.userData.index }));
-                }
-                objMain.selectObj.obj = null;
-                objMain.selectObj.type = '';
-            }
-        }
-        //{
-
-        //case 'ability':
-        //    {
-        //        objMain.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        //        objMain.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        //        //alert(mouse.x + ',' + mouse.y);
-        //        objMain.raycaster.setFromCamera(objMain.mouse, objMain.camera);
-        //        {
-        //            //  var names = ['BatteryMile', 'BatteryBusiness', 'BatteryVolume', 'BatterySpeed'];
-        //            var intersects = objMain.raycaster.intersectObjects(objMain.columnGroup.children);
-        //            if (intersects.length > 0) {
-        //                for (var i = 0; i < intersects.length; i++) {
-        //                    var selectObj = intersects[i].object;
-        //                    switch (selectObj.name) {
-        //                        case 'BatteryMile':
-        //                        case 'BatteryBusiness':
-        //                        case 'BatteryVolume':
-        //                        case 'BatterySpeed':
-        //                            {
-        //                                if (objMain.Task.state == '') {
-        //                                    throw 'task not select';
-        //                                }
-        //                                else {
-        //                                    if (objMain.PromoteDiamondCount[selectObj.userData.index] > 0) {
-        //                                        objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': selectObj.userData.index }));
-        //                                    }
-        //                                }
-        //                                return;
-        //                            }; break;
-        //                    }
-        //                }
-        //            }
-        //            //name: "diamond_mile"
-        //            //if (intersects.length > 0) {
-        //            //    for (var i = 0; i < intersects.length; i++) {
-        //            //        if (intersects[i].distance < minLength) {
-        //            //            selectObj = intersects[i].object;
-        //            //            selectType = 'peibian';
-        //            //            minLength = intersects[i].distance;
-        //            //        }
-        //            //    }
-        //            //}
-        //            //
-        //        }
-        //    }; break;
-        //}
-        //         case 'mile':
-        //                        case 'business':
-        //                        case 'volume':
-        //                        case 'speed':
-        //{
-        //    objMain.selectObj.obj = selectObj;
-        //    objMain.selectObj.type = objMain.Task.state;
-        //    // objMain.promoteDiamond.getChildByName('diamond_' + objMain.Task.state).scale.set(scale, scale * 1.1, scale);
-        //    //
-        //    //selectObj.scale.set(scale, scale * 1.1, scale);
-        //    //objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state }));
-        //}; break;
     }
     var operateStart = function (event) {
         objMain.canSelect = true;
+        objMain.music.change();
     }
     objMain.labelRenderer.domElement.addEventListener('mouseup', operateEnd, false);
     objMain.labelRenderer.domElement.addEventListener('mousedown', operateStart, false);
-    window.touchEndEventSelfRegester = function (event) {
-        switch (event.touches.length) {
 
-            case 1: // one-fingered touch: rotate
-                {
-                    //alert(event.touches[0].pageX);
-                    //alert('clientY:' + event.touches[0].clientY);
-                    //alert(JSON.stringify(event));
-                    if (mouseClickInterviewState.click()) {
-                        if (objMain.panOrRotate == 'rotate') {
-                            objMain.panOrRotate = 'pan';
-                        }
-                        else {
-                            objMain.panOrRotate = 'rotate'
-                        }
-                        operateStateShow.show();
-                    }
-                    else {
-                        fuckF(event.touches[0]);
-                    }
-                }
-
-                break;
-
-            default:
-                { }
-
-
-        }
-    };
 
     objMain.labelRenderer.domElement.addEventListener('touchstart', operateStart, false);
     objMain.labelRenderer.domElement.addEventListener('touchend', operateEnd, false);
@@ -3421,8 +2246,17 @@ var set3DHtml = function () {
     //scope.domElement.removeEventListener('touchend', onTouchEnd, false);
     //drawCarBtnsFrame();
     //objNotify.carNotifyShow();
+    window.addEventListener('resize', onWindowResize, false);
 }
+function onWindowResize() {
 
+    objMain.camera.aspect = window.innerWidth / window.innerHeight;
+    objMain.camera.updateProjectionMatrix();
+
+    objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    objMain.renderer.setSize(window.innerWidth, window.innerHeight);
+    carAbility.refreshPosition();
+}
 var mouseClickInterviewState = (function () {
     this.i = [0, 100000];
     this.step = 0;
@@ -4026,201 +2860,199 @@ var drawPoint = function (color, fp, indexKey) {
 
 var drawCarBtns = function () {
     {
-        var clearBtnOfObj = function (id) {
-            if (document.getElementById(id) == null) { }
-            else {
-                var tp = document.getElementById(id);
-                while (tp.children.length > 0) {
-                    tp.children[0].remove();
-                }
-            }
-        }
+        //var clearBtnOfObj = function (id) {
+        //    if (document.getElementById(id) == null) { }
+        //    else {
+        //        var tp = document.getElementById(id);
+        //        while (tp.children.length > 0) {
+        //            tp.children[0].remove();
+        //        }
+        //    }
+        //}
 
-        var ff2 = function () {
-
-
-
-            while (document.getElementById('taskOperatingPanel') != null) {
-                document.getElementById('taskOperatingPanel').remove();
-            }
-            var divTaskOperatingPanel = document.createElement('div');
-            divTaskOperatingPanel.id = 'taskOperatingPanel';
-
-            divTaskOperatingPanel.style.position = 'absolute';
-            divTaskOperatingPanel.style.zIndex = '7';
-            divTaskOperatingPanel.style.right = '20px';
-            divTaskOperatingPanel.style.border = 'none';
-            divTaskOperatingPanel.style.width = '5em';
-            divTaskOperatingPanel.style.color = 'green';
-            //每个子对象1.3em 8px 共2.5个
-            divTaskOperatingPanel.style.top = 'calc(50% - 3.25em - 20px)';
-
-            var addItemToTaskOperatingPanle = function (btnName, id, clickF) {
-                var div = document.createElement('div');
-                div.style.width = 'calc(5em - 4px)';
-                div.style.textAlign = 'center';
-                div.style.border = '2px inset #ffc403';
-                div.style.borderRadius = '0.3em';
-                div.style.marginTop = '4px';
-                div.style.marginBottom = '4px';
-                div.style.background = 'rgba(0, 191, 255, 0.6)';
-                div.style.height = '1.3em';
-                div.id = id;
-
-                var span = document.createElement('span');
-                span.innerText = btnName;
-                div.appendChild(span);
-                //  <span id="carASpan">提升续航</span>
-
-                div.onclick = function () { clickF(); }
-                divTaskOperatingPanel.appendChild(div);
-            }
-            var showBtnEvent = function (show) {
+        //var ff2 = function () {
 
 
-                //   carBtns.addBtnToFrame(objMain.carsNames, show);
-                return;
-            }
-            //addItemToTaskOperatingPanle('收集', 'collectOrTaxBtn', function () {
-
-            //    var tmp = arguments;
-            //    clearBtnOfObj('taskOperatingPanel');
-            //    addItemToTaskOperatingPanle('收集金钱', 'collectMoneyBtn', function () {
-
-            //        showBtnEvent(true);
-            //        objMain.Task.state = 'collect';
-            //        objMain.Task.carSelect = '';
-            //        // alert('提升续航');
-            //        console.log('点击', '收集金钱');
-            //        var endF = ff2;
-            //        for (var i = 0; i < 38; i++) {
-            //            objMain.mainF.refreshCollectAndPanle(i + 0, endF);
-            //        }
-            //        objMain.collectGroup.userData.endF = endF;
-            //        clearBtnOfObj('taskOperatingPanel');
-
-            //        addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
-            //            tmp.callee();
-            //        });
-            //        //  ff2();
-            //    });
-            //    addItemToTaskOperatingPanle('收集分红', 'collectTaxBtn', function () {
-
-            //        showBtnEvent(true);
-            //        objMain.Task.state = 'getTax';
-            //        objMain.mainF.refreshTaxPanel();
-            //        objMain.Task.carSelect = '';
-            //        //   alert('收取税金！');
-            //        //showBtnEvent(true);
-            //        //objMain.Task.state = 'collect';
-            //        //objMain.Task.carSelect = '';
-            //        //// alert('提升续航');
-            //        //console.log('点击', '收集金钱');
-            //        //objMain.mainF.refreshCollectAndPanle();
-            //        clearBtnOfObj('taskOperatingPanel');
-            //        addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
-            //            tmp.callee();
-            //        });
-            //    });
-            //    addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
-            //        showBtnEvent(false);
-            //        objMain.Task.state = '';
-            //        objMain.Task.carSelect = '';
-            //        ff2();
-            //        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //        //showBtnEvent(true);
-            //        //objMain.Task.state = 'collect';
-            //        //objMain.Task.carSelect = '';
-            //        //// alert('提升续航');
-            //        //console.log('点击', '收集金钱');
-            //        //objMain.mainF.refreshCollectAndPanle();
-            //    });
-
-            //    showBtnEvent(false);
-            //    objMain.Task.state = '';
-            //    objMain.Task.carSelect = '';
-            //    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-            //}); 
-            addItemToTaskOperatingPanle('宝石', 'useGetDiamondBtn', function () {
 
 
-                var tmp_S1 = arguments;
-                clearBtnOfObj('taskOperatingPanel');
-                addItemToTaskOperatingPanle('购买', 'buyDiamondBtn', function () {
-                    // var tmp = arguments;
-                    showBtnEvent(false);
-                    objMain.Task.state = 'buyDiamond';
-                    objMain.mainF.refreshBuyPanel();
-                    objMain.Task.carSelect = '';
-                    objMain.mainF.lookAtPosition(objMain.basePoint);
-                    //   alert('收取税金！');
-                    //showBtnEvent(true);
-                    //objMain.Task.state = 'collect';
-                    //objMain.Task.carSelect = '';
-                    //// alert('提升续航');
-                    //console.log('点击', '收集金钱');
-                    //objMain.mainF.refreshCollectAndPanle();
-                    clearBtnOfObj('taskOperatingPanel');
-                    addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
-                        tmp_S1.callee();
-                    });
-                });
-                addItemToTaskOperatingPanle('出售', 'sellDiamondBtn', function () {
+        //    var divTaskOperatingPanel = document.createElement('div');
+        //    divTaskOperatingPanel.id = 'taskOperatingPanel';
 
-                    clearBtnOfObj('taskOperatingPanel');
-                    showBtnEvent(false);
-                    objMain.Task.state = 'sellDiamond';
-                    objMain.Task.carSelect = '';
-                    objMain.mainF.lookAtPosition(objMain.basePoint);
-                    objMain.mainF.refreshPromotePanel();
+        //    divTaskOperatingPanel.style.position = 'absolute';
+        //    divTaskOperatingPanel.style.zIndex = '7';
+        //    divTaskOperatingPanel.style.right = '20px';
+        //    divTaskOperatingPanel.style.border = 'none';
+        //    divTaskOperatingPanel.style.width = '5em';
+        //    divTaskOperatingPanel.style.color = 'green';
+        //    //每个子对象1.3em 8px 共2.5个
+        //    divTaskOperatingPanel.style.top = 'calc(50% - 3.25em - 20px)';
 
-                    //showBtnEvent(true);
-                    //objMain.Task.state = 'collect';
-                    //objMain.Task.carSelect = '';
-                    //// alert('提升续航');
-                    //console.log('点击', '收集金钱');
-                    //var endF = ff2;
-                    //objMain.mainF.refreshCollectAndPanle(endF);
+        //    var addItemToTaskOperatingPanle = function (btnName, id, clickF) {
+        //        var div = document.createElement('div');
+        //        div.style.width = 'calc(5em - 4px)';
+        //        div.style.textAlign = 'center';
+        //        div.style.border = '2px inset #ffc403';
+        //        div.style.borderRadius = '0.3em';
+        //        div.style.marginTop = '4px';
+        //        div.style.marginBottom = '4px';
+        //        div.style.background = 'rgba(0, 191, 255, 0.6)';
+        //        div.style.height = '1.3em';
+        //        div.id = id;
 
-                    //objMain.collectGroup.userData.endF = endF;
-                    //clearBtnOfObj('taskOperatingPanel');
+        //        var span = document.createElement('span');
+        //        span.innerText = btnName;
+        //        div.appendChild(span);
+        //        //  <span id="carASpan">提升续航</span>
 
-                    addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
-                        tmp.callee();
-                    });
-                });
-                addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
-                    showBtnEvent(false);
-                    objMain.Task.state = '';
-                    objMain.Task.carSelect = '';
-                    ff2();
-                    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                    //showBtnEvent(true);
-                    //objMain.Task.state = 'collect';
-                    //objMain.Task.carSelect = '';
-                    //// alert('提升续航');
-                    //console.log('点击', '收集金钱');
-                    //objMain.mainF.refreshCollectAndPanle();
-                });
+        //        div.onclick = function () { clickF(); }
+        //        divTaskOperatingPanel.appendChild(div);
+        //    }
+        //    var showBtnEvent = function (show) {
 
-                showBtnEvent(false);
-                objMain.Task.state = '';
-                objMain.Task.carSelect = '';
-                objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
-                /*------*/
 
-            });
-            addItemToTaskOperatingPanle('打压', 'attackOthersBtn', function () {
-                showBtnEvent(true);
-                objMain.Task.state = 'attack';
-                objMain.mainF.refreshAttackPanel();
-                objMain.Task.carSelect = '';
-            });
+        //        //   carBtns.addBtnToFrame(objMain.carsNames, show);
+        //        return;
+        //    }
+        //    //addItemToTaskOperatingPanle('收集', 'collectOrTaxBtn', function () {
 
-            document.body.appendChild(divTaskOperatingPanel);
-        }
+        //    //    var tmp = arguments;
+        //    //    clearBtnOfObj('taskOperatingPanel');
+        //    //    addItemToTaskOperatingPanle('收集金钱', 'collectMoneyBtn', function () {
 
-        ff2();
+        //    //        showBtnEvent(true);
+        //    //        objMain.Task.state = 'collect';
+        //    //        objMain.Task.carSelect = '';
+        //    //        // alert('提升续航');
+        //    //        console.log('点击', '收集金钱');
+        //    //        var endF = ff2;
+        //    //        for (var i = 0; i < 38; i++) {
+        //    //            objMain.mainF.refreshCollectAndPanle(i + 0, endF);
+        //    //        }
+        //    //        objMain.collectGroup.userData.endF = endF;
+        //    //        clearBtnOfObj('taskOperatingPanel');
+
+        //    //        addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+        //    //            tmp.callee();
+        //    //        });
+        //    //        //  ff2();
+        //    //    });
+        //    //    addItemToTaskOperatingPanle('收集分红', 'collectTaxBtn', function () {
+
+        //    //        showBtnEvent(true);
+        //    //        objMain.Task.state = 'getTax';
+        //    //        objMain.mainF.refreshTaxPanel();
+        //    //        objMain.Task.carSelect = '';
+        //    //        //   alert('收取税金！');
+        //    //        //showBtnEvent(true);
+        //    //        //objMain.Task.state = 'collect';
+        //    //        //objMain.Task.carSelect = '';
+        //    //        //// alert('提升续航');
+        //    //        //console.log('点击', '收集金钱');
+        //    //        //objMain.mainF.refreshCollectAndPanle();
+        //    //        clearBtnOfObj('taskOperatingPanel');
+        //    //        addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+        //    //            tmp.callee();
+        //    //        });
+        //    //    });
+        //    //    addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+        //    //        showBtnEvent(false);
+        //    //        objMain.Task.state = '';
+        //    //        objMain.Task.carSelect = '';
+        //    //        ff2();
+        //    //        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
+        //    //        //showBtnEvent(true);
+        //    //        //objMain.Task.state = 'collect';
+        //    //        //objMain.Task.carSelect = '';
+        //    //        //// alert('提升续航');
+        //    //        //console.log('点击', '收集金钱');
+        //    //        //objMain.mainF.refreshCollectAndPanle();
+        //    //    });
+
+        //    //    showBtnEvent(false);
+        //    //    objMain.Task.state = '';
+        //    //    objMain.Task.carSelect = '';
+        //    //    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
+        //    //}); 
+        //    addItemToTaskOperatingPanle('宝石', 'useGetDiamondBtn', function () {
+
+
+        //        var tmp_S1 = arguments;
+        //        clearBtnOfObj('taskOperatingPanel');
+        //        addItemToTaskOperatingPanle('购买', 'buyDiamondBtn', function () {
+        //            // var tmp = arguments;
+        //            showBtnEvent(false);
+        //            objMain.Task.state = 'buyDiamond';
+        //            objMain.mainF.refreshBuyPanel();
+        //            objMain.Task.carSelect = '';
+        //            objMain.mainF.lookAtPosition(objMain.basePoint);
+        //            //   alert('收取税金！');
+        //            //showBtnEvent(true);
+        //            //objMain.Task.state = 'collect';
+        //            //objMain.Task.carSelect = '';
+        //            //// alert('提升续航');
+        //            //console.log('点击', '收集金钱');
+        //            //objMain.mainF.refreshCollectAndPanle();
+        //            clearBtnOfObj('taskOperatingPanel');
+        //            addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+        //                tmp_S1.callee();
+        //            });
+        //        });
+        //        addItemToTaskOperatingPanle('出售', 'sellDiamondBtn', function () {
+
+        //            clearBtnOfObj('taskOperatingPanel');
+        //            showBtnEvent(false);
+        //            objMain.Task.state = 'sellDiamond';
+        //            objMain.Task.carSelect = '';
+        //            objMain.mainF.lookAtPosition(objMain.basePoint);
+        //            objMain.mainF.refreshPromotePanel();
+
+        //            //showBtnEvent(true);
+        //            //objMain.Task.state = 'collect';
+        //            //objMain.Task.carSelect = '';
+        //            //// alert('提升续航');
+        //            //console.log('点击', '收集金钱');
+        //            //var endF = ff2;
+        //            //objMain.mainF.refreshCollectAndPanle(endF);
+
+        //            //objMain.collectGroup.userData.endF = endF;
+        //            //clearBtnOfObj('taskOperatingPanel');
+
+        //            addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+        //                tmp.callee();
+        //            });
+        //        });
+        //        addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+        //            showBtnEvent(false);
+        //            objMain.Task.state = '';
+        //            objMain.Task.carSelect = '';
+        //            ff2();
+        //            objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
+        //            //showBtnEvent(true);
+        //            //objMain.Task.state = 'collect';
+        //            //objMain.Task.carSelect = '';
+        //            //// alert('提升续航');
+        //            //console.log('点击', '收集金钱');
+        //            //objMain.mainF.refreshCollectAndPanle();
+        //        });
+
+        //        showBtnEvent(false);
+        //        objMain.Task.state = '';
+        //        objMain.Task.carSelect = '';
+        //        objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
+        //        /*------*/
+
+        //    });
+        //    addItemToTaskOperatingPanle('打压', 'attackOthersBtn', function () {
+        //        showBtnEvent(true);
+        //        objMain.Task.state = 'attack';
+        //        objMain.mainF.refreshAttackPanel();
+        //        objMain.Task.carSelect = '';
+        //    });
+
+        //    document.body.appendChild(divTaskOperatingPanel);
+        //}
+
+        //ff2();
     }
 
 }
@@ -4455,7 +3287,296 @@ var broadTeamJoin = function (teamJoinBroadInfo) {
     document.getElementById('rootContainer').children[0].appendChild(addDiv('队员：', teamJoinBroadInfo.PlayerName));
 }
 
+var marketOperate =
+{
+    refresh: function () {
+        marketOperate.clearPanel();
+        marketOperate.state = '';
+        switch (objMain.carState["car"]) {
+            case 'waitAtBaseStation':
+                {
+                    marketOperate.drawCarBtns();
+                }; break;
+            default:
+                {
+                }; break;
+        }
+    },
+    clearPanel: function () {
+        while (document.getElementById('taskOperatingPanel') != null) {
+            document.getElementById('taskOperatingPanel').remove();
+        }
+    },
+    drawCarBtns: function () {
+        {
+            var clearBtnOfObj = function (id) {
+                if (document.getElementById(id) == null) { }
+                else {
+                    var tp = document.getElementById(id);
+                    while (tp.children.length > 0) {
+                        tp.children[0].remove();
+                    }
+                }
+            }
 
+            var ff2 = function () {
+                var divTaskOperatingPanel = document.createElement('div');
+                divTaskOperatingPanel.id = 'taskOperatingPanel';
+
+                divTaskOperatingPanel.style.position = 'absolute';
+                divTaskOperatingPanel.style.zIndex = '7';
+                divTaskOperatingPanel.style.right = '20px';
+                divTaskOperatingPanel.style.border = 'none';
+                divTaskOperatingPanel.style.width = '5em';
+                divTaskOperatingPanel.style.color = 'green';
+                //每个子对象1.3em 8px 共2.5个
+                divTaskOperatingPanel.style.top = 'calc(50% - 3.25em - 20px)';
+
+                var addItemToTaskOperatingPanle = function (btnName, id, clickF) {
+                    var div = document.createElement('div');
+                    div.style.width = 'calc(5em - 4px)';
+                    div.style.textAlign = 'center';
+                    div.style.border = '2px inset #ffc403';
+                    div.style.borderRadius = '0.3em';
+                    div.style.marginTop = '4px';
+                    div.style.marginBottom = '4px';
+                    div.style.background = 'rgba(0, 191, 255, 0.6)';
+                    div.style.height = '1.3em';
+                    div.id = id;
+
+                    var span = document.createElement('span');
+                    span.innerText = btnName;
+                    div.appendChild(span);
+                    //  <span id="carASpan">提升续航</span>
+
+                    div.onclick = function () { clickF(); }
+                    divTaskOperatingPanel.appendChild(div);
+                }
+
+                addItemToTaskOperatingPanle('宝石', 'useGetDiamondBtn', function () {
+
+
+                    var tmp_S1 = arguments;
+                    clearBtnOfObj('taskOperatingPanel');
+                    addItemToTaskOperatingPanle('购买', 'buyDiamondBtn', function () {
+
+                        objMain.ws.send(JSON.stringify({ 'c': 'BuyDiamond', 'pType': objMain.selectObj.obj.userData.index }));
+                    });
+                    addItemToTaskOperatingPanle('出售', 'sellDiamondBtn', function () {
+                        objMain.ws.send(JSON.stringify({ 'c': 'SellDiamond', 'pType': objMain.selectObj.obj.userData.index }));
+                    });
+                    addItemToTaskOperatingPanle('取消', 'cancleBtn', function () {
+                        marketOperate.state = '';
+                        marketOperate.refresh();
+
+                    });
+
+
+
+                    /*------*/
+
+                });
+
+                document.body.appendChild(divTaskOperatingPanel);
+            }
+
+            ff2();
+        }
+
+    },
+    state: ''
+};
+
+var operatePanel =
+{
+    clearPanel: function () {
+        while (document.getElementById('taskOperatingPanel') != null) {
+            document.getElementById('taskOperatingPanel').remove();
+        }
+    },
+    refresh: function () {
+        operatePanel.clearPanel();
+        var clearBtnOfObj = function (id) {
+            if (document.getElementById(id) == null) { }
+            else {
+                var tp = document.getElementById(id);
+                while (tp.children.length > 0) {
+                    tp.children[0].remove();
+                }
+            }
+        }
+        var divTaskOperatingPanel = document.createElement('div');
+        divTaskOperatingPanel.id = 'taskOperatingPanel';
+
+        divTaskOperatingPanel.style.position = 'absolute';
+        divTaskOperatingPanel.style.zIndex = '7';
+        divTaskOperatingPanel.style.right = '20px';
+        divTaskOperatingPanel.style.border = 'none';
+        divTaskOperatingPanel.style.width = '5em';
+        divTaskOperatingPanel.style.color = 'green';
+        //每个子对象1.3em 8px 共2.5个
+        divTaskOperatingPanel.style.top = 'calc(50% - 3.25em - 20px)';
+        var addItemToTaskOperatingPanle = function (btnName, id, clickF) {
+            var div = document.createElement('div');
+            div.style.width = 'calc(5em - 4px)';
+            div.style.textAlign = 'center';
+            div.style.border = '2px inset #ffc403';
+            div.style.borderRadius = '0.3em';
+            div.style.marginTop = '4px';
+            div.style.marginBottom = '4px';
+            div.style.background = 'rgba(0, 191, 255, 0.6)';
+            div.style.height = '1.3em';
+            div.id = id;
+
+            var span = document.createElement('span');
+            span.innerText = btnName;
+            div.appendChild(span);
+            //  <span id="carASpan">提升续航</span>
+
+            div.onclick = function () { clickF(); }
+            divTaskOperatingPanel.appendChild(div);
+        }
+        document.body.appendChild(divTaskOperatingPanel);
+
+        var carState = objMain.carState["car"];
+        switch (carState) {
+            case 'waitAtBaseStation':
+                {
+                    switch (objMain.Task.state) {
+                        case 'collect':
+                            {
+                                addItemToTaskOperatingPanle('收集', 'collectBtn', function () {
+                                    objMain.canSelect = false;
+                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                        var selectObj = objMain.selectObj.obj;
+                                        // console.log('selectObj', selectObj.userData.collectPosition.Fp.FastenPositionID);
+                                        objMain.ws.send(JSON.stringify({ 'c': 'Collect', 'cType': 'findWork', 'fastenpositionID': selectObj.userData.collectPosition.Fp.FastenPositionID, 'collectIndex': selectObj.userData.collectPosition.collectIndex }));
+                                        objMain.selectObj.obj = null;
+                                        objMain.selectObj.type = '';
+                                        operatePanel.refresh();
+                                    }
+                                });
+                            }; break;
+                        case 'attack':
+                            {
+                                addItemToTaskOperatingPanle('攻击', 'attackBtn', function () {
+                                    objMain.canSelect = false;
+                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                        var selectObj = objMain.selectObj.obj;
+                                        var customTagIndexKey = selectObj.name.substring(5);
+                                        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
+                                            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
+                                            objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
+
+                                        }
+                                        objMain.selectObj.obj = null;
+                                        objMain.selectObj.type = '';
+                                        operatePanel.refresh();
+                                    }
+                                });
+                            }; break;
+                        case 'mile':
+                        case 'business':
+                        case 'volume':
+                        case 'speed':
+                            {
+                                addItemToTaskOperatingPanle('寻宝', 'promoteBtn', function () {
+                                    objMain.canSelect = false;
+                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                        objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.selectObj.type }));
+                                        objMain.selectObj.obj = null;
+                                        objMain.selectObj.type = '';
+                                        operatePanel.refresh();
+                                    }
+                                });
+                            }; break;
+                        case 'ability':
+                            {
+                                addItemToTaskOperatingPanle('使用', 'useDiamondBtn', function () {
+                                    if (objMain.carState["car"] == 'waitAtBaseStation') {
+                                        if (objMain.PromoteDiamondCount[objMain.selectObj.obj.userData.index] > 0) {
+                                            objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': objMain.selectObj.obj.userData.index }));
+                                        }
+                                    }
+                                });
+                                addItemToTaskOperatingPanle('出售', 'sellDiamondBtn', function () {
+                                    if (objMain.carState["car"] == 'waitAtBaseStation') {
+                                        objMain.ws.send(JSON.stringify({ 'c': 'SellDiamond', 'pType': objMain.selectObj.obj.userData.index }));
+                                    }
+                                });
+                                addItemToTaskOperatingPanle('购买', 'buyDiamondBtn', function () {
+                                    if (objMain.carState["car"] == 'waitAtBaseStation') {
+                                        objMain.ws.send(JSON.stringify({ 'c': 'BuyDiamond', 'pType': objMain.selectObj.obj.userData.index }));
+                                    }
+                                });
+                            }; break;
+                    }
+                }; break;
+            case 'waitOnRoad':
+                {
+                    switch (objMain.Task.state) {
+                        case 'collect':
+                            {
+                                addItemToTaskOperatingPanle('收集', 'collectBtn', function () {
+                                    objMain.canSelect = false;
+                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                        var selectObj = objMain.selectObj.obj;
+                                        // console.log('selectObj', selectObj.userData.collectPosition.Fp.FastenPositionID);
+                                        objMain.ws.send(JSON.stringify({ 'c': 'Collect', 'cType': 'findWork', 'fastenpositionID': selectObj.userData.collectPosition.Fp.FastenPositionID, 'collectIndex': selectObj.userData.collectPosition.collectIndex }));
+                                        objMain.selectObj.obj = null;
+                                        objMain.selectObj.type = '';
+                                        operatePanel.refresh();
+                                    }
+                                });
+                            }; break;
+                        case 'attack':
+                            {
+                                addItemToTaskOperatingPanle('攻击', 'attackBtn', function () {
+                                    objMain.canSelect = false;
+                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                        var selectObj = objMain.selectObj.obj;
+                                        var customTagIndexKey = selectObj.name.substring(5);
+                                        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
+                                            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
+                                            objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
+
+                                        }
+                                        objMain.selectObj.obj = null;
+                                        objMain.selectObj.type = '';
+                                        operatePanel.refresh();
+                                    }
+                                });
+                            }; break;
+                        case 'mile':
+                        case 'business':
+                        case 'volume':
+                        case 'speed':
+                            {
+                                addItemToTaskOperatingPanle('寻宝', 'promoteBtn', function () {
+                                    objMain.canSelect = false;
+                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                        objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.selectObj.type }));
+                                        objMain.selectObj.obj = null;
+                                        objMain.selectObj.type = '';
+                                        operatePanel.refresh();
+                                    }
+                                });
+                            }; break;
+                    }
+                    addItemToTaskOperatingPanle('回基地', 'goBackBtn', function () {
+                        objMain.canSelect = false;
+                        if (objMain.carState["car"] == 'waitOnRoad') {
+                            var selectObj = objMain.selectObj.obj;
+                            objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn' }));
+                            objMain.selectObj.obj = null;
+                            objMain.selectObj.type = '';
+                            operatePanel.refresh();
+                        }
+                    });
+                }; break;
+        }
+    }
+};
 /////////////
 /*
  * 复数类

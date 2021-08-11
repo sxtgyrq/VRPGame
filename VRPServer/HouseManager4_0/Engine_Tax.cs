@@ -24,7 +24,6 @@ namespace HouseManager4_0
 
         internal void CollectTax(int startT, taxSet taxSet)
         {
-
             this.startNewThread(startT + 1, taxSet, this);
         }
 
@@ -55,12 +54,12 @@ namespace HouseManager4_0
                         //var boss =
                     }
                 }
-                that.retutnE.SetReturnFromBoss(100, boss, new returnning()
+                that.retutnE.SetReturnFromBoss(1000, boss, new returnning()
                 {
                     c = "returnning",
                     changeType = returnning.ChangeType.AfterTax,
                     key = taxSet.key,
-                    returningOjb = ReturningOjb.ojbWithoutBoss(taxSet.returningOjb),
+                    returningOjb = taxSet.returningOjb,
                     target = boss.StartFPIndex
                 });
             }

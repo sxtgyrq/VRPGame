@@ -1,5 +1,4 @@
 ﻿using CommonClass;
-using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,22 +8,14 @@ using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 
 namespace HouseManager4_0
 {
-    public abstract class Engine
+    public abstract class Engine : EngineAndManger
     {
-        protected RoomMain roomMain;
-        protected RoomMain that { get { return this.roomMain; } }
-
-
-
         public void sendMsg(string controllerUrl, string json)
         {
             Startup.sendMsg(controllerUrl, json);
         }
 
-        public void WebNotify(RoleInGame player, string Msg)
-        {
-            roomMain.WebNotify(player, Msg);
-        }
+       
 
         internal string updateAction(interfaceOfEngine.tryCatchAction actionDo, Command c, string operateKey)
         {
@@ -44,6 +35,7 @@ namespace HouseManager4_0
                             switch (car.state)
                             {
                                 case CarState.waitAtBaseStation:
+                                case CarState.waitOnRoad:
                                     {
                                         if (actionDo.carAbilitConditionsOk(player, car, c))
                                         {
@@ -69,38 +61,11 @@ namespace HouseManager4_0
                                             }
                                             else if (mrr == MileResultReason.NearestIsMoneyWhenPromote)
                                             {
-                                                this.WebNotify(player, $"离宝石最近的是钱，不是你的车。请离宝石再近点儿！");
+
                                             }
-                                        }
-                                        else
-                                        {
-                                            actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                        }
-                                    }; break;
-                                case CarState.waitOnRoad:
-                                    {
-                                        if (actionDo.carAbilitConditionsOk(player, car, c))
-                                        {
-                                            MileResultReason mrr;
-                                            actionDo.maindDo(player, car, c, ref notifyMsg, out mrr);
-                                            if (mrr == MileResultReason.Abundant) { }
-                                            else if (mrr == MileResultReason.CanNotReach)
+                                            else if (mrr == MileResultReason.NearestIsMoneyWhenAttack)
                                             {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                                this.WebNotify(player, "小车不能到达目的地，被安排返回！");
-                                            }
-                                            else if (mrr == MileResultReason.CanNotReturn)
-                                            {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                                this.WebNotify(player, "小车到达目的地后不能返回，在当前地点安排返回！");
-                                            }
-                                            else if (mrr == MileResultReason.MoneyIsNotEnougt)
-                                            {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                            }
-                                            else if (mrr == MileResultReason.NearestIsMoneyWhenPromote)
-                                            {
-                                                this.WebNotify(player, $"离宝石最近的是钱，不是你的车。请离宝石再近点儿！");
+                                                // this.WebNotify(player, $"离宝石最近的是钱，不是你的车。请离宝石再近点儿！");
                                             }
                                         }
                                         else
@@ -160,8 +125,7 @@ namespace HouseManager4_0
             Data.PathStartPoint2 startPosition;
             if (car.state == CarState.waitAtBaseStation)
             {
-                that.getStartPositionByFp(out startPosition, fp1);
-                result = that.getStartPositon(fp1, player.positionInStation, ref startT);
+                result = that.getStartPositon(fp1, player.positionInStation, ref startT,out startPosition);
             }
             else if (car.state == CarState.waitOnRoad)
             {
@@ -178,12 +142,8 @@ namespace HouseManager4_0
             Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
             //  result.RemoveAll(item => item.t == 0);
 
-            car.setAnimateData(player, ref notifyMsg, new AnimateData2()
-            {
-                start = startPosition,
-                animateData = result,
-                recordTime = DateTime.Now
-            });
+            car.setAnimateData(player, ref notifyMsg, new AnimateData2(startPosition, result, DateTime.Now, false));
+
         }
 
         protected void carParkOnRoad(int target, ref Car car, RoleInGame player, ref List<string> notifyMsgs)
@@ -193,19 +153,12 @@ namespace HouseManager4_0
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
 
 
-            var animate = new AnimateData2()
-            {
-                start = new Data.PathStartPoint2()
-                {
-                    x = Convert.ToInt32(endX * 256),
-                    y = Convert.ToInt32(endY * 256)
-                },
-                animateData = new List<int>()
-                {
-                    0,0,20000
-                },
-                recordTime = DateTime.Now
-            };
+            var animate = new AnimateData2(
+                new Data.PathStartPoint2()  { x = Convert.ToInt32(endX * 256), y = Convert.ToInt32(endY * 256) },
+                new List<int>() { 0, 0, 20000 },
+                DateTime.Now,
+                true
+                );
             car.setAnimateData(player, ref notifyMsgs, animate);
 
         }
@@ -223,7 +176,7 @@ namespace HouseManager4_0
                 that.retutnE.SetReturnT(startT, new commandWithTime.returnning()
                 {
                     c = "returnning",
-                    changeType = commandWithTime.returnning.ChangeType.AttackFailedReturn,
+                    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
                     key = player.Key,
                     returningOjb = returnPath_Record,
                     target = from
@@ -262,17 +215,8 @@ namespace HouseManager4_0
         {
             Thread.Sleep(mSecondsWait);
         }
-        public void startNewThread(int startT, baseC dOwner, interfaceOfEngine.startNewThread objNeedToStartNewThread)
-        {
-            Thread th = new Thread(() => newThreadDoBefore(startT, dOwner, objNeedToStartNewThread));
-            th.Start();
-            //  throw new NotImplementedException();
-        }
-        public void newThreadDoBefore(int startT, baseC dOwner, interfaceOfEngine.startNewThread objNeedToStartNewThread)
-        {
-            Thread.Sleep(startT);
-            objNeedToStartNewThread.newThreadDo(dOwner);
-        }
+
+
 
         public class notifyMsg
         {

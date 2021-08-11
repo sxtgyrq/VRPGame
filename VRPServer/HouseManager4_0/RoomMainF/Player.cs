@@ -7,6 +7,7 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Player, interfaceOfHM.CarAndRoomInterface
     {
+        
         const string AddSuffix = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         //  enum CostOrSum { Cost, Sum }
@@ -177,12 +178,6 @@ namespace HouseManager4_0.RoomMainF
 
                     // this._FpOwner.Add(fpIndex, addItem.Key);
                     this._Players[addItem.Key].StartFPIndex = fpIndex;
-
-
-                    this._Players[addItem.Key].TaxInPositionInit();// = RoomMain.TaxAdded;
-                                                                   // this._Players[addItem.Key].InitializeDebt();
-
-
                     //SetMoneyCanSave 在InitializeDebt 之后，MoneySet之前
                     ((Player)this._Players[addItem.Key]).SetMoneyCanSave = this.SetMoneyCanSave;// RoomMain.SetMoneyCanSave;
                     ((Player)this._Players[addItem.Key]).MoneyChanged = this.MoneyChanged;//  RoomMain.MoneyChanged;
@@ -207,6 +202,7 @@ namespace HouseManager4_0.RoomMainF
                     this._Players[addItem.Key].setType(RoleInGame.PlayerType.player);
                     this._Players[addItem.Key].SetLevel(1, ref notifyMsgs);
                     newPlayer.ShowLevelOfPlayerF = this.ShowLevelOfPlayerF;
+                    newPlayer.afterBroke = this.AfterPlayerBroken;
                 }
             }
 
@@ -222,7 +218,27 @@ namespace HouseManager4_0.RoomMainF
             //  throw new NotImplementedException();
         }
 
-
+        private void AfterPlayerBroken(Player npc, ref List<string> notifyMsgs)
+        {
+            {
+                var keys = new List<string>();
+                foreach (var item in this._Players)
+                {
+                    if (item.Value.TheLargestHolderKey == npc.Key && item.Value.playerType == RoleInGame.PlayerType.player)
+                    {
+                        keys.Add(item.Key);
+                    }
+                }
+                for (var i = 0; i < keys.Count; i++)
+                {
+                    this._Players[keys[i]].InitializeTheLargestHolder();
+                }
+            }
+            {
+                var keys = new List<string>();
+            }
+            //  throw new NotImplementedException();
+        }
 
         public void DiamondInCarChanged(Player player, Car car, ref List<string> notifyMsgs, string value)
         {
@@ -298,6 +314,8 @@ namespace HouseManager4_0.RoomMainF
                             ((Player)Program.rm._Players[checkItem.Key]).OpenMore++;
                             Program.rm._Players[checkItem.Key].clearUsedRoad();
                             Program.rm._Players[checkItem.Key] = player;
+
+
                         }
                         else
                         {

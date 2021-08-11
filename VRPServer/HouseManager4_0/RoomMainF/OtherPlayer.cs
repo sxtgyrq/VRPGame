@@ -80,7 +80,11 @@ namespace HouseManager4_0.RoomMainF
                         key = other.Key,
                         PlayerName = other.PlayerName,
                         fPIndex = other.StartFPIndex,
-                        positionInStation = other.positionInStation
+                        positionInStation = other.positionInStation,
+                        isNPC = other.playerType == RoleInGame.PlayerType.NPC,
+                        isPlayer = other.playerType == RoleInGame.PlayerType.player,
+                        Level = other.Level
+                          
                         // var xx=  getPosition.Key
                     };
                     msgsWithUrl.Add(((Player)self).FromUrl);

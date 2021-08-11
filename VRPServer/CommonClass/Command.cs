@@ -51,6 +51,9 @@ namespace CommonClass
         public string PlayerName { get; set; }
         public int fPIndex { get; set; }
         public int positionInStation { get; set; }
+        public bool isPlayer { get; set; }
+        public bool isNPC { get; set; }
+        public int Level { get; set; }
     }
 
     public class TaxNotify : CommandNotify
@@ -79,7 +82,10 @@ namespace CommonClass
     {
         public string othersKey;
     }
-
+    public class WMsg : CommandNotify
+    {
+        public string Msg;
+    }
     public class DebtsRemove : CommandNotify
     {
         public string othersKey;
@@ -313,10 +319,14 @@ namespace CommonClass
         public string pType { get; set; }
     }
 
+
     public class OrderToReturn : Command
     {
         public string Key { get; set; }
         //public string car { get; set; }
+    }
+    public class OrderToReturnBySystem : OrderToReturn
+    {
     }
 
     public class OrderToSubsidize : Command

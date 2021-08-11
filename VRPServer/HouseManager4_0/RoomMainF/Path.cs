@@ -29,16 +29,16 @@ namespace HouseManager4_0.RoomMainF
             return Convert.ToInt32(sumMiles) / 1000;
         }
 
-        public void getStartPositionByFp(out Data.PathStartPoint2 startPosition, Model.FastonPosition fp1)
-        {
-            double startX, startY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp1.Longitude, fp1.Latitde, out startX, out startY);
-            startPosition = new Data.PathStartPoint2()
-            {
-                x = Convert.ToInt32(startX * 256),
-                y = Convert.ToInt32(startY * 256)
-            };
-        }
+        //public void getStartPositionByFp(out Data.PathStartPoint2 startPosition, Model.FastonPosition fp1)
+        //{
+        //    double startX, startY;
+        //    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp1.Longitude, fp1.Latitde, out startX, out startY);
+        //    startPosition = new Data.PathStartPoint2()
+        //    {
+        //        x = Convert.ToInt32(startX * 256),
+        //        y = Convert.ToInt32(startY * 256)
+        //    };
+        //}
 
         /// <summary>
         /// 获取从基地出来时的路径！
@@ -47,7 +47,7 @@ namespace HouseManager4_0.RoomMainF
         /// <param name="car">carA？-carE</param>
         /// <param name="startTInput">时间</param>
         /// <returns></returns>
-        public List<int> getStartPositon(Model.FastonPosition fp, int positionInStation, ref int startTInput)
+        public List<int> getStartPositon(Model.FastonPosition fp, int positionInStation, ref int startTInput, out Data.PathStartPoint2 startPosition)
         {
             double startX, startY;
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, out startX, out startY);
@@ -100,14 +100,20 @@ namespace HouseManager4_0.RoomMainF
             double carPositionX = startX + position.Real * percentOfPosition;
             double carPositionY = startY - position.Imaginary * percentOfPosition;
 
+            startPosition = new Data.PathStartPoint2()
+            {
+                x = Convert.ToInt32(carPositionX * 256),
+                y = Convert.ToInt32(carPositionY * 256)
+            };
+
             List<int> animateResult = new List<int>();
             startT0 = startTInput;
             endT0 = startT0 + 500;
             startTInput += 500;
             var animate1 = new Data.PathResult3()
             {
-                x = Convert.ToInt32((startX - carPositionX) * 256),
-                y = Convert.ToInt32((startY - carPositionY) * 256),
+                x = Convert.ToInt32(-(position.Real * percentOfPosition) * 256),
+                y = Convert.ToInt32(position.Imaginary * percentOfPosition * 256),
                 t = endT0 - startT0
             };
             //var animate1 = new Data.PathResult()
@@ -180,13 +186,17 @@ namespace HouseManager4_0.RoomMainF
 
         public void getEndPositon(Model.FastonPosition fp, int initPosition, ref List<int> animateResult, ref int startTInput)
         {
+            if (initPosition > 5)
+            {
+                initPosition = initPosition % 5;
+            }
             double endX, endY;
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, out endX, out endY);
-            int startT0, startT1;
+            int startT1;
 
             double startX, startY;
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out startX, out startY);
-            int endT0, endT1;
+            int endT1;
 
             //这里要考虑前台坐标系（左手坐标系）。
             var cc = new Complex(startX - endX, (-startY) - (-endY));

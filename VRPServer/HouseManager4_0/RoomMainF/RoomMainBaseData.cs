@@ -190,5 +190,14 @@ namespace HouseManager4_0.RoomMainF
         public Engine_PromoteEngine promoteE;
 
         public Engine_DiamondOwnerEngine diamondOwnerE;
+
+        public Engine_Attach attachE;
+
+
+        //以上为Engine
+        //以下为Manager
+
+        public Manager_NPC NPCM;
+        public Manager_Frequency frequencyM;
     }
 }

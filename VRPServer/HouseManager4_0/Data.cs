@@ -457,8 +457,7 @@ namespace HouseManager4_0
                 }
             }
         }
-
-
+         
         public void getAll(out List<double[]> meshPoints, out List<object> listOfCrosses)
         {
             Dictionary<string, bool> Cs = new Dictionary<string, bool>();

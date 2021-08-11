@@ -6,7 +6,7 @@ using System.Text;
 
 namespace HouseManager4_0
 {
-    public abstract class RoleInGame
+    public abstract class RoleInGame : interfaceOfHM.GetFPIndex
     {
         public delegate void ShowLevelOfPlayer(Player player, int level, ref List<string> notifyMsg);
         public ShowLevelOfPlayer ShowLevelOfPlayerF = null;
@@ -23,6 +23,7 @@ namespace HouseManager4_0
                 return this._level;
             }
         }
+
         public void SetLevel(int newLevel, ref List<string> notifyMsg)
         {
             if (this._level == newLevel) { }
@@ -30,6 +31,10 @@ namespace HouseManager4_0
             {
                 this._level = newLevel;
                 ShowLevelOfPlayerDetail(ref notifyMsg);
+                if (this.playerType == PlayerType.NPC)
+                {
+                    ((NPC)this).initializeCarOfNPC();
+                }
             }
         }
         public string Key { get; internal set; }
@@ -125,10 +130,7 @@ namespace HouseManager4_0
         public Dictionary<int, int> CollectPosition { get; internal set; }
 
         // Dictionary<int, int> _collectPosition = new Dictionary<int, int>();
-        internal void TaxInPositionInit()
-        {
-            this.TaxInPosition = new Dictionary<int, long>();
-        }
+
 
 
         long _Money = 0;
@@ -178,6 +180,10 @@ namespace HouseManager4_0
         internal void InitializeTheLargestHolder()
         {
             this.TheLargestHolderKey = this.Key;
+        }
+        internal void SetTheLargestHolder(Player boss)
+        {
+            this.TheLargestHolderKey = boss.Key;
         }
 
         public bool HasTheBoss(Dictionary<string, RoleInGame> _Players, out RoleInGame boss)
@@ -262,10 +268,6 @@ namespace HouseManager4_0
             }
         }
 
-        internal bool TaxContainsKey(int target)
-        {
-            return this.TaxInPosition.ContainsKey(target);
-        }
 
 
         /// <summary>
@@ -485,63 +487,33 @@ namespace HouseManager4_0
         {
             this.Bust = v;
             BustChangedF(this, this.Bust, ref notifyMsg);
-        }
-
-
-
-
-
-        /// <summary>
-        /// 表征玩家在某一地点能,key是地点，long是金钱（分）
-        /// </summary>
-        protected Dictionary<int, long> TaxInPosition { get; set; }
-
-        public long SumTax
-        {
-            get
-            {
-                long result = 0;
-                foreach (var item in this.TaxInPosition)
+            if (this.Bust)
+                if (this.playerType == PlayerType.NPC)
                 {
-                    result += item.Value;
+                    ((NPC)this).afterBrokeM(ref notifyMsg);
                 }
-                return result;
-            }
-        }
-        public long GetTaxByPositionIndex(int position)
-        {
-            if (this.TaxInPosition.ContainsKey(position))
-                return this.TaxInPosition[position];
-            else return 0;
+                else if (this.playerType == PlayerType.player)
+                {
+                    ((Player)this).afterBrokeM(ref notifyMsg);
+                }
         }
 
 
-        public long getAllBonus()
-        {
-            long sum = 0;
-            foreach (var item in this.TaxInPosition)
-            {
-                sum += item.Value;
-            }
-            return sum;
-            //throw new NotImplementedException();
-        }
-        internal long getTaxByBonus()
-        {
-            long allBonus = this.getAllBonus();
-            //var tax=this.
-            throw new NotImplementedException();
-        }
-        public List<int> TaxInPositionForeach()
-        {
 
-            List<int> result = new List<int>();
-            foreach (var item in this.TaxInPosition)
-            {
-                result.Add(item.Key);
-            }
-            return result;
-        }
+
+
+        ///// <summary>
+        ///// 表征玩家在某一地点能,key是地点，long是金钱（分）
+        ///// </summary>
+        //protected Dictionary<int, long> TaxInPosition { get; set; }
+
+
+
+
+
+
+
+
 
         DateTime _BustTime { get; set; }
         public DateTime BustTime
@@ -736,7 +708,11 @@ namespace HouseManager4_0
             this.playerType = t;
         }
 
-
+        public int GetFPIndex()
+        {
+            return this.StartFPIndex;
+            // throw new NotImplementedException();
+        }
     }
     public class Player : RoleInGame, interfaceTag.HasContactInfo
     {
@@ -782,161 +758,112 @@ namespace HouseManager4_0
         /// </summary>
         public int OpenMore { get; set; }
 
+        public delegate void PlayerOperateF(Player player, ref List<string> notifyMsgs);
 
+        public PlayerOperateF afterBroke;
+        public void afterBrokeM(ref List<string> notifyMsg)
+        {
+            this.afterBroke(this, ref notifyMsg);
+        }
     }
     public class NPC : RoleInGame
     {
-        //public int Level { get; set; }
-        public int Radius { get; set; }
 
-        internal bool Contain(FastonPosition fp)
+        public delegate void BeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsgs);
+        public BeingAttacked BeingAttackedM;
+        string _challenger = "";
+        public string challenger { get { return this._challenger; } }
+
+        public void BeingAttackedF(string keyOfAttacker, ref List<string> notifyMsgs)
         {
-            var baseFp = Program.dt.GetFpByIndex(this.StartFPIndex);
-            double fpX, fpY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, out fpX, out fpY);
-
-            double baseX, baseY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(baseFp.Longitude, baseFp.Latitde, out baseX, out baseY);
-
-            return Math.Sqrt((baseX - fpX) * (baseX - fpX) + (baseY - fpY) * (baseY - fpY)) <= this.Radius;
-            //  throw new NotImplementedException();
+            this.BeingAttackedM(keyOfAttacker, this, ref notifyMsgs);
         }
 
-        internal bool SuitToAttack()
+        internal void setChallenger(string key, ref List<string> notifyMsg)
         {
-#warning 这里要重写
-            throw new Exception("");
-            //if (this.getCar().state == Car.CarState.waitAtBaseStation)
-            //    if (Program.rm.Market.mile_Price.HasValue)
-            //    {
-            //        if (Program.rm.Market.mile_Price.Value < this.Money)
-            //        {
-            //            if (this.TheLargestHolderKey == this.Key)
-            //            {
-            //                if (this.SelfPercent > 60)
-            //                {
-            //                    return true;
-            //                }
-            //                else
-            //                {
-            //                    return false;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                return false;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            return false;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        return false;
-            //    }
-            //else if (this.getCar().state == Car.CarState.waitForCollectOrAttack)
-
-            //    if (this.getCar().ability.costVolume >= this.getCar().ability.Volume)
-            //    {
-            //        return true;
-            //    }
-            //    else
-            //    {
-            //        return false;
-            //    }
-            //else if (this.getCar().state == Car.CarState.waitForTaxOrAttack)
-            //    if (this.getCar().ability.costBusiness >= this.getCar().ability.Business)
-            //    {
-            //        return true;
-            //    }
-            //    else
-            //    {
-            //        return false;
-            //    }
-            //else
-            //    return false;
+            this._challenger = key;
+            this._molester = "";
         }
 
 
-
-        internal void ClearEnemiesAndMolester(Dictionary<string, RoleInGame> _Players)
+        public delegate void NPCOperateF(NPC npc, ref List<string> notifyMsgs);
+        public NPCOperateF afterWaitedM;
+        public void dealWithWaitedNPC(ref List<string> notifyMsgs)
         {
-            this.Enemies.RemoveAll(item => (!_Players.ContainsKey(item)));
-            this.Enemies.RemoveAll(item => _Players[item].Bust);
-
-            this.Molester.RemoveAll(item => (!_Players.ContainsKey(item)));
-            this.Molester.RemoveAll(item => _Players[item].Bust);
+            this.afterWaitedM(this, ref notifyMsgs);
+            //throw new NotImplementedException();
         }
 
-        internal bool SuitToCollectTax()
+        public NPCOperateF afterReturnedM;
+        internal void dealWithReturnedNPC(ref List<string> notifyMsg)
         {
-#warning 这里要重写
-            throw new Exception("");
-            //if (this.getCar().state == Car.CarState.waitAtBaseStation)
-            //    if (Program.rm.Market.mile_Price.HasValue)
-            //    {
-            //        if (Program.rm.Market.mile_Price.Value < this.Money)
-            //        {
-            //            if (this.SumTax >= this.getCar().ability.Business)
-            //            {
-            //                return true;
-            //            }
-            //            else
-            //            {
-            //                return false;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            return false;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        return false;
-            //    }
-            //else if (this.getCar().state == Car.CarState.waitForTaxOrAttack)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
+            if (!string.IsNullOrEmpty(this.molester)) { }
+            else if (!string.IsNullOrEmpty(this.challenger))
+            {
+                this.afterReturnedM(this, ref notifyMsg);
+            }
         }
 
-        internal bool SuitToCollect()
+        public NPCOperateF afterBroke;
+        public void afterBrokeM(ref List<string> notifyMsg)
         {
-#warning 这里要重写
-            throw new Exception("");
-
-            //if (this.getCar().state == Car.CarState.waitAtBaseStation)
-            //{
-            //    {
-            //        if (this.Enemies.Count + this.Molester.Count > 0)
-            //        {
-            //            return true;
-            //        }
-            //        else
-            //        {
-            //            return false;
-            //        }
-            //    }
-            //}
-            //else if (this.getCar().state == Car.CarState.waitForCollectOrAttack)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
+            this.afterBroke(this, ref notifyMsg);
         }
 
-        public List<string> Enemies { get; set; }
-        public List<string> Molester { get; set; }
+        string _molester = "";
+        //internal void setMolester(string key, ref List<string> notifyMsg)
+        //{
+        //    if (string.IsNullOrEmpty(this._challenger))
+        //        this._molester = key;
+        //}
+        public string molester { get { return this._molester; } }
+
+        public NPCOperateF BeingMolestedM;
+        public bool BeingMolestedF(string keyOfMolester, ref List<string> notifyMsgs)
+        {
+            if (!this.Bust)
+                if (string.IsNullOrEmpty(this._challenger) && string.IsNullOrEmpty(this._molester))
+                {
+                    this._molester = keyOfMolester;
+                    this.BeingMolestedM(this, ref notifyMsgs);
+                    return true;
+                }
+            return false;
+            // this.BeingAttackedM(keyOfAttacker, this, ref notifyMsgs);
+        }
+
+        internal void initializeCarOfNPC()
+        {
+            List<string> notifyMsg = new List<string>();
+            var car = this.getCar();
+
+            for (var i = 2; i < this.Level; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    switch (Program.rm.rm.Next(0, 4))
+                    {
+                        case 0:
+                            {
+                                car.ability.AbilityAdd("mile", this, car, ref notifyMsg);
+                            }; break;
+                        case 1: 
+                            {
+                                car.ability.AbilityAdd("business", this, car, ref notifyMsg);
+                            }; break;
+                        case 2: 
+                            {
+                                car.ability.AbilityAdd("volume", this, car, ref notifyMsg);
+                            }; break;
+                        case 3: 
+                            {
+                                car.ability.AbilityAdd("speed", this, car, ref notifyMsg);
+                            }; break;
+                    }
+                }
+            }
+            notifyMsg = null;
+        }
     }
 
     public class OtherPlayers

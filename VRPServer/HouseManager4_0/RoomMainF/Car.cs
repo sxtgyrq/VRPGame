@@ -91,6 +91,7 @@ namespace HouseManager4_0.RoomMainF
                                 deltaT = Convert.ToInt32((DateTime.Now - other.getCar().animateData.recordTime).TotalMilliseconds),
                                 animateData = other.getCar().animateData.animateData,
                                 start = other.getCar().animateData.start,
+                                isParking = other.getCar().animateData.isParking
                             };
                             var obj = new BradCastAnimateOfOthersCar2
                             {
@@ -99,6 +100,7 @@ namespace HouseManager4_0.RoomMainF
                                 WebSocketID = self.WebSocketID,
                                 carID = getCarName() + "_" + other.Key,
                                 parentID = other.Key,
+
                             };
                             var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                             msgsWithUrl.Add(self.FromUrl);
@@ -120,7 +122,8 @@ namespace HouseManager4_0.RoomMainF
                 {
                     deltaT = Convert.ToInt32((DateTime.Now - car.animateData.recordTime).TotalMilliseconds),
                     animateData = car.animateData.animateData,
-                    start = car.animateData.start
+                    start = car.animateData.start,
+                    isParking = car.animateData.isParking
                 };
                 var obj = new BradCastAnimateOfSelfCar
                 {
@@ -200,7 +203,8 @@ namespace HouseManager4_0.RoomMainF
                 {
                     deltaT = Convert.ToInt32((DateTime.Now - self.getCar().animateData.recordTime).TotalMilliseconds),
                     animateData = self.getCar().animateData.animateData,
-                    start = self.getCar().animateData.start
+                    start = self.getCar().animateData.start,
+                    isParking = self.getCar().animateData.isParking,
                 };
                 var obj = new BradCastAnimateOfSelfCar
                 {

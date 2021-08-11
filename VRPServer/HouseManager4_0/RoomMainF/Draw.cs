@@ -7,7 +7,7 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain
     {
-        private void DrawSingleRoadF(Player player, string roadCode, ref List<string> notifyMsg)
+        public void DrawSingleRoadF(Player player, string roadCode, ref List<string> notifyMsg)
         {
             List<int> meshPoints;
             List<int> basePoint;

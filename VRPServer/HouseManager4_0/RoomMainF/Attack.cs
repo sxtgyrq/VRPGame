@@ -98,59 +98,53 @@ namespace HouseManager4_0.RoomMainF
 
 
 
-        private void EditCarStateWhenAttackStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, SetAttack sa, List<Model.MapGo.nyrqPosition> goPath, out int startT, ref List<string> notifyMsg)
-        {
-            car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
+        //private void EditCarStateWhenAttackStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, SetAttack sa, List<Model.MapGo.nyrqPosition> goPath, out int startT, ref List<string> notifyMsg)
+        //{
+        //    car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
 
-            // car.purpose = Purpose.attack;//B.更改小车目的，小车变为攻击状态！
-            //  car.changeState++;//C.更改状态用去前台更新动画  
+        //    // car.purpose = Purpose.attack;//B.更改小车目的，小车变为攻击状态！
+        //    //  car.changeState++;//C.更改状态用去前台更新动画  
 
-            /*
-            * D.更新小车动画参数
-            */
-            var speed = car.ability.Speed;
-            startT = 0;
-            //List<Data.PathResult3> result;
-            List<int> result;
-            Data.PathStartPoint2 startPosition;
-            if (car.state == CarState.waitAtBaseStation)
-            {
-                getStartPositionByFp(out startPosition, fp1);
-                result = getStartPositon(fp1, player.positionInStation, ref startT);
-            }
-            else if (car.state == CarState.waitOnRoad)
-            {
-                result = new List<int>();
-                getStartPositionByGoPath(out startPosition, goPath);
-            }
-            else
-            {
-                throw new Exception("错误的汽车类型！！！");
-            }
-            car.setState(this._Players[sa.Key], ref notifyMsg, CarState.working);
-            //car.state = CarState.roadForAttack;
-            //  this.SendStateAndPurpose(this._Players[sa.Key], car, ref notifyMsg);
-
-
-            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
-            //  result.RemoveAll(item => item.t == 0);
-
-            var animateData = new AnimateData2()
-            {
-                start = startPosition,
-                animateData = result,
-                recordTime = DateTime.Now
-            };
-
-            car.setAnimateData(player, ref notifyMsg, animateData);
-        }
+        //    /*
+        //    * D.更新小车动画参数
+        //    */
+        //    var speed = car.ability.Speed;
+        //    startT = 0;
+        //    //List<Data.PathResult3> result;
+        //    List<int> result;
+        //    Data.PathStartPoint2 startPosition;
+        //    if (car.state == CarState.waitAtBaseStation)
+        //    {
+        //        getStartPositionByFp(out startPosition, fp1);
+        //        result = getStartPositon(fp1, player.positionInStation, ref startT);
+        //    }
+        //    else if (car.state == CarState.waitOnRoad)
+        //    {
+        //        result = new List<int>();
+        //        getStartPositionByGoPath(out startPosition, goPath);
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("错误的汽车类型！！！");
+        //    }
+        //    car.setState(this._Players[sa.Key], ref notifyMsg, CarState.working);
+        //    //car.state = CarState.roadForAttack;
+        //    //  this.SendStateAndPurpose(this._Players[sa.Key], car, ref notifyMsg);
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="startT"></param>
-        /// <param name="dor"></param>
+        //    Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
+        //    //  result.RemoveAll(item => item.t == 0);
+
+        //    var animateData = new AnimateData2()
+        //    {
+        //        start = startPosition,
+        //        animateData = result,
+        //        recordTime = DateTime.Now
+        //    };
+
+        //    car.setAnimateData(player, ref notifyMsg, animateData);
+        //}
+         
 
 
 

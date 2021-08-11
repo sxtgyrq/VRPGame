@@ -144,7 +144,8 @@ namespace HouseManager4_0.RoomMainF
             /// </summary>
             CanNotReturn,
             MoneyIsNotEnougt,
-            NearestIsMoneyWhenPromote
+            NearestIsMoneyWhenPromote,
+            NearestIsMoneyWhenAttack
         }
         public string updateCollect(SetCollect sc)
         {
@@ -169,59 +170,59 @@ namespace HouseManager4_0.RoomMainF
             return 0;
             // throw new NotImplementedException();
         }
-        /// <summary>
-        /// 修改小车相关属性
-        /// </summary>
-        /// <param name="car"></param>
-        /// <param name="to"></param>
-        /// <param name="fp1"></param>
-        /// <param name="sc"></param>
-        /// <param name="goPath"></param>
-        private void EditCarStateWhenCollectStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, SetCollect sc, List<Model.MapGo.nyrqPosition> goPath, ref List<string> notifyMsg, out int startT)
-        {
+        ///// <summary>
+        ///// 修改小车相关属性
+        ///// </summary>
+        ///// <param name="car"></param>
+        ///// <param name="to"></param>
+        ///// <param name="fp1"></param>
+        ///// <param name="sc"></param>
+        ///// <param name="goPath"></param>
+        //private void EditCarStateWhenCollectStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, SetCollect sc, List<Model.MapGo.nyrqPosition> goPath, ref List<string> notifyMsg, out int startT)
+        //{
 
-            car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
+        //    car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
 
-            //car.purpose = Purpose.collect;//B.更改小车目的，用户操作控制
-            //    car.changeState++;//C.更改状态用去前台更新动画   
-            /*
-             * 步骤C已经封装进 car.setAnimateData
-             */
-            /*
-             * D.更新小车动画参数
-             */
+        //    //car.purpose = Purpose.collect;//B.更改小车目的，用户操作控制
+        //    //    car.changeState++;//C.更改状态用去前台更新动画   
+        //    /*
+        //     * 步骤C已经封装进 car.setAnimateData
+        //     */
+        //    /*
+        //     * D.更新小车动画参数
+        //     */
 
-            var speed = car.ability.Speed;
-            startT = 0;
-            List<int> result;
-            Data.PathStartPoint2 startPosition;
-            if (car.state == CarState.waitAtBaseStation)
-            {
-                getStartPositionByFp(out startPosition, fp1);
-                result = getStartPositon(fp1, player.positionInStation, ref startT);
-            }
-            else if (car.state == CarState.waitOnRoad)
-            {
-                result = new List<int>();
-                getStartPositionByGoPath(out startPosition, goPath);
-            }
-            else
-            {
-                throw new Exception($"未知情况！{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
-            }
-            car.setState(player, ref notifyMsg, CarState.working);
-            //car.state = CarState.roadForCollect;
+        //    var speed = car.ability.Speed;
+        //    startT = 0;
+        //    List<int> result;
+        //    Data.PathStartPoint2 startPosition;
+        //    if (car.state == CarState.waitAtBaseStation)
+        //    {
+        //        getStartPositionByFp(out startPosition, fp1);
+        //        result = getStartPositon(fp1, player.positionInStation, ref startT);
+        //    }
+        //    else if (car.state == CarState.waitOnRoad)
+        //    {
+        //        result = new List<int>();
+        //        getStartPositionByGoPath(out startPosition, goPath);
+        //    }
+        //    else
+        //    {
+        //        throw new Exception($"未知情况！{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
+        //    }
+        //    car.setState(player, ref notifyMsg, CarState.working);
+        //    //car.state = CarState.roadForCollect;
 
-            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
-            //  result.RemoveAll(item => item.t == 0);
+        //    Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
+        //    //  result.RemoveAll(item => item.t == 0);
 
-            car.setAnimateData(player, ref notifyMsg, new AnimateData2()
-            {
-                start = startPosition,
-                animateData = result,
-                recordTime = DateTime.Now
-            });
-        }
+        //    car.setAnimateData(player, ref notifyMsg, new AnimateData2()
+        //    {
+        //        start = startPosition,
+        //        animateData = result,
+        //        recordTime = DateTime.Now
+        //    });
+        //}
 
         private int getCollectPositionTo(int collectIndex)
         {

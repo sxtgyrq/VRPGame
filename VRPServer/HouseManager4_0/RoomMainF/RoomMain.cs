@@ -25,7 +25,11 @@ namespace HouseManager4_0.RoomMainF
             this.collectE = new Engine_CollectEngine(this);
             this.promoteE = new Engine_PromoteEngine(this);
             this.diamondOwnerE = new Engine_DiamondOwnerEngine(this);
+            this.attachE = new Engine_Attach(this);
             //  this.npcc = new NPCControle();
+
+            this.NPCM = new Manager_NPC(this);
+            this.frequencyM = new Manager_Frequency(this);
 
             lock (PlayerLock)
             {
@@ -114,16 +118,17 @@ namespace HouseManager4_0.RoomMainF
                 /// </summary>
                 public ChangeType changeType { get; internal set; }
 
+
+                /// <summary>
+                /// 表征是否在税收方法执行之后！
+                /// </summary>
                 public enum ChangeType
                 {
-                    Attack,
-                    Tax,
+                    /// <summary>
+                    /// 在收取税收之后
+                    /// </summary>
                     AfterTax,
-                    AfterAttack,
-                    AttackFailedReturn,
-                    GetDiamond,
-                    AfterPromote,
-                    OrderToReturn,
+                    BeforeTax,
                 }
             }
 
@@ -170,74 +175,66 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-        /// <summary>
-        /// 当没有抢到宝石-或者收集、保护费，在路上待命。
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="car"></param>
-        private void carParkOnRoad(int target, ref Car car, RoleInGame player, ref List<string> notifyMsgs)
-        {
-            var fp = Program.dt.GetFpByIndex(target);
-            double endX, endY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
+        ///// <summary>
+        ///// 当没有抢到宝石-或者收集、保护费，在路上待命。
+        ///// </summary>
+        ///// <param name="target"></param>
+        ///// <param name="car"></param>
+        //private void carParkOnRoad(int target, ref Car car, RoleInGame player, ref List<string> notifyMsgs)
+        //{
+        //    var fp = Program.dt.GetFpByIndex(target);
+        //    double endX, endY;
+        //    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
 
 
-            var animate = new AnimateData2()
-            {
-                start = new Data.PathStartPoint2()
-                {
-                    x = Convert.ToInt32(endX * 256),
-                    y = Convert.ToInt32(endY * 256)
-                },
-                animateData = new List<int>()
-                {
-                    0,0,20000
-                },
-                //animateData = new List<Data.PathResult3>()
-                //        {
-                //              new Data.PathResult3()
-                //              {
-                //                  x=0,
-                //                  y=0,
-                //                  t=20000
-                //              }
-                //        },
-                recordTime = DateTime.Now
-            };
-            car.setAnimateData(player, ref notifyMsgs, animate);
-            //car.animateData = new AnimateData()
-            //{
-            //    animateData = new List<Data.PathResult>()
-            //            {
-            //                  new Data.PathResult()
-            //                  {
-            //                      t0=0,
-            //                      x0=endX,
-            //                      y0=endY,
-            //                      t1=200000,
-            //                      x1=endX,
-            //                      y1=endY
-            //                  }
-            //            },
-            //    recordTime = DateTime.Now
-            //};
+        //    var animate = new AnimateData2()
+        //    {
+        //        start = new Data.PathStartPoint2()
+        //        {
+        //            x = Convert.ToInt32(endX * 256),
+        //            y = Convert.ToInt32(endY * 256)
+        //        },
+        //        animateData = new List<int>()
+        //        {
+        //            0,0,20000
+        //        },
+        //        recordTime = DateTime.Now,
+        //        isParking = true
+        //    };
+        //    car.setAnimateData(player, ref notifyMsgs, animate);
+        //    //car.animateData = new AnimateData()
+        //    //{
+        //    //    animateData = new List<Data.PathResult>()
+        //    //            {
+        //    //                  new Data.PathResult()
+        //    //                  {
+        //    //                      t0=0,
+        //    //                      x0=endX,
+        //    //                      y0=endY,
+        //    //                      t1=200000,
+        //    //                      x1=endX,
+        //    //                      y1=endY
+        //    //                  }
+        //    //            },
+        //    //    recordTime = DateTime.Now
+        //    //};
 
-            //if (this.debug)
-            {
-                //var goPath = Program.dt.GetAFromB(car.targetFpIndex, this.collectPosition);
-                //var returnPath = Program.dt.GetAFromB(this.collectPosition, player.StartFPIndex);
+        //    //if (this.debug)
+        //    {
+        //        //var goPath = Program.dt.GetAFromB(car.targetFpIndex, this.collectPosition);
+        //        //var returnPath = Program.dt.GetAFromB(this.collectPosition, player.StartFPIndex);
 
-                //var goMile = GetMile(goPath);
-                //var returnMile = GetMile(returnPath);
-                //if (goMile + returnMile > car.ability.leftMile) 
-                //{
-                //    for (int i = 0; i < 3; i++) 
-                //    {
-                //        Console.WriteLine($"现在回收是要返回的！");
-                //    }
-                //}
-            }
-        }
+        //        //var goMile = GetMile(goPath);
+        //        //var returnMile = GetMile(returnPath);
+        //        //if (goMile + returnMile > car.ability.leftMile) 
+        //        //{
+        //        //    for (int i = 0; i < 3; i++) 
+        //        //    {
+        //        //        Console.WriteLine($"现在回收是要返回的！");
+        //        //    }
+        //        //}
+        //    }
+        //}
 
     }
 }

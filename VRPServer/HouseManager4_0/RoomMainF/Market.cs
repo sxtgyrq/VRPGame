@@ -145,7 +145,58 @@ namespace HouseManager4_0.RoomMainF
 
         }
 
-        
+       
+
+        internal void ClearPlayers()
+        {
+            //   return;
+            List<string> notifyMsg = new List<string>();
+            lock (this.PlayerLock)
+            {
+                List<string> keysOfAll = new List<string>();
+                List<string> keysNeedToClear = new List<string>();
+                foreach (var item in this._Players)
+                {
+
+                    if (item.Value.Bust)
+                    {
+                        if (item.Value.getCar().state == Car.CarState.waitAtBaseStation)
+                        {
+                            keysNeedToClear.Add(item.Key);
+                        }
+                        else
+                        {
+                            keysOfAll.Add(item.Key);
+                        }
+                    }
+                    else
+                    {
+                        keysOfAll.Add(item.Key);
+                    }
+                }
+
+                for (var i = 0; i < keysNeedToClear.Count; i++)
+                {
+                    this._Players.Remove(keysNeedToClear[i]);
+
+                    for (var j = 0; j < keysOfAll.Count; j++)
+                    {
+                        if (this._Players[keysOfAll[j]].othersContainsKey(keysNeedToClear[i]))
+                        {
+                            this._Players[keysOfAll[j]].othersRemove(keysNeedToClear[i], ref notifyMsg);
+                        }
+                    }
+                }
+
+            }
+
+            for (var i = 0; i < notifyMsg.Count; i += 2)
+            {
+                var url = notifyMsg[i];
+                var sendMsg = notifyMsg[i + 1];
+                Startup.sendMsg(url, sendMsg);
+            }
+        }
 
         public void Sell(SetSellDiamond ss)
         {

@@ -228,16 +228,16 @@ namespace HouseManager
         /// <param name="goMile">去里程,主要用于里程统计！</param>
         private void StartArriavalThread(int startT, Car car, SetCollect sc, List<Model.MapGo.nyrqPosition> returnPath, int goMile)
         {
-            Thread th = new Thread(() => setArrive(startT, new commandWithTime.placeArriving()
-            {
-                c = "placeArriving",
-                key = sc.Key,
-                car = sc.car,
-                returnPath = returnPath,
-                target = car.targetFpIndex,
-                costMile = goMile
-            }));
-            th.Start();
+            //Thread th = new Thread(() => setArrive(startT, new commandWithTime.placeArriving()
+            //{
+            //    c = "placeArriving",
+            //    key = sc.Key,
+            //    car = sc.car,
+            //    returnPath = returnPath,
+            //    target = car.targetFpIndex,
+            //    costMile = goMile
+            //}));
+            //th.Start();
         }
 
         /// <summary>

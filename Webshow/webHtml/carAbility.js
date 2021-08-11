@@ -8,35 +8,7 @@
             'business': { 'costValue': 110, 'sumValue': 120 },
             'volume': { 'costValue': 190, 'sumValue': 300 },
             'speed': { 'costValue': 0, 'sumValue': 1 }
-        },
-        //'carB':
-        //{
-        //    'mile': { 'costValue': 0, 'sumValue': 1 },
-        //    'business': { 'costValue': 0, 'sumValue': 1 },
-        //    'volume': { 'costValue': 0, 'sumValue': 1 },
-        //    'speed': { 'costValue': 0, 'sumValue': 1 }
-        //},
-        //'carC':
-        //{
-        //    'mile': { 'costValue': 0, 'sumValue': 1 },
-        //    'business': { 'costValue': 0, 'sumValue': 1 },
-        //    'volume': { 'costValue': 0, 'sumValue': 1 },
-        //    'speed': { 'costValue': 0, 'sumValue': 1 }
-        //},
-        //'carD':
-        //{
-        //    'mile': { 'costValue': 0, 'sumValue': 1 },
-        //    'business': { 'costValue': 0, 'sumValue': 1 },
-        //    'volume': { 'costValue': 0, 'sumValue': 1 },
-        //    'speed': { 'costValue': 0, 'sumValue': 1 }
-        //},
-        //'carE':
-        //{
-        //    'mile': { 'costValue': 0, 'sumValue': 1 },
-        //    'business': { 'costValue': 0, 'sumValue': 1 },
-        //    'volume': { 'costValue': 0, 'sumValue': 1 },
-        //    'speed': { 'costValue': 0, 'sumValue': 1 }
-        //}
+        }
     },
     setData: function (inputData) {
         this.data[inputData.carIndexStr][inputData.pType].costValue = inputData.costValue;
@@ -148,26 +120,16 @@
         if (document.getElementById('abilityCanvasContainer') != null) {
             document.getElementById('abilityCanvasContainer').remove();
         }
+    },
+    refreshPosition: function () {
+        var t = document.getElementById('abilityCanvasContainer');
+        var horizontal = window.innerWidth / window.innerHeight >= 1;
+        if (t != null)
+            if (horizontal) {
+                t.classList.add('Horizontal');
+            }
+            else {
+                t.classList.remove('Horizontal')
+            }
     }
-    //updateNotify: function () {
-    //    //var that = carAbility;
-    //    //// var carIDs = ['carA', 'carB', 'carC', 'carD', 'carE'];
-    //    //var operateId = objNotify.ids;
-    //    ////for (var i = 0; i < 5; i++)
-    //    //{
-    //    //    var operateObj = document.getElementById(operateId[i]);
-    //    //    if (that.data['car'].volume.costValue >= that.data['car'].volume.sumValue) {
-    //    //        operateObj.classList.add('volumefull');
-    //    //    }
-    //    //    else {
-    //    //        operateObj.classList.remove('volumefull');
-    //    //    }
-    //    //    if (that.data['car'].business.costValue >= that.data['car'].business.sumValue) {
-    //    //        operateObj.classList.add('businessfull');
-    //    //    }
-    //    //    else {
-    //    //        operateObj.classList.remove('businessfull');
-    //    //    }
-    //    //}
-    //}
 };

@@ -25,6 +25,7 @@ namespace HouseManager4_0
                 this.Data[pType].Add(DateTime.Now);
                 switch (pType)
                 {
+
                     case "mile":
                         {
                             if (role.playerType == RoleInGame.PlayerType.player)

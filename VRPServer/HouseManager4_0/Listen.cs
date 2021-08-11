@@ -103,10 +103,10 @@ namespace HouseManager4_0
                     //        outPut = "ok";
                     //        //await context.Response.WriteAsync("ok");
                     //    }; break;
-                    //case "GetFrequency":
-                    //    {
-                    //        outPut = Program.rm.GetFrequency().ToString();
-                    //    }; break;
+                    case "GetFrequency":
+                        {
+                            outPut = Program.rm.GetFrequency().ToString();
+                        }; break;
                     case "OrderToReturn":
                         {
                             CommonClass.OrderToReturn otr = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.OrderToReturn>(notifyJson);

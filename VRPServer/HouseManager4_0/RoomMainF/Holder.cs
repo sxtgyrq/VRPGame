@@ -7,7 +7,7 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain
     {
-        private void TheLargestHolderKeyChanged(string keyFrom, string keyTo, string roleKey, ref List<string> notifyMsg)
+        public void TheLargestHolderKeyChanged(string keyFrom, string keyTo, string roleKey, ref List<string> notifyMsg)
         {
             /*
              * lock 机制，保证了所有的key 都存在
