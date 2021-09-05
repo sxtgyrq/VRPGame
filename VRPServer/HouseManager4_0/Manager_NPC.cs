@@ -1,5 +1,4 @@
-﻿using HouseManager4_0.interfaceOfEngine;
-using HouseManager4_0.RoomMainF;
+﻿using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -265,6 +264,8 @@ namespace HouseManager4_0
                     npc.afterBroke = this.afterBroke;
                     npc.BeingMolestedM = this.BeingMolestedM;
                     //npc.BeAttacked=
+                    npc.confuseRecord = new Manager_Driver.ConfuseManger();
+                    //npc.confuseUsing = null;
                 }
             }
             return key;

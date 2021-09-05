@@ -1,5 +1,6 @@
 ﻿using CommonClass;
 using HouseManager4_0.RoomMainF;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using System;
 using System.Collections.Generic;
 using static HouseManager4_0.Car;
@@ -114,6 +115,66 @@ namespace HouseManager4_0
 
         RoomMainF.RoomMain.commandWithTime.ReturningOjb collect(RoleInGame player, Car car, SetCollect sc, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
+            if (player.confuseRecord.IsBeingControlled())
+            {
+                if (player.confuseRecord.getControlType() == Manager_Driver.ConfuseManger.ControlAttackType.Lose)
+                {
+                    Model.FastonPosition target;
+                    if (car.state == CarState.waitOnRoad)
+                    {
+                        target = Program.dt.GetFpByIndex(car.targetFpIndex);
+
+                    }
+                    else if (car.state == CarState.waitAtBaseStation)
+                    {
+                        target = Program.dt.GetFpByIndex(player.StartFPIndex);
+                    }
+                    else
+                    {
+                        throw new Exception("");
+                    }
+                    var positions = that.getCollectPositionsByDistance(target);
+                    if (sc.collectIndex == positions[0] || sc.collectIndex == positions[1])
+                    {
+
+                    }
+                    else
+                    {
+                        var position0 = Program.dt.GetFpByIndex(that._collectPosition[positions[0]]);
+                        var position1 = Program.dt.GetFpByIndex(that._collectPosition[positions[1]]);
+                        var distance0 = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, position0.Latitde, position0.Longitude);
+                        var distance1 = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, position1.Latitde, position1.Longitude);
+                        if (distance0 < distance1)
+                        {
+                            this.WebNotify(player, $"您处于迷失状态，未能到达远方！只能先到附近的[{position0.FastenPositionName}]执行收集任务！");
+                            var newSc = new SetCollect()
+                            {
+                                c = "SetCollect",
+                                collectIndex = positions[0],
+                                fastenpositionID = position0.FastenPositionID,
+                                cType = "findWork",
+                                Key = sc.Key
+                            };
+                            return collect(player, car, newSc, ref notifyMsg, out Mrr);
+                        }
+                        else
+                        {
+                            this.WebNotify(player, $"您处于迷失状态，未能到达远方！只能先到附近的[{position1.FastenPositionName}]执行收集任务！");
+                            var newSc = new SetCollect()
+                            {
+                                c = "SetCollect",
+                                collectIndex = positions[1],
+                                fastenpositionID = position1.FastenPositionID,
+                                cType = "findWork",
+                                Key = sc.Key
+                            };
+                            return collect(player, car, newSc, ref notifyMsg, out Mrr);
+                        }
+                    }
+                    //var target = Program.dt.GetFpByIndex(victim.StartFPIndex);
+                    //var collectIndexTarget = that.getCollectPositionsByDistance(target)[randomValue];
+                }
+            }
             RoleInGame boss;
             if (player.HasTheBoss(roomMain._Players, out boss))
             {
@@ -376,7 +437,7 @@ namespace HouseManager4_0
             else
                 throw new Exception("parameter is wrong!");
         }
-        private commandWithTime.ReturningOjb collectPassBossAddress(RoleInGame player, RoleInGame boss, Car car, SetCollect sc, ref List<string> notifyMsg, out MileResultReason mrr)
+        public commandWithTime.ReturningOjb collectPassBossAddress(RoleInGame player, RoleInGame boss, Car car, SetCollect sc, ref List<string> notifyMsg, out MileResultReason mrr)
         {
             if (car.ability.leftVolume > 0)
             {

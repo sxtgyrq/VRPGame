@@ -1414,6 +1414,17 @@ var objMain =
                 {
                     objMain.diamondPrice[received_obj.priceType] = received_obj.price;
                 }; break;
+            case 'DriverNotify':
+                {
+                    objMain.driver.driverIndex = received_obj.index;
+                    objMain.driver.name = received_obj.name;
+                    objMain.driver.skill1.name = received_obj.skill1Name;
+                    objMain.driver.skill1.skillIndex = received_obj.skill1Index;
+                    objMain.driver.skill2.name = received_obj.skill2Name;
+                    objMain.driver.skill2.skillIndex = received_obj.skill2Index;
+                    driverSys.drawIcon(objMain.driver);
+                    operatePanel.refresh();
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -1426,7 +1437,16 @@ var objMain =
         'business': 0,
         'volume': 0,
         'speed': 0
-    }
+    },
+    driver:
+    {
+        driverIndex: -1,
+        sex: null,
+        name: '',
+        skill1: { name: '', skillIndex: -1 },
+        skill2: { name: '', skillIndex: -1 }
+    },
+    camaraAnimateData: null
 };
 var startA = function () {
     var connected = false;
@@ -1493,6 +1513,53 @@ function animate() {
         if (objMain.state == 'OnLine') {
 
             var lengthOfCC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+            {
+                if (objMain.camaraAnimateData != null) {
+                    if (objMain.camaraAnimateData.newT.t < Date.now()) {
+                        objMain.camaraAnimateData = null;
+                    }
+                    else {
+                        var percent1 = (Date.now() - objMain.camaraAnimateData.old.t) / 3000 * Math.PI;
+                        var percent2 = (Math.sin(percent1 - Math.PI / 2) + 1) / 2;
+                        var x = objMain.camaraAnimateData.old.x + (objMain.camaraAnimateData.newT.x - objMain.camaraAnimateData.old.x) * percent2;
+                        var y = objMain.camaraAnimateData.old.y + (objMain.camaraAnimateData.newT.y - objMain.camaraAnimateData.old.y) * percent2;
+                        var z = objMain.camaraAnimateData.old.z + (objMain.camaraAnimateData.newT.z - objMain.camaraAnimateData.old.z) * percent2;
+                        objMain.controls.target.set(x, y, z);
+                        var angle = objMain.controls.getPolarAngle();
+                        //if(
+                        var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                        var distance = lengthOfCC;
+                        var unitY = distance * Math.cos(angle);
+                        var unitZX = distance * Math.sin(angle);
+
+                        var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                        var unitX = unitZX * Math.sin(angleOfCamara);
+                        var unitZ = unitZX * Math.cos(angleOfCamara);
+                        //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                        //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                        objMain.camera.position.set(x + unitX, y + unitY, z + unitZ);
+                        objMain.camera.lookAt(x, y, z);
+                    }
+                    // var percent = objMain.camaraAnimateData.newT.t
+
+                    //old: {
+                    //    x: objMain.controls.target.x,
+                    //        y: objMain.controls.target.y,
+                    //            z: objMain.controls.target.z,
+                    //                t: Date.now()
+                    //},
+                    //newT:
+                    //{
+                    //    x: objMain.selectObj.obj.position.x,
+                    //        y: objMain.selectObj.obj.position.y,
+                    //            z: objMain.selectObj.obj.position.z,
+                    //                t: Date.now() + 1000
+                    //}
+                }
+
+            }
+
             //if (clothForRender.cloth != null) {
 
             //    clothForRender.simulate(Date.now());
@@ -2230,7 +2297,6 @@ var set3DHtml = function () {
     var operateEnd = function (event) {
         operatePanel.refresh();
         return;
-        objMain.canSelect = false;
     }
     var operateStart = function (event) {
         objMain.canSelect = true;
@@ -2257,30 +2323,30 @@ function onWindowResize() {
     objMain.renderer.setSize(window.innerWidth, window.innerHeight);
     carAbility.refreshPosition();
 }
-var mouseClickInterviewState = (function () {
-    this.i = [0, 100000];
-    this.step = 0;
-    var that = this;
-    this.click = function () {
-        that.i[that.step] = Date.now();
-        that.step++;
-        that.step = that.step % 2;
-        if (Math.abs(that.i[1] - that.i[0]) < 400) {
-            console.log('双击时间', Math.abs(that.i[1] - that.i[0]));
-            that.init();
-            return true;
-        }
-        else {
-            console.log('双击时间', Math.abs(that.i[1] - that.i[0]));
-            return false;
-        }
-    };
-    this.init = function () {
-        that.i[0] = 0; that.i[1] = 100000; that.step = 0;
-        return that;
-    }
-    return this;
-})().init();
+//var mouseClickInterviewState = (function () {
+//    this.i = [0, 100000];
+//    this.step = 0;
+//    var that = this;
+//    this.click = function () {
+//        that.i[that.step] = Date.now();
+//        that.step++;
+//        that.step = that.step % 2;
+//        if (Math.abs(that.i[1] - that.i[0]) < 400) {
+//            console.log('双击时间', Math.abs(that.i[1] - that.i[0]));
+//            that.init();
+//            return true;
+//        }
+//        else {
+//            console.log('双击时间', Math.abs(that.i[1] - that.i[0]));
+//            return false;
+//        }
+//    };
+//    this.init = function () {
+//        that.i[0] = 0; that.i[1] = 100000; that.step = 0;
+//        return that;
+//    }
+//    return this;
+//})().init();
 
 var MapData =
 {
@@ -3439,6 +3505,87 @@ var operatePanel =
         document.body.appendChild(divTaskOperatingPanel);
 
         var carState = objMain.carState["car"];
+
+        var attackF = function () {
+            addItemToTaskOperatingPanle('攻击', 'attackBtn', function () {
+                objMain.canSelect = false;
+                if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                    var selectObj = objMain.selectObj.obj;
+                    var customTagIndexKey = selectObj.name.substring(5);
+                    if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
+                        var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
+                        objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
+
+                    }
+                    objMain.selectObj.obj = null;
+                    objMain.selectObj.type = '';
+                    operatePanel.refresh();
+                }
+            });
+
+        };
+        var magicF = function () {
+            if (objMain.driver.driverIndex > 0) {
+                addItemToTaskOperatingPanle(objMain.driver.skill1.name, 'skill1Btn', function () {
+                    objMain.canSelect = false;
+                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                        var selectObj = objMain.selectObj.obj;
+                        var customTagIndexKey = selectObj.name.substring(5);
+                        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
+                            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
+                            objMain.ws.send(JSON.stringify({ 'c': 'Skill1', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
+
+                        }
+                        objMain.selectObj.obj = null;
+                        objMain.selectObj.type = '';
+                        operatePanel.refresh();
+                    }
+                });
+                addItemToTaskOperatingPanle(objMain.driver.skill2.name, 'skill2Btn', function () {
+                    objMain.canSelect = false;
+                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                        var selectObj = objMain.selectObj.obj;
+                        var customTagIndexKey = selectObj.name.substring(5);
+                        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
+                            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
+                            objMain.ws.send(JSON.stringify({ 'c': 'Skill2', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
+
+                        }
+                        objMain.selectObj.obj = null;
+                        objMain.selectObj.type = '';
+                        operatePanel.refresh();
+                    }
+                });
+            }
+        };
+        var lookUp = function () {
+            addItemToTaskOperatingPanle('查看', 'viewBtn', function () {
+                objMain.canSelect = false;
+                if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                    var selectObj = objMain.selectObj.obj;
+                    var animationData =
+                    {
+                        old: {
+                            x: objMain.controls.target.x,
+                            y: objMain.controls.target.y,
+                            z: objMain.controls.target.z,
+                            t: Date.now()
+                        },
+                        newT:
+                        {
+                            x: objMain.selectObj.obj.position.x,
+                            y: objMain.selectObj.obj.position.y,
+                            z: objMain.selectObj.obj.position.z,
+                            t: Date.now() + 3000
+                        }
+                    };
+                    objMain.camaraAnimateData = animationData;
+                    objMain.selectObj.obj = null;
+                    objMain.selectObj.type = '';
+                    operatePanel.refresh();
+                }
+            });
+        };
         switch (carState) {
             case 'waitAtBaseStation':
                 {
@@ -3456,24 +3603,27 @@ var operatePanel =
                                         operatePanel.refresh();
                                     }
                                 });
+                                lookUp();
                             }; break;
                         case 'attack':
                             {
-                                addItemToTaskOperatingPanle('攻击', 'attackBtn', function () {
-                                    objMain.canSelect = false;
-                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
-                                        var selectObj = objMain.selectObj.obj;
-                                        var customTagIndexKey = selectObj.name.substring(5);
-                                        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
-                                            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
-                                            objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
+                                attackF();
+                                lookUp();
+                                //addItemToTaskOperatingPanle('攻击', 'attackBtn', function () {
+                                //    objMain.canSelect = false;
+                                //    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                                //        var selectObj = objMain.selectObj.obj;
+                                //        var customTagIndexKey = selectObj.name.substring(5);
+                                //        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
+                                //            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
+                                //            objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
 
-                                        }
-                                        objMain.selectObj.obj = null;
-                                        objMain.selectObj.type = '';
-                                        operatePanel.refresh();
-                                    }
-                                });
+                                //        }
+                                //        objMain.selectObj.obj = null;
+                                //        objMain.selectObj.type = '';
+                                //        operatePanel.refresh();
+                                //    }
+                                //});
                             }; break;
                         case 'mile':
                         case 'business':
@@ -3489,6 +3639,7 @@ var operatePanel =
                                         operatePanel.refresh();
                                     }
                                 });
+                                lookUp();
                             }; break;
                         case 'ability':
                             {
@@ -3510,6 +3661,24 @@ var operatePanel =
                                     }
                                 });
                             }; break;
+                        case 'setReturn':
+                            {
+                                if (objMain.driver.driverIndex > 0) { }
+                                else {
+                                    addItemToTaskOperatingPanle('招募', 'findDriver', function () {
+                                        if (objMain.carState["car"] == 'waitAtBaseStation') {
+                                            if (objMain.driver.driverIndex < 0) {
+                                                driverSys.draw(function (driverIndex) {
+                                                    // objMain.ws.send(sendStr);
+                                                    alert(driverIndex);
+                                                    objMain.ws.send(JSON.stringify({ 'c': 'DriverSelect', 'driverIndex': driverIndex }));
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                                //if (objMain
+                            }; break;
                     }
                 }; break;
             case 'waitOnRoad':
@@ -3528,24 +3697,13 @@ var operatePanel =
                                         operatePanel.refresh();
                                     }
                                 });
+                                lookUp();
                             }; break;
                         case 'attack':
                             {
-                                addItemToTaskOperatingPanle('攻击', 'attackBtn', function () {
-                                    objMain.canSelect = false;
-                                    if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
-                                        var selectObj = objMain.selectObj.obj;
-                                        var customTagIndexKey = selectObj.name.substring(5);
-                                        if (objMain.othersBasePoint[customTagIndexKey] != undefined) {
-                                            var fPIndex = objMain.othersBasePoint[customTagIndexKey].fPIndex;
-                                            objMain.ws.send(JSON.stringify({ 'c': 'Attack', 'TargetOwner': customTagIndexKey, 'Target': fPIndex }));
-
-                                        }
-                                        objMain.selectObj.obj = null;
-                                        objMain.selectObj.type = '';
-                                        operatePanel.refresh();
-                                    }
-                                });
+                                attackF();
+                                magicF();
+                                lookUp();
                             }; break;
                         case 'mile':
                         case 'business':
@@ -3561,6 +3719,7 @@ var operatePanel =
                                         operatePanel.refresh();
                                     }
                                 });
+                                lookUp();
                             }; break;
                     }
                     addItemToTaskOperatingPanle('回基地', 'goBackBtn', function () {

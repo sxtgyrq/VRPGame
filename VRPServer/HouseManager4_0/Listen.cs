@@ -156,6 +156,18 @@ namespace HouseManager4_0
                             objI.SendMsg(dm);
                             outPut = "ok";
                         }; break;
+                    case "SetSelectDriver":
+                        {
+                            CommonClass.SetSelectDriver dm = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetSelectDriver>(notifyJson);
+                            objI.SelectDriver(dm);
+                            outPut = "ok";
+                        }; break;
+                    case "MagicSkill": 
+                        {
+                            CommonClass.MagicSkill ms = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MagicSkill>(notifyJson);
+                            var result = objI.updateMagic(ms);
+                            outPut = "ok";
+                        }; break;
                 }
             }
             {

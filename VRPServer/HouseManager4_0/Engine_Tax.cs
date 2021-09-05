@@ -38,19 +38,78 @@ namespace HouseManager4_0
                 {
                     if (boss.StartFPIndex == taxSet.returningOjb.Boss.StartFPIndex)
                     {
-                        var car = player.getCar();
-                        long tax = 0;
+                        if (player.confuseRecord.IsBeingControlled())
+                        {
+                            var car = player.getCar();
+                            long tax = 0;
+                            long indemnity = 0;
 
-                        var newCostBusiness = car.ability.costBusiness * 4 / 5;
-                        tax += (car.ability.costBusiness - newCostBusiness);
-                        car.ability.setCostBusiness(newCostBusiness, player, car, ref n.notifyMsgs);
+                            indemnity = player.confuseRecord.getIndemnity();
 
-                        var newCostVolume = car.ability.costVolume * 4 / 5;
-                        tax += (car.ability.costVolume - newCostVolume);
-                        car.ability.setCostVolume(newCostVolume, player, car, ref n.notifyMsgs);
+                            {
+                                long newCostBusiness;
+                                if (indemnity > car.ability.costBusiness)
+                                {
+                                    newCostBusiness = 0;
+                                }
+                                else
+                                {
+                                    newCostBusiness = car.ability.costBusiness - indemnity;
+                                }
+                                var reduceValue = car.ability.costBusiness - newCostBusiness;
+                                car.ability.setCostBusiness(newCostBusiness, player, car, ref n.notifyMsgs);
+                                player.confuseRecord.reduceValue(reduceValue);
+                                tax += reduceValue;
+                            }
+                            indemnity = player.confuseRecord.getIndemnity();
 
-                        if (tax > 0)
-                            boss.MoneySet(boss.Money + tax, ref n.notifyMsgs);
+                            if (indemnity > 0)
+                            {
+                                long newCostVolume;
+                                if (indemnity > car.ability.costVolume)
+                                {
+                                    newCostVolume = 0;
+                                }
+                                else
+                                    newCostVolume = car.ability.costVolume - indemnity;
+                                var reduceValue = car.ability.costVolume - newCostVolume;
+                                car.ability.setCostVolume(newCostVolume, player, car, ref n.notifyMsgs);
+                                player.confuseRecord.reduceValue(reduceValue);
+                                tax += reduceValue;
+                            }
+                            if (tax > 0)
+                                boss.MoneySet(boss.Money + tax, ref n.notifyMsgs);
+                            //else
+                            //{
+                            //    newCostBusiness = indemnity;
+                            //}
+                            //= car.ability.costBusiness * 4 / 5;
+                            //tax += (car.ability.costBusiness - newCostBusiness);
+                            //car.ability.setCostBusiness(newCostBusiness, player, car, ref n.notifyMsgs);
+
+                            //var newCostVolume = car.ability.costVolume * 4 / 5;
+                            //tax += (car.ability.costVolume - newCostVolume);
+                            //car.ability.setCostVolume(newCostVolume, player, car, ref n.notifyMsgs);
+
+                            //if (tax > 0)
+                            //    boss.MoneySet(boss.Money + tax, ref n.notifyMsgs);
+                        }
+                        else
+                        {
+                            var car = player.getCar();
+                            long tax = 0;
+
+                            var newCostBusiness = car.ability.costBusiness * 4 / 5;
+                            tax += (car.ability.costBusiness - newCostBusiness);
+                            car.ability.setCostBusiness(newCostBusiness, player, car, ref n.notifyMsgs);
+
+                            var newCostVolume = car.ability.costVolume * 4 / 5;
+                            tax += (car.ability.costVolume - newCostVolume);
+                            car.ability.setCostVolume(newCostVolume, player, car, ref n.notifyMsgs);
+
+                            if (tax > 0)
+                                boss.MoneySet(boss.Money + tax, ref n.notifyMsgs);
+                        }
                         //var boss =
                     }
                 }

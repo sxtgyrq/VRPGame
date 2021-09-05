@@ -27,7 +27,12 @@ namespace CommonClass
         public string pType { get; set; }
     }
     public class SetSellDiamond : SetBuyDiamond { }
-
+    public class SetSelectDriver : Command
+    {
+        public string Key { get; set; }
+        public int Index { get; set; }
+    }
+ 
     public class MarketIn : Command
     {
         public int count { get; set; }

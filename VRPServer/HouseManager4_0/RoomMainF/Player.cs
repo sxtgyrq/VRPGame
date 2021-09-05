@@ -7,7 +7,7 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Player, interfaceOfHM.CarAndRoomInterface
     {
-        
+
         const string AddSuffix = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         //  enum CostOrSum { Cost, Sum }
@@ -203,6 +203,9 @@ namespace HouseManager4_0.RoomMainF
                     this._Players[addItem.Key].SetLevel(1, ref notifyMsgs);
                     newPlayer.ShowLevelOfPlayerF = this.ShowLevelOfPlayerF;
                     newPlayer.afterBroke = this.AfterPlayerBroken;
+                    // newPlayer.driverSelected = this.driverSelected;
+                    newPlayer.confuseRecord = new Manager_Driver.ConfuseManger();
+                    //newPlayer.confuseUsing = null;
                 }
             }
 
@@ -341,5 +344,7 @@ namespace HouseManager4_0.RoomMainF
             //    return "ng";
             //}
         }
+
+       
     }
 }

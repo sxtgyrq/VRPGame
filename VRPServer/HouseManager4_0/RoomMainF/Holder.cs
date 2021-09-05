@@ -80,5 +80,30 @@ namespace HouseManager4_0.RoomMainF
                 }
             }
         }
+
+        public bool isAtTheSameGroup(RoleInGame player, RoleInGame victim)
+        {
+            if (player.TheLargestHolderKey == victim.Key)
+            {
+                return true;
+            }
+            else if (victim.TheLargestHolderKey == player.Key)
+            {
+                //Msg = $"[{victim.PlayerName}]是你的小弟，只能发挥出攻击效率的10%";
+                return true;
+            }
+            else if (victim.TheLargestHolderKey == player.TheLargestHolderKey)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool isAtTheSameGroup(string player, string victim)
+        {
+            return isAtTheSameGroup(this._Players[player], this._Players[victim]); 
+        }
     }
 }

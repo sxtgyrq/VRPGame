@@ -9,7 +9,9 @@ namespace HouseManager4_0.interfaceOfEngine
     interface engine : webnotify
     {
     }
-
+    interface manager : webnotify
+    {
+    }
     interface webnotify : sendMsg, wait
     {
         void WebNotify(RoleInGame player, string Msg);

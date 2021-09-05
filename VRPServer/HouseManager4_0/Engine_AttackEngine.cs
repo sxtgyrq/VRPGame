@@ -1,4 +1,5 @@
 ﻿using CommonClass;
+using CommonClass.driversource;
 using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace HouseManager4_0
         }
         internal string updateAttack(SetAttack sa)
         {
-            return this.updateAction(this, sa, sa.Key); 
+            return this.updateAction(this, sa, sa.Key);
         }
 
         public RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out MileResultReason mrr)
@@ -41,8 +42,12 @@ namespace HouseManager4_0
                 this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
                 if (car.state == CarState.waitAtBaseStation)
                 {
+                    /*
+                     * 在起始地点，攻击失败，说明最大里程内不能到达，故要重新换NPC.
+                     */
                     if (player.playerType == RoleInGame.PlayerType.NPC)
                     {
+#warning 这里要考虑是否直接提升玩家等级。
                         ((NPC)player).SetBust(true, ref notifyMsg);
                     }
                 }
@@ -158,7 +163,19 @@ namespace HouseManager4_0
             RoleInGame boss;
             if (player.HasTheBoss(roomMain._Players, out boss))
             {
-                return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
+                if (player.confuseRecord.IsBeingControlled())
+                {
+                    if (player.confuseRecord.getControlType() == Manager_Driver.ConfuseManger.ControlAttackType.Confuse)
+                    {
+                        return randomWhenConfused(player, boss, car, sa, ref notifyMsg, out Mrr);
+                    }
+                    else
+                    {
+                        return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
+                    }
+                }
+                else
+                    return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
                 //return promotePassBossAddress(player, boss, car, sp, ref notifyMsg, out reason);
             }
             else
@@ -230,6 +247,40 @@ namespace HouseManager4_0
             }
         }
 
+        public commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
+        {
+            var randomValue = that.rm.Next(0, 5);
+            if (randomValue == 4)
+            {
+                return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
+            }
+            else
+            {
+                var victim = that._Players[sa.targetOwner];
+                var target = Program.dt.GetFpByIndex(victim.StartFPIndex);
+                var collectIndexTarget = that.getCollectPositionsByDistance(target)[randomValue];
+                var sc = new SetCollect()
+                {
+                    c = "SetCollect",
+                    collectIndex = collectIndexTarget,
+                    cType = "findWork",
+                    fastenpositionID = Program.dt.GetFpByIndex(that._collectPosition[collectIndexTarget]).FastenPositionID,
+                    Key = player.Key
+                };
+                return that.collectE.collectPassBossAddress(player, boss, car, sc, ref notifyMsg, out Mrr);
+            }
+        }
+
+        private void getFiveColsestTarget(string targetOwner)
+        {
+
+            //for (int i = 0; i < 38; i++)
+            //{
+            //    var collectP = Program.dt.GetFpByIndex(that._collectPosition[i]);
+
+            //}
+            //throw new NotImplementedException();
+        }
 
         private RoomMainF.RoomMain.commandWithTime.ReturningOjb attackPassBossAddress(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason mrr)
         {
@@ -315,6 +366,8 @@ namespace HouseManager4_0
 
         }
 
+
+        
         //private void SetAttackArrivalThread(int startT, Car car, SetAttack sa, List<Model.MapGo.nyrqPosition> returnToSelfAddrPath, int goMile)
         //{
         //    SetAttackArrivalThread(startT, car, sa, null, returnToSelfAddrPath, goMile, false, null);

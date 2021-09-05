@@ -79,6 +79,8 @@ namespace HouseManager4_0
             this._Car.ability.VolumeChanged = roomMain.AbilityChanged2_0;
             this._Car.ability.SpeedChanged = roomMain.AbilityChanged2_0;
 
+            this._Car.ability.driverSelected = roomMain.DriverSelected;
+
             // car.ability.SubsidizeChanged = RoomMain.SubsidizeChanged;
             this._Car.ability.DiamondInCarChanged = roomMain.DiamondInCarChanged;
 
@@ -188,7 +190,12 @@ namespace HouseManager4_0
 
         public bool HasTheBoss(Dictionary<string, RoleInGame> _Players, out RoleInGame boss)
         {
-            if (this.TheLargestHolderKey == this.Key)
+            if (this.confuseRecord.IsBeingControlled())
+            {
+                boss = this.confuseRecord.getBoss();
+                return true;
+            }
+            else if (this.TheLargestHolderKey == this.Key)
             {
                 boss = null;
                 return false;
@@ -713,6 +720,16 @@ namespace HouseManager4_0
             return this.StartFPIndex;
             // throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// 混乱记录器，主要用于被混乱释放的对象
+        /// </summary>
+        public Manager_Driver.ConfuseManger confuseRecord;
+
+        ///// <summary>
+        ///// 混乱记录器，主要用于主动混乱
+        ///// </summary>
+        //public Manager_Driver.ConfuseManger confuseUsing = null;
     }
     public class Player : RoleInGame, interfaceTag.HasContactInfo
     {
@@ -847,15 +864,15 @@ namespace HouseManager4_0
                             {
                                 car.ability.AbilityAdd("mile", this, car, ref notifyMsg);
                             }; break;
-                        case 1: 
+                        case 1:
                             {
                                 car.ability.AbilityAdd("business", this, car, ref notifyMsg);
                             }; break;
-                        case 2: 
+                        case 2:
                             {
                                 car.ability.AbilityAdd("volume", this, car, ref notifyMsg);
                             }; break;
-                        case 3: 
+                        case 3:
                             {
                                 car.ability.AbilityAdd("speed", this, car, ref notifyMsg);
                             }; break;

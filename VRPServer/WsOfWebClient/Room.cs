@@ -682,7 +682,76 @@ namespace WsOfWebClient
             #endregion
         }
 
+        internal static async Task<string> magic(State s, Skill2 s2)
+        {
+            Regex rex_Target = new Regex("^(?<target>[a-f0-9]{32})$");
 
+            //var m = r.Match(attack.car);
+            var m_Target = rex_Target.Match(s2.TargetOwner);
+            if (m_Target.Success)
+            {
+                var targetOwner = m_Target.Groups["target"].Value;
+
+                //   Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                // if (m.Groups["key"].Value == s.Key)
+                {
+                    var ms = new MagicSkill()
+                    {
+                        c = "MagicSkill",
+                        Key = s.Key,
+                        //car = "car" + m.Groups["car"].Value,
+                        targetOwner = targetOwner,
+                        target = s2.Target,
+                        selectIndex = 2
+                    };
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
+                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                }
+            }
+            return "";
+        }
+
+        internal static async Task<string> magic(State s, Skill1 s1)
+        {
+            Regex rex_Target = new Regex("^(?<target>[a-f0-9]{32})$");
+
+            //var m = r.Match(attack.car);
+            var m_Target = rex_Target.Match(s1.TargetOwner);
+            if (m_Target.Success)
+            {
+                var targetOwner = m_Target.Groups["target"].Value;
+
+                //   Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                // if (m.Groups["key"].Value == s.Key)
+                {
+                    var ms = new MagicSkill()
+                    {
+                        c = "MagicSkill",
+                        Key = s.Key,
+                        //car = "car" + m.Groups["car"].Value,
+                        targetOwner = targetOwner,
+                        target = s1.Target,
+                        selectIndex = 1
+                    };
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
+                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                }
+            }
+            return "";
+        }
+
+        internal static async Task<string> selectDriver(State s, DriverSelect ds)
+        {
+            SetSelectDriver ssd = new SetSelectDriver()
+            {
+                c = "SetSelectDriver",
+                Key = s.Key,
+                Index = ds.driverIndex
+            };
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ssd);
+            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            return "";
+        }
 
         internal static async Task<string> buyDiamond(State s, BuyDiamond bd)
         {

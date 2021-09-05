@@ -68,6 +68,7 @@ namespace HouseManager4_0
                             /*
                              * 重复收集，立即返回！
                              */
+                            car.setState(player, ref notifyMsg, CarState.returning);
                             that.retutnE.SetReturnT(0, new commandWithTime.returnning()
                             {
                                 c = "returnning",

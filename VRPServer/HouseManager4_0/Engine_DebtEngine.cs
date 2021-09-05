@@ -1,4 +1,5 @@
 ﻿using CommonClass;
+using CommonClass.driversource;
 using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
@@ -14,17 +15,64 @@ namespace HouseManager4_0
         {
             this.roomMain = roomMain;
         }
+        class attackTool : interfaceOfHM.AttackT
+        {
+            public bool CheckCarState(Car car)
+            {
+                return car.state == CarState.working;
+            }
 
+            public Engine_DebtEngine.DebtCondition getCondition()
+            {
+                return Engine_DebtEngine.DebtCondition.attack;
+            }
+
+            public int GetDefensiveValue(Driver driver)
+            {
+                if (driver == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return driver.defensiveOfPhysics;
+                }
+            }
+
+            public string GetSkillName()
+            {
+                return "业务切磋";
+            }
+
+            public long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation)
+            {
+                return ambushInfomation.bussinessValue;
+            }
+
+            public long leftValue(AbilityAndState ability)
+            {
+                return ability.leftBusiness;
+            }
+
+            public void setCost(long reduce, RoleInGame player, Car car, ref List<string> notifyMsg)
+            {
+                car.ability.setCostBusiness(car.ability.costBusiness + reduce, player, car, ref notifyMsg);
+            }
+        }
         public void newThreadDo(baseC bObj)
         {
             if (bObj.c == "debtOwner")
             {
                 var dOwner = (commandWithTime.debtOwner)bObj;
-                this.setDebt(dOwner);
+                this.setDebt(dOwner, new attackTool());
             }
             //throw new NotImplementedException();
         }
-
+        public enum DebtCondition
+        {
+            attack,
+            magic
+        }
         internal void setDebtT(int startT, Car car, SetAttack sa, int goMile, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro)
         {
             this.startNewThread(startT, new commandWithTime.debtOwner()
@@ -42,7 +90,9 @@ namespace HouseManager4_0
             //Thread th = new Thread(() => setDebt(startT,);
             //th.Start();
         }
-        private void setDebt(commandWithTime.debtOwner dOwner)
+
+
+        internal void setDebt(commandWithTime.debtOwner dOwner, interfaceOfHM.AttackT at)
         {
             List<string> notifyMsg = new List<string>();
             //  bool needUpdatePlayers = false;
@@ -51,7 +101,8 @@ namespace HouseManager4_0
                 var player = that._Players[dOwner.key];
                 var car = that._Players[dOwner.key].getCar();
                 // car.targetFpIndex = this._Players[dor.key].StartFPIndex;
-                if (car.state == CarState.working)
+                ;
+                if (at.CheckCarState(car))
                 {
                     if (car.targetFpIndex == -1)
                     {
@@ -65,8 +116,8 @@ namespace HouseManager4_0
                          * 还有正常情况。
                          * 这三种情况都要考虑到。
                          */
-
-                        var attackMoney = car.ability.Business;
+                        //attackTool at = new attackTool();
+                        // var attackMoney = car.ability.Business;
                         if (that._Players.ContainsKey(dOwner.victim))
                         {
                             var victim = that._Players[dOwner.victim];
@@ -75,17 +126,34 @@ namespace HouseManager4_0
                                 var percentValue = getAttackPercentValue(player, victim);
 
                                 //if(victim.Money*100/ car.ability.Business)
+                                long reduceSum = 0;
                                 var m = victim.Money;
-                                // var reduce = Math.Min(m, attackMoney);
-                                var reduce = attackMoney * percentValue / 100;
-                                if (reduce > victim.Money) 
+                                long reduce;
+                                if (m > 0)
                                 {
-                                    reduce = victim.Money;
+                                    //car.ability.leftBusiness 
+                                    var attackMoney = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
+                                    reduce = attackMoney;
+                                    if (reduce > m)
+                                    {
+                                        reduce = m;
+                                    }
+                                    reduce = Math.Max(1, reduce);
+                                    at.setCost(reduce, player, car, ref notifyMsg);
+                                    this.WebNotify(victim, $"【{player.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
+                                    m -= reduce;
+                                    reduceSum += reduce;
                                 }
-                                victim.MoneySet(m - reduce, ref notifyMsg);
-                                car.ability.setCostBusiness(car.ability.costBusiness + reduce, player, car, ref notifyMsg);
-                                this.WebNotify(player, $"你对【{victim.PlayerName}】执行了攻击，攻击效率为{percentValue}%，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money/100.00).ToString("f2")}金币。");
-                                this.WebNotify(victim, $"【{player.PlayerName}】对你执行了攻击，攻击效率为{percentValue}%，损失{(reduce / 100.00).ToString("f2")}金币 ");
+                                else
+                                {
+                                    reduce = 0;
+                                    reduceSum = 0;
+                                }
+
+                                that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref m, ref reduceSum);
+
+                                victim.MoneySet(m - reduceSum, ref notifyMsg);
+                                this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
                                 if (victim.Money == 0)
                                 {
                                     victim.SetBust(true, ref notifyMsg);
@@ -94,7 +162,7 @@ namespace HouseManager4_0
                                 {
                                     ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg);
                                 }
-                                
+
                             }
                             else
                             {
@@ -162,10 +230,10 @@ namespace HouseManager4_0
             {
                 return 20;
             }
-            else 
+            else
             {
                 return 100;
-            } 
+            }
         }
     }
 }

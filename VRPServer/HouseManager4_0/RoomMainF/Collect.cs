@@ -1,6 +1,8 @@
 ﻿using CommonClass;
+using Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using static HouseManager4_0.Car;
@@ -156,7 +158,18 @@ namespace HouseManager4_0.RoomMainF
 
 
 
-
+        internal List<int> getCollectPositionsByDistance(FastonPosition target)
+        {
+            List<int> positions = new List<int>();
+            for (int i = 0; i < 38; i++)
+            {
+                positions.Add(i);
+                //var collectP = Program.dt.GetFpByIndex(this._collectPosition[i]);
+                //positions.Add(collectP);
+            }
+            positions = (from item in positions orderby CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, Program.dt.GetFpByIndex(this._collectPosition[item]).Latitde, Program.dt.GetFpByIndex(this._collectPosition[item]).Longitude) select item).ToList();
+            return positions;
+        }
 
         private long getCollectReWardByReward(int target)
         {
@@ -234,6 +247,6 @@ namespace HouseManager4_0.RoomMainF
                 throw new Exception("parameter is wrong!");
         }
 
-     
+
     }
 }

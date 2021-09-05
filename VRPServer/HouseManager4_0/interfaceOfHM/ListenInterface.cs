@@ -57,8 +57,8 @@ namespace HouseManager4_0.interfaceOfHM
         /// <returns></returns>
         string updateAttack(SetAttack sa);
 
-      
-       
+
+
         /// <summary>
         /// 命令其返回！
         /// </summary>
@@ -102,5 +102,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="dm"></param>
         void SendMsg(DialogMsg dm);
+        void SelectDriver(SetSelectDriver dm);
+        string updateMagic(MagicSkill ms);
     }
 }

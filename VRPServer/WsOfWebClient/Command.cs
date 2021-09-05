@@ -22,7 +22,10 @@ namespace WsOfWebClient
     public class CreateTeam : CommonClass.Command
     {
     }
-
+    public class DriverSelect : CommonClass.Command
+    {
+        public int driverIndex { get; set; }
+    }
     public class JoinTeam : CommonClass.Command
     {
     }
@@ -60,6 +63,12 @@ namespace WsOfWebClient
         public string TargetOwner { get; set; }
         //public string car { get; set; }
     }
+    public class Skill1 : Attack
+    {
+    }
+    public class Skill2 : Attack
+    {
+    }
 
     public class Bust : Attack
     {
@@ -68,9 +77,9 @@ namespace WsOfWebClient
         //public string car { get; set; }
     }
     public class BuyDiamond : CommonClass.Command
-    { 
-        public string pType { get; set; } 
-         
+    {
+        public string pType { get; set; }
+
     }
     public class Tax : CommonClass.Command
     {

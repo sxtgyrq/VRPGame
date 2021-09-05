@@ -25,7 +25,14 @@ namespace HouseManager4_0
 
             roomMain.WebNotify(player, Msg);
         }
-
+        public void sendMsg(string controllerUrl, string json)
+        {
+            Startup.sendMsg(controllerUrl, json);
+        }
+        public void ThreadSleep(int mSecondsWait)
+        {
+            Thread.Sleep(mSecondsWait);
+        }
         //public void startNewCommandThread(int timeC, CommonClass.Command c, startNewThread self)
         //{
         //    throw new NotImplementedException();

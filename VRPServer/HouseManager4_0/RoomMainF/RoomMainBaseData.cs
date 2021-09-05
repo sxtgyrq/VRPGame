@@ -193,11 +193,14 @@ namespace HouseManager4_0.RoomMainF
 
         public Engine_Attach attachE;
 
+        public Engine_MagicEngine magicE;
+
 
         //以上为Engine
         //以下为Manager
 
         public Manager_NPC NPCM;
         public Manager_Frequency frequencyM;
+        public Manager_Driver driverM;
     }
 }

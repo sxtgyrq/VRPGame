@@ -1,0 +1,730 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        @keyframes mymove {
+            0% {
+                background: rgba(255, 216, 0, 0.00);
+                border-color: yellowgreen;
+            }
+
+            50% {
+                background: rgba(255, 0, 220, 0.99);
+                border-color: #ff00dc;
+            }
+
+            100% {
+                background: rgba(255, 216, 0, 0.00);
+                border-color: yellowgreen;
+            }
+        }
+
+        .chatdialog {
+        }
+
+            .chatdialog.msg {
+                animation: mymove 1.9s infinite;
+                -webkit-animation: mymove 1.9s infinite;
+            }
+
+        .friendMsg {
+            animation: mymove 1.9s infinite;
+            -webkit-animation: mymove 1.9s infinite;
+        }
+    </style>
+</head>
+<body style="width:100%;height:100%;overflow:hidden;">
+    <div id="rootContainer" style="width: 100%; height: 100%; overflow: hidden;position:absolute;left:0px;top:0px;">
+        <div style="text-align:center;margin-top:2em">
+            <label>房间号</label><input id="roomNubInput" type="number" />
+        </div>
+        <div style="text-align:center;">
+            <button style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                加入
+            </button>
+        </div>
+    </div>
+    <div style="position: absolute;
+        width: 8em;
+        height: calc(6em + 48px);
+        z-index: 6;
+        left: 1em;
+        top: calc(50% - 20px - 2px - 3em);
+        font-size: 20px;
+        color: blue;
+        text-shadow: 1px 1px 1px #000000;
+        border-color:deepskyblue;
+        ">
+        <div style="width: calc(100% - 2px);
+        text-align: center;
+        border: 1px solid deepskyblue;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carASpan">啊啊啊啊啊啊啊</span>
+        </div>
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 1px solid deepskyblue;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carBSpan">啊啊啊啊啊</span>
+        </div>
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 1px solid deepskyblue;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carCSpan">啊啊啊</span>
+        </div>
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 1px solid deepskyblue;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carDSpan">啊啊</span>
+        </div>
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 2px    inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carESpan">啊啊啊啊啊啊</span>
+        </div>
+        <div style="width:3em;text-align:center;border:1px solid gray;border-radius:0.3em;margin-top:4px;margin-bottom:4px;color:yellowgreen;">
+            <span>隐藏</span>
+        </div>
+    </div>
+
+    <div style="position: absolute;
+        width: 3em;
+        height: calc(3em + 24px);
+        z-index: 6;
+        left: 10em;
+        top: calc(50% - 20px - 2px - 3em);
+        font-size: 20px;
+        color: blue;
+        text-shadow: 1px 1px 1px #000000;
+        border-color:deepskyblue;
+        ">
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carASpan">属性</span>
+        </div>
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 1px solid deepskyblue;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carBSpan">任务</span>
+        </div>
+        <div style="        width: calc(100% - 2px);
+        text-align: center;
+        border: 1px solid deepskyblue;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;">
+            <span id="carCSpan">物品</span>
+        </div>
+
+
+    </div>
+
+    <div style="
+    position:absolute;
+    z-index:7;
+    right:20px;border:none;width:5em;color:green;top:calc(50% - 4em - 28px)">
+        <div style="width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;background:rgba(0, 191, 255, 0.6);">
+            <span id="carASpan">提升续航</span>
+        </div>
+        <div style="        width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;background:rgba(0, 191, 255, 0.6);">
+            <span id="carASpan">提升业务</span>
+        </div>
+        <div style="        width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        background: rgba(0, 191, 255, 0.6);
+">
+            <span id="carASpan">提升容量</span>
+        </div>
+        <div style="        width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        background: rgba(0, 191, 255, 0.6);
+">
+            <span id="carASpan">提升速度</span>
+        </div>
+        <div style="        width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        background: rgba(0, 191, 255, 0.6);
+">
+            <span id="carASpan">收集金钱</span>
+        </div>
+        <div style="        width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        background: rgba(0, 191, 255, 0.6);
+">
+            <span id="carASpan">收取税金</span>
+        </div>
+        <div style="        width: calc(5em - 4px);
+        text-align: center;
+        border: 2px inset #ffc403;
+        border-radius: 0.3em;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        background: rgba(0, 191, 255, 0.6);
+">
+            <span id="carASpan">打压对手</span>
+        </div>
+    </div>
+
+    <div style="position:absolute;z-index:7;top:calc(100% - 2.5em - 8px);left:8px">
+
+        <img src="Pic/chatPng.png" class="chatdialog msg" style="border:solid 1px yellowgreen;border-radius:5px;height:calc(2.5em - 2px);width:auto;" />
+
+        <img src="Pic/trade.png" style="border:solid 1px yellowgreen;border-radius:2px;height:calc(2.5em - 2px);width:auto;" />
+
+    </div>
+
+    <div style="position:absolute;z-index:8;top:0px;width:12em; height:calc(100% - 60px);border:solid 1px red;text-align:center;background:rgba(104, 48, 8, 0.85);color:#83ffff; overflow-y:scroll;  ">
+        <div class="friendMsg">
+            玩家A
+        </div>
+        <div style="margin-bottom:0.25em;margin-top:0.25em">
+            玩家B
+        </div>
+    </div>
+
+    <!--<div style="position:absolute;z-index:8;top:calc(50% - 3em);width:12em; left:calc(50% - 6em);height:6em;border:solid 1px red;text-align:center;background:rgba(104, 48, 8, 0.85);color:#83ffff; overflow:hidden;  ">
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;">
+            存
+        </div>
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;">
+            取
+        </div>
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;">
+            取消
+        </div>
+    </div>-->
+    <!--<script src="mainf.js"></script>-->
+    <style type="text/css">
+        .diverDialog {
+            position: absolute;
+            z-index: 9;
+            top: calc(10% - 1px);
+            width: 350px;
+            max-width: 100%;
+            left: calc(50% - 175px);
+            height: calc(80% + 2px);
+            border: solid 1px red;
+            text-align: center;
+            background: rgba(104, 48, 8, 0.85);
+            color: #83ffff;
+            overflow: hidden;
+            overflow-y: scroll;
+            max-height: calc(90%);
+        }
+
+        .driversTable {
+            width: calc(100% - 2px);
+        }
+
+            .driversTable.Assistant {
+                width: calc(100% - 2px);
+                border: 4px double rgba(0, 191, 255, 0.6);
+                margin-bottom: 1em;
+            }
+
+            .driversTable.Controller {
+                width: calc(100% - 2px);
+                border: 4px double rgba(255, 196, 3, 0.66);
+                margin-bottom: 1em;
+            }
+
+            .driversTable.Exporter {
+                width: calc(100% - 2px);
+                border: 4px double rgba(235, 13, 13, 0.68);
+                margin-bottom: 1em;
+            }
+
+        .diverDataItem {
+            border: 1px solid white;
+        }
+
+            .diverDataItem.man {
+                border-color: blue;
+            }
+
+            .diverDataItem.woman {
+                border-color: red;
+            }
+
+        .diverImg {
+            width: 3em;
+            height: auto;
+        }
+
+        .diverName {
+            font-size: 0.5em;
+        }
+
+        .diverCancle {
+            margin-bottom: 20px;
+        }
+
+        .driverIcon {
+            position: absolute;
+            z-index: 9;
+            width: 3em;
+           /* height: auto;*/
+            right: 4px;
+            top: 3px;
+            text-align: center;
+        }
+
+        .driverIconBorder {
+            border: 1px solid yellow;
+            position:relative;
+        }
+
+        .driverIconImage {
+            width: 3em;
+            height: auto;
+            
+        }
+        .driverIconSpan {
+            font-size: smaller;
+        }
+        .driverLevetValue {
+            position:absolute;
+            top:3px;
+            right:calc(3em + 4px);
+        }
+    </style>
+    <script>
+        var data =
+        {
+            assistant:
+            {
+                m: [
+                    { name: '孙策', index: 510 },
+                    { name: '明世隐', index: 501 },
+                    { name: '百里约', index: 196 },
+                    { name: '哪吒', index: 180 },
+                    { name: '李元芳', index: 173 },
+                    { name: '刘备', index: 170 },
+                    { name: '后羿', index: 169 },
+                    { name: '亚瑟', index: 166 },
+                    { name: '张良', index: 156 },
+                    { name: '孙膑', index: 118 },
+                    { name: '刘禅', index: 114 },
+                    { name: '廉颇', index: 105 }
+                ],
+                wm: [
+                    { name: '艾琳', index: 155 },
+                    { name: '阿古朵', index: 533 },
+                    { name: '西施', index: 523 },
+                    { name: '阿瑶', index: 505 },
+                    { name: '元歌', index: 125 },
+                    { name: '杨玉环', index: 176 },
+                    { name: '大乔', index: 191 },
+                    { name: '蔡文姬', index: 184 },
+                    { name: '雅典娜', index: 183 },
+                    { name: '芈月', index: 121 },
+                    { name: '阿轲', index: 116 },
+                    { name: '小乔', index: 106 },
+                ]
+            },
+            controller:
+            {
+                m: [
+                    { name: '司马懿', index: 137 },
+                    { name: '诸葛亮', index: 190 },
+                    { name: '韩信', index: 150 },
+                    { name: '刘邦', index: 149 },
+                    { name: '达摩', index: 134 },
+                    { name: '狄仁杰', index: 133 },
+                    { name: '马可波罗', index: 132 },
+                    { name: '李白', index: 131 },
+                    { name: '曹操', index: 128 },
+                    { name: '周瑜', index: 124 },
+                    { name: '高渐离', index: 115 },
+                    { name: '嬴政', index: 110 }
+                ],
+                wm: [
+                    { name: '夏洛特', index: 536 },
+                    { name: '云中君', index: 506 },
+                    { name: '嫦娥', index: 515 },
+                    { name: '上官婉', index: 513 },
+                    { name: '沈梦溪', index: 312 },
+                    { name: '米莱狄', index: 504 },
+                    { name: '女娲', index: 179 },
+                    { name: '娜露露', index: 162 },
+                    { name: '不火舞', index: 157 },
+                    { name: '露娜', index: 146 },
+                    { name: '貂蝉', index: 141 },
+                    { name: '武则天', index: 136 },
+                ]
+            },
+            exporter:
+            {
+                m: [
+                    { name: '马超', index: 518 },
+                    { name: '苏烈', index: 194 },
+                    { name: '百里玄', index: 195 },
+                    { name: '阿铠', index: 193 },
+                    { name: '黄忠', index: 192 },
+                    { name: '杨戬', index: 178 },
+                    { name: '张飞', index: 171 },
+                    { name: '程咬金', index: 144 },
+                    { name: '关羽', index: 140 },
+                    { name: '项羽', index: 135 },
+                    { name: '吕布', index: 123 },
+                    { name: '赵云', index: 107 }
+                ],
+                wm: [
+                    { name: '云缨', index: 538 },
+                    { name: '伽罗', index: 508 },
+                    { name: '公孙离', index: 199 },
+                    { name: '孟琪', index: 198 },
+                    { name: '虞姬', index: 174 },
+                    { name: '花木兰', index: 154 },
+                    { name: '王昭君', index: 152 },
+                    { name: '安琪拉', index: 142 },
+                    { name: '甄姬', index: 127 },
+                    { name: '钟无艳', index: 117 },
+                    { name: '孙尚香', index: 111 },
+                    { name: '妲己', index: 109 },
+                ]
+            }
+        };
+        var draw = function () {
+            var dialog = document.createElement('div');
+            dialog.classList.add('diverDialog');
+
+            var divParent = document.createElement('div');
+            var titleSpan = document.createElement('span');
+            titleSpan.innerText = '选择司机';
+            divParent.appendChild(titleSpan);
+
+            var drawTable = function (title, fromData, tableStyle) {
+                var tableAssistant = document.createElement('table');
+                tableAssistant.classList.add('driversTable');
+                tableAssistant.classList.add(tableStyle);
+
+                var tr1 = document.createElement('tr');
+                {
+                    var th = document.createElement('th');
+                    th.colSpan = 6;
+                    th.innerText = title;
+                    tr1.appendChild(th);
+                }
+
+                var tr2 = document.createElement('tr');
+                {
+                    var th = document.createElement('th');
+                    th.colSpan = 3;
+                    th.innerText = "男";
+                    tr2.appendChild(th);
+
+                    var th = document.createElement('th');
+                    th.colSpan = 3;
+                    th.innerText = "女";
+                    tr2.appendChild(th);
+                }
+                tableAssistant.appendChild(tr1);
+                tableAssistant.appendChild(tr2);
+
+
+                {
+                    for (var i = 0; i < 4; i++) {
+                        var tr3 = document.createElement('tr');
+
+                        for (var j = 0; j < 3; j++) {
+                            var dataItem = fromData.m[i * 3 + j];
+                            var td = document.createElement('td');
+
+                            var divItem = document.createElement('div');
+                            divItem.dataItem = dataItem;
+                            divItem.onclick = function () {
+                                alert(this.dataItem.name);
+                            }
+                            divItem.classList.add('diverDataItem');
+                            divItem.classList.add('man');
+
+                            var divImage = document.createElement('div');
+                            var image = document.createElement('img');
+                            image.classList.add('diverImg')
+                            image.src = 'Pic/driverimage/' + dataItem.index.toString() + '.jpg';
+                            divImage.appendChild(image);
+                            divItem.appendChild(divImage);
+
+                            var divName = document.createElement('div');
+                            var nameSpan = document.createElement('span');
+                            nameSpan.innerText = dataItem.name;
+                            divName.classList.add('diverName');
+                            divName.appendChild(nameSpan);
+                            divItem.appendChild(divName);
+
+                            td.appendChild(divItem);
+                            tr3.appendChild(td);
+                        }
+                        for (var j = 0; j < 3; j++) {
+                            var dataItem = fromData.wm[i * 3 + j];
+                            var td = document.createElement('td');
+                            var divItem = document.createElement('div');
+                            divItem.dataItem = dataItem;
+                            divItem.onclick = function () {
+                                alert(this.dataItem.name);
+                            }
+                            divItem.classList.add('diverDataItem');
+                            divItem.classList.add('woman');
+                            var divImage = document.createElement('div');
+
+                            var divImage = document.createElement('div');
+                            var image = document.createElement('img');
+                            image.classList.add('diverImg')
+                            image.src = 'Pic/driverimage/' + dataItem.index.toString() + '.jpg';
+                            divImage.appendChild(image);
+                            divItem.appendChild(divImage);
+
+                            var divName = document.createElement('div');
+                            var nameSpan = document.createElement('span');
+                            nameSpan.innerText = dataItem.name;
+                            divName.classList.add('diverName');
+                            divName.appendChild(nameSpan);
+                            divItem.appendChild(divName);
+
+                            td.appendChild(divItem);
+                            tr3.appendChild(td);
+                        }
+                        tableAssistant.appendChild(tr3);
+                    }
+                }
+
+
+
+                divParent.appendChild(tableAssistant);
+            }
+
+            drawTable("辅助", data.assistant, "Assistant");
+            drawTable("控制", data.controller, "Controller");
+            drawTable("输出", data.exporter, "Exporter");
+
+            var cancleBtn = document.createElement('button');
+            cancleBtn.innerText = '取消';
+            cancleBtn.classList.add('diverCancle');
+            cancleBtn.onclick = function () { };
+            divParent.appendChild(cancleBtn);
+
+            dialog.appendChild(divParent);
+            document.body.appendChild(dialog);
+        }
+    </script>
+    <!--<div class="diverDialog">
+        <div>
+            <div><span>选择司机</span></div>
+
+            <table class="driversAssistant">
+
+
+                <tr><th colspan="6">辅助</th></tr>
+                <tr>
+                    <th colspan="3">男</th>
+                    <th colspan="3">女</th>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="border:1px solid white;">
+                            <div>
+                                <img style="        width: 3em;
+        height: auto;" src="Pic/driverimage/510.jpg" />
+                            </div>
+                            <div style="font-size:smaller;">
+                                <span>孙策</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="border:1px solid white;">
+                            <div>
+                                <img style="        width: 3em;
+        height: auto;" src="Pic/driverimage/510.jpg" />
+                            </div>
+                            <div style="font-size: smaller;">
+                                <span>
+                                    明世隐
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="border:1px solid white;">
+                            <div>
+                                <img style="        width: 3em;
+        height: auto;" src="Pic/driverimage/510.jpg" />
+                            </div>
+                            <div style="font-size: smaller;">
+                                <span>
+                                    百里约
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="border:1px solid white;">
+                            <div>
+                                <img style="        width: 3em;
+        height: auto;" src="Pic/driverimage/510.jpg" />
+                            </div>
+                            <div style="font-size: smaller;">
+                                <span>孙策</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="border:1px solid white;">
+                            <div>
+                                <img style="        width: 3em;
+        height: auto;" src="Pic/driverimage/510.jpg" />
+                            </div>
+                            <div style="font-size: smaller;">
+                                <span>
+                                    明世隐
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="border:1px solid white;">
+                            <div>
+                                <img style="        width: 3em;
+        height: auto;" src="Pic/driverimage/510.jpg" />
+                            </div>
+                            <div style="font-size: smaller;">
+                                <span>
+                                    百里约
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+
+            </table>
+        </div>
+
+    </div>-->
+    <div class="driverIcon">
+        <div class="driverIconBorder">
+            <div>
+                <img class="driverIconImage" src="Pic/driverimage/510.jpg" />
+            </div> 
+            <div class="driverIconSpan">
+                <span>孙策</span>
+            </div>
+            <div class="driverLevetValue">
+                <span id="driverLevetValue">5级</span>
+            </div>
+        </div> 
+    </div>
+    <div id="实施" style="z-index:4;position:absolute;top:4px;right:calc(50% - 100px - 1px);border:double 2px #000000;height:60px;width:200px;font-size:14px;color:white;text-align:center;">
+        <canvas id="chanleOfCarAbility" style="
+    width: 140px;
+        height: 60px;
+        position: absolute;
+        top: 0px;
+        left: 0px;opacity:0.7;" height="60" width="140">
+        </canvas>
+        <div style="        width: 140px;
+        height: calc(100% - 4px);
+        position: absolute;
+        top: 0px;
+        left: 0px;">
+            <div style="width:100%;height:calc(33.3%);background-color: transparent;">
+                89/100
+            </div>
+            <div style="        width: 100%;
+        height: calc(33.3%);
+        background-color: transparent;">
+                89/100
+            </div>
+            <div style="        width: 100%;
+        height: calc(33.3%);
+        background-color: transparent;">
+                50/100
+            </div>
+        </div>
+
+        <div style="vertical-align:middle;position:absolute;top:0px;left:140px;border:solid 1px red;width:58px;height:58px;background-color:rgba(0, 0, 0, 0.8);">
+            <span style="vertical-align:middle;width:100%;height:100%;line-height:60px;">50</span>
+        </div>
+        <script type="text/javascript">
+            var f = function () {
+                var c = document.getElementById("chanleOfCarAbility");
+                var ctx = c.getContext("2d");
+                ctx.fillStyle = "#800000";
+                ctx.fillRect(0, 0, 140, 20);
+                ctx.fillStyle = "#FF0000";
+                ctx.fillRect(0, 0, 60, 20);
+
+                ctx.fillStyle = "#008000";
+                ctx.fillRect(0, 20, 140, 40);
+                ctx.fillStyle = "#00FF00";
+                ctx.fillRect(0, 20, 70, 40);
+
+                ctx.fillStyle = "#000080";
+                ctx.fillRect(0, 40, 140, 60);
+                ctx.fillStyle = "#0000FF";
+                ctx.fillRect(0, 40, 75, 60);
+            }
+
+        </script>
+
+        <div>现金1.3K</div>
+    </div>
+</body>
+</html>

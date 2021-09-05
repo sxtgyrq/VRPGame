@@ -78,6 +78,16 @@ namespace CommonClass
         public long Money { get; set; }
     }
 
+    public class DriverNotify : CommandNotify
+    {
+        public int index { get; set; }
+        public string name { get; set; }
+        public int skill1Index { get; set; }
+        public int skill2Index { get; set; }
+        public string skill1Name { get; set; }
+        public string skill2Name { get; set; }
+    }
+
     public class OthersRemove : CommandNotify
     {
         public string othersKey;
@@ -295,6 +305,10 @@ namespace CommonClass
         //public string car { get; set; }
         public string targetOwner { get; set; }
         public int target { get; set; }
+    }
+    public class MagicSkill : SetAttack
+    {
+        public int selectIndex { get; set; }
     }
 
     public class SetBust : Command

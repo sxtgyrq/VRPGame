@@ -9,14 +9,7 @@ using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 namespace HouseManager4_0
 {
     public abstract class Engine : EngineAndManger
-    {
-        public void sendMsg(string controllerUrl, string json)
-        {
-            Startup.sendMsg(controllerUrl, json);
-        }
-
-       
-
+    { 
         internal string updateAction(interfaceOfEngine.tryCatchAction actionDo, Command c, string operateKey)
         {
             string conditionNotReason;
@@ -172,7 +165,7 @@ namespace HouseManager4_0
                 int startT = 1;
                 //var carKey = $"{}_{}";
                 var returnPath_Record = player.returningOjb;
-
+                car.setState(player, ref notifyMsg, CarState.returning);
                 that.retutnE.SetReturnT(startT, new commandWithTime.returnning()
                 {
                     c = "returnning",
@@ -211,10 +204,7 @@ namespace HouseManager4_0
             }
         }
 
-        public void ThreadSleep(int mSecondsWait)
-        {
-            Thread.Sleep(mSecondsWait);
-        }
+     
 
 
 

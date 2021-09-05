@@ -16,7 +16,7 @@ namespace HouseManager4_0
         }
 
         internal void SetReturnT(int t, commandWithTime.returnning returnning)
-        {
+        { 
             this.startNewThread(t + 1, returnning, this);
             //Thread th = new Thread(() => setReturn(t, returnning));
             //th.Start();
@@ -190,6 +190,10 @@ namespace HouseManager4_0
                     car.ability.Refresh(player, car, ref notifyMsg);
                     car.Refresh(player, ref notifyMsg);
 
+                    if (that.driverM.controlledByMagic(player, car, ref notifyMsg))
+                    {
+
+                    }
                     if (player.playerType == RoleInGame.PlayerType.NPC)
                     {
                         ///  NPC

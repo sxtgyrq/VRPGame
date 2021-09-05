@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonClass;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static HouseManager4_0.Car;
@@ -26,10 +27,12 @@ namespace HouseManager4_0.RoomMainF
             this.promoteE = new Engine_PromoteEngine(this);
             this.diamondOwnerE = new Engine_DiamondOwnerEngine(this);
             this.attachE = new Engine_Attach(this);
+            this.magicE = new Engine_MagicEngine(this);
             //  this.npcc = new NPCControle();
 
             this.NPCM = new Manager_NPC(this);
             this.frequencyM = new Manager_Frequency(this);
+            this.driverM = new Manager_Driver(this);
 
             lock (PlayerLock)
             {
@@ -53,6 +56,8 @@ namespace HouseManager4_0.RoomMainF
                 {  "speed" ,10 * 100},
             };
         }
+
+       
 
         public class commandWithTime
         {

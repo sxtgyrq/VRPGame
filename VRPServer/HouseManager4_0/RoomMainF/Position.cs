@@ -88,7 +88,7 @@ namespace HouseManager4_0.RoomMainF
                         //this._Players[getPosition.Key];
                         ((Player)this._Players[getPosition.Key]).MoneyChanged(player, this._Players[getPosition.Key].Money, ref notifyMsgs);
                         ((Player)this._Players[getPosition.Key]).ShowLevelOfPlayerDetail(ref notifyMsgs);
-                         
+                        this.DriverSelected(this._Players[getPosition.Key], this._Players[getPosition.Key].getCar(), ref notifyMsgs);
                         result = new GetPositionResult()
                         {
                             Success = true,

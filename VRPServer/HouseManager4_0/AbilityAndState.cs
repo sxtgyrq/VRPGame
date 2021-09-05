@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonClass.driversource;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -80,8 +81,8 @@ namespace HouseManager4_0
         {
             bool changed = this._diamondInCar != diamondInCarInput;
             this._diamondInCar = diamondInCarInput;
-            if (role.playerType == RoleInGame.PlayerType.player&&changed) 
-                    this.DiamondInCarChanged((Player)role, car, ref notifyMsg, this.diamondInCar);
+            if (role.playerType == RoleInGame.PlayerType.player && changed)
+                this.DiamondInCarChanged((Player)role, car, ref notifyMsg, this.diamondInCar);
         }
 
         DateTime CreateTime { get; set; }
@@ -196,6 +197,17 @@ namespace HouseManager4_0
             //   this.subsidize = 0;
         }
 
+        public void RefreshAfterDriverArrived(RoleInGame player, Car car, ref List<string> notifyMsg)
+        {
+            if (player.playerType == RoleInGame.PlayerType.player)
+            {
+                MileChanged((Player)player, car, ref notifyMsg, "mile");
+                BusinessChanged((Player)player, car, ref notifyMsg, "business");
+                VolumeChanged((Player)player, car, ref notifyMsg, "volume");
+                SpeedChanged((Player)player, car, ref notifyMsg, "speed");
+            }
+        }
+
         public delegate void AbilityChangedF(Player player, Car car, ref List<string> notifyMsgs, string pType);
         public AbilityChangedF MileChanged;
         public void setCostMiles(long costMileInput, RoleInGame role, Car car, ref List<string> notifyMsg)
@@ -226,6 +238,11 @@ namespace HouseManager4_0
         }
 
         public AbilityChangedF SpeedChanged;
+        internal Driver driver = null;
+
+        public delegate void DriverSelected(RoleInGame player, Car car, ref List<string> notifyMsgs);
+
+        public DriverSelected driverSelected;
         //internal delegate void AbilityChanged(Player player, Car car, ref List<string> notifyMsgs, string pType);
         /// <summary>
         /// 依次用辅助、business、volume来支付。
@@ -310,15 +327,42 @@ namespace HouseManager4_0
         /// <summary>
         /// 小车能携带的金钱数量！单位为分，即1/100元。
         /// </summary>
-        public long Business { get { return (this.Data["business"].Count * 500 + 10000); } }
+        public long Business
+        {
+            get
+            {
+                if (this.driver == null)
+                    return (this.Data["business"].Count * 500 + 10000);
+                else
+                    return driver.improveBusiness(this.Data["business"].Count * 500 + 10000);
+            }
+        }
         /// <summary>
         /// 小车能装载的最大容量，默认为10000分，即1/100元。
         /// </summary>
-        public long Volume { get { return (this.Data["volume"].Count * 500 + 10000); } }
+        public long Volume
+        {
+            get
+            {
+                if (this.driver == null)
+                    return (this.Data["volume"].Count * 500 + 10000);
+                else
+                    return driver.improveVolume(this.Data["volume"].Count * 500 + 10000);
+            }
+        }
         /// <summary>
         /// 小车能跑的最快速度！
         /// </summary>
-        public int Speed { get { return this.Data["speed"].Count * 2 + 50; } }
+        public int Speed
+        {
+            get
+            {
+                if (this.driver == null)
+                    return this.Data["speed"].Count * 2 + 50;
+                else
+                    return driver.improveSpeed(this.Data["speed"].Count * 2 + 50);
+            }
+        }
 
         /// <summary>
         /// 单位为分，是身上business（业务）。

@@ -1,92 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleTestAPP
 {
     class Program
     {
+        class tt
+        {
+            public int a;
+            public int b;
+        }
         static void Main(string[] args)
         {
             Console.WriteLine("你好啊，测试员！！！");
 
-            List<string> commands = new List<string>()
+
+            var a0 = new tt()
             {
-                "milereturn","测试能力提升点返回！",
-                "businessawaitreturn","测试能力提升点等待返回",
-                "promotemilenotenoughreturn","能提提升时，剩余里程不足，返回",
-                "promoteawaitcollectfailreturn","能提提升-等待-回收-里程不够-返回",
-                "PromoteToCollect","能提提升-回收的转变"
+                a = 1,
+                b = 1
             };
-
-            for (var i = 0; i < commands.Count; i += 2)
+            var a1 = new tt()
             {
-                var index = (i / 2).ToString("D4");
-                var A = commands[i];
-
-                var s = index + "    " + A;
-                while (s.Length < 40)
-                {
-                    s += " ";
-                };
-                s += commands[i + 1];
-                Console.WriteLine(s);
-            }
-
-            var command = Console.ReadLine();
-            bool success;
-            int commandIndex;
-            if (int.TryParse(command, out commandIndex))
+                a = 1,
+                b = 2
+            };
+            var a2 = new tt()
             {
-                if (commandIndex < commands.Count / 2)
-                {
-                    success = true;
-                    command = commands[commandIndex * 2];
-                }
-                else
-                {
-                    success = false;
-                    Console.WriteLine("请输入正确的序号");
-                }
-            }
-            else
+                a = 2,
+                b = 1
+            };
+            var a3 = new tt()
             {
-                if (commands.Contains(command))
+                a = 2,
+                b = 2
+            };
+            List<tt> tList = new List<tt>() { a1, a0, a2, a3 };
+            Random rm = new Random();
+            for (var i = 0; i < 100; i++)
+                tList.Add(new tt()
                 {
-                    commandIndex = (commands.FindIndex(item => item == command) / 2);
-                    command = commands[commandIndex * 2];
-                    success = true;
-                }
-                else
-                {
-                    success = false;
-                    Console.WriteLine("请输入正确的命令");
-                }
-            }
+                    a = rm.Next(3, 6),
+                    b = rm.Next(0, 6)
+                });
 
-            if (success)
-                switch (command)
-                {
-                    case "milereturn":
-                        {
-                            TestTag.MileTest.TestReturn(command);
-                        }; break;
-                    case "businessawaitreturn":
-                        {
-                            TestTag.BusinessTest.TestWaitThenReturn(command);
-                        }; break;
-                    case "promotemilenotenoughreturn":
-                        {
-                            TestTag.PromoteIsNotEnoughThenReturn.Test(command);
-                        }; break;
-                    case "promoteawaitcollectfailreturn":
-                        {
-                            TestTag.PromoteIsNotEnoughThenReturn.Test2(command);
-                        }; break;
-                    case "PromoteToCollect":
-                        {
-                            TestTag.PromoteCollectOK.Test(command);
-                        }; break;
-                }
+            tList = (from item in tList orderby item.a ascending, item.b descending select item).ToList();
+
+            for (int i = 0; i < tList.Count; i++) 
+            {
+                Console.WriteLine($"{i.ToString("000")}--a:{tList[i].a}-b:{tList[i].b}");
+            }
             Console.ReadLine();
         }
     }

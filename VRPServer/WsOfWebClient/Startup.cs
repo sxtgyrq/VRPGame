@@ -467,6 +467,30 @@ namespace WsOfWebClient
                                         await Room.sellDiamond(s, bd);
                                     }
                                 }; break;
+                            case "DriverSelect":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        DriverSelect ds = Newtonsoft.Json.JsonConvert.DeserializeObject<DriverSelect>(returnResult.result);
+                                        await Room.selectDriver(s, ds);
+                                    }
+                                }; break;
+                            case "Skill1":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        Skill1 s1 = Newtonsoft.Json.JsonConvert.DeserializeObject<Skill1>(returnResult.result);
+                                        await Room.magic(s, s1);
+                                    }
+                                }; break;
+                            case "Skill2":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        Skill2 s2 = Newtonsoft.Json.JsonConvert.DeserializeObject<Skill2>(returnResult.result);
+                                        await Room.magic(s, s2);
+                                    }
+                                }; break;
                         }
                     }
                     catch (Exception e)
