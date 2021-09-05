@@ -2,12 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\VRPServer",
+    "\\VRPServer\\CommonClass",
+    "\\VRPServer\\HouseManager4_0",
     "\\VRPServer\\Server",
     "\\WebFileOnly",
-    "\\Webshow",
     "\\Webshow\\WebApplication1",
     "\\Webshow\\webHtml"
   ],
-  "SelectedNode": "\\Webshow\\WebApplication1\\WebApplication1.sln",
+  "SelectedNode": "\\VRPServer\\CommonClass",
   "PreviewInSolutionExplorer": false
 }
