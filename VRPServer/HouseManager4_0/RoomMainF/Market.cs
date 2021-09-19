@@ -146,7 +146,7 @@ namespace HouseManager4_0.RoomMainF
 
         }
 
-       
+        
 
         internal void ClearPlayers()
         {
@@ -318,6 +318,6 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-     
+        
     }
 }

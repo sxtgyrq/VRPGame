@@ -77,6 +77,15 @@
     <None Update="model\fenghong\fh.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="model\speedicon\mfire.mtl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="model\speedicon\mfire.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="model\speedicon\walnut.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="rmb\rmb.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

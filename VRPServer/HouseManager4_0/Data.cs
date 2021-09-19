@@ -1,4 +1,4 @@
-﻿using System; 
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -106,86 +106,7 @@ namespace HouseManager4_0
             return this._allFp.Count;
         }
 
-        public decimal getCurrentTimeCostOfEveryStep()
-        {
-            throw new Exception("");
-            //var now = DateTime.Now;
-            //var pathCostNow = $"{this.rewardRecord}{now.ToString("yyyyMMddHH")}Cost.txt";
-            //if (File.Exists(pathCostNow))
-            //{
-            //    var stringValue = File.ReadAllText(pathCostNow);
-            //    var result = Convert.ToDecimal(stringValue);
-            //    if (result <= 0.01m)
-            //    {
-            //        return 0.01m;
-            //    }
-            //    else
-            //    {
-            //        return Math.Round(result, 2);
-            //        //return result;
-            //    }
-            //}
-            //else
-            //{
-            //    decimal sumRecord = 0m;
-            //    decimal lastCost = 0.01m;
-            //    bool getCostFromRecod = false;
-            //    decimal cost;
-            //    for (int i = 1; i <= 8; i++)
-            //    {
-            //        var timeNode = now.AddHours(-i);
-            //        if (!getCostFromRecod)
-            //        {
-            //            var pathBeforeOfCost = $"{this.rewardRecord}{timeNode.ToString("yyyyMMddHH")}Cost.txt";
-            //            if (File.Exists(pathBeforeOfCost))
-            //            {
-            //                getCostFromRecod = true;
-            //                var stringValue = File.ReadAllText(pathBeforeOfCost);
 
-            //                lastCost = Convert.ToDecimal(stringValue);
-            //                lastCost = Math.Max(0.01m, lastCost);
-            //            }
-            //        }
-
-            //        var pathBeforeOfReward = $"{this.rewardRecord}{timeNode.ToString("yyyyMMddHH")}Reward.txt";
-            //        if (File.Exists(pathBeforeOfReward))
-            //        {
-            //            var stringValue = File.ReadAllText(pathBeforeOfReward);
-            //            sumRecord += Convert.ToDecimal(stringValue);
-            //        }
-            //        //var path=""
-            //    }
-            //    if (sumRecord >= 60 * 8)
-            //    {
-            //        if (lastCost < 0.1m)
-            //        {
-            //            cost = lastCost * 2m;
-            //        }
-            //        else
-            //        {
-            //            cost = lastCost * 1.1m;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (lastCost < 0.1m)
-            //        {
-            //            cost = lastCost / 2m;
-            //        }
-            //        else
-            //        {
-            //            cost = lastCost / 1.1m;
-            //        }
-            //    }
-            //    {
-            //        cost = Math.Round(cost, 2);
-            //        cost = Math.Max(0.01m, cost);
-            //        var stringValue = cost.ToString();
-            //        File.WriteAllText(pathCostNow, stringValue);
-            //    }
-            //    return getCurrentTimeCostOfEveryStep();
-            //}
-        }
 
 
 
@@ -358,7 +279,7 @@ namespace HouseManager4_0
         /// <param name="speed">速度</param>
         /// <param name="result">ref path的结果。</param>
         /// <param name="startT">ref 时间结果</param>
-        internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT)
+        internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
         {
             for (var i = 0; i < dataResult.Count; i++)
             {
@@ -376,6 +297,7 @@ namespace HouseManager4_0
                     //  var interview =
                     var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fpLast.positionLatitudeOnRoad, fpLast.positionLongitudeOnRoad, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
 
+                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
 
                     if (result.Count == 0)
                     {
@@ -430,6 +352,8 @@ namespace HouseManager4_0
                     // var length = CommonClass.Geography.getLengthOfTwoPoint.
                     //  var interview =
                     var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+                    
+                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
 
                     var animate1 = new Data.PathResult3()
                     {
@@ -457,7 +381,7 @@ namespace HouseManager4_0
                 }
             }
         }
-         
+
         public void getAll(out List<double[]> meshPoints, out List<object> listOfCrosses)
         {
             Dictionary<string, bool> Cs = new Dictionary<string, bool>();

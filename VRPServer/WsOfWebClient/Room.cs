@@ -336,6 +336,7 @@ namespace WsOfWebClient
 
                 if (string.IsNullOrEmpty(ConnectInfo.DiamondObj))
                 {
+
                     ConnectInfo.DiamondObj = await File.ReadAllTextAsync("diamond.obj");
                 }
                 {
@@ -358,6 +359,37 @@ namespace WsOfWebClient
                         #endregion
                     }
                 }
+                if (string.IsNullOrEmpty(ConnectInfo.SpeedIconBase64))
+                {
+                    var bytes = File.ReadAllBytes("model/speedicon/walnut.jpg");
+                    var Base64 = Convert.ToBase64String(bytes);
+                    ConnectInfo.SpeedIconBase64 = Base64;
+                    ConnectInfo.SpeedMtl = await File.ReadAllTextAsync("model/speedicon/mfire.mtl");
+                    ConnectInfo.SpeedObj = await File.ReadAllTextAsync("model/speedicon/mfire.obj");
+                }
+                {
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                    {
+                        c = "SetSpeedIcon",
+                        Obj = ConnectInfo.SpeedObj,
+                        Mtl = ConnectInfo.SpeedMtl,
+                        Img = ConnectInfo.SpeedIconBase64
+                    });
+                    var sendData = Encoding.ASCII.GetBytes(msg);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                    {
+                        #region 校验响应
+                        var checkIsOk = await CheckRespon(webSocket, "SetSpeedIcon");
+                        if (checkIsOk) { }
+                        else
+                        {
+                            return null;
+                        }
+                        #endregion
+                    }
+                }
+
                 result = await setState(s, webSocket, LoginState.OnLine);
 
                 {

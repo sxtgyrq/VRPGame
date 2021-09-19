@@ -28,7 +28,7 @@ namespace HouseManager4_0
             returning
         }
 
-       
+
 
         //public enum Purpose
         //{

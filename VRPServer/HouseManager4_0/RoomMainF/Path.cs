@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -47,15 +48,15 @@ namespace HouseManager4_0.RoomMainF
         /// <param name="car">carA？-carE</param>
         /// <param name="startTInput">时间</param>
         /// <returns></returns>
-        public List<int> getStartPositon(Model.FastonPosition fp, int positionInStation, ref int startTInput, out Data.PathStartPoint2 startPosition)
+        public List<int> getStartPositon(Model.FastonPosition fp, int positionInStation, ref int startTInput, out Data.PathStartPoint2 startPosition, bool speedImproved)
         {
             double startX, startY;
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, out startX, out startY);
-            int startT0, startT1;
+            int startT0;// startT1;
 
             double endX, endY;
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
-            int endT0, endT1;
+            int endT0;// endT1;
 
             //这里要考虑前台坐标系（左手坐标系）。
             var cc = new Complex(endX - startX, (-endY) - (-startY));
@@ -108,8 +109,8 @@ namespace HouseManager4_0.RoomMainF
 
             List<int> animateResult = new List<int>();
             startT0 = startTInput;
-            endT0 = startT0 + 500;
-            startTInput += 500;
+            endT0 = startT0 + this.magicE.shotTime(500, speedImproved);
+            startTInput += this.magicE.shotTime(500, speedImproved);
             var animate1 = new Data.PathResult3()
             {
                 x = Convert.ToInt32(-(position.Real * percentOfPosition) * 256),
@@ -136,8 +137,10 @@ namespace HouseManager4_0.RoomMainF
              * 上道路的速度为10m/s 即36km/h
              */
             var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
-            startT1 = startTInput;
-            endT1 = startT1 + interview;
+            interview = this.magicE.shotTime(interview, speedImproved);
+
+            //startT1 = startTInput;
+            //endT1 = startT1 + interview;
             startTInput += interview;
 
             var animate2 = new Data.PathResult3()
@@ -171,7 +174,16 @@ namespace HouseManager4_0.RoomMainF
             return new Complex(cc.Real / m, cc.Imaginary / m);
         }
 
-
+        internal void getStartPositionByFp(out Data.PathStartPoint2 startPosition, FastonPosition fastonPosition)
+        {
+            double startX, startY;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.positionLongitudeOnRoad, fastonPosition.positionLatitudeOnRoad, out startX, out startY);
+            startPosition = new Data.PathStartPoint2()
+            {
+                x = Convert.ToInt32(startX * 256),
+                y = Convert.ToInt32(startY * 256)
+            };
+        }
         public void getStartPositionByGoPath(out Data.PathStartPoint2 startPosition, List<Model.MapGo.nyrqPosition> goPath)
         {
             var firstPosition = goPath.First();
@@ -184,7 +196,7 @@ namespace HouseManager4_0.RoomMainF
             };
         }
 
-        public void getEndPositon(Model.FastonPosition fp, int initPosition, ref List<int> animateResult, ref int startTInput)
+        public void getEndPositon(Model.FastonPosition fp, int initPosition, ref List<int> animateResult, ref int startTInput, bool speedImproved)
         {
             if (initPosition > 5)
             {
@@ -250,6 +262,7 @@ namespace HouseManager4_0.RoomMainF
              * 上道路的速度为10m/s 即36km/h
              */
             var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
+            interview = this.magicE.shotTime(interview, speedImproved);
             startT1 = startTInput;
             endT1 = startT1 + interview;
             startTInput += interview;
@@ -278,13 +291,13 @@ namespace HouseManager4_0.RoomMainF
 
             //  startT0 = startTInput;
             //    endT0 = startT0 + 500;
-            startTInput += 500;
+            startTInput += this.magicE.shotTime(500, speedImproved);
 
             var animate1 = new Data.PathResult3()
             {
                 x = Convert.ToInt32((carPositionX - endX) * 256),
                 y = Convert.ToInt32((carPositionY - endY) * 256),
-                t = 500
+                t = this.magicE.shotTime(500, speedImproved)
             };
             //var animate1 = new Data.PathResult()
             //{

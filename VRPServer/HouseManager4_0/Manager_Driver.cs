@@ -105,6 +105,17 @@ namespace HouseManager4_0
                         car.ability.RefreshAfterDriverArrived(player, car, ref notifyMsg);
                         car.ability.driverSelected(player, car, ref notifyMsg);
                     }; break;
+                case 510:
+                    {
+                        var name = "孙策";
+                        CommonClass.driversource.Driver simayi = new CommonClass.driversource.Driver(CommonClass.driversource.Sex.man, CommonClass.driversource.Race.devil, name);
+                        simayi.DefensiveInitialize(13, 10, 14, 72, 68, 40, 18);
+                        simayi.GrouthSet(110, 95, 95);
+                        simayi.Index = index;
+                        car.ability.driver = simayi;
+                        car.ability.RefreshAfterDriverArrived(player, car, ref notifyMsg);
+                        car.ability.driverSelected(player, car, ref notifyMsg);
+                    }; break;
 
             }
         }
@@ -427,7 +438,7 @@ namespace HouseManager4_0
                     player = player_,
                     fpResult = fastonPosition_,
                     volumeValue = volumeValue_,
-                    bussinessValue= bussinessValue_
+                    bussinessValue = bussinessValue_
                 });
             }
 
@@ -437,8 +448,8 @@ namespace HouseManager4_0
             //}
             internal List<AmbushInfomation> ambushInfomations = new List<AmbushInfomation>();
 
-            internal delegate void AmbushAttack(int i, ref List<string> notifyMsg, RoleInGame enemy);
-            internal void AmbushSelf(RoleInGame selfRole, RoomMain that, webnotify ex, ref List<string> notifyMsg, interfaceOfHM.AttackT at, AmbushAttack aa)
+            internal delegate void AmbushAttack(int i, ref List<string> notifyMsg, RoleInGame enemy, ref long reduceSumInput);
+            internal void AmbushSelf(RoleInGame selfRole, RoomMain that, webnotify ex, ref List<string> notifyMsg, interfaceOfHM.AttackT at, ref long reduceSumInput, AmbushAttack aa)
             {
                 List<AmbushInfomation> newList = new List<AmbushInfomation>();
                 for (int i = 0; i < ambushInfomations.Count; i++)
@@ -455,7 +466,7 @@ namespace HouseManager4_0
                 var baseFp = Program.dt.GetFpByIndex(selfRole.StartFPIndex);
 
                 this.ambushInfomations = (from item in newList
-                                          orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, item.fpResult.Latitde, item.fpResult.Longitude) ascending, 
+                                          orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, item.fpResult.Latitde, item.fpResult.Longitude) ascending,
                                           (at.getCondition() == Engine_DebtEngine.DebtCondition.magic ? item.volumeValue : item.bussinessValue) descending
                                           select item).ToList();
 
@@ -466,11 +477,62 @@ namespace HouseManager4_0
                     var success = dealWithItem(selfRole, this.ambushInfomations[i], that, ex, enemyCar, enemy, ref notifyMsg);
                     if (success)
                     {
-                        aa(i, ref notifyMsg, enemy);
+                        aa(i, ref notifyMsg, enemy, ref reduceSumInput);
                     }
                 }
             }
             #endregion 埋伏区
+        }
+
+        public class ImproveManager
+        {
+            public long speedValue { get; private set; }
+            public long attackValue { get; private set; }
+            public long defenceValue { get; private set; }
+            public ImproveManager()
+            {
+                this.speedValue = 0;
+                this.attackValue = 0;
+                this.defenceValue = 0;
+            }
+
+            const int speedImproveParameter = 7;
+            internal void addSpeed(RoleInGame role, long leftVolume, out long costVolumeValue, ref List<string> notifyMsg)
+            {
+                var speedBeforeImprove = this.speedValue;
+                if (this.speedValue < leftVolume * speedImproveParameter)
+                {
+                    costVolumeValue = leftVolume - this.speedValue / speedImproveParameter;
+                    costVolumeValue = Math.Max(1, costVolumeValue);
+                    this.speedValue = leftVolume * speedImproveParameter;
+                }
+                else
+                {
+                    costVolumeValue = 0;
+                }
+                var speedAfterImprove = this.speedValue;
+                if ((speedBeforeImprove == 0 && speedAfterImprove != 0) ||
+                    (speedBeforeImprove != 0 && speedAfterImprove == 0))
+                {
+                    role.speedMagicChanged(role, ref notifyMsg);
+                }
+            }
+
+            internal void reduceSpeed(RoleInGame role, long changeValue, ref List<string> notifyMsg)
+            {
+                var speedBeforeImprove = this.speedValue;
+                this.speedValue -= changeValue;
+                if (this.speedValue < 0) 
+                {
+                    this.speedValue = 0;
+                } 
+                var speedAfterImprove = this.speedValue;
+                if ((speedBeforeImprove == 0 && speedAfterImprove != 0) ||
+                    (speedBeforeImprove != 0 && speedAfterImprove == 0))
+                {
+                    role.speedMagicChanged(role, ref notifyMsg);
+                }
+            }
         }
 
         internal bool controlledByMagic(RoleInGame player, Car car, ref List<string> notifyMsg)

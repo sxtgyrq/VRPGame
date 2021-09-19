@@ -32,6 +32,7 @@ namespace CommonClass
     public class GetPositionNotify_v2 : CommandNotify
     {
         public Model.FastonPosition fp { get; set; }
+        public int fPIndex { get; set; }
         public string key { get; set; }
         public string PlayerName { get; set; }
         public int positionInStation { get; set; }
@@ -86,6 +87,13 @@ namespace CommonClass
         public int skill2Index { get; set; }
         public string skill1Name { get; set; }
         public string skill2Name { get; set; }
+        public string sex { get; set; }
+        public string race { get; set; }
+    }
+    public class SpeedNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
     }
 
     public class OthersRemove : CommandNotify

@@ -51,7 +51,8 @@ namespace HouseManager4_0
                                     WebSocketID = GPResult.WebSocketID,
                                     key = getPosition.Key,
                                     PlayerName = GPResult.PlayerName,
-                                    positionInStation = GPResult.positionInStation
+                                    positionInStation = GPResult.positionInStation,
+                                    fPIndex = GPResult.fPIndex
                                 };
 
                                 Startup.sendMsg(GPResult.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(notify));

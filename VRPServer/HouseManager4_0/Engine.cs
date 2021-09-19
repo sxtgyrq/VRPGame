@@ -9,7 +9,7 @@ using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 namespace HouseManager4_0
 {
     public abstract class Engine : EngineAndManger
-    { 
+    {
         internal string updateAction(interfaceOfEngine.tryCatchAction actionDo, Command c, string operateKey)
         {
             string conditionNotReason;
@@ -118,7 +118,7 @@ namespace HouseManager4_0
             Data.PathStartPoint2 startPosition;
             if (car.state == CarState.waitAtBaseStation)
             {
-                result = that.getStartPositon(fp1, player.positionInStation, ref startT,out startPosition);
+                result = that.getStartPositon(fp1, player.positionInStation, ref startT, out startPosition, player.improvementRecord.speedValue > 0);
             }
             else if (car.state == CarState.waitOnRoad)
             {
@@ -132,7 +132,7 @@ namespace HouseManager4_0
             car.setState(player, ref notifyMsg, CarState.working);
             //car.state = CarState.roadForCollect;
 
-            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
+            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
             //  result.RemoveAll(item => item.t == 0);
 
             car.setAnimateData(player, ref notifyMsg, new AnimateData2(startPosition, result, DateTime.Now, false));
@@ -147,7 +147,7 @@ namespace HouseManager4_0
 
 
             var animate = new AnimateData2(
-                new Data.PathStartPoint2()  { x = Convert.ToInt32(endX * 256), y = Convert.ToInt32(endY * 256) },
+                new Data.PathStartPoint2() { x = Convert.ToInt32(endX * 256), y = Convert.ToInt32(endY * 256) },
                 new List<int>() { 0, 0, 20000 },
                 DateTime.Now,
                 true
@@ -204,7 +204,7 @@ namespace HouseManager4_0
             }
         }
 
-     
+
 
 
 

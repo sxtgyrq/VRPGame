@@ -152,6 +152,12 @@ namespace HouseManager4_0.RoomMainF
                 public string victim { get; internal set; }
                 public int costMile { get; internal set; }
             }
+            public class speedSet : returnning
+            {
+                //  public int costMile { get; internal set; }
+                public string beneficiary { get; internal set; }
+                public int costMile { get; internal set; }
+            }
             public class bustSet : returnning
             {
                 //  public int costMile { get; internal set; }

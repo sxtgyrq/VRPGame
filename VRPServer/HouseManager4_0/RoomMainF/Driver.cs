@@ -27,6 +27,8 @@ namespace HouseManager4_0.RoomMainF
                         WebSocketID = player.WebSocketID,
                         index = car.ability.driver.Index,
                         name = car.ability.driver.Name,
+                        race = car.ability.driver.race.ToString(),
+                        sex = car.ability.driver.sex.ToString(),
                         skill1Index = car.ability.driver.skill1.Index,
                         skill1Name = car.ability.driver.skill1.skillName,
                         skill2Index = car.ability.driver.skill2.Index,

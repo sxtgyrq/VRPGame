@@ -205,7 +205,8 @@ namespace HouseManager4_0.RoomMainF
                     newPlayer.afterBroke = this.AfterPlayerBroken;
                     // newPlayer.driverSelected = this.driverSelected;
                     newPlayer.confuseRecord = new Manager_Driver.ConfuseManger();
-                    //newPlayer.confuseUsing = null;
+                    newPlayer.improvementRecord = new Manager_Driver.ImproveManager();
+                    newPlayer.speedMagicChanged = this.speedMagicChanged;
                 }
             }
 
@@ -345,6 +346,6 @@ namespace HouseManager4_0.RoomMainF
             //}
         }
 
-       
+
     }
 }

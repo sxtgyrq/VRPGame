@@ -80,7 +80,7 @@ namespace CommonClass.driversource
 
         const int modBase = 19;
 
-        public void DefensiveInitialize(int electric, int water, int fire, int confuse,  int moreHurt,int lose, int physics)
+        public void DefensiveInitialize(int electric, int water, int fire, int confuse, int moreHurt, int lose, int physics)
         {
 
             this.defensiveOfElectic = electric;
@@ -313,6 +313,18 @@ namespace CommonClass.driversource
                 case SkillEnum.Lose:
                     {
                         this.skillName = "迷失";
+                    }; break;
+                case SkillEnum.Speed:
+                    {
+                        this.skillName = "提速";
+                    }; break;
+                case SkillEnum.Attack:
+                    {
+                        this.skillName = "红牛";
+                    }; break;
+                case SkillEnum.Defense:
+                    {
+                        this.skillName = "提抗";
                     }; break;
                 default:
                     {

@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Text;
 using static HouseManager4_0.Car;
 using static HouseManager4_0.RoomMainF.RoomMain;
-using OssModel = Model;
 
 namespace HouseManager4_0
 {
-    public class Engine_AttackEngine : Engine, interfaceOfEngine.engine, interfaceOfEngine.tryCatchAction
+    public class Engine_AttackEngine : Engine_ContactEngine, interfaceOfEngine.engine, interfaceOfEngine.tryCatchAction
     {
 
         public Engine_AttackEngine(RoomMain roomMain)
@@ -148,6 +147,40 @@ namespace HouseManager4_0
             }
         }
 
+
+        class AttackObj : interfaceOfHM.ContactInterface
+        {
+            private SetAttack _sa;
+            SetAttackArrivalThreadM _setAttackArrivalThread;
+
+
+            public AttackObj(SetAttack sa, SetAttackArrivalThreadM setAttackArrivalThread)
+            {
+                this._sa = sa;
+                this._setAttackArrivalThread = setAttackArrivalThread;
+            }
+
+            public string targetOwner
+            {
+                get { return this._sa.targetOwner; }
+            }
+
+            public int target
+            {
+                get { return this._sa.target; }
+            }
+            public delegate void SetAttackArrivalThreadM(int startT, Car car, SetAttack sa, int goMile, commandWithTime.ReturningOjb ro);
+            public void SetArrivalThread(int startT, Car car, int goMile, commandWithTime.ReturningOjb returningOjb)
+            {
+                this._setAttackArrivalThread(startT, car, this._sa, goMile, returningOjb);
+            }
+
+            public bool carLeftConditions(Car car)
+            {
+                return car.ability.leftBusiness > 0;
+            }
+        }
+        // delegate 
         /// <summary>
         /// 此函数，必须在this._Players.ContainsKey(sa.targetOwner)=true且this._Players[sa.targetOwner].Bust=false情况下运行。请提前进行判断！
         /// </summary>
@@ -159,202 +192,17 @@ namespace HouseManager4_0
         /// <param name="reason"></param>
         RoomMainF.RoomMain.commandWithTime.ReturningOjb attack(RoleInGame player, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
-            //sa = attackTargetChange(player, sa);
-            RoleInGame boss;
-            if (player.HasTheBoss(roomMain._Players, out boss))
-            {
-                if (player.confuseRecord.IsBeingControlled())
-                {
-                    if (player.confuseRecord.getControlType() == Manager_Driver.ConfuseManger.ControlAttackType.Confuse)
-                    {
-                        return randomWhenConfused(player, boss, car, sa, ref notifyMsg, out Mrr);
-                    }
-                    else
-                    {
-                        return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
-                    }
-                }
-                else
-                    return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
-                //return promotePassBossAddress(player, boss, car, sp, ref notifyMsg, out reason);
-            }
-            else
-            {
-                if (that._Players.ContainsKey(sa.targetOwner))
-                {
-                    var victim = that._Players[sa.targetOwner];
-                    OssModel.FastonPosition fpResult;
-                    var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, victim, out fpResult);
-                    if (distanceIsEnoughToStart)
-                        if (car.ability.leftBusiness > 0)
-                        {
-                            var from = this.getFromWhenAction(player, car);
-                            var to = sa.target;
-                            var fp1 = Program.dt.GetFpByIndex(from);
-                            var fp2 = Program.dt.GetFpByIndex(to);
-                            var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                            var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
-                            //var returnPath = Program.dt.GetAFromB(fp2, baseFp.FastenPositionID);
-                            //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                            var returnPath = that.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
-
-                            var goMile = that.GetMile(goPath);
-                            var returnMile = that.GetMile(returnPath);
-
-
-
-                            //第一步，计算去程和回程。
-                            if (car.ability.leftMile >= goMile + returnMile)
-                            {
-                                int startT;
-                                this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
-                                SetAttackArrivalThread(startT, car, sa, goMile, commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath));
-
-                                // getAllCarInfomations(sa.Key, ref notifyMsg);
-                                Mrr = MileResultReason.Abundant;
-                                return commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
-                            }
-
-                            else if (car.ability.leftMile >= goMile)
-                            {
-                                Mrr = MileResultReason.CanNotReturn;
-                                return player.returningOjb;
-                            }
-                            else
-                            {
-                                Mrr = MileResultReason.CanNotReach;
-                                return player.returningOjb;
-                            }
-                        }
-                        else
-                        {
-                            Mrr = MileResultReason.MoneyIsNotEnougt;
-                            this.WebNotify(player, "你身上的剩余业务空间不够啦！");
-                            return player.returningOjb;
-                        }
-                    else
-                    {
-                        Mrr = MileResultReason.NearestIsMoneyWhenAttack;
-                        this.WebNotify(player, $"离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，攻击失败！");
-                        return player.returningOjb;
-                    }
-                }
-                else
-                {
-                    throw new Exception("准备运行条件里没有筛查？");
-                }
-
-            }
+            AttackObj ao = new AttackObj(sa, this.SetAttackArrivalThread);
+            return this.contact(player, car, ao, ref notifyMsg, out Mrr); 
         }
 
-        public commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
+        internal commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
-            var randomValue = that.rm.Next(0, 5);
-            if (randomValue == 4)
-            {
-                return attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
-            }
-            else
-            {
-                var victim = that._Players[sa.targetOwner];
-                var target = Program.dt.GetFpByIndex(victim.StartFPIndex);
-                var collectIndexTarget = that.getCollectPositionsByDistance(target)[randomValue];
-                var sc = new SetCollect()
-                {
-                    c = "SetCollect",
-                    collectIndex = collectIndexTarget,
-                    cType = "findWork",
-                    fastenpositionID = Program.dt.GetFpByIndex(that._collectPosition[collectIndexTarget]).FastenPositionID,
-                    Key = player.Key
-                };
-                return that.collectE.collectPassBossAddress(player, boss, car, sc, ref notifyMsg, out Mrr);
-            }
+            AttackObj ao = new AttackObj(sa, this.SetAttackArrivalThread);
+            return this.randomWhenConfused(player, boss, car, ao, ref notifyMsg, out Mrr);
         }
 
-        private void getFiveColsestTarget(string targetOwner)
-        {
-
-            //for (int i = 0; i < 38; i++)
-            //{
-            //    var collectP = Program.dt.GetFpByIndex(that._collectPosition[i]);
-
-            //}
-            //throw new NotImplementedException();
-        }
-
-        private RoomMainF.RoomMain.commandWithTime.ReturningOjb attackPassBossAddress(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason mrr)
-        {
-            if (that._Players.ContainsKey(sa.targetOwner))
-            {
-                var victim = that._Players[sa.targetOwner];
-                OssModel.FastonPosition fpResult;
-                var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, victim, out fpResult);
-                if (distanceIsEnoughToStart)
-                {
-                    if (car.ability.leftBusiness > 0)
-                    {
-                        var from = this.getFromWhenAction(player, car);
-                        var to = sa.target;
-                        var fp1 = Program.dt.GetFpByIndex(from);
-                        var fp2 = Program.dt.GetFpByIndex(to);
-                        var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-
-                        // var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
-
-                        //var goPath = Program.dt.GetAFromB(from, to);
-                        var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
-                        //var returnPath = Program.dt.GetAFromB(fp2, baseFp.FastenPositionID);
-                        //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                        var returnToBossAddrPath = that.GetAFromB(to, boss.StartFPIndex, player, ref notifyMsg);
-                        var returnToSelfAddrPath = that.GetAFromB(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
-
-                        var goMile = that.GetMile(goPath);
-                        var returnToBossAddrPathMile = that.GetMile(returnToBossAddrPath);
-                        var returnToSelfAddrPathMile = that.GetMile(returnToSelfAddrPath);
-
-                        //第一步，计算去程和回程。
-                        if (car.ability.leftMile >= goMile + returnToBossAddrPathMile + returnToSelfAddrPathMile)
-                        {
-                            int startT;
-                            this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
-                            var ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossAddrPath, returnToSelfAddrPath, boss);
-                            SetAttackArrivalThread(startT, car, sa, goMile, ro);
-                            mrr = MileResultReason.Abundant;
-                            return ro;
-                        }
-
-                        else if (car.ability.leftMile >= goMile)
-                        {
-                            mrr = MileResultReason.CanNotReturn;
-                            return player.returningOjb;
-                        }
-                        else
-                        {
-                            mrr = MileResultReason.CanNotReach;
-                            return player.returningOjb;
-                        }
-                    }
-                    else
-                    {
-                        this.WebNotify(player, "你身上的剩余业务空间不够啦！");
-                        mrr = MileResultReason.MoneyIsNotEnougt;
-                        return player.returningOjb;
-                    }
-                }
-                else
-                {
-                    mrr = MileResultReason.NearestIsMoneyWhenAttack;
-                    this.WebNotify(player, $"离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，攻击失败！");
-                    return player.returningOjb;
-                }
-            }
-            else
-            {
-                throw new Exception("判断条件异常！");
-            }
-        }
-
-
+        
 
 
 
@@ -367,7 +215,7 @@ namespace HouseManager4_0
         }
 
 
-        
+
         //private void SetAttackArrivalThread(int startT, Car car, SetAttack sa, List<Model.MapGo.nyrqPosition> returnToSelfAddrPath, int goMile)
         //{
         //    SetAttackArrivalThread(startT, car, sa, null, returnToSelfAddrPath, goMile, false, null);

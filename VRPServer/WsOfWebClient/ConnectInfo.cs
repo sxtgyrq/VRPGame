@@ -56,7 +56,13 @@ namespace WsOfWebClient
 
         public static string[] ProfileModel = new string[] { };
 
+        
+
         internal static int webSocketPort;
         internal static int tcpServerPort;
+
+        public static string SpeedIconBase64 = "";
+        public static string SpeedObj = "";
+        public static string SpeedMtl = "";
     }
 }

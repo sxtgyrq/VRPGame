@@ -240,29 +240,7 @@ namespace HouseManager4_0
 
             // GetTheLargestHolderKey(ref notifyMsg);
         }
-
-        //public void GetTheLargestHolderKey(ref List<string> notifyMsg)
-        //{
-        //    var valueToCal = this.Key;
-        //    long moneyToCalculate = this.Money;
-        //    foreach (var item in this.Debts)
-        //    {
-        //        if (this.Magnify(item.Value) > moneyToCalculate)
-        //        {
-        //            valueToCal = item.Key;
-        //            moneyToCalculate = item.Value;
-        //        }
-        //    }
-
-        //    if (valueToCal != this.TheLargestHolderKey)
-        //    {
-        //        if (TheLargestHolderKeyChanged != null)
-        //            TheLargestHolderKeyChanged(this.TheLargestHolderKey, valueToCal, this.Key, ref notifyMsg);
-        //        this.TheLargestHolderKey = valueToCal;
-        //        Console.WriteLine($"最大股权人发生了变化{this.TheLargestHolderKey}->{valueToCal}");
-        //    }
-        //    // throw new NotImplementedException();
-        //}
+ 
 
         /// <summary>
         /// 可用于攻击的金钱。
@@ -316,150 +294,7 @@ namespace HouseManager4_0
             //}
         }
 
-        //public delegate void SupportChanged(Player player, Support money, ref List<string> msgsWithUrl);
-        //public SupportChanged SupportChangedF;
-        //public long SupportToPlayMoney
-        //{
-        //    get
-        //    {
-        //        if (this.SupportToPlay == null)
-        //        {
-        //            return 0;
-        //        }
-        //        return SupportToPlay.Money;
-        //    }
-        //}
-        //internal void setSupportToPlayMoney(long newValue, ref List<string> notifyMsg)
-        //{
-
-        //    if (this.SupportToPlay == null)
-        //    {
-        //        this.SupportToPlay = new Support()
-        //        {
-        //            Money = 0
-        //        };
-        //    }
-        //    if (this.SupportToPlay.Money != newValue)
-        //    {
-        //        this.SupportToPlay.Money = newValue;
-        //        this.SupportChangedF(this, this.SupportToPlay, ref notifyMsg);
-        //    }
-
-
-        //}
-        //internal void RunSupportChangedF(ref List<string> notifyMsgs)
-        //{
-        //    this.SupportChangedF(this, this.SupportToPlay, ref notifyMsgs);
-        //    //throw new NotImplementedException();
-        //}
-        ///// <summary>
-        ///// 专款专用，扶持的资金，进扶持的账户，赚的钱，进赚着的账户
-        ///// </summary>
-        ///// <param name="needMoney">总共需要的钱</param>
-        ///// <param name="moneyFromSupport">用于扶持的钱</param>
-        ///// <param name="moneyFromEarn">从自己腰包里掏出的钱</param>
-        //internal void PayWithSupport(long needMoney, out long moneyFromSupport, out long moneyFromEarn, ref List<string> notifyMsg)
-        //{
-
-
-        //    if (this.SupportToPlay != null)
-        //    {
-        //        moneyFromSupport = Math.Min(needMoney, this.SupportToPlay.Money);
-        //    }
-        //    else
-        //    {
-        //        moneyFromSupport = 0;
-        //    }
-        //    //  Console.WriteLine($"{needMoney}{moneyFromSupport}{}");
-        //    moneyFromEarn = needMoney - moneyFromSupport;
-        //    if (this.SupportToPlay != null)
-        //        this.SupportToPlay.Money -= moneyFromSupport;
-        //    if (moneyFromEarn > 0)
-        //    {
-        //        this.MoneySet(this.Money - moneyFromEarn, ref notifyMsg);
-        //    }
-        //    //this.Money -= moneyFromEarn;
-        //}
-        ///// <summary>
-        ///// 玩家欠其他玩家的债！
-        ///// </summary>
-        //protected Dictionary<string, long> Debts { get; set; }
-
-        //internal Dictionary<string, long> DebtsCopy
-        //{
-        //    get
-        //    {
-        //        var result = new Dictionary<string, long>();
-        //        foreach (var item in this.Debts)
-        //        {
-        //            if (item.Value > 0)
-        //                result.Add(item.Key + "", item.Value + 0);
-        //        }
-        //        return result;
-        //    }
-        //}
-
-        /// <summary>
-        /// 用于计算破产相关参数
-        /// </summary>
-        //long brokenParameterT2
-        //{
-        //    get { return 100; }
-        //}
-        //  long brokenParameterT1Value = 80;
-        /// <summary>
-        /// 用于计算破产相关参数
-        /// </summary>
-        //public long brokenParameterT1
-        //{
-        //    get
-        //    {
-        //        return brokenParameterT1Value;
-        //    }
-        //}
-        // internal OtherPlayers.BrokenParameterT1RecordChanged brokenParameterT1RecordChanged;
-        //internal void setBrokenParameterT1(long v, ref List<string> notifyMsg)
-        //{
-        //    var m1 = this.MoneyForSave;
-        //    this.brokenParameterT1Value = v;
-        //    brokenParameterT1RecordChanged(this.Key, this.Key, v, ref notifyMsg);
-        //    var m2 = this.MoneyForSave;
-        //    GetTheLargestHolderKey(ref notifyMsg);
-        //    if (m1 != m2)
-        //        if (this.playerType == PlayerType.player)
-        //            ((Player)this).SetMoneyCanSave((Player)this, ref notifyMsg);
-
-
-        //}
-        ///// <summary>
-        ///// 返回使玩家破产需要的资金！
-        ///// </summary>
-        ///// <param name="victim">玩家</param>
-        ///// <returns>返回使玩家破产需要的资金！</returns>
-        //public long LastDebt
-        //{
-        //    /*
-        //     * a asset资产
-        //     * d debt债务
-        //     * a+x=(d+x)*t
-        //     * t=t1/t2
-        //     * t1=120
-        //     * t2-100
-        //     */
-        //    get
-        //    {
-        //        long debt = 0;
-        //        foreach (var item in this.Debts)
-        //        {
-        //            debt += item.Value;
-        //        }
-        //        long asset = this.Money;
-        //        //const long t2 = 100;
-        //        //const long t1 = 120;
-        //        return Math.Max(1, (asset * brokenParameterT2 - debt * brokenParameterT1) / (brokenParameterT1 - brokenParameterT2));
-        //    }
-
-        //}
+        
 
         long LastMoneyCanUseForAttack
         {
@@ -506,13 +341,7 @@ namespace HouseManager4_0
         }
 
 
-
-
-
-        ///// <summary>
-        ///// 表征玩家在某一地点能,key是地点，long是金钱（分）
-        ///// </summary>
-        //protected Dictionary<int, long> TaxInPosition { get; set; }
+         
 
 
 
@@ -579,95 +408,17 @@ namespace HouseManager4_0
             }
         }
 
-        //{
-        //    var newValue = Math.Max(0, this.Money - intializedMoney - this.sumDebets * brokenParameterT1 / brokenParameterT2 * 2);
-        //    if (newValue == MoneyForSave) { }
-        //    else
-        //    {
-        //        MoneyForSave = newValue;
-        //    }
-        //    //   return Math.Max(0, this.Money - intializedMoney - this.sumDebets * brokenParameterT1 / brokenParameterT2 * 2);
-        //}
+        
 
         public RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb { get; set; }
-        //internal List<Model.MapGo.nyrqPosition> returnToBossRecord { get; set; }
-        //internal List<Model.MapGo.nyrqPosition> returnToSelfRecord { get; set; }
-        //public bool NeedToReturnToBoss
-        //{
-        //    get
-        //    {
-        //        if (returnToBossRecord == null)
-        //            return false;
-        //        else
-        //            return true;
-        //    }
-        //}
+       
 
         /// <summary>
         /// 当小车执行完宝石获取任务，回到基地后。用相应增加。
         /// </summary>
         public Dictionary<string, int> PromoteDiamondCount { get; set; }
 
-        //  public delegate void TaxChangedF(Player player, int Position, long AddValue, ref List<string> msgsWithUrl);
-        //public TaxChangedF TaxChanged { get; internal set; }
-
-
-
-        //internal long DebtsGet(string key)
-        //{
-        //    return this.Debts[key];
-        //}
-        //internal int DebtsPercent(string key)
-        //{
-        //    if (this.Debts.ContainsKey(key))
-        //    {
-        //        long sum = 0;
-        //        sum += this.Money;
-        //        foreach (var item in this.Debts)
-        //        {
-        //            sum += this.Magnify(item.Value);
-        //        }
-        //        sum = Math.Max(sum, 1);
-        //        var percent = Convert.ToInt32(this.Magnify(this.Debts[key]) * 1000 / sum);
-        //        return percent;
-        //    }
-        //    else
-        //    {
-        //        return 0;
-        //    }
-        //}
-        //internal void SetDebts(string key, long v, ref List<string> notifyMsg)
-        //{
-        //    this.Debts[key] = v;
-        //    this.GetTheLargestHolderKey(ref notifyMsg);
-        //}
-
-        //internal void DebtsRemove(string key, ref List<string> notifyMsg)
-        //{
-        //    if (this.playerType == PlayerType.player)
-        //    {
-        //        var player = ((Player)this);
-        //        player.PlayerDebtsRemove(key, ref notifyMsg);
-        //    }
-        //    this.Debts.Remove(key);
-        //}
-
-        /// <summary>
-        /// 此方法，用于债务放大权益（包括收益、债务重组）
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        //private long Magnify(long value)
-        //{
-        //    const long t1 = 105;
-        //    const long t2 = 100;
-        //    return value * t1 / t2;
-        //}
-        //internal long Magnify(long value)
-        //{
-        //    return value * this.brokenParameterT1 / this.brokenParameterT2;
-        //    //throw new NotImplementedException();
-        //}
+        
 
         public delegate void DrawSingleRoad(Player player, string roadCode, ref List<string> notifyMsg);
         public DrawSingleRoad DrawSingleRoadF;
@@ -726,10 +477,13 @@ namespace HouseManager4_0
         /// </summary>
         public Manager_Driver.ConfuseManger confuseRecord;
 
+
+        public Manager_Driver.ImproveManager improvementRecord;
         ///// <summary>
         ///// 混乱记录器，主要用于主动混乱
         ///// </summary>
         //public Manager_Driver.ConfuseManger confuseUsing = null;
+        public Engine_MagicEngine.SpeedMagicChanged speedMagicChanged;
     }
     public class Player : RoleInGame, interfaceTag.HasContactInfo
     {

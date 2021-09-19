@@ -98,7 +98,8 @@ namespace HouseManager4_0.RoomMainF
                             NotifyMsgs = notifyMsgs,
                             WebSocketID = webSocketID,
                             PlayerName = playerName,
-                            positionInStation = this._Players[getPosition.Key].positionInStation
+                            positionInStation = this._Players[getPosition.Key].positionInStation,
+                            fPIndex = this._Players[getPosition.Key].StartFPIndex
                         };
                     }
                     else
@@ -155,6 +156,7 @@ namespace HouseManager4_0.RoomMainF
             public string FromUrl { get; set; }
             public int WebSocketID { get; set; }
             public Model.FastonPosition Fp { get; set; }
+            public int fPIndex { get; set; }
             //public string[] CarsNames { get; set; }
             public List<string> NotifyMsgs { get; set; }
             public string PlayerName { get; set; }

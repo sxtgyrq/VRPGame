@@ -16,7 +16,7 @@ namespace HouseManager4_0
         }
 
         internal void SetReturnT(int t, commandWithTime.returnning returnning)
-        { 
+        {
             this.startNewThread(t + 1, returnning, this);
             //Thread th = new Thread(() => setReturn(t, returnning));
             //th.Start();
@@ -62,15 +62,24 @@ namespace HouseManager4_0
             //  that.getStartPositon(Program.dt.GetFpByIndex(cmp.target), (boss.positionInStation + 1) % 5, ref startT);
             var boss = cmp.returningOjb.Boss;
 
-            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT);
+            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
             var self = player;
-            that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT);
+            that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
             // result.RemoveAll(item => item.t == 0);
 
             car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
             car.targetFpIndex = self.StartFPIndex;
+
             Data.PathStartPoint2 startPosition;
-            that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToSelfAddrPath);
+            if (cmp.returningOjb.returnToSelfAddrPath.Count == 0)
+            {
+                that.getStartPositionByFp(out startPosition, Program.dt.GetFpByIndex(player.StartFPIndex));
+            }
+            else
+            {
+                that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToSelfAddrPath);
+            }
+
             car.setAnimateData(player, ref notifyMsg,
                 new AnimateData2(startPosition, result, DateTime.Now, false));
             this.startNewThread(startT, new commandWithTime.comeBack()
@@ -96,10 +105,10 @@ namespace HouseManager4_0
 
                         Data.PathStartPoint2 startPosition;
                         var fp1 = Program.dt.GetFpByIndex(boss.StartFPIndex);
-                        result = that.getStartPositon(fp1, boss.positionInStation + 1, ref startT, out startPosition);
-                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT);
+                        result = that.getStartPositon(fp1, boss.positionInStation + 1, ref startT, out startPosition, player.improvementRecord.speedValue > 0);
+                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
                         var self = player;
-                        that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT);
+                        that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
                         // result.RemoveAll(item => item.t == 0);
 
                         car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
@@ -122,8 +131,8 @@ namespace HouseManager4_0
                         //  that.getStartPositon(Program.dt.GetFpByIndex(cmp.target), (boss.positionInStation + 1) % 5, ref startT);
                         var boss = cmp.returningOjb.Boss;
 
-                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToBossAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT);
-                        that.getEndPositon(Program.dt.GetFpByIndex(boss.StartFPIndex), boss.positionInStation + 1, ref result, ref startT);
+                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToBossAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+                        that.getEndPositon(Program.dt.GetFpByIndex(boss.StartFPIndex), boss.positionInStation + 1, ref result, ref startT, player.improvementRecord.speedValue > 0);
                         // result.RemoveAll(item => item.t == 0);
 
                         car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
@@ -173,6 +182,8 @@ namespace HouseManager4_0
                     //  var moneyCanSave1 = player.GetMoneyCanSave();
 
                     player.MoneySet(player.Money + car.ability.costBusiness + car.ability.costVolume, ref notifyMsg);
+
+                    player.improvementRecord.reduceSpeed(player, car.ability.costBusiness + car.ability.costVolume, ref notifyMsg);
                     //player.Money += car.ability.costBusiness;
                     //player.Money += car.ability.costVolume;
 

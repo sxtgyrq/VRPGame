@@ -265,6 +265,8 @@ namespace HouseManager4_0
                     npc.BeingMolestedM = this.BeingMolestedM;
                     //npc.BeAttacked=
                     npc.confuseRecord = new Manager_Driver.ConfuseManger();
+                    npc.improvementRecord = new Manager_Driver.ImproveManager();
+                    npc.speedMagicChanged = that.speedMagicChanged;
                     //npc.confuseUsing = null;
                 }
             }

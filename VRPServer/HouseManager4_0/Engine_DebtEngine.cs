@@ -127,7 +127,7 @@ namespace HouseManager4_0
 
                                 //if(victim.Money*100/ car.ability.Business)
                                 long reduceSum = 0;
-                                var m = victim.Money;
+                                var m = victim.Money - reduceSum;
                                 long reduce;
                                 if (m > 0)
                                 {
@@ -141,19 +141,21 @@ namespace HouseManager4_0
                                     reduce = Math.Max(1, reduce);
                                     at.setCost(reduce, player, car, ref notifyMsg);
                                     this.WebNotify(victim, $"【{player.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
-                                    m -= reduce;
+
                                     reduceSum += reduce;
                                 }
                                 else
                                 {
-                                    reduce = 0;
                                     reduceSum = 0;
+                                    reduce = 0;
                                 }
 
-                                that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref m, ref reduceSum);
+                                that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref reduceSum);
 
-                                victim.MoneySet(m - reduceSum, ref notifyMsg);
-                                this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
+                                if (reduceSum > 0)
+                                    victim.MoneySet(victim.Money - reduceSum, ref notifyMsg);
+                                if (reduce > 0)
+                                    this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
                                 if (victim.Money == 0)
                                 {
                                     victim.SetBust(true, ref notifyMsg);
@@ -214,7 +216,7 @@ namespace HouseManager4_0
 
         }
 
-        private long getAttackPercentValue(RoleInGame player, RoleInGame victim)
+        internal long getAttackPercentValue(RoleInGame player, RoleInGame victim)
         {
             if (player.TheLargestHolderKey == victim.Key)
             {
