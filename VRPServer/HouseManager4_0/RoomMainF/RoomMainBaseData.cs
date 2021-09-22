@@ -102,7 +102,10 @@ namespace HouseManager4_0.RoomMainF
             { "volume",1000},
             { "speed",1000},
         };
-
+        /// <summary>
+        /// 获取所有角色
+        /// </summary>
+        /// <returns></returns>
         protected List<RoleInGame> getGetAllRoles()
         {
             List<RoleInGame> players = new List<RoleInGame>();

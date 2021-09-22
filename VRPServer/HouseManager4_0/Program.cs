@@ -87,6 +87,7 @@ namespace HouseManager4_0
                 Program.rm.ClearPlayers();
                 Program.rm.SetNPC();
                 Thread.Sleep(30 * 1000);
+                
             }
             //  throw new NotImplementedException();
         }

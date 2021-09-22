@@ -88,6 +88,7 @@ namespace HouseManager4_0
             this._Money = intializedMoney;
             // this.Money = intializedMoney;
             this.SupportToPlay = null;
+
         }
 
         internal void initializeOthers()
@@ -183,7 +184,11 @@ namespace HouseManager4_0
         {
             this.TheLargestHolderKey = this.Key;
         }
-        internal void SetTheLargestHolder(Player boss)
+        /// <summary>
+        /// 设置老大。
+        /// </summary>
+        /// <param name="boss"></param>
+        internal void SetTheLargestHolder(RoleInGame boss)
         {
             this.TheLargestHolderKey = boss.Key;
         }
@@ -240,7 +245,7 @@ namespace HouseManager4_0
 
             // GetTheLargestHolderKey(ref notifyMsg);
         }
- 
+
 
         /// <summary>
         /// 可用于攻击的金钱。
@@ -294,7 +299,7 @@ namespace HouseManager4_0
             //}
         }
 
-        
+
 
         long LastMoneyCanUseForAttack
         {
@@ -341,7 +346,7 @@ namespace HouseManager4_0
         }
 
 
-         
+
 
 
 
@@ -408,17 +413,17 @@ namespace HouseManager4_0
             }
         }
 
-        
+
 
         public RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb { get; set; }
-       
+
 
         /// <summary>
         /// 当小车执行完宝石获取任务，回到基地后。用相应增加。
         /// </summary>
         public Dictionary<string, int> PromoteDiamondCount { get; set; }
 
-        
+
 
         public delegate void DrawSingleRoad(Player player, string roadCode, ref List<string> notifyMsg);
         public DrawSingleRoad DrawSingleRoadF;
@@ -428,13 +433,13 @@ namespace HouseManager4_0
 
         internal void addUsedRoad(string roadCode, ref List<string> notifyMsgs)
         {
-            if (this.usedRoad.ContainsKey(roadCode)) { }
-            else
-            {
-                this.usedRoad.Add(roadCode, true);
-                if (this.playerType == PlayerType.player)
+            if (this.playerType == PlayerType.player)
+                if (this.usedRoad.ContainsKey(roadCode)) { }
+                else
+                {
+                    this.usedRoad.Add(roadCode, true);
                     this.DrawSingleRoadF((Player)this, roadCode, ref notifyMsgs);
-            }
+                }
         }
         internal void clearUsedRoad()
         {
@@ -484,6 +489,21 @@ namespace HouseManager4_0
         ///// </summary>
         //public Manager_Driver.ConfuseManger confuseUsing = null;
         public Engine_MagicEngine.SpeedMagicChanged speedMagicChanged;
+        public Engine_MagicEngine.AttackMagicChanged attackMagicChanged;
+        public Engine_MagicEngine.DefenceMagicChanged defenceMagicChanged;
+
+        public Engine_MagicEngine.ConfusePrepareMagicChanged confusePrepareMagicChanged;
+        public Engine_MagicEngine.LostPrepareMagicChanged lostPrepareMagicChanged;
+        public Engine_MagicEngine.AmbushPrepareMagicChanged ambushPrepareMagicChanged;
+        public Engine_MagicEngine.ControlPrepareMagicChanged controlPrepareMagicChanged;
+
+        public Engine_MagicEngine.ConfuseMagicChanged confuseMagicChanged;
+        public Engine_MagicEngine.ConfuseMagicChanged loseMagicChanged;
+
+        public Engine_MagicEngine.FireMagicChanged fireMagicChanged;
+        public Engine_MagicEngine.WaterMagicChanged waterMagicChanged;
+        public Engine_MagicEngine.ElectricMagicChanged electricMagicChanged;
+        // fireMagicChanged
     }
     public class Player : RoleInGame, interfaceTag.HasContactInfo
     {
@@ -536,13 +556,23 @@ namespace HouseManager4_0
         {
             this.afterBroke(this, ref notifyMsg);
         }
+        public System.Numerics.Complex direciton = 0;
     }
     public class NPC : RoleInGame
     {
 
         public delegate void BeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsgs);
         public BeingAttacked BeingAttackedM;
+
+        internal void CopyChanlleger(string challenger_)
+        {
+            this._challenger = challenger_;
+        }
+
         string _challenger = "";
+        /// <summary>
+        /// 挑战者，npc对挑战者的态度是不死方休
+        /// </summary>
         public string challenger { get { return this._challenger; } }
 
         public void BeingAttackedF(string keyOfAttacker, ref List<string> notifyMsgs)
@@ -559,6 +589,10 @@ namespace HouseManager4_0
 
         public delegate void NPCOperateF(NPC npc, ref List<string> notifyMsgs);
         public NPCOperateF afterWaitedM;
+        /// <summary>
+        ///  NPC的状态为CarState.waitOnRoad时，对NPC发布命令。
+        /// </summary>
+        /// <param name="notifyMsgs"></param>
         public void dealWithWaitedNPC(ref List<string> notifyMsgs)
         {
             this.afterWaitedM(this, ref notifyMsgs);
@@ -587,9 +621,35 @@ namespace HouseManager4_0
         //    if (string.IsNullOrEmpty(this._challenger))
         //        this._molester = key;
         //}
+        /// <summary>
+        /// 骚扰者，npc对待骚扰者的态度是教训一下即可！
+        /// </summary>
         public string molester { get { return this._molester; } }
 
         public NPCOperateF BeingMolestedM;
+
+        public class AttackTag
+        {
+            public string Target { get; set; }
+            public enum AttackType
+            {
+                attack,
+                electric,
+                fire,
+                water,
+                ambush,
+                confuse,
+                lose,
+                speed,
+                attackImprove,
+                defendImprove
+            }
+            public AttackType aType { get; set; }
+            public double HarmValue { get; internal set; }
+            public FastonPosition fpPass { get; internal set; }
+        }
+        internal AttackTag attackTag = null;
+
         public bool BeingMolestedF(string keyOfMolester, ref List<string> notifyMsgs)
         {
             if (!this.Bust)
@@ -635,6 +695,8 @@ namespace HouseManager4_0
             }
             notifyMsg = null;
         }
+
+
     }
 
     public class OtherPlayers

@@ -54,8 +54,24 @@ var objMain =
     cars: {},
     rmbModel: {},
     ModelInput: {
-        speed: null
+        speed: null,
+        attack: null,
+        shield: null,
+        confusePrepare: null,
+        lostPrepare: null,
+        ambushPrepare: null,
+        water: null,
+        direction: null
     },
+    shieldGroup: null,
+    confusePrepareGroup: null,
+    lostPrepareGroup: null,
+    ambushPrepareGroup: null,
+    waterGroup: null,
+    fireGroup: null,
+    lightningGroup: null,
+    directionGroup: null,
+    clock: null,
     leaveGameModel: null,
     profileModel: null,
     light1: null,
@@ -1048,9 +1064,101 @@ var objMain =
                             objMain.ModelInput.speed = objectInput;
 
                         },
-                        transparent: { opacity: 0.7 }
+                        transparent: { opacity: 0.7 },
+                        color: { r: 2, g: 1, b: 2 }
                     });
                     objMain.ws.send('SetSpeedIcon');
+                }; break;
+            case 'SetAttackIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            objMain.ModelInput.attack = objectInput;
+
+                        },
+                        transparent: { opacity: 0.5 },
+                        color: { r: 2, g: 2, b: 0.4 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetAttackIcon');
+                }; break;
+            case 'SetShield':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            objMain.ModelInput.shield = objectInput;
+
+                        },
+                        transparent: { opacity: 0.8 },
+                        color: { r: 2, g: 1, b: 1 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetShield');
+                }; break;
+            case 'SetConfusePrepareIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            objMain.ModelInput.confusePrepare = objectInput;
+
+                        },
+                        transparent: { opacity: 0.8 },
+                        color: { r: 1.5, g: 1.5, b: 1.5 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetConfusePrepareIcon');
+                }; break;
+            case 'SetLostPrepareIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            objMain.ModelInput.lostPrepare = objectInput;
+
+                        },
+                        transparent: { opacity: 1 },
+                        color: { r: 1, g: 1.2, b: 1.2 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetLostPrepareIcon');
+                }; break;
+            case 'SetAmbushPrepareIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            objMain.ModelInput.ambushPrepare = objectInput;
+
+                        },
+                        transparent: { opacity: 1 },
+                        color: { r: 1.3, g: 0.9, b: 0.9 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetAmbushPrepareIcon');
+                }; break;
+            case 'SetWaterIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            //objMain.ModelInput.ambushPrepare = objectInput;
+                            objMain.ModelInput.water = objectInput;
+                        },
+                        //transparent: { opacity: 0.2 },
+                        //color: { r: 1, g: 1, b: 1 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetWaterIcon');
+                }; break;
+            case 'SetDirectionIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            //objMain.ModelInput.ambushPrepare = objectInput;
+                            objMain.ModelInput.direction = objectInput;
+                        },
+                        //transparent: { opacity: 0.2 },
+                        //color: { r: 1, g: 1, b: 1 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetDirectionIcon');
                 }; break;
             case 'BradCastAnimateOfCar':
                 {
@@ -1448,6 +1556,95 @@ var objMain =
                     if (received_obj.On) { stateSet.speed.add(received_obj.Key); }
                     else { stateSet.speed.clear(received_obj.Key); }
                 }; break;
+            case 'AttackNotify':
+                {
+                    if (received_obj.On) { stateSet.attck.add(received_obj.Key); }
+                    else { stateSet.attck.clear(received_obj.Key); }
+                }; break;
+            case 'DefenceNotify':
+                {
+                    if (received_obj.On) { stateSet.defend.add(received_obj.Key); }
+                    else { stateSet.defend.clear(received_obj.Key); }
+                }; break;
+            case 'ViewSearch':
+                {
+                    var animationData =
+                    {
+                        old: {
+                            x: objMain.controls.target.x,
+                            y: objMain.controls.target.y,
+                            z: objMain.controls.target.z,
+                            t: Date.now()
+                        },
+                        newT:
+                        {
+                            x: received_obj.mctX,
+                            y: objMain.controls.target.y,
+                            z: 0 - received_obj.mctY,
+                            t: Date.now() + 3000
+                        }
+                    };
+                    objMain.camaraAnimateData = animationData;
+                }; break;
+            case 'ConfusePrepareNotify':
+                {
+                    if (received_obj.On) {
+                        stateSet.control.clear(received_obj.Key);
+                        var animateData = { startX: received_obj.StartX / 256, startY: objMain.controls.target.y, startZ: received_obj.StartY / -256, start: Date.now(), endX: received_obj.EndX / 256, endY: objMain.controls.target.y, endZ: received_obj.EndY / -256 };
+                        stateSet.confusePrepare.add(received_obj.Key, animateData);
+                    }
+                }; break;
+            case 'LostPrepareNotify':
+                {
+                    if (received_obj.On) {
+                        stateSet.control.clear(received_obj.Key);
+                        var animateData = { startX: received_obj.StartX / 256, startY: objMain.controls.target.y, startZ: received_obj.StartY / -256, start: Date.now(), endX: received_obj.EndX / 256, endY: objMain.controls.target.y, endZ: received_obj.EndY / -256 };
+                        stateSet.lostPrepare.add(received_obj.Key, animateData);
+                    }
+                }; break;
+            case 'AmbushPrepareNotify':
+                {
+                    if (received_obj.On) {
+                        stateSet.control.clear(received_obj.Key);
+                        var animateData = { startX: received_obj.StartX / 256, startY: objMain.controls.target.y, startZ: received_obj.StartY / -256, start: Date.now(), endX: received_obj.EndX / 256, endY: objMain.controls.target.y, endZ: received_obj.EndY / -256 };
+                        stateSet.ambusePrepare.add(received_obj.Key, animateData);
+                    }
+                }; break;
+            case 'ControlPrepareNotify':
+                {
+                    if (received_obj.On) {
+                    }
+                    else {
+                        // stateSet.confusePrepare.clear(received_obj.Key);
+                        stateSet.control.clear(received_obj.Key);
+                    }
+                }; break;
+            case 'LoseNotify':
+                {
+                    if (received_obj.On) { stateSet.lost.add(received_obj.Key); }
+                    else { stateSet.lost.clear(received_obj.Key); }
+                }; break;
+            case 'ConfuseNotify':
+                {
+                    if (received_obj.On) { stateSet.confuse.add(received_obj.Key); }
+                    else { stateSet.confuse.clear(received_obj.Key); }
+                }; break;
+            case 'FireNotify':
+                {
+                    stateSet.fire.add(received_obj.targetRoleID, received_obj.actionRoleID);
+                }; break;
+            case 'WaterNotify':
+                {
+                    stateSet.water.add(received_obj.targetRoleID, received_obj.actionRoleID);
+                }; break;
+            case 'ElectricNotify':
+                {
+                    stateSet.lightning.add(received_obj.targetRoleID, received_obj.actionRoleID);
+                }; break;
+            case 'ShowDirectionOperator':
+                {
+                    DirectionOperator.show(received_obj);
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -1565,39 +1762,10 @@ function animate() {
                         objMain.camera.position.set(x + unitX, y + unitY, z + unitZ);
                         objMain.camera.lookAt(x, y, z);
                     }
-                    // var percent = objMain.camaraAnimateData.newT.t
-
-                    //old: {
-                    //    x: objMain.controls.target.x,
-                    //        y: objMain.controls.target.y,
-                    //            z: objMain.controls.target.z,
-                    //                t: Date.now()
-                    //},
-                    //newT:
-                    //{
-                    //    x: objMain.selectObj.obj.position.x,
-                    //        y: objMain.selectObj.obj.position.y,
-                    //            z: objMain.selectObj.obj.position.z,
-                    //                t: Date.now() + 1000
-                    //}
                 }
 
             }
 
-            //if (clothForRender.cloth != null) {
-
-            //    clothForRender.simulate(Date.now());
-            //    const p = clothForRender.cloth.particles;
-            //    for (let i = 0, il = p.length; i < il; i++) {
-
-            //        const v = p[i].position;
-
-            //        clothForRender.clothGeometry.attributes.position.setXYZ(i, v.x, v.y, v.z);
-
-            //    }
-            //    clothForRender.clothGeometry.attributes.position.needsUpdate = true;
-            //    clothForRender.clothGeometry.computeVertexNormals();
-            //}
             for (var i = 0; i < objMain.collectGroup.children.length; i++) {
                 /*
                  * 初始化人民币的大小
@@ -1624,15 +1792,16 @@ function animate() {
                  */
 
                 if (objMain.playerGroup.children[i].isMesh) {
-                    //if (objMain.Task.state == 'attack') {
-                    //    objMain.playerGroup.children[i].scale.set(0.0005 / 3 * lengthOfCC, 0.0005 / 3 * lengthOfCC, 0.0005 / 3 * lengthOfCC);
-                    //    objMain.playerGroup.children[i].position.y = lengthOfCC * 0.024 + 0.028;
-
-                    //}
-                    //else
                     {
                         objMain.playerGroup.children[i].scale.set(0.0015, 0.0015, 0.0015);
                         objMain.playerGroup.children[i].position.y = 0.1;
+                        stateSet.defend.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                        stateSet.confusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                        stateSet.lostPrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                        stateSet.ambusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                        stateSet.water.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                        stateSet.fire.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                        stateSet.lightning.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
                     }
                 }
             }
@@ -1756,7 +1925,7 @@ function animate() {
                         }
                     }
 
-                    if (objMain.carState == 'waitAtBaseStation')
+                    if (objMain.carState.car == 'waitAtBaseStation')
                         for (var i = 0; i < objMain.columnGroup.children.length; i++) {
                             if (objMain.columnGroup.children[i].isMesh) {
                                 {
@@ -2006,28 +2175,21 @@ function animate() {
                     objMain.carGroup.children[i].scale.set(0.002, 0.002, 0.002);
                     objMain.carGroup.children[1].name.split('_')[1]
                     stateSet.speed.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                    stateSet.attck.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                    stateSet.confuse.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                    stateSet.lost.Animate(objMain.carGroup.children[i].name.split('_')[1]);
                 }
             }
 
 
 
-            for (var i = 0; i < objMain.playerGroup.children.length; i++) {
-                /*
-                 * 初始化 旗帜的大小
-                 */
+            //for (var i = 0; i < objMain.playerGroup.children.length; i++) {
+            //    /*
+            //     * 初始化 旗帜的大小
+            //     */
 
-                //if (objMain.playerGroup.children[i].isMesh) {
-                //    if (objMain.Task.state == 'attack') {
-                //        objMain.playerGroup.children[i].scale.set(0.0005 / 3 * lengthOfCC, 0.0005 / 3 * lengthOfCC, 0.0005 / 3 * lengthOfCC);
-                //        objMain.playerGroup.children[i].position.y = lengthOfCC * 0.024 + 0.028;
 
-                //    }
-                //    else {
-                //        objMain.playerGroup.children[i].scale.set(0.0005, 0.0005, 0.0005);
-                //        objMain.playerGroup.children[i].position.y = 0.1;
-                //    }
-                //}
-            }
+            //}
 
             var lengthOfPAndC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
 
@@ -2150,6 +2312,33 @@ function animate() {
                                 if (!complexV.isZero()) {
                                     objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
                                 }
+
+                            }
+                            if (isSelf && isAnimation && objMain.carState.car == 'selecting') {
+                                //  console.log('');
+                                //  alert('selecting');
+                                objMain.controls.target.set(x, 0, -y);
+                                var angle = objMain.controls.getPolarAngle();
+                                //if(
+                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                                var distance = 8;
+                                if (dCal >= 9) {
+                                    distance = dCal * 0.99 - 0.01;
+                                }
+                                else if (dCal <= 7) {
+                                    distance = dCal * 1.01 + 0.01;
+                                }
+                                var unitY = distance * Math.cos(angle);
+                                var unitZX = distance * Math.sin(angle);
+
+                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                                var unitX = unitZX * Math.sin(angleOfCamara);
+                                var unitZ = unitZX * Math.cos(angleOfCamara);
+                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                                objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
+                                objMain.camera.lookAt(x, 0, -y);
                             }
                         }
                     }
@@ -2158,6 +2347,10 @@ function animate() {
 
                     //}
                 }
+            }
+
+            if (objMain.carState == 'selecting') {
+
             }
             objMain.animation.animateCameraByCarAndTask();
 
@@ -2295,6 +2488,32 @@ var set3DHtml = function () {
     objMain.taxGroup = new THREE.Group();
     objMain.scene.add(objMain.taxGroup);
 
+    objMain.shieldGroup = new THREE.Group();
+    objMain.scene.add(objMain.shieldGroup);
+
+    objMain.confusePrepareGroup = new THREE.Group();
+    objMain.scene.add(objMain.confusePrepareGroup);
+
+    objMain.lostPrepareGroup = new THREE.Group();
+    objMain.scene.add(objMain.lostPrepareGroup);
+
+    objMain.ambushPrepareGroup = new THREE.Group();
+    objMain.scene.add(objMain.ambushPrepareGroup);
+
+    objMain.waterGroup = new THREE.Group();
+    objMain.scene.add(objMain.waterGroup);
+
+    objMain.fireGroup = new THREE.Group();
+    objMain.scene.add(objMain.fireGroup);
+
+    objMain.lightningGroup = new THREE.Group();
+    objMain.scene.add(objMain.lightningGroup);
+
+    objMain.directionGroup = new THREE.Group();
+    objMain.scene.add(objMain.directionGroup);
+
+    objMain.clock = new THREE.Clock();
+
     {
         objMain.light1 = new THREE.PointLight(0xffffff);
         objMain.light1.position.set(-100, 300, -100);
@@ -2323,6 +2542,10 @@ var set3DHtml = function () {
 
     var operateEnd = function (event) {
         operatePanel.refresh();
+
+        var json = JSON.stringify({ c: 'ViewAngle', x1: objMain.camera.position.x, y1: -objMain.camera.position.z, x2: objMain.controls.target.x, y2: -objMain.controls.target.z });
+        objMain.ws.send(json);
+        //objMain.ws
         return;
     }
     var operateStart = function (event) {
@@ -2350,30 +2573,7 @@ function onWindowResize() {
     objMain.renderer.setSize(window.innerWidth, window.innerHeight);
     carAbility.refreshPosition();
 }
-//var mouseClickInterviewState = (function () {
-//    this.i = [0, 100000];
-//    this.step = 0;
-//    var that = this;
-//    this.click = function () {
-//        that.i[that.step] = Date.now();
-//        that.step++;
-//        that.step = that.step % 2;
-//        if (Math.abs(that.i[1] - that.i[0]) < 400) {
-//            console.log('双击时间', Math.abs(that.i[1] - that.i[0]));
-//            that.init();
-//            return true;
-//        }
-//        else {
-//            console.log('双击时间', Math.abs(that.i[1] - that.i[0]));
-//            return false;
-//        }
-//    };
-//    this.init = function () {
-//        that.i[0] = 0; that.i[1] = 100000; that.step = 0;
-//        return that;
-//    }
-//    return this;
-//})().init();
+
 
 var MapData =
 {
@@ -3466,20 +3666,28 @@ var ModelOperateF =
                                     for (var mi = 0; mi < object.children[iOfO].material.length; mi++) {
                                         object.children[iOfO].material[mi].transparent = true;
                                         object.children[iOfO].material[mi].opacity = config.transparent.opacity;
-                                        //object.children[iOfO].material[mi].side = THREE.FrontSide;
-                                        object.children[iOfO].material[mi].color = new THREE.Color(2, 1, 2);
                                     }
                                 }
                             }
                         }
-                        if (config.bind != undefined) {
-                            config.bind(object);
+                        if (config.color != undefined) {
+                            for (var iOfO = 0; iOfO < object.children.length; iOfO++) {
+                                if (object.children[iOfO].isMesh) {
+                                    for (var mi = 0; mi < object.children[iOfO].material.length; mi++) {
+                                        object.children[iOfO].material[mi].color = new THREE.Color(config.color.r, config.color.g, config.color.b);
+                                    }
+                                }
+                            }
                         }
                         if (config.rotate != undefined) {
                             object.rotateX(config.rotate.x);
                             object.rotateX(config.rotate.y);
                             object.rotateX(config.rotate.z);
                         }
+                        if (config.bind != undefined) {
+                            config.bind(object);
+                        }
+
 
 
                     }, function () { }, function () { });
@@ -3493,7 +3701,7 @@ var stateSet =
     {
         add: function (carId) {
             for (var i = 0; i < 2; i++) {
-                meshCopy = objMain.ModelInput.speed.children[0].clone();
+                var meshCopy = objMain.ModelInput.speed.children[0].clone();
                 meshCopy.name = 'fire' + i.toString() + '_' + carId;
                 meshCopy.position.x = 77;//97.11
                 meshCopy.position.z = 4 - i * 18;
@@ -3529,8 +3737,570 @@ var stateSet =
                     }
                 }
         },
+    },
+    attck:
+    {
+        add: function (carId) {
+            {
+                var meshCopy = objMain.ModelInput.attack.children[0].clone();
+                meshCopy.name = 'fist_' + carId;
+                meshCopy.position.x = -0;//97.11
+                meshCopy.position.y = -30;
+                meshCopy.position.z = 0;
+                meshCopy.rotateX(Math.PI / 2);
+                meshCopy.rotateY(Math.PI);
+                meshCopy.scale.set(5, 5, 5);// = 2;//3
+                var car = objMain.carGroup.getObjectByName('car_' + carId);
+                if (car)
+                    car.add(meshCopy);
+            }
+        },
+        Animate: function (carId) {
+            //input Is group
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car) {
+                var name = 'fist_' + carId;
+                var fist = car.getObjectByName(name);
+                if (fist) {
+                    var percent = (Date.now() % 500) / 500;
+                    if (percent < 0.3) {
+                        percent = percent / 0.3;
+                    }
+                    else {
+                        percent = (1 - percent) / 0.7;
+                    }
+                    fist.position.x = -40 + (-35 - (-40)) * percent;
+                }
+            }
+        },
+        clear: function (carId) {
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car) {
+                var name = 'fist_' + carId;
+                var fist = car.getObjectByName(name);
+                if (fist) {
+                    car.remove(fist);
+                }
+            }
+        },
+    },
+    defend:
+    {
+        add: function (carId) {
+            {
+                var flag = objMain.playerGroup.getChildByName('flag_' + carId);
+                if (flag) {
+                    var O3d = new THREE.Object3D();
+                    O3d.name = 'defender_' + carId;
+                    O3d.position.set(flag.position.x, flag.position.y, flag.position.z);
+
+                    for (var i = 0; i < 3; i++) {
+                        var meshCopy = objMain.ModelInput.shield.children[0].clone();
+                        meshCopy.name = 'shield' + i.toString() + '_' + carId;
+                        meshCopy.position.x = 0.8 * Math.cos(i * 2 * Math.PI / 3);//97.11
+                        meshCopy.position.y = 0.5;
+                        meshCopy.position.z = 0.8 * Math.sin(i * 2 * Math.PI / 3);
+                        meshCopy.scale.set(0.003, 0.003, 0.003);
+                        meshCopy.rotateX(Math.PI / 2);
+                        meshCopy.rotateZ(-Math.PI / 2 + i * 2 * Math.PI / 3);
+                        O3d.add(meshCopy);
+                    }
+                    objMain.shieldGroup.add(O3d);
+                }
+            }
+        },
+        Animate: function (carId) {
+            //input Is group
+            var O3dname = 'defender_' + carId;
+
+            var O3d = objMain.shieldGroup.getObjectByName(O3dname);
+            if (O3d) {
+                O3d.rotation.y = (Math.sin((Date.now() % 2000) / 2000 * Math.PI * 2) + 1) * Math.PI;
+            }
+        },
+        clear: function (carId) {
+            var O3dname = 'defender_' + carId;
+            var O3d = objMain.shieldGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var length = O3d.children.length;
+                for (var i = length - 1; i >= 0; i--) {
+                    O3d.remove(O3d.children[i]);
+                }
+                objMain.shieldGroup.remove(O3d);
+            }
+            //var car = objMain.carGroup.getObjectByName('car_' + carId);
+            //if (car) {
+            //    var name = 'fist_' + carId;
+            //    var fist = car.getObjectByName(name);
+            //    if (fist) {
+            //        car.remove(fist);
+            //    }
+            //}
+        }
+    },
+    confusePrepare:
+    {
+        add: function (carId, animateData) {
+            {
+                //var flag = objMain.playerGroup.getChildByName('flag_' + carId);
+                //if (flag)
+                // var animateData = { startX: objMain.controls.target.x, startY: objMain.controls.target.y, startZ: objMain.controls.target.z, start: Date.now(), endX: objMain.controls.target.x + 5, endY: objMain.controls.target.y, endZ: objMain.controls.target.z }
+                {
+                    var O3d = new THREE.Object3D();
+                    O3d.name = 'confusePrepare_' + carId;
+                    O3d.position.set(animateData.startX, animateData.startY, animateData.startZ);
+
+                    {
+                        var meshCopy = objMain.ModelInput.confusePrepare.children[0].clone();
+                        meshCopy.name = 'confusePrepareChild_' + carId;
+                        meshCopy.position.x = 0;//97.11
+                        meshCopy.position.y = 0;
+                        meshCopy.position.z = 0;
+                        meshCopy.scale.set(0.05, 0.05, 0.05);
+                        meshCopy.rotateX(Math.PI / 2);
+                        //meshCopy.rotateZ(-Math.PI / 2 + i * 2 * Math.PI / 3);
+                        O3d.add(meshCopy);
+                    }
+                    O3d.userData.animateData = animateData;
+                    objMain.confusePrepareGroup.add(O3d);
+                }
+            }
+        },
+        Animate: function (carId) {
+            //input Is group
+            var O3dname = 'confusePrepare_' + carId;
+
+            var O3d = objMain.confusePrepareGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var userData = O3d.userData.animateData;
+                var percent = ((Date.now() - userData.start) % 3000) / 3000;
+                var positionX = userData.startX + percent * (userData.endX - userData.startX);
+                var positionY = userData.startY + percent * (userData.endY - userData.startY);
+                var positionZ = userData.startZ + percent * (userData.endZ - userData.startZ);
+                O3d.position.set(positionX, positionY, positionZ);
+
+                O3d.children[0].position.set(0.1 * Math.sin(percent * 20), 0.06 * Math.sin(percent * 10), 0.08 * Math.sin(percent * 15));
+                O3d.children[0].rotation.set((percent * 1.7 % 1) * Math.PI * 2, (percent * 1.1 % 1) * Math.PI * 2, (percent * 1.3 % 1) * Math.PI * 2)
+
+            }
+        },
+        clear: function (carId) {
+            var O3dname = 'confusePrepare_' + carId;
+            var O3d = objMain.confusePrepareGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var length = O3d.children.length;
+                for (var i = length - 1; i >= 0; i--) {
+                    O3d.remove(O3d.children[i]);
+                }
+                objMain.confusePrepareGroup.remove(O3d);
+            }
+            //var car = objMain.carGroup.getObjectByName('car_' + carId);
+            //if (car) {
+            //    var name = 'fist_' + carId;
+            //    var fist = car.getObjectByName(name);
+            //    if (fist) {
+            //        car.remove(fist);
+            //    }
+            //}
+        }
+    },
+    confuse:
+    {
+        add: function (carId) {
+            var meshCopy = objMain.ModelInput.confusePrepare.children[0].clone();
+            meshCopy.name = 'confuse' + '_' + carId;
+            meshCopy.position.y = 18;
+            meshCopy.scale.set(5, 5, 5);
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car)
+                car.add(meshCopy);
+        },
+        Animate: function (carId) {
+            //input Is group
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car) {
+                var name = 'confuse' + '_' + carId;
+                var confuseTag = car.getObjectByName(name);
+                if (confuseTag) {
+                    var t = (Date.now() % 1500 - 750) / 750;
+                    var deltaT = (Date.now() % 10000) / 10000;
+                    confuseTag.rotation.set(0, Math.abs(t * Math.PI) + deltaT * 2 * Math.PI, 0, 'XYZ')
+                }
+            }
+        },
+        clear: function (carId) {
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car) {
+                var name = 'confuse' + '_' + carId;
+                var confuseTag = car.getObjectByName(name);
+                if (confuseTag) {
+                    car.remove(confuseTag);
+                }
+            }
+        }
+    },
+    lostPrepare:
+    {
+        add: function (carId, animateData) {
+            {
+                //var flag = objMain.playerGroup.getChildByName('flag_' + carId);
+                //if (flag)
+                // var animateData = { startX: objMain.controls.target.x, startY: objMain.controls.target.y, startZ: objMain.controls.target.z, start: Date.now(), endX: objMain.controls.target.x + 5, endY: objMain.controls.target.y, endZ: objMain.controls.target.z }
+                {
+                    var O3d = new THREE.Object3D();
+                    O3d.name = 'lostPrepare_' + carId;
+                    O3d.position.set(animateData.startX, animateData.startY, animateData.startZ);
+
+                    {
+                        var meshCopy = objMain.ModelInput.lostPrepare.children[0].clone();
+                        meshCopy.name = 'lostPrepareChild_' + carId;
+                        meshCopy.position.x = 0;//97.11
+                        meshCopy.position.y = 0;
+                        meshCopy.position.z = 0.0;
+                        meshCopy.scale.set(0.015, 0.015, 0.015);
+                        //meshCopy.rotateX(Math.PI / 2);
+                        meshCopy.rotateZ(Math.PI / 2);
+                        //meshCopy.rotateZ(-Math.PI / 2 + i * 2 * Math.PI / 3);
+                        O3d.add(meshCopy);
+                    }
+                    O3d.userData.animateData = animateData;
+                    objMain.lostPrepareGroup.add(O3d);
+                }
+            }
+        },
+        Animate: function (carId) {
+            //input Is group
+            var O3dname = 'lostPrepare_' + carId;
+
+            var O3d = objMain.lostPrepareGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var userData = O3d.userData.animateData;
+                var percent = ((Date.now() - userData.start) % 3000) / 3000;
+                var positionX = userData.startX + percent * (userData.endX - userData.startX);
+                var positionY = userData.startY + percent * (userData.endY - userData.startY);
+                var positionZ = userData.startZ + percent * (userData.endZ - userData.startZ);
+                O3d.position.set(positionX, positionY, positionZ);
+
+                //O3d.children[0].position.set(0.1 * Math.sin(percent * 20), 0.06 * Math.sin(percent * 10), 0.08 * Math.sin(percent * 15));
+                O3d.children[0].rotation.set((percent * 2 % 1) * Math.PI * 2, 0, Math.PI / 2)
+
+            }
+        },
+        clear: function (carId) {
+            var O3dname = 'lostPrepare_' + carId;
+            var O3d = objMain.lostPrepareGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var length = O3d.children.length;
+                for (var i = length - 1; i >= 0; i--) {
+                    O3d.remove(O3d.children[i]);
+                }
+                objMain.lostPrepareGroup.remove(O3d);
+            }
+        }
+    },
+    lost:
+    {
+        add: function (carId) {
+            var meshCopy = objMain.ModelInput.lostPrepare.children[0].clone();
+            meshCopy.name = 'lost' + '_' + carId;
+            meshCopy.position.y = 35;
+            meshCopy.scale.set(1, 1, 1);
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car)
+                car.add(meshCopy);
+        },
+        Animate: function (carId) {
+            //input Is group
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car) {
+                var name = 'lost' + '_' + carId;;
+                var loseTag = car.getObjectByName(name);
+                if (loseTag) {
+                    var t = (Date.now() % 2500) / 2500;
+                    loseTag.rotation.set(0, t * 2 * Math.PI, 0, 'XYZ');
+                }
+            }
+        },
+        clear: function (carId) {
+            var car = objMain.carGroup.getObjectByName('car_' + carId);
+            if (car) {
+                var name = 'lost' + '_' + carId;;
+                var loseTag = car.getObjectByName(name);
+                if (loseTag) {
+                    car.remove(loseTag);
+                }
+            }
+        }
+    },
+    ambusePrepare:
+    {
+        add: function (carId, animateData) {
+            {
+                //var flag = objMain.playerGroup.getChildByName('flag_' + carId);
+                //if (flag)
+                // var animateData = { startX: objMain.controls.target.x, startY: objMain.controls.target.y, startZ: objMain.controls.target.z, start: Date.now(), endX: objMain.controls.target.x + 5, endY: objMain.controls.target.y, endZ: objMain.controls.target.z }
+                {
+                    var O3d = new THREE.Object3D();
+                    O3d.name = 'ambusePrepare_' + carId;
+                    O3d.position.set(animateData.startX, animateData.startY, animateData.startZ);
+
+                    {
+                        var meshCopy = objMain.ModelInput.ambushPrepare.children[0].clone();
+                        meshCopy.name = 'ambusePrepareChild_' + carId;
+                        meshCopy.position.x = 0;//97.11
+                        meshCopy.position.y = 0;
+                        meshCopy.position.z = 0;
+                        meshCopy.scale.set(0.005, 0.005, 0.005);
+                        //meshCopy.rotateX(Math.PI / 2);
+                        //meshCopy.rotateZ(-Math.PI / 2 + i * 2 * Math.PI / 3);
+                        O3d.add(meshCopy);
+                    }
+                    O3d.userData.animateData = animateData;
+                    objMain.ambushPrepareGroup.add(O3d);
+                }
+            }
+        },
+        Animate: function (carId) {
+            //input Is group
+            var O3dname = 'ambusePrepare_' + carId;
+
+            var O3d = objMain.ambushPrepareGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var userData = O3d.userData.animateData;
+                var percent = ((Date.now() - userData.start) % 3000) / 3000;
+                var positionX = userData.startX + percent * (userData.endX - userData.startX);
+                var positionY = userData.startY + percent * (userData.endY - userData.startY);
+                var positionZ = userData.startZ + percent * (userData.endZ - userData.startZ);
+                O3d.position.set(positionX, positionY, positionZ);
+
+                // O3d.children[0].position.set(0.1 * Math.sin(percent * 20), 0.06 * Math.sin(percent * 10), 0.08 * Math.sin(percent * 15));
+                //O3d.children[0].rotation.set((percent * 1.7 % 1) * Math.PI * 2, (percent * 1.1 % 1) * Math.PI * 2, (percent * 1.3 % 1) * Math.PI * 2)
+
+            }
+        },
+        clear: function (carId) {
+            var O3dname = 'ambusePrepare_' + carId;
+            var O3d = objMain.ambushPrepareGroup.getObjectByName(O3dname);
+            if (O3d) {
+                var length = O3d.children.length;
+                for (var i = length - 1; i >= 0; i--) {
+                    O3d.remove(O3d.children[i]);
+                }
+                objMain.ambushPrepareGroup.remove(O3d);
+            }
+            //var car = objMain.carGroup.getObjectByName('car_' + carId);
+            //if (car) {
+            //    var name = 'fist_' + carId;
+            //    var fist = car.getObjectByName(name);
+            //    if (fist) {
+            //        car.remove(fist);
+            //    }
+            //}
+        }
+    },
+    control:
+    {
+        clear: function (carId) {
+            stateSet.confusePrepare.clear(carId);
+            stateSet.lostPrepare.clear(carId);
+            stateSet.ambusePrepare.clear(carId);
+        }
+    },
+    water:
+    {
+        add: function (targetRoleID, actionRole) {
+            {
+                this.clear(actionRole);
+                var flag = objMain.playerGroup.getChildByName('flag_' + targetRoleID);
+                if (flag) {
+                    //var O3d = new THREE.Object3D();
+
+                    // O3d.position.set(flag.position.x, flag.position.y, flag.position.z);
+                    var waterCopy = objMain.ModelInput.water.clone();
+
+                    for (var i = 0; i < waterCopy.children.length; i++) {
+                        waterCopy.children[i].material.transparent = true;
+                        waterCopy.children[i].material.opacity = 0.6;
+                    }
+                    waterCopy.name = 'water_' + actionRole;
+                    waterCopy.position.set(flag.position.x, 0, flag.position.z);
+                    waterCopy.scale.set(0.15, 0.5, 0.15);
+                    waterCopy.userData = { startT: Date.now() };
+                    objMain.waterGroup.add(waterCopy);
+                }
+            }
+        },
+        Animate: function (actionRole) {
+            var name = 'water_' + actionRole;
+            var water = objMain.waterGroup.getObjectByName(name);
+            if (water) {
+                var percent = (Date.now() - water.userData.startT) / 10000;
+                if (percent < 1) {
+                    //var secondPercent = 
+                    var shuilang = water.getObjectByName('shuilang');
+                    shuilang.scale.set(1, 1 - percent, 1);
+                    var shuizhu = water.getObjectByName('shuizhu');
+                    shuizhu.scale.set(1 + Math.pow(percent * 10, 0.66), 1, 1 + Math.pow(percent * 10, 0.66));
+                }
+                else {
+                    objMain.waterGroup.remove(water);
+                }
+            }
+        },
+        clear: function (actionRole) {
+            var name = 'water_' + actionRole;
+            var water = objMain.waterGroup.getObjectByName(name);
+            if (water) {
+                objMain.waterGroup.remove(water);
+            }
+        }
+    },
+    fire:
+    {
+        particleCount: 400,
+        add: function (targetRoleID, actionRole) {
+            this.clear(actionRole);
+            var particleFire = new fire();
+            particleFire.install({ THREE: THREE });
+
+            var geometry1 = new particleFire.Geometry(10, 35, this.particleCount);
+            var material1 = new particleFire.Material({ color: 0x800080 });
+            var height = window.innerHeight;
+            material1.setPerspective(objMain.camera.fov, height);
+            var particleFireMesh1 = new THREE.Points(geometry1, material1);
+            var flag = objMain.playerGroup.getChildByName('flag_' + targetRoleID);
+            if (flag) {
+                //  mesh.position.set(flag.position.x, 0, flag.position.z);
+                particleFireMesh1.position.set(flag.position.x, 0, flag.position.z);
+                particleFireMesh1.name = 'fire_' + actionRole;
+                particleFireMesh1.userData = { startT: Date.now() };
+                objMain.fireGroup.add(particleFireMesh1);
+            }
+        },
+        Animate: function (actionRole) {
+            var name = 'fire_' + actionRole;
+            var fire = objMain.fireGroup.getObjectByName(name);
+            if (fire) {
+                fire.material.update(Date.now() % 2000 / 2000 * 20);
+                //particleFireMesh1.material.update(delta);
+                //particleFireMesh2.material.update(delta);
+                var percent = (Date.now() - fire.userData.startT) / 10000;
+                if (percent < 1) {
+                    var car = objMain.carGroup.getObjectByName('car_' + actionRole);
+                    if (car) {
+                        var deltaX = car.position.x - fire.position.x;
+                        var deltaZ = car.position.z - fire.position.z;
+
+                        for (let i = this.particleCount - this.particleCount / 4; i < this.particleCount; i++) {
+                            var positionPercent = (i - (this.particleCount - this.particleCount / 4)) / (this.particleCount / 4);
+
+                            fire.geometry.attributes.position.array[i * 3 + 0] = positionPercent * deltaX;
+                            fire.geometry.attributes.position.array[i * 3 + 1] = (positionPercent * positionPercent - positionPercent) * -100;
+                            fire.geometry.attributes.position.array[i * 3 + 2] = positionPercent * deltaZ;
+
+                        }
+                        fire.geometry.attributes.position.needsUpdate = true;
+                    }
+                }
+                else {
+                    objMain.fireGroup.remove(fire);
+                }
+            }
+        },
+        clear: function (actionRole) {
+            var name = 'fire_' + actionRole;
+            var fire = objMain.fireGroup.getObjectByName(name);
+            if (fire) {
+                objMain.fireGroup.remove(fire);
+            }
+        }
+    },
+    lightning:
+    {
+        add: function (targetRoleID, actionRole) {
+            this.clear(actionRole);
+            let rayParams = {
+
+                sourceOffset: new THREE.Vector3(),
+                destOffset: new THREE.Vector3(),
+                radius0: 0.07,
+                radius1: 0.08,
+                minRadius: 0.05,
+                maxIterations: 7,
+                isEternal: true,
+
+                timeScale: 0.7,
+
+                propagationTimeFactor: 0.05,
+                vanishingTimeFactor: 0.95,
+                subrayPeriod: 3.5,
+                subrayDutyCycle: 0.6,
+                maxSubrayRecursion: 3,
+                ramification: 7,
+                recursionProbability: 0.6,
+
+                roughness: 0.85,
+                straightness: 0.8
+
+            };
+            let lightningStrike = new THREE.LightningStrike(rayParams);
+
+            let lightningMaterial = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xb0fffe) });
+            let lightningStrikeMesh = new THREE.Mesh(lightningStrike, lightningMaterial);
+            lightningStrikeMesh.name = 'lightning_' + actionRole;
+
+            let flag = objMain.playerGroup.getObjectByName('flag_' + targetRoleID);
+            if (flag) {
+                lightningStrikeMesh.position.set(flag.position.x, 0, flag.position.z);
+                lightningStrikeMesh.userData = { startT: Date.now() };
+                objMain.lightningGroup.add(lightningStrikeMesh);
+            }
+        },
+        Animate: function (actionRole) {
+            let name = 'lightning_' + actionRole;
+            var lightningStrikeMesh = objMain.lightningGroup.getObjectByName(name);
+            if (lightningStrikeMesh) {
+                var percent = (Date.now() - lightningStrikeMesh.userData.startT) / 10000;
+                if (percent < 1) {
+                    //objMain.carGroup.getObjectByName('car_'+objMain.indexKey).position
+                    var car = objMain.carGroup.getObjectByName('car_' + actionRole);
+                    var deltaX = car.position.x - lightningStrikeMesh.position.x;
+                    var deltaZ = car.position.z - lightningStrikeMesh.position.z;
+
+                    lightningStrikeMesh.geometry.rayParameters.sourceOffset.copy(new THREE.Vector3(deltaX, 10, deltaZ));
+                    lightningStrikeMesh.geometry.rayParameters.sourceOffset.y += 1;
+                    lightningStrikeMesh.geometry.rayParameters.destOffset.copy(new THREE.Vector3(Math.sin(percent * Math.PI * 5) * 3.3, 0, Math.cos(percent * Math.PI * 1.5)));
+                    lightningStrikeMesh.geometry.rayParameters.destOffset.y -= 1;
+                    lightningStrikeMesh.geometry.update(Date.now() / 2000);
+                }
+                else {
+                    objMain.lightningGroup.remove(lightningStrikeMesh);
+                }
+            }
+        },
+        clear: function (actionRole) {
+            let name = 'lightning_' + actionRole;
+            var lightningStrikeMesh = objMain.lightningGroup.getObjectByName(name);
+            if (lightningStrikeMesh) {
+                objMain.lightningGroup.remove(lightningStrikeMesh);
+            }
+        }
     }
 }
+var DirectionOperator =
+{
+    data: null,
+    show: function (received_obj) {
+        DirectionOperator.data = received_obj;
+        objMain.mainF.removeF.clearGroup(objMain.directionGroup);
+        var newDirectionModle = objMain.ModelInput.direction.clone();
+        newDirectionModle.rotateX(-Math.PI / 2);
+        newDirectionModle.scale.set(0.4, 0.4, 0.4);//(Math.PI / 2);
+        newDirectionModle.position.set(DirectionOperator.data.positionX, -0.1, -DirectionOperator.data.positionY);
+
+        objMain.directionGroup.add(newDirectionModle);
+    }
+};
 /////////////
 /*
  * 复数类

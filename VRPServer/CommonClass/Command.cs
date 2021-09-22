@@ -95,7 +95,78 @@ namespace CommonClass
         public string Key { get; set; }
         public bool On { get; set; }
     }
-
+    public class ConfuseNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+    }
+    public class LoseNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+    }
+    public class FireNotify : CommandNotify
+    {
+        public string targetRoleID { get; set; }
+        public string actionRoleID { get; set; }
+    }
+    public class WaterNotify : CommandNotify
+    {
+        public string targetRoleID { get; set; }
+        public string actionRoleID { get; set; }
+    }
+    public class ElectricNotify : CommandNotify
+    {
+        public string targetRoleID { get; set; }
+        public string actionRoleID { get; set; }
+    }
+    public class ViewSearch : CommandNotify
+    {
+        public int mctX { get; set; }
+        public int mctY { get; set; }
+    }
+    public class AttackNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+    }
+    public class DefenceNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+    }
+    public class ConfusePrepareNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+        public int StartX { get; set; }
+        public int StartY { get; set; }
+        public int EndX { get; set; }
+        public int EndY { get; set; }
+    }
+    public class LostPrepareNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+        public int StartX { get; set; }
+        public int StartY { get; set; }
+        public int EndX { get; set; }
+        public int EndY { get; set; }
+    }
+    public class AmbushPrepareNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+        public int StartX { get; set; }
+        public int StartY { get; set; }
+        public int EndX { get; set; }
+        public int EndY { get; set; }
+    }
+    public class ControlPrepareNotify : CommandNotify
+    {
+        public string Key { get; set; }
+        public bool On { get; set; }
+    }
     public class OthersRemove : CommandNotify
     {
         public string othersKey;
@@ -244,6 +315,15 @@ namespace CommonClass
         public string theme { get; set; }
     }
 
+    public class ShowDirectionOperator : CommandNotify
+    {
+        /// <summary>
+        /// item为 旋转的弧度。0~2π
+        /// </summary>
+        public double[] direction { get; set; }
+        public double positionX { get; set; }
+        public double positionY { get; set; }
+    }
     public class BradCastBackground : CommandNotify
     {
         public string path { get; set; }
@@ -316,7 +396,30 @@ namespace CommonClass
     }
     public class MagicSkill : SetAttack
     {
+        /// <summary>
+        /// 魔法技能的选择。取值只能是1或2，出现其他值，系统报错不处理就对了。1一般为种族技能，2为性别技能。
+        /// </summary>
         public int selectIndex { get; set; }
+    }
+    public class View : Command
+    {
+        public string Key { get; set; }
+        /// <summary>
+        /// camera X
+        /// </summary>
+        public double x1 { get; set; }
+        /// <summary>
+        /// camera Y
+        /// </summary>
+        public double y1 { get; set; }
+        /// <summary>
+        /// Target X
+        /// </summary>
+        public double x2 { get; set; }
+        /// <summary>
+        /// TargetY
+        /// </summary>
+        public double y2 { get; set; }
     }
 
     public class SetBust : Command

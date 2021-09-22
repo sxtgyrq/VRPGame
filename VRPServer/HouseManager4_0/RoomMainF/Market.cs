@@ -2,6 +2,8 @@
 using Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace HouseManager4_0.RoomMainF
@@ -146,7 +148,7 @@ namespace HouseManager4_0.RoomMainF
 
         }
 
-        
+      
 
         internal void ClearPlayers()
         {
@@ -198,6 +200,8 @@ namespace HouseManager4_0.RoomMainF
                 Startup.sendMsg(url, sendMsg);
             }
         }
+
+      
 
         public void Sell(SetSellDiamond ss)
         {

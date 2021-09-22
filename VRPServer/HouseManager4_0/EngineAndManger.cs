@@ -1,4 +1,5 @@
 ﻿using HouseManager4_0.RoomMainF;
+using System.Collections.Generic;
 using System.Threading;
 using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 
@@ -32,6 +33,21 @@ namespace HouseManager4_0
         public void ThreadSleep(int mSecondsWait)
         {
             Thread.Sleep(mSecondsWait);
+        }
+
+        public void sendMsg(List<string> notifyMsg)
+        {
+            for (var i = 0; i < notifyMsg.Count; i += 2)
+            {
+                var url = notifyMsg[i];
+                var sendMsg = notifyMsg[i + 1];
+                //Console.WriteLine($"url:{url}");
+                if (!string.IsNullOrEmpty(url))
+                {
+                    this.sendMsg(url, sendMsg);
+                    Startup.sendMsg(url, sendMsg);
+                }
+            }
         }
         //public void startNewCommandThread(int timeC, CommonClass.Command c, startNewThread self)
         //{

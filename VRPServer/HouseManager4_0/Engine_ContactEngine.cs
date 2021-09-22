@@ -29,11 +29,11 @@ namespace HouseManager4_0
                         // var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
 
                         //var goPath = Program.dt.GetAFromB(from, to);
-                        var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
+                        var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
                         //var returnPath = Program.dt.GetAFromB(fp2, baseFp.FastenPositionID);
                         //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                        var returnToBossAddrPath = that.GetAFromB(to, boss.StartFPIndex, player, ref notifyMsg);
-                        var returnToSelfAddrPath = that.GetAFromB(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
+                        var returnToBossAddrPath = that.GetAFromB_v2(to, boss.StartFPIndex, player, ref notifyMsg);
+                        var returnToSelfAddrPath = that.GetAFromB_v2(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
 
                         var goMile = that.GetMile(goPath);
                         var returnToBossAddrPathMile = that.GetMile(returnToBossAddrPath);
@@ -45,7 +45,7 @@ namespace HouseManager4_0
                             int startT;
                             this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
                             var ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossAddrPath, returnToSelfAddrPath, boss);
-                            ci.SetArrivalThread(startT, car, goMile, ro);
+                            ci.SetArrivalThread(startT, car, goMile, goPath, ro);
                             mrr = MileResultReason.Abundant;
                             return ro;
                         }
@@ -71,6 +71,7 @@ namespace HouseManager4_0
                 else
                 {
                     mrr = MileResultReason.NearestIsMoneyWhenAttack;
+                    that.ViewPosition(player, fpResult, ref notifyMsg);
                     this.WebNotify(player, $"离【{victimOrBeneficiary.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，攻击失败！");
                     return player.returningOjb;
                 }
@@ -143,10 +144,10 @@ namespace HouseManager4_0
                             var fp1 = Program.dt.GetFpByIndex(from);
                             //var fp2 = Program.dt.GetFpByIndex(to);
                             //var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                            var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
+                            var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
                             //var returnPath = Program.dt.GetAFromB(fp2, baseFp.FastenPositionID);
                             //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                            var returnPath = that.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
+                            var returnPath = that.GetAFromB_v2(to, player.StartFPIndex, player, ref notifyMsg);
 
                             var goMile = that.GetMile(goPath);
                             var returnMile = that.GetMile(returnPath);
@@ -158,7 +159,7 @@ namespace HouseManager4_0
                             {
                                 int startT;
                                 this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
-                                ci.SetArrivalThread(startT, car, goMile, commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath));
+                                ci.SetArrivalThread(startT, car, goMile, goPath, commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath));
 
                                 // getAllCarInfomations(sa.Key, ref notifyMsg);
                                 Mrr = MileResultReason.Abundant;
@@ -186,6 +187,7 @@ namespace HouseManager4_0
                     {
                         Mrr = MileResultReason.NearestIsMoneyWhenAttack;
                         this.WebNotify(player, $"离【{victimOrBeneficiary.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，攻击失败！");
+                        that.ViewPosition(player, fpResult, ref notifyMsg);
                         return player.returningOjb;
                     }
                 }

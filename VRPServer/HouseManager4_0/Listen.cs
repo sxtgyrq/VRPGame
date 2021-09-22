@@ -169,6 +169,12 @@ namespace HouseManager4_0
                             var result = objI.updateMagic(ms);
                             outPut = "ok";
                         }; break;
+                    case "View": 
+                        {
+                            CommonClass.View v= Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.View>(notifyJson);
+                            var result = objI.updateView(v);
+                            outPut = "ok";
+                        };break;
                 }
             }
             {

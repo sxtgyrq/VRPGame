@@ -1,6 +1,7 @@
 ﻿using CommonClass;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using static HouseManager4_0.Car;
 using static HouseManager4_0.RoomMainF.RoomMain;
@@ -79,17 +80,17 @@ namespace HouseManager4_0
                         }
                     }
                 }
-
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    //Console.WriteLine($"url:{url}");
-                    if (!string.IsNullOrEmpty(url))
-                    {
-                        Startup.sendMsg(url, sendMsg);
-                    }
-                }
+                this.sendMsg(notifyMsg);
+                //for (var i = 0; i < notifyMsg.Count; i += 2)
+                //{
+                //    var url = notifyMsg[i];
+                //    var sendMsg = notifyMsg[i + 1];
+                //    //Console.WriteLine($"url:{url}");
+                //    if (!string.IsNullOrEmpty(url))
+                //    {
+                //        Startup.sendMsg(url, sendMsg);
+                //    }
+                //}
                 return "";
             }
             else
@@ -98,9 +99,8 @@ namespace HouseManager4_0
             }
         }
 
-        protected void EditCarStateWhenActionStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, List<Model.MapGo.nyrqPosition> goPath, ref List<string> notifyMsg, out int startT)
+        public void EditCarStateWhenActionStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, Node goPath, ref List<string> notifyMsg, out int startT)
         {
-
             car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
 
             //car.purpose = Purpose.collect;//B.更改小车目的，用户操作控制
@@ -119,11 +119,13 @@ namespace HouseManager4_0
             if (car.state == CarState.waitAtBaseStation)
             {
                 result = that.getStartPositon(fp1, player.positionInStation, ref startT, out startPosition, player.improvementRecord.speedValue > 0);
+
             }
             else if (car.state == CarState.waitOnRoad)
             {
                 result = new List<int>();
-                that.getStartPositionByGoPath(out startPosition, goPath);
+                that.getStartPositionByGoPath(out startPosition, goPath.path[0]);
+                // that.getStartPositionByGoPath(out startPosition, goPath);
             }
             else
             {
@@ -131,12 +133,62 @@ namespace HouseManager4_0
             }
             car.setState(player, ref notifyMsg, CarState.working);
             //car.state = CarState.roadForCollect;
-
-            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            //  var position = new Model.MapGo.nyrqPosition(fp1.RoadCode, fp1.RoadOrder, fp1.RoadPercent, fp1.positionLongitudeOnRoad, fp1.positionLatitudeOnRoad, Program.dt.GetItemRoadInfo(fp1.RoadCode, fp1.RoadOrder).MaxSpeed);
+            Program.dt.GetAFromBPoint(goPath.path[0].path, goPath.path[0].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
             //  result.RemoveAll(item => item.t == 0);
 
             car.setAnimateData(player, ref notifyMsg, new AnimateData2(startPosition, result, DateTime.Now, false));
 
+        }
+
+        /// <summary>
+        /// 这个方法没有targetPlayer，所以不进入station
+        /// </summary>
+        /// <param name="indexValue"></param>
+        /// <param name="player"></param>
+        /// <param name="car"></param>
+        /// <param name="goPath"></param>
+        /// <param name="notifyMsg"></param>
+        /// <param name="startT"></param>
+        public void EditCarStateAfterSelect(int indexValue, RoleInGame player, ref Car car, Node goPath, ref List<string> notifyMsg, out int startT)
+        {
+            var speed = car.ability.Speed;
+            startT = 0;
+            List<int> result;
+            Data.PathStartPoint2 startPosition;
+            {
+                result = new List<int>();
+                that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
+            }
+            Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            car.setAnimateData(player, ref notifyMsg, new AnimateData2(startPosition, result, DateTime.Now, false));
+        }
+        /// <summary>
+        /// 这个方法进入targetPlayer 的station
+        /// </summary>
+        /// <param name="indexValue"></param>
+        /// <param name="player"></param>
+        /// <param name="car"></param>
+        /// <param name="goPath"></param>
+        /// <param name="targetPlayer"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="notifyMsg"></param>
+        /// <param name="startT"></param>
+        public void EditCarStateAfterSelect(int indexValue, RoleInGame player, ref Car car, Node goPath, RoleInGame targetPlayer, int targetPosition, ref List<string> notifyMsg, out int startT)
+        {
+            var speed = car.ability.Speed;
+            startT = 0;
+            List<int> result;
+            Data.PathStartPoint2 startPosition;
+            {
+                result = new List<int>();
+                that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
+            }
+
+            Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            //  result.RemoveAll(item => item.t == 0);
+            that.getEndPositon(Program.dt.GetFpByIndex(targetPlayer.StartFPIndex), targetPosition, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            car.setAnimateData(player, ref notifyMsg, new AnimateData2(startPosition, result, DateTime.Now, false));
         }
 
         protected void carParkOnRoad(int target, ref Car car, RoleInGame player, ref List<string> notifyMsgs)
@@ -203,10 +255,63 @@ namespace HouseManager4_0
                     }
             }
         }
+        protected void StartSelectThread(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player)
+        {
+            selections.RemoveAll(item => that.isZero(item));
+            int k = 0;
+            var oldState = player.getCar().state;
+            while (true)
+            {
 
+                if (isRight(selections, player.direciton))
+                {
+                    break;
+                }
+                else
+                {
 
+                    if (player.getCar().state != CarState.selecting)
+                    {
+                        List<string> notifyMsg = new List<string>();
+                        player.getCar().setState(player, ref notifyMsg, CarState.selecting);
+                        that.showDirecitonAndSelection(player, selections, selectionCenter, ref notifyMsg);
+                        this.sendMsg(notifyMsg);
+                    }
+                    this.ThreadSleep(80);
+                }
+                //ThreadSleep(250);
+                k++;
+                Console.WriteLine($"提示，让玩家进行选择！！！");
+                if (k >= 250 * 3)
+                {
+                    break;
+                }
 
+            }
+            if (player.getCar().state == CarState.selecting)
+            {
+                List<string> notifyMsg = new List<string>();
+                player.getCar().setState(player, ref notifyMsg, oldState);
+                this.sendMsg(notifyMsg);
+            }
+        }
 
+        private bool isRight(List<Node.direction> selections, System.Numerics.Complex c2)
+        {
+            if (selections.Count == 0)
+            {
+                return true;
+            }
+            else if (selections.Count(item => item.right) == 0)
+            {
+                return true;
+            }
+            var first = (from item in selections
+                         orderby that.getAngle(that.getComplex(item) / c2) ascending
+                         select item)
+                   .ToList()[0];
+            return first.right;
+        }
 
         public class notifyMsg
         {

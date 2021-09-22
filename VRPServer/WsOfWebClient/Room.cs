@@ -390,6 +390,48 @@ namespace WsOfWebClient
                     }
                 }
 
+                if (await SetModelCopy(new attackIcon(), webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                shieldIcon si = new shieldIcon();
+                if (await SetModelCopy(si, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                confusePrepareIcon cpi = new confusePrepareIcon();
+                if (await SetModelCopy(cpi, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                lostPrepareIcon lpi = new lostPrepareIcon();
+                if (await SetModelCopy(lpi, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                ambushPrepareIcon api = new ambushPrepareIcon();
+                if (await SetModelCopy(api, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                waterIcon wi = new waterIcon();
+                if (await SetModelCopy(wi, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                direction di = new direction();
+                if (await SetModelCopy(di, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+
                 result = await setState(s, webSocket, LoginState.OnLine);
 
                 {
@@ -405,6 +447,347 @@ namespace WsOfWebClient
                 await initializeOperation(s);
             }
             return result;
+        }
+        private static async Task<bool> SetModelCopy(interfaceTag.modelForCopy mp, WebSocket webSocket)
+        {
+            if (string.IsNullOrEmpty(mp.Tag))
+            {
+                var bytes = File.ReadAllBytes(mp.imgPath);
+                var Base64 = Convert.ToBase64String(bytes);
+                mp.SetImgBase64(Base64);
+                string mtl = await File.ReadAllTextAsync(mp.mtlPath);
+                mp.SetMtl(mtl);
+                string obj = await File.ReadAllTextAsync(mp.objPath);
+                mp.setObj(obj);
+                // ConnectInfo.SpeedObj = await File.ReadAllTextAsync("model/speedicon/mfire.obj");
+            }
+            {
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                {
+                    c = mp.Command,
+                    Obj = mp.GetObj(),
+                    Mtl = mp.GetMtl(),
+                    Img = mp.GetImg(),
+                });
+                var sendData = Encoding.ASCII.GetBytes(msg);
+                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                {
+                    #region 校验响应
+                    var checkIsOk = await CheckRespon(webSocket, mp.Command);
+                    if (checkIsOk)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    #endregion
+                }
+            }
+        }
+        class shieldIcon : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.ShieldIconBase64; } }
+
+            public string imgPath { get { return "model/shield/dd.jpg"; } }
+
+            public string mtlPath { get { return "model/shield/shield.mtl"; } }
+
+            public string objPath { get { return "model/shield/shield.obj"; } }
+
+            public string Command { get { return "SetShield"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.ShieldIconBase64;
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.ShieldMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.ShieldObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.ShieldIconBase64 = base64;
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.ShieldMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.ShieldObj = obj;
+            }
+        }
+        class attackIcon : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.AttackIconBase64; } }
+
+            public string imgPath { get { return "model/attackicon/bouquet.jpg"; } }
+
+            public string mtlPath { get { return "model/attackicon/fistresult3.mtl"; } }
+
+            public string objPath { get { return "model/attackicon/fistresult3.obj"; } }
+
+            public string Command { get { return "SetAttackIcon"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.AttackIconBase64;
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.AttackMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.AttackObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.AttackIconBase64 = base64;
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.AttackMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.AttackObj = obj;
+            }
+        }
+
+        class confusePrepareIcon : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.ConfusePrepareIconBase64; } }
+
+            public string imgPath { get { return "model/confuseicon/img.jpg"; } }
+
+            public string mtlPath { get { return "model/confuseicon/untitled.mtl"; } }
+
+            public string objPath { get { return "model/confuseicon/untitled.obj"; } }
+
+            public string Command { get { return "SetConfusePrepareIcon"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.ConfusePrepareIconBase64;
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.ConfusePrepareMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.ConfusePrepareObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.ConfusePrepareIconBase64 = base64;
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.ConfusePrepareMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.ConfusePrepareObj = obj;
+            }
+        }
+
+        class lostPrepareIcon : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.LostPrepareIconBase64; } }
+
+            public string imgPath { get { return "model/losticon/lost.jpg"; } }
+
+            public string mtlPath { get { return "model/losticon/untitled.mtl"; } }
+
+            public string objPath { get { return "model/losticon/untitled.obj"; } }
+
+            public string Command { get { return "SetLostPrepareIcon"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.LostPrepareIconBase64;
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.LostPrepareMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.LostPrepareObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.LostPrepareIconBase64 = base64;
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.LostPrepareMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.LostPrepareObj = obj;
+            }
+        }
+
+        class ambushPrepareIcon : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.AmbushPrepareIconBase64; } }
+
+            public string imgPath { get { return "model/ambush/grmarble.jpg"; } }
+
+            public string mtlPath { get { return "model/ambush/untitled.mtl"; } }
+
+            public string objPath { get { return "model/ambush/untitled.obj"; } }
+
+            public string Command { get { return "SetAmbushPrepareIcon"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.AmbushPrepareIconBase64;
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.AmbushPrepareMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.AmbushPrepareObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.AmbushPrepareIconBase64 = base64;
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.AmbushPrepareMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.AmbushPrepareObj = obj;
+            }
+        }
+
+        class waterIcon : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.WaterIconBase64; } }
+
+            public string imgPath { get { return "model/water/water.jpg"; } }
+
+            public string mtlPath { get { return "model/water/water.mtl"; } }
+
+            public string objPath { get { return "model/water/water.obj"; } }
+
+            public string Command { get { return "SetWaterIcon"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.WaterIconBase64;
+                //throw new NotImplementedException();
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.WaterMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.WaterObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.WaterIconBase64 = base64;
+                //throw new NotImplementedException();
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.WaterMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.WaterObj = obj;
+            }
+        }
+
+        class direction : interfaceTag.modelForCopy
+        {
+            public string Tag { get { return ConnectInfo.DirectionIconBase64; } }
+
+            public string imgPath { get { return "model/direction/color.jpg"; } }
+
+            public string mtlPath { get { return "model/direction/untitled.mtl"; } }
+
+            public string objPath { get { return "model/direction/untitled.obj"; } }
+
+            public string Command { get { return "SetDirectionIcon"; } }
+
+            public string GetImg()
+            {
+                return ConnectInfo.DirectionIconBase64;
+                // throw new NotImplementedException();
+            }
+
+            public string GetMtl()
+            {
+                return ConnectInfo.DirectionMtl;
+            }
+
+            public string GetObj()
+            {
+                return ConnectInfo.DirectionObj;
+            }
+
+            public void SetImgBase64(string base64)
+            {
+                ConnectInfo.DirectionIconBase64 = base64;
+            }
+
+            public void SetMtl(string mtl)
+            {
+                ConnectInfo.DirectionMtl = mtl;
+            }
+
+            public void setObj(string obj)
+            {
+                ConnectInfo.DirectionObj = obj;
+            }
         }
 
         private static async Task<bool> ProfileIcon(WebSocket webSocket)
@@ -742,7 +1125,23 @@ namespace WsOfWebClient
             }
             return "";
         }
-
+        internal static async Task<string> view(State s, ViewAngle va)
+        {
+            var ms = new View()
+            {
+                c = "View",
+                Key = s.Key,
+                //car = "car" + m.Groups["car"].Value,
+                x1 = va.x1,
+                y1 = va.y1,
+                x2 = va.x2,
+                y2 = va.y2
+            };
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
+            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            return "";
+            // throw new NotImplementedException();
+        }
         internal static async Task<string> magic(State s, Skill1 s1)
         {
             Regex rex_Target = new Regex("^(?<target>[a-f0-9]{32})$");

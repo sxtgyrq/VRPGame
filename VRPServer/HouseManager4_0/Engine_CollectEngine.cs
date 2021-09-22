@@ -117,7 +117,7 @@ namespace HouseManager4_0
         {
             if (player.confuseRecord.IsBeingControlled())
             {
-                if (player.confuseRecord.getControlType() == Manager_Driver.ConfuseManger.ControlAttackType.Lose)
+                if (player.confuseRecord.getControlType() == Manager_Driver.ConfuseManger.ControlAttackType.Lost)
                 {
                     Model.FastonPosition target;
                     if (car.state == CarState.waitOnRoad)
@@ -192,9 +192,10 @@ namespace HouseManager4_0
                     var fbBase = Program.dt.GetFpByIndex(player.StartFPIndex);
                     //var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
                     //var goPath = Program.dt.GetAFromB(from, to);
-                    var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
+                    var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
+
                     //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                    var returnPath = that.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
+                    var returnPath = that.GetAFromB_v2(to, player.StartFPIndex, player, ref notifyMsg);
                     var goMile = that.GetMile(goPath);
                     var returnMile = that.GetMile(returnPath);
                     if (car.ability.leftMile >= goMile + returnMile)
@@ -202,7 +203,14 @@ namespace HouseManager4_0
                         int startT;
                         this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
                         var ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
-                        StartArriavalThread(startT, car, sc, ro, goMile);
+                        //  Thread th=new Thread() { }
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);
+                        //if (player.playerType == RoleInGame.PlayerType.NPC)
+                        //    StartArriavalThread(startT, car, sc, ro, goMile);
+                        //else
+                        //    StartArriavalThread(startT, car, sc, ro, goMile);
+                        //   StartSelectThread(0, startT, car, sc, ro, goMile, goPath);
                         //  getAllCarInfomations(sc.Key, ref notifyMsg);
                         Mrr = MileResultReason.Abundant;//返回原因
                         return ro;
@@ -232,20 +240,94 @@ namespace HouseManager4_0
         }
 
 
-        private void StartArriavalThread(int startT, Car car, SetCollect sc, commandWithTime.ReturningOjb ro, int goMile)
+
+        //private void StartArriavalThread(int startT, Car car, SetCollect sc, commandWithTime.ReturningOjb ro, int goMile)
+        //{
+        //    this.startNewThread(startT + 100, new commandWithTime.placeArriving()
+        //    {
+        //        c = "placeArriving",
+        //        key = sc.Key,
+        //        //car = sc.car,
+        //        returningOjb = ro,
+        //        target = car.targetFpIndex,
+        //        costMile = goMile
+        //    }, this);
+        //    //Thread th = new Thread(() => setArrive(startT, ));
+        //    //th.Start();
+        //}
+        private void StartArriavalThread(int startT, int step, RoleInGame player, Car car, SetCollect sc, commandWithTime.ReturningOjb ro, int goMile, Node goPath)
         {
-            this.startNewThread(startT + 100, new commandWithTime.placeArriving()
+            System.Threading.Thread th = new System.Threading.Thread(() =>
             {
-                c = "placeArriving",
-                key = sc.Key,
-                //car = sc.car,
-                returningOjb = ro,
-                target = car.targetFpIndex,
-                costMile = goMile
-            }, this);
+                if (step >= goPath.path.Count - 1)
+
+                    this.startNewThread(startT + 100, new commandWithTime.placeArriving()
+                    {
+                        c = "placeArriving",
+                        key = sc.Key,
+                        //car = sc.car,
+                        returningOjb = ro,
+                        target = car.targetFpIndex,
+                        costMile = goMile
+                    }, this);
+                else
+                {
+                    if (step == 0)
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else
+                        {
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        step++;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        else
+                            newStartT = 0;
+
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
+                    }
+                    else
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+                            this.ThreadSleep(500);
+                        }
+                        else if (startT != 0)
+                        {
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+                        step++;
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        // else if(step==goPath.path.Count-1)
+                        //EditCarStateAfterSelect(step,player,ref car,)
+                        else
+                            throw new Exception("这种情况不会出现");
+                        //newStartT = 0;
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
+                    }
+                }
+            });
+            th.Start();
             //Thread th = new Thread(() => setArrive(startT, ));
             //th.Start();
         }
+
 
         /// <summary>
         /// 到达某一地点。变更里程，进行collcet交易。
@@ -449,9 +531,9 @@ namespace HouseManager4_0
                 var fbBase = Program.dt.GetFpByIndex(player.StartFPIndex);
                 //var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
                 //var goPath = Program.dt.GetAFromB(from, to);
-                var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
-                var returnToBossPath = that.GetAFromB(to, boss.StartFPIndex, player, ref notifyMsg);
-                var returnToSelfPath = that.GetAFromB(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
+                var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
+                var returnToBossPath = that.GetAFromB_v2(to, boss.StartFPIndex, player, ref notifyMsg);
+                var returnToSelfPath = that.GetAFromB_v2(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
                 var goMile = that.GetMile(goPath);
                 var returnToBossMile = that.GetMile(returnToBossPath);
                 var returnToSelfMile = that.GetMile(returnToSelfPath);
@@ -461,7 +543,8 @@ namespace HouseManager4_0
                     int startT;
                     this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
                     var ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
-                    StartArriavalThread(startT, car, sc, ro, goMile);
+                    car.setState(player, ref notifyMsg, CarState.working);
+                    StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);
                     //  getAllCarInfomations(sc.Key, ref notifyMsg);
                     mrr = MileResultReason.Abundant;//返回原因
                     return ro;

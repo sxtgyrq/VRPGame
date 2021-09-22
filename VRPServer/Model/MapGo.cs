@@ -6,6 +6,7 @@ namespace Model
 {
     public class MapGo
     {
+        public class pathResut { }
         public class nyrqPosition
         {
             public nyrqPosition(string rc, int rorder, double percent_, double BDlongitude_, double BDlatitude_, int maxSpeed_)

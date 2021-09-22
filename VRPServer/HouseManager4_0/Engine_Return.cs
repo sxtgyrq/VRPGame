@@ -62,32 +62,40 @@ namespace HouseManager4_0
             //  that.getStartPositon(Program.dt.GetFpByIndex(cmp.target), (boss.positionInStation + 1) % 5, ref startT);
             var boss = cmp.returningOjb.Boss;
 
-            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            // Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
             var self = player;
-            that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            //  that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
             // result.RemoveAll(item => item.t == 0);
 
             car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
             car.targetFpIndex = self.StartFPIndex;
 
             Data.PathStartPoint2 startPosition;
-            if (cmp.returningOjb.returnToSelfAddrPath.Count == 0)
+            if (cmp.returningOjb.returnToSelfAddrPath.path[0].path.Count == 0)
             {
-                that.getStartPositionByFp(out startPosition, Program.dt.GetFpByIndex(player.StartFPIndex));
+                that.getStartPositionByFp(out startPosition, cmp.returningOjb.returnToSelfAddrPath.path[0].position);
+                // that.getStartPositionByFp(out startPosition, Program.dt.GetFpByIndex(player.StartFPIndex));
             }
             else
             {
-                that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToSelfAddrPath);
+                that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToSelfAddrPath.path[0]);
             }
-
+            car.setState(player, ref notifyMsg, CarState.returning);
             car.setAnimateData(player, ref notifyMsg,
                 new AnimateData2(startPosition, result, DateTime.Now, false));
-            this.startNewThread(startT, new commandWithTime.comeBack()
-            {
-                c = "comeBack",
-                //car = cmp.car,
-                key = cmp.key
-            }, this);
+            car.setState(player, ref notifyMsg, CarState.returning);
+            this.StartArriavalThread(startT, 0, player, car, cmp.returningOjb.returnToSelfAddrPath,
+                (newStartT) =>
+                {
+                    this.startNewThread(newStartT, new commandWithTime.comeBack()
+                    {
+                        c = "comeBack",
+                        //car = cmp.car,
+                        key = cmp.key
+                    }, this);
+                }, player);
+
         }
 
         private void ReturnToBoss(RoleInGame player, Car car, returnning cmp, ref List<string> notifyMsg)
@@ -106,21 +114,27 @@ namespace HouseManager4_0
                         Data.PathStartPoint2 startPosition;
                         var fp1 = Program.dt.GetFpByIndex(boss.StartFPIndex);
                         result = that.getStartPositon(fp1, boss.positionInStation + 1, ref startT, out startPosition, player.improvementRecord.speedValue > 0);
-                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+
                         var self = player;
-                        that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
+                        // that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
                         // result.RemoveAll(item => item.t == 0);
 
                         car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
                         car.targetFpIndex = self.StartFPIndex;
                         car.setAnimateData(player, ref notifyMsg,
                             new AnimateData2(startPosition, result, DateTime.Now, false));
-                        this.startNewThread(startT, new commandWithTime.comeBack()
+                        car.setState(player, ref notifyMsg, CarState.returning);
+                        this.StartArriavalThread(startT, 0, player, car, cmp.returningOjb.returnToSelfAddrPath, (int newStart) =>
                         {
-                            c = "comeBack",
-                            //car = cmp.car,
-                            key = cmp.key
-                        }, this);
+                            this.startNewThread(newStart, new commandWithTime.comeBack()
+                            {
+                                c = "comeBack",
+                                //car = cmp.car,
+                                key = cmp.key
+                            }, this);
+                        }, self);
+
                     }; break;
                 case returnning.ChangeType.BeforeTax:
                     {
@@ -131,8 +145,9 @@ namespace HouseManager4_0
                         //  that.getStartPositon(Program.dt.GetFpByIndex(cmp.target), (boss.positionInStation + 1) % 5, ref startT);
                         var boss = cmp.returningOjb.Boss;
 
-                        Program.dt.GetAFromBPoint(cmp.returningOjb.returnToBossAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
-                        that.getEndPositon(Program.dt.GetFpByIndex(boss.StartFPIndex), boss.positionInStation + 1, ref result, ref startT, player.improvementRecord.speedValue > 0);
+                        if (cmp.returningOjb.returnToBossAddrPath.path.Count > 0)
+                            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToBossAddrPath.path[0].path, cmp.returningOjb.returnToBossAddrPath.path[0].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+                        //  that.getEndPositon(Program.dt.GetFpByIndex(boss.StartFPIndex), boss.positionInStation + 1, ref result, ref startT, player.improvementRecord.speedValue > 0);
                         // result.RemoveAll(item => item.t == 0);
 
                         car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
@@ -142,10 +157,10 @@ namespace HouseManager4_0
                          * A:这里的if 是正常情况
                          * B:else 考虑的是攻击自己的老大的情况！位置就是处于老大大本营时的情况
                          */
-                        if (cmp.returningOjb.returnToBossAddrPath.Count > 0)
+                        if (cmp.returningOjb.returnToBossAddrPath.path.Count > 0)
                         {
                             Data.PathStartPoint2 startPosition;
-                            that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToBossAddrPath);
+                            that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToBossAddrPath.path[0]);
                             car.setAnimateData(player, ref notifyMsg,
                                 new AnimateData2(startPosition, result, DateTime.Now, false));
                         }
@@ -153,14 +168,20 @@ namespace HouseManager4_0
                         {
 
                         }
-                        that.taxE.CollectTax(startT, new taxSet()
-                        {
-                            c = "taxSet",
-                            changeType = returnning.ChangeType.BeforeTax,
-                            key = cmp.key,
-                            target = cmp.target,
-                            returningOjb = cmp.returningOjb
-                        });
+                        car.setState(player, ref notifyMsg, CarState.returning);
+                        StartArriavalThread(startT, 0, player, car, cmp.returningOjb.returnToBossAddrPath, (int newStartT) =>
+                         {
+                             that.taxE.CollectTax(newStartT, new taxSet()
+                             {
+                                 c = "taxSet",
+                                 changeType = returnning.ChangeType.BeforeTax,
+                                 key = cmp.key,
+                                 target = cmp.target,
+                                 returningOjb = cmp.returningOjb
+                             });
+                         }, boss);
+                        //startNewThread(startT,)
+
                     }; break;
                 default:
                     {
@@ -168,6 +189,104 @@ namespace HouseManager4_0
                     }
             }
 
+        }
+        private void StartSelectThread(List<Node.direction> selections)
+        {
+            int k = 0;
+            while (true)
+            {
+                ThreadSleep(250);
+                k++;
+                Console.WriteLine($"提示，让玩家进行选择！！！");
+                if (k >= 2)
+                {
+                    break;
+                }
+            }
+        }
+
+        //enum ArriveType
+        //{
+        //    comeback,
+        //    taxCollect
+        //}
+        delegate void ArriavalF(int newStartT);
+        private void StartArriavalThread(int startT, int step, RoleInGame player, Car car, Node goPath, ArriavalF f, RoleInGame targetPlayer)
+        {
+
+            System.Threading.Thread th = new System.Threading.Thread(() =>
+            {
+                if (step >= goPath.path.Count - 1)
+                {
+                    f(startT);
+                }
+                else
+                {
+                    if (step == 0)
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else
+                        {
+                            StartSelectThread(goPath.path[step].selections);
+                        }
+                        step++;
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        else
+                            newStartT = 0;
+
+                        car.setState(player, ref notifyMsg, CarState.returning);
+                        this.sendMsg(notifyMsg);
+                        StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
+                    }
+                    else
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else if (startT != 0)
+                        {
+                            StartSelectThread(goPath.path[step].selections);
+                        }
+                        step++;
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+
+                        if (step == goPath.path.Count - 1)
+                        {
+                            //  car.setState(player, ref notifyMsg, CarState.returning);
+                            int positionInStation;
+                            if (player.Key == targetPlayer.Key)
+                            {
+                                positionInStation = targetPlayer.positionInStation;
+                            }
+                            else
+                                positionInStation = targetPlayer.positionInStation + 1;
+                            EditCarStateAfterSelect(step, player, ref car, goPath, targetPlayer, positionInStation, ref notifyMsg, out newStartT);
+                        }
+                        else
+                        {
+
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        }
+                        car.setState(player, ref notifyMsg, CarState.returning);
+                        this.sendMsg(notifyMsg);
+                        StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
+                    }
+                }
+            });
+            th.Start();
+
+            //Thread th = new Thread(() => setArrive(startT, ));
+            //th.Start();
         }
 
         private void setBack(commandWithTime.comeBack comeBack)
@@ -207,6 +326,8 @@ namespace HouseManager4_0
                     }
                     if (player.playerType == RoleInGame.PlayerType.NPC)
                     {
+                        //that.
+                        that.GetMaxHarmInfomation((NPC)player);
                         ///  NPC
                         ((NPC)player).dealWithReturnedNPC(ref notifyMsg);
                     }

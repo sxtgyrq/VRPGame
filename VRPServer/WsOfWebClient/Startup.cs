@@ -491,6 +491,14 @@ namespace WsOfWebClient
                                         await Room.magic(s, s2);
                                     }
                                 }; break;
+                            case "ViewAngle":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        ViewAngle va = Newtonsoft.Json.JsonConvert.DeserializeObject<ViewAngle>(returnResult.result);
+                                        await Room.view(s, va);
+                                    }
+                                }; break;
                         }
                     }
                     catch (Exception e)

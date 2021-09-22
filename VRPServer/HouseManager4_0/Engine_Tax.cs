@@ -40,6 +40,7 @@ namespace HouseManager4_0
                     {
                         if (player.confuseRecord.IsBeingControlled())
                         {
+                            var cType = player.confuseRecord.getControlType();
                             var car = player.getCar();
                             long tax = 0;
                             long indemnity = 0;
@@ -79,20 +80,22 @@ namespace HouseManager4_0
                             }
                             if (tax > 0)
                                 boss.MoneySet(boss.Money + tax, ref n.notifyMsgs);
-                            //else
-                            //{
-                            //    newCostBusiness = indemnity;
-                            //}
-                            //= car.ability.costBusiness * 4 / 5;
-                            //tax += (car.ability.costBusiness - newCostBusiness);
-                            //car.ability.setCostBusiness(newCostBusiness, player, car, ref n.notifyMsgs);
-
-                            //var newCostVolume = car.ability.costVolume * 4 / 5;
-                            //tax += (car.ability.costVolume - newCostVolume);
-                            //car.ability.setCostVolume(newCostVolume, player, car, ref n.notifyMsgs);
-
-                            //if (tax > 0)
-                            //    boss.MoneySet(boss.Money + tax, ref n.notifyMsgs);
+                            if (player.confuseRecord.IsBeingControlled())
+                            { }
+                            else
+                            {
+                                switch (cType)
+                                {
+                                    case Manager_Driver.ConfuseManger.ControlAttackType.Confuse:
+                                        {
+                                            player.confuseMagicChanged(player, ref n.notifyMsgs);
+                                        }; break;
+                                    case Manager_Driver.ConfuseManger.ControlAttackType.Lost:
+                                        {
+                                            player.loseMagicChanged(player, ref n.notifyMsgs);
+                                        }; break;
+                                }
+                            }
                         }
                         else
                         {

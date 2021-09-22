@@ -1,6 +1,7 @@
 ﻿using CommonClass;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using static HouseManager4_0.Car;
 
@@ -57,6 +58,23 @@ namespace HouseManager4_0.RoomMainF
             };
         }
 
+        public string updateView(View v)
+        {
+            lock (this.PlayerLock) 
+            {
+                if (this._Players.ContainsKey(v.Key)) 
+                {
+                    var player = this._Players[v.Key];
+                    if (player.playerType == RoleInGame.PlayerType.player) 
+                    {
+                        ((Player)player).direciton = getComplex(v, ((Player)player).direciton);
+                    }
+                }
+            }
+            return "";
+         //   throw new NotImplementedException();
+        }
+
        
 
         public class commandWithTime
@@ -69,14 +87,14 @@ namespace HouseManager4_0.RoomMainF
             }
             public class ReturningOjb
             {
-                internal List<Model.MapGo.nyrqPosition> returnToBossAddrPath { get; private set; }
-                internal List<Model.MapGo.nyrqPosition> returnToSelfAddrPath { get; private set; }
+                internal Node returnToBossAddrPath { get; private set; }
+                internal Node returnToSelfAddrPath { get; private set; }
                 public bool NeedToReturnBoss { get; private set; }
                 public RoleInGame Boss { get; private set; }
 
                 public static ReturningOjb ojbWithBoss(
-                    List<Model.MapGo.nyrqPosition> returnToBossAddrPath,
-                     List<Model.MapGo.nyrqPosition> returnToSelfAddrPath,
+                    Node returnToBossAddrPath,
+                   Node returnToSelfAddrPath,
                      RoleInGame Boss
                     )
                 {
@@ -87,8 +105,8 @@ namespace HouseManager4_0.RoomMainF
                         returnToBossAddrPath = returnToBossAddrPath,
                         returnToSelfAddrPath = returnToSelfAddrPath
                     };
-                }
-                public static ReturningOjb ojbWithoutBoss(List<Model.MapGo.nyrqPosition> returnToSelfAddrPath)
+                } 
+                internal static ReturningOjb ojbWithoutBoss(Node returnToSelfAddrPath)
                 {
                     return new ReturningOjb()
                     {
@@ -98,6 +116,16 @@ namespace HouseManager4_0.RoomMainF
                         returnToBossAddrPath = null
                     };
                 }
+                //public static ReturningOjb ojbWithoutBoss(List<Model.MapGo.nyrqPosition> returnToSelfAddrPath)
+                //{
+                //    return new ReturningOjb()
+                //    {
+                //        Boss = null,
+                //        NeedToReturnBoss = false,
+                //        returnToSelfAddrPath = returnToSelfAddrPath,
+                //        returnToBossAddrPath = null
+                //    };
+                //}
                 public static ReturningOjb ojbWithoutBoss(ReturningOjb oldObj)
                 {
                     return new ReturningOjb()
@@ -108,6 +136,8 @@ namespace HouseManager4_0.RoomMainF
                         returnToBossAddrPath = null
                     };
                 }
+
+
             }
             public class returnning : baseC
             {
@@ -153,6 +183,18 @@ namespace HouseManager4_0.RoomMainF
                 public int costMile { get; internal set; }
             }
             public class speedSet : returnning
+            {
+                //  public int costMile { get; internal set; }
+                public string beneficiary { get; internal set; }
+                public int costMile { get; internal set; }
+            }
+            public class attackSet : returnning
+            {
+                //  public int costMile { get; internal set; }
+                public string beneficiary { get; internal set; }
+                public int costMile { get; internal set; }
+            }
+            public class defenseSet : returnning
             {
                 //  public int costMile { get; internal set; }
                 public string beneficiary { get; internal set; }

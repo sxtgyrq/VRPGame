@@ -15,6 +15,7 @@ namespace HouseManager4_0.RoomMainF
             //   AddNPC();
             this.NPCM.AddNPC();
             this.NPCM.ClearNPC();
+            this.NPCM.ControlNPC();
         }
 
 
@@ -54,6 +55,7 @@ namespace HouseManager4_0.RoomMainF
                             }
                         }
                         success = true;
+
                     }
                     else
                         success = false;

@@ -1,8 +1,10 @@
 ﻿using CommonClass;
 using CommonClass.driversource;
+using HouseManager4_0.interfaceOfEngine;
 using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.Xml;
 using static HouseManager4_0.Car;
 using static HouseManager4_0.RoomMainF.RoomMain;
@@ -12,6 +14,10 @@ namespace HouseManager4_0
 {
     public class Engine_MagicEngine : Engine_ContactEngine, interfaceOfEngine.engine, interfaceOfEngine.tryCatchAction, interfaceOfEngine.startNewThread
     {
+        internal int DefencePhysicsAdd { get { return 40; } }
+
+        public int DefenceMagicAdd { get { return 20; } }
+
         public Engine_MagicEngine(RoomMain roomMain)
         {
             this.roomMain = roomMain;
@@ -63,7 +69,7 @@ namespace HouseManager4_0
                                 {
                                     throw new Exception($"{state.ToString()}未注册！");
                                 }
-                            }; break;
+                            };
                         case SkillEnum.Ambush:
                         case SkillEnum.Confusion:
                         case SkillEnum.Lose:
@@ -148,6 +154,14 @@ namespace HouseManager4_0
             {
                 return false;
             }
+        }
+
+
+
+        internal long enlarge(long attackMoney)
+        {
+            return attackMoney * 7 / 5;
+            //throw new NotImplementedException();
         }
 
         internal int shotTime(int v, bool speedImproved)
@@ -332,10 +346,17 @@ namespace HouseManager4_0
                         {
                             return improveSpeedMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
                         };
+                    case SkillEnum.Attack:
+                        {
+                            return improveAttackMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                        };
+                    case SkillEnum.Defense:
+                        {
+                            return improveDefenseMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                        };
                     default:
                         {
-                            Mrr = MileResultReason.NearestIsMoneyWhenAttack;
-                            return player.returningOjb;
+                            throw new Exception("意料之外！");
                         }
                 }
 
@@ -343,6 +364,225 @@ namespace HouseManager4_0
             }
         }
 
+        internal int ProtectedByAmbush()
+        {
+            return 20;
+        }
+        internal int ProtectedByConfuse()
+        {
+            return 20;
+        }
+
+        internal int ProtectedByLost()
+        {
+            return 20;
+        }
+
+        enum startArriavalThreadCommand
+        {
+            defenseSet,
+            attackSet,
+            speedSet
+        }
+        private void StartArriavalThread(startArriavalThreadCommand command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro)
+        {
+            System.Threading.Thread th = new System.Threading.Thread(() =>
+            {
+                if (step >= goPath.path.Count - 1)
+
+
+                    switch (command)
+                    {
+                        case startArriavalThreadCommand.defenseSet:
+                            {
+                                this.startNewThread(startT, new commandWithTime.defenseSet()
+                                {
+                                    c = "defenseSet",
+                                    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                                    costMile = goMile,
+                                    key = ms.Key,
+                                    returningOjb = ro,
+                                    target = car.targetFpIndex,
+                                    beneficiary = ms.targetOwner
+                                }, this);
+                            }; break;
+                        case startArriavalThreadCommand.attackSet:
+                            {
+                                this.startNewThread(startT, new commandWithTime.attackSet()
+                                {
+                                    c = "attackSet",
+                                    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                                    costMile = goMile,
+                                    key = ms.Key,
+                                    returningOjb = ro,
+                                    target = car.targetFpIndex,
+                                    beneficiary = ms.targetOwner
+                                }, this);
+                            }; break;
+                        case startArriavalThreadCommand.speedSet:
+                            {
+                                this.startNewThread(startT, new commandWithTime.speedSet()
+                                {
+                                    c = "speedSet",
+                                    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                                    costMile = goMile,
+                                    key = ms.Key,
+                                    returningOjb = ro,
+                                    target = car.targetFpIndex,
+                                    beneficiary = ms.targetOwner
+                                }, this);
+                            }; break;
+                    }
+
+                else
+                {
+                    if (step == 0)
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else
+                        {
+
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        step++;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        else
+                            newStartT = 0;
+
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                        StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
+                    }
+                    else
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else if (startT != 0)
+                        {
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+                        step++;
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        // else if(step==goPath.path.Count-1)
+                        //EditCarStateAfterSelect(step,player,ref car,)
+                        else
+                            throw new Exception("这种情况不会出现");
+                        //newStartT = 0;
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
+                    }
+                }
+            });
+            th.Start();
+            //Thread th = new Thread(() => setArrive(startT, ));
+            //th.Start();
+        }
+
+
+        private commandWithTime.ReturningOjb improveDefenseMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        {
+            DefenceObj dfo = new DefenceObj(ms, (int startT, Car car, MagicSkill ms2, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
+            {
+                List<string> notifyMsg = new List<string>();
+                car.setState(player, ref notifyMsg, CarState.working);
+                this.sendMsg(notifyMsg);
+                this.StartArriavalThread(startArriavalThreadCommand.defenseSet, startT, 0, player, car, ms2, goMile, goPath, ro);
+                //this.startNewThread(startT, new commandWithTime.defenseSet()
+                //{
+                //    c = "defenseSet",
+                //    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                //    costMile = goMile,
+                //    key = ms.Key,
+                //    returningOjb = ro,
+                //    target = car.targetFpIndex,
+                //    beneficiary = ms.targetOwner
+                //}, this);
+            });
+            return this.contact(player, car, dfo, ref notifyMsg, out Mrr);
+        }
+
+        private commandWithTime.ReturningOjb improveAttackMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        {
+            AttackObj ao = new AttackObj(ms, (int startT, Car car, MagicSkill ms1, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
+            {
+                List<string> notifyMsg = new List<string>();
+                car.setState(player, ref notifyMsg, CarState.working);
+                this.sendMsg(notifyMsg);
+                this.StartArriavalThread(startArriavalThreadCommand.attackSet, startT, 0, player, car, ms1, goMile, goPath, ro);
+                //beneficiary 
+                //this.startNewThread(startT, new commandWithTime.attackSet()
+                //{
+                //    c = "attackSet",
+                //    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                //    costMile = goMile,
+                //    key = ms.Key,
+                //    returningOjb = ro,
+                //    target = car.targetFpIndex,
+                //    beneficiary = ms.targetOwner
+                //}, this);
+            });
+            return this.contact(player, car, ao, ref notifyMsg, out Mrr);
+        }
+        public class AttackObj : interfaceOfHM.ContactInterface
+        {
+            private MagicSkill _ms;
+            SetAttackImproveArrivalThreadM _setAttackImproveArrivalThread;
+
+
+            public AttackObj(MagicSkill ms, SetAttackImproveArrivalThreadM setAttackImproveArrivalThread)
+            {
+                this._ms = ms;
+                this._setAttackImproveArrivalThread = setAttackImproveArrivalThread;
+            }
+
+            public string targetOwner
+            {
+                get { return this._ms.targetOwner; }
+            }
+
+            public int target
+            {
+                get { return this._ms.target; }
+            }
+            public delegate void SetAttackImproveArrivalThreadM(int startT, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb);
+            //public void SetArrivalThread(int startT, Car car, int goMile, commandWithTime.ReturningOjb returningOjb)
+            //{
+            //    this._setAttackImproveArrivalThread(startT, car, this._ms, goMile, returningOjb);
+            //}
+
+            public bool carLeftConditions(Car car)
+            {
+                return car.ability.leftBusiness > 0;
+            }
+
+            public void SetArrivalThread(int startT, Car car, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb)
+            {
+                //this._setAttackImproveArrivalThread(startT,car,)
+                // throw new NotImplementedException();
+                this._setAttackImproveArrivalThread(startT, car, this._ms, goMile, goPath, returningOjb);
+            }
+        }
+
+        //public class AttackObj2 : AttackObj 
+        //{
+        //    private MagicSkill _ms;
+        //}
         class SpeedObj : interfaceOfHM.ContactInterface
         {
             private MagicSkill _ms;
@@ -364,10 +604,49 @@ namespace HouseManager4_0
             {
                 get { return this._ms.target; }
             }
-            public delegate void SetSpeedImproveArrivalThreadM(int startT, Car car, MagicSkill ms, int goMile, commandWithTime.ReturningOjb ro);
-            public void SetArrivalThread(int startT, Car car, int goMile, commandWithTime.ReturningOjb returningOjb)
+            public delegate void SetSpeedImproveArrivalThreadM(int startT, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb);
+            //public void SetArrivalThread(int startT, Car car, int goMile, commandWithTime.ReturningOjb returningOjb)
+            //{
+            //    //this._setAttackImproveArrivalThread(startT, car, this._ms, goMile, goPath, returningOjb);
+            //    //this._setSpeedImproveArrivalThread(startT, car, this._ms, goMile, returningOjb);
+            //}
+
+            public bool carLeftConditions(Car car)
             {
-                this._setSpeedImproveArrivalThread(startT, car, this._ms, goMile, returningOjb);
+                return car.ability.leftVolume > 0;
+            }
+
+            public void SetArrivalThread(int startT, Car car, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb)
+            {
+                this._setSpeedImproveArrivalThread(startT, car, this._ms, goMile, goPath, returningOjb);
+            }
+        }
+
+        class DefenceObj : interfaceOfHM.ContactInterface
+        {
+            private MagicSkill _ms;
+            SetDefenceObjImproveArrivalThreadM _setDefenceObjImproveArrivalThread;
+
+
+            public DefenceObj(MagicSkill ms, SetDefenceObjImproveArrivalThreadM setDefencemproveArrivalThread)
+            {
+                this._ms = ms;
+                this._setDefenceObjImproveArrivalThread = setDefencemproveArrivalThread;
+            }
+
+            public string targetOwner
+            {
+                get { return this._ms.targetOwner; }
+            }
+
+            public int target
+            {
+                get { return this._ms.target; }
+            }
+            public delegate void SetDefenceObjImproveArrivalThreadM(int startT, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb);
+            public void SetArrivalThread(int startT, Car car, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb)
+            {
+                this._setDefenceObjImproveArrivalThread(startT, car, this._ms, goMile, goPath, returningOjb);
             }
 
             public bool carLeftConditions(Car car)
@@ -377,61 +656,15 @@ namespace HouseManager4_0
         }
         private commandWithTime.ReturningOjb improveSpeedMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
-            SpeedObj so = new SpeedObj(ms, (int startT, Car car, MagicSkill ms2, int goMile, commandWithTime.ReturningOjb ro) =>
-             {
-                 //beneficiary 
-                 this.startNewThread(startT, new commandWithTime.speedSet()
-                 {
-                     c = "speedSet",
-                     changeType = commandWithTime.returnning.ChangeType.BeforeTax,
-                     costMile = goMile,
-                     key = ms.Key,
-                     returningOjb = ro,
-                     target = car.targetFpIndex,
-                     beneficiary = ms.targetOwner
-                 }, this);
-             });
+            //  this.StartArriavalThread(startT, 1, player, car, ms2, goMile, goPath, ro);
+            SpeedObj so = new SpeedObj(ms, (int startT, Car car, MagicSkill ms2, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
+            {
+                List<string> notifyMsg = new List<string>();
+                car.setState(player, ref notifyMsg, CarState.working);
+                this.sendMsg(notifyMsg);
+                this.StartArriavalThread(startArriavalThreadCommand.speedSet, startT, 0, player, car, ms2, goMile, goPath, ro);
+            });
             return this.contact(player, car, so, ref notifyMsg, out Mrr);
-            //if (that._Players.ContainsKey(ms.targetOwner))
-            //{
-            //    var beneficiary = that._Players[ms.targetOwner];
-            //    OssModel.FastonPosition fpResult;
-            //    var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, beneficiary, out fpResult);
-            //    if (distanceIsEnoughToStart)
-            //        if (car.ability.leftVolume > 0)
-            //        {
-            //            if (car.state == CarState.waitOnRoad)
-            //            {
-            //                if (beneficiary.Key == player.Key)
-            //                {
-
-            //                    //   beneficiary.improvementRecord.addSpeed(player.getCar().ability.leftVolume);
-            //                    //   that._Players.
-            //                }
-            //            }
-            //            else
-            //                throw new Exception("运行此方法，没有正确校验");
-            //            //player.confuseUsing = victim.confuseRecord;
-            //            Mrr = MileResultReason.Abundant;
-            //            return player.returningOjb;
-            //        }
-            //        else
-            //        {
-            //            Mrr = MileResultReason.MoneyIsNotEnougt;
-            //            this.WebNotify(player, "你身上的剩余能量空间不够啦！");
-            //            return player.returningOjb;
-            //        }
-            //    else
-            //    {
-            //        Mrr = MileResultReason.NearestIsMoneyWhenAttack;
-            //        this.WebNotify(player, $"离【{beneficiary.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，{ ct.GetName()}失败！");
-            //        return player.returningOjb;
-            //    }
-            //}
-            //else
-            //{
-            //    throw new Exception("准备运行条件里没有筛查？");
-            //}
         }
 
         private commandWithTime.ReturningOjb ambushMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
@@ -464,7 +697,7 @@ namespace HouseManager4_0
                         }
                     case SkillEnum.Lose:
                         {
-                            return Manager_Driver.ConfuseManger.ControlAttackType.Lose;
+                            return Manager_Driver.ConfuseManger.ControlAttackType.Lost;
                         }
                     case SkillEnum.Ambush:
                         {
@@ -514,39 +747,55 @@ namespace HouseManager4_0
                 OssModel.FastonPosition fpResult;
                 var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, victim, out fpResult);
                 if (distanceIsEnoughToStart)
-                    if (car.ability.leftVolume > 0)
+                {
+                    if (car.state == CarState.waitOnRoad)
                     {
-                        if (car.state == CarState.waitOnRoad)
+                        switch (ct.GetAttackType())
                         {
-                            switch (ct.GetAttackType())
-                            {
-                                case Manager_Driver.ConfuseManger.ControlAttackType.Confuse:
-                                case Manager_Driver.ConfuseManger.ControlAttackType.Lose:
+                            case Manager_Driver.ConfuseManger.ControlAttackType.Confuse:
+                            case Manager_Driver.ConfuseManger.ControlAttackType.Lost:
+                                if (car.ability.leftVolume > 0)
+                                {
                                     victim.confuseRecord.AddControlInfo(player, Program.dt.GetFpByIndex(car.targetFpIndex), car.ability.leftVolume, ct.GetAttackType());
-                                    break;
-                                case Manager_Driver.ConfuseManger.ControlAttackType.Ambush:
-                                    victim.confuseRecord.AddAmbushInfo(player, Program.dt.GetFpByIndex(car.targetFpIndex), car.ability.leftBusiness, car.ability.leftVolume);
-                                    break;
-                                default:
-                                    throw new Exception("程序意料之外！");
-                            }
-                            this.WebNotify(player, $"已经部署{ct.GetName()}计谋，等其车辆返回基地后开始实施！");
+                                    car.setControllingObj(player, car, ct.GetAttackType(), victim.Key, ref notifyMsg);// = victim;
+                                    this.WebNotify(player, $"已经部署{ct.GetName()}计谋，等其车辆返回基地后开始实施！");
+                                    Mrr = MileResultReason.Abundant;
+                                    return player.returningOjb;
+                                }
+                                else
+                                {
+                                    Mrr = MileResultReason.MoneyIsNotEnougt;
+                                    this.WebNotify(player, "你身上的剩余空间不够啦！");
+                                    return player.returningOjb;
+                                }
+                            case Manager_Driver.ConfuseManger.ControlAttackType.Ambush:
+                                if (car.ability.leftVolume > 0)
+                                {
+                                    victim.confuseRecord.AddAmbushInfo(player, Program.dt.GetFpByIndex(car.targetFpIndex), car.ability.leftVolume, victim.Key, ref notifyMsg);
+                                    car.setControllingObj(player, car, ct.GetAttackType(), victim.Key, ref notifyMsg);
+                                    this.WebNotify(player, $"已经部署{ct.GetName()}计谋，等待其被攻击！");
+                                    Mrr = MileResultReason.Abundant;
+                                    return player.returningOjb;
+                                }
+                                else
+                                {
+                                    Mrr = MileResultReason.MoneyIsNotEnougt;
+                                    this.WebNotify(player, "你身上的剩余空间不够啦！");
+                                    return player.returningOjb;
+                                }
+                            default:
+                                throw new Exception("程序意料之外！");
                         }
-                        else
-                            throw new Exception("运行此方法，没有正确校验");
-                        //player.confuseUsing = victim.confuseRecord;
-                        Mrr = MileResultReason.Abundant;
-                        return player.returningOjb;
+
                     }
                     else
-                    {
-                        Mrr = MileResultReason.MoneyIsNotEnougt;
-                        this.WebNotify(player, "你身上的剩余能量空间不够啦！");
-                        return player.returningOjb;
-                    }
+                        throw new Exception("运行此方法，没有正确校验");
+
+                }
                 else
                 {
                     Mrr = MileResultReason.NearestIsMoneyWhenAttack;
+                    that.ViewPosition(player, fpResult, ref notifyMsg);
                     this.WebNotify(player, $"离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，{ ct.GetName()}失败！");
                     return player.returningOjb;
                 }
@@ -569,7 +818,7 @@ namespace HouseManager4_0
             return attackMagic(player, car, ms, et, ref notifyMsg, out Mrr);
         }
 
-        class attackMagicTool : interfaceOfHM.AttackMagic
+        public class attackMagicTool : interfaceOfHM.AttackMagic
         {
             public Skill skill;
 
@@ -578,9 +827,23 @@ namespace HouseManager4_0
                 this.skill = skill_;
             }
 
+            public bool isMagic { get { return true; } }
+
             public bool CheckCarState(Car car)
             {
                 return car.state == CarState.waitOnRoad;
+            }
+            public long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMain that)
+            {
+                var car = player.getCar();
+                var rank = Program.rm.getPlayerClosestPositionRankNum(player, car, victim);
+
+                for (var i = 0; i < rank; i++)
+                {
+                    percentValue = percentValue * 70 / 100;
+                }
+                percentValue = Math.Max(1, percentValue);
+                return percentValue;
             }
 
             public Engine_DebtEngine.DebtCondition getCondition()
@@ -617,19 +880,83 @@ namespace HouseManager4_0
                 }
             }
 
+            public int GetDefensiveValue(Driver driver, bool Defened)
+            {
+                if (Defened)
+                {
+                    int baseDefend;
+                    if (driver == null)
+                    {
+                        baseDefend = 0;
+                    }
+                    else
+                        switch (this.skill.skillEnum)
+
+                        {
+                            case SkillEnum.Electic:
+                                {
+                                    baseDefend = driver.defensiveOfElectic;
+                                }; break;
+                            case SkillEnum.Water:
+                                {
+                                    baseDefend = driver.defensiveOfWater;
+                                }; break;
+                            case SkillEnum.Fire:
+                                {
+                                    baseDefend = driver.defensiveOfFire;
+                                }; break;
+                            default:
+                                {
+                                    baseDefend = 0;
+                                }; break;
+                        }
+                    int addDefend = Program.rm.magicE.DefenceMagicAdd;
+                    return baseDefend + addDefend;
+                }
+                else
+                {
+                    return GetDefensiveValue(driver);
+                }
+            }
+
             public string GetSkillName()
             {
                 return this.skill.skillName;
             }
 
-            public long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation)
+            //public long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation)
+            //{
+            //    return ambushInfomation.volumeValue;
+            //}
+
+            public long ImproveAttack(RoleInGame role, long attackMoney, ref List<string> notifyMsgs)
             {
-                return ambushInfomation.volumeValue;
+                return attackMoney;
             }
 
             public long leftValue(AbilityAndState ability)
             {
                 return ability.leftVolume;
+            }
+
+            public void MagicAnimateShow(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs)
+            {
+                switch (this.skill.skillEnum)
+                {
+                    case SkillEnum.Fire:
+                        {
+                            player.fireMagicChanged(player, victim, ref notifyMsgs);
+                        }; break;
+                    case SkillEnum.Water:
+                        {
+                            player.waterMagicChanged(player, victim, ref notifyMsgs);
+                        }; break;
+                    case SkillEnum.Electic:
+                        {
+                            player.electricMagicChanged(player, victim, ref notifyMsgs);
+                        }; break;
+                }
+                //throw new NotImplementedException();
             }
 
             public void setCost(long reduce, RoleInGame player, Car car, ref List<string> notifyMsg)
@@ -653,8 +980,25 @@ namespace HouseManager4_0
             if (that._Players.ContainsKey(ms.targetOwner))
             {
                 var victim = that._Players[ms.targetOwner];
-                OssModel.FastonPosition fpResult;
-                var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, victim, out fpResult);
+                //
+                // string msg;
+                bool distanceIsEnoughToStart;
+                OssModel.FastonPosition fpResult = null;
+                if (player.confuseRecord.IsBeingControlledByLose())
+                {
+                    if (that.theNearestToPlayerIsCarNotMoney(player, car, victim, out fpResult))
+                    {
+                        distanceIsEnoughToStart = true;
+                    }
+                    else
+                    {
+                        distanceIsEnoughToStart = false;
+                    }
+                }
+                else
+                {
+                    distanceIsEnoughToStart = true;
+                }
                 if (distanceIsEnoughToStart)
                     if (car.ability.leftVolume > 0)
                     {
@@ -679,8 +1023,13 @@ namespace HouseManager4_0
                     }
                 else
                 {
+                    if (fpResult == null)
+                    {
+                        throw new Exception("逻辑错误！！！");
+                    }
                     Mrr = MileResultReason.NearestIsMoneyWhenAttack;
-                    this.WebNotify(player, $"离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，{am.GetSkillName()}失败！");
+                    that.ViewPosition(player, fpResult, ref notifyMsg);
+                    this.WebNotify(player, $"迷惑状态下只能近距离攻击，离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，{am.GetSkillName()}失败！");
                     return player.returningOjb;
                 }
             }
@@ -693,39 +1042,65 @@ namespace HouseManager4_0
         internal void AmbushSelf(RoleInGame victim, interfaceOfHM.AttackT at, ref List<string> notifyMsg, ref long reduceSumInput)
         {
             // var car = selfRole.getCar();
-            victim.confuseRecord.AmbushSelf(victim, that, this, ref notifyMsg, at, ref reduceSumInput, (int i, ref List<string> notifyMsgPass, RoleInGame attacker, ref long reduceSum) =>
+            victim.confuseRecord.AmbushSelf(victim, that, this, ref notifyMsg, at, ref reduceSumInput, (int i, ref List<string> notifyMsgPass, RoleInGame attacker, ref long reduceSum, bool protecedByDefendMagic) =>
              {
-                 var m = victim.Money - reduceSum;
-                 if (m > 0)
+                 if (protecedByDefendMagic)
                  {
-                     long reduce;
-                     // var m = victim.Money;
+                     var car = attacker.getCar();
+                     var m = victim.Money - reduceSum;
+                     if (m > 0)
                      {
                          var percentValue = that.debtE.getAttackPercentValue(attacker, victim);
-                         var attackMoney = (at.leftValue(attacker.getCar().ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
-                         // var attackMoney = at.getVolumeOrBussiness(victim.confuseRecord.ambushInfomations[i]) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100;
-                         reduce = attackMoney;
-                         if (reduce > m)
-                         {
-                             reduce = m;
-                         }
-                     }
-                     reduce = Math.Max(1, reduce);
 
-                     at.setCost(reduce, attacker, attacker.getCar(), ref notifyMsgPass);
-                     // car.ability.setCostVolume(car.ability.costVolume + reduce, selfRole, car, ref notifyMsgPass);
-                     this.WebNotify(attacker, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
-                     this.WebNotify(victim, $"【{attacker.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
-                     reduceSum += reduce;
+                         // var m = victim.Money;
+                         var defendReduce = this.that.debtE.DealWithReduceWhenSimulationWithoutDefendMagic(at, attacker, car, victim, percentValue);
+                         victim.improvementRecord.reduceDefend(victim, defendReduce, ref notifyMsgPass);
+                     }
+                 }
+                 else
+                 {
+                     var car = attacker.getCar();
+                     var m = victim.Money - reduceSum;
+                     if (m > 0)
+                     {
+                         var percentValue = that.debtE.getAttackPercentValue(attacker, victim);
+                         long reduce;
+                         // var m = victim.Money;
+                         this.that.debtE.DealWithReduceWhenAttack(at, attacker, car, victim, percentValue, ref notifyMsgPass, out reduce, m, ref reduceSum);
+                     }
                  }
              });
         }
 
+        /// <summary>
+        /// this function only to imitate.not do action！
+        /// </summary>
+        /// <param name="victim"></param>
+        /// <param name="at"></param>
+        /// <param name="harmValue"></param>
+        internal void AmbushSelf(RoleInGame victim, attackMagicTool at, ref long harmValue)
+        {
+            harmValue += victim.confuseRecord.AmbushSelf(victim, that, at);
+        }
         internal string updateMagic(MagicSkill ms)
         {
             return this.updateAction(this, ms, ms.Key);
         }
         public delegate void SpeedMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+        public delegate void AttackMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+        public delegate void DefenceMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+
+        public delegate void ConfusePrepareMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+        public delegate void LostPrepareMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+        public delegate void AmbushPrepareMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+        public delegate void ControlPrepareMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+
+        public delegate void ConfuseMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
+
+        public delegate void FireMagicChanged(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
+        public delegate void WaterMagicChanged(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
+        public delegate void ElectricMagicChanged(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
+
         public void newThreadDo(commandWithTime.baseC dObj)
         {
             if (dObj.c == "speedSet")
@@ -769,6 +1144,14 @@ namespace HouseManager4_0
                                             car.ability.setCostVolume(car.ability.costVolume + costVolumeValue, player, car, ref notifyMsg);
                                             this.WebNotify(player, $"你提高了【{player.PlayerName}】的速度，其向你的司机支付{(costVolumeValue / 100).ToString()}.{(costVolumeValue % 100).ToString()}银两。");
                                         }
+                                        else
+                                        {
+                                            this.WebNotify(player, $"【{player.PlayerName}】状态已满！");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.WebNotify(player, $"【{player.PlayerName}】资金匮乏！");
                                     }
                                 }
                                 else
@@ -796,6 +1179,202 @@ namespace HouseManager4_0
                                     target = ss.target,
                                     changeType = ss.changeType,
                                     returningOjb = ss.returningOjb
+                                });
+
+                            }
+                            //else
+                            //{
+                            //    car.setState(player, ref notifyMsg, CarState.waitOnRoad);
+                            //}
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("car.state == CarState.buying!或者 dor.changeType不是四种类型");
+                    }
+                }
+                for (var i = 0; i < notifyMsg.Count; i += 2)
+                {
+                    var url = notifyMsg[i];
+                    var sendMsg = notifyMsg[i + 1];
+                    Console.WriteLine($"url:{url}");
+                    Startup.sendMsg(url, sendMsg);
+                }
+            }
+            else if (dObj.c == "attackSet")
+            {
+                commandWithTime.attackSet ats = (commandWithTime.attackSet)dObj;
+                List<string> notifyMsg = new List<string>();
+                //  bool needUpdatePlayers = false;
+                lock (that.PlayerLock)
+                {
+                    var player = that._Players[ats.key];
+                    var car = that._Players[ats.key].getCar();
+                    if (car.state == CarState.working)
+                    {
+                        if (car.targetFpIndex == -1)
+                        {
+                            throw new Exception("居然来了一个没有目标的车！！！");
+                        }
+                        else
+                        {
+                            /*
+                             * 当到达地点时，有可能攻击对象不存在。
+                             * 也有可能攻击对象已破产。
+                             * 还有正常情况。
+                             * 这三种情况都要考虑到。
+                             */
+                            //attackTool at = new attackTool();
+                            // var attackMoney = car.ability.Business;
+                            if (that._Players.ContainsKey(ats.beneficiary))
+                            {
+                                var beneficiary = that._Players[ats.beneficiary];
+                                if (!beneficiary.Bust)
+                                {
+                                    if (beneficiary.Money >= 4 * player.getCar().ability.leftBusiness)
+                                    {
+                                        long costBusinessValue;
+                                        beneficiary.improvementRecord.addAttack(beneficiary, player.getCar().ability.leftBusiness, out costBusinessValue, ref notifyMsg);
+                                        if (costBusinessValue > 0)
+                                        {
+                                            this.WebNotify(beneficiary, $"【{player.PlayerName}】提高了你的业务能力，你向其支付{(costBusinessValue / 100).ToString()}.{(costBusinessValue % 100).ToString()}银两。");
+                                            beneficiary.MoneySet(beneficiary.Money - costBusinessValue, ref notifyMsg);
+                                            car.ability.setCostVolume(car.ability.costBusiness + costBusinessValue, player, car, ref notifyMsg);
+                                            this.WebNotify(player, $"你提高了【{player.PlayerName}】的速度，其向你的司机支付{(costBusinessValue / 100).ToString()}.{(costBusinessValue % 100).ToString()}银两。");
+                                        }
+                                        else
+                                        {
+                                            this.WebNotify(player, $"【{player.PlayerName}】状态已满！");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.WebNotify(player, $"【{player.PlayerName}】资金匮乏！");
+                                    }
+                                }
+                                else
+                                {
+                                    //这种情况也有可能存在。
+                                }
+
+                            }
+                            else
+                            {
+                                //这种情况有可能存在.
+                            }
+                            /*
+                             * 无论什么情况，直接返回。
+                             */
+                            //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
+                            {
+                                car.setState(player, ref notifyMsg, CarState.returning);
+                                that.retutnE.SetReturnT(0, new commandWithTime.returnning()
+                                {
+                                    c = "returnning",
+                                    key = ats.key,
+                                    // car = dOwner.car,
+                                    //returnPath = dOwner.returnPath,//returnPath_Record,
+                                    target = ats.target,
+                                    changeType = ats.changeType,
+                                    returningOjb = ats.returningOjb
+                                });
+
+                            }
+                            //else
+                            //{
+                            //    car.setState(player, ref notifyMsg, CarState.waitOnRoad);
+                            //}
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("car.state == CarState.buying!或者 dor.changeType不是四种类型");
+                    }
+                }
+                for (var i = 0; i < notifyMsg.Count; i += 2)
+                {
+                    var url = notifyMsg[i];
+                    var sendMsg = notifyMsg[i + 1];
+                    Console.WriteLine($"url:{url}");
+                    Startup.sendMsg(url, sendMsg);
+                }
+            }
+            else if (dObj.c == "defenseSet")
+            {
+                commandWithTime.defenseSet ats = (commandWithTime.defenseSet)dObj;
+                List<string> notifyMsg = new List<string>();
+                //  bool needUpdatePlayers = false;
+                lock (that.PlayerLock)
+                {
+                    var player = that._Players[ats.key];
+                    var car = that._Players[ats.key].getCar();
+                    if (car.state == CarState.working)
+                    {
+                        if (car.targetFpIndex == -1)
+                        {
+                            throw new Exception("居然来了一个没有目标的车！！！");
+                        }
+                        else
+                        {
+                            /*
+                             * 当到达地点时，有可能攻击对象不存在。
+                             * 也有可能攻击对象已破产。
+                             * 还有正常情况。
+                             * 这三种情况都要考虑到。
+                             */
+                            //attackTool at = new attackTool();
+                            // var attackMoney = car.ability.Business;
+                            if (that._Players.ContainsKey(ats.beneficiary))
+                            {
+                                var beneficiary = that._Players[ats.beneficiary];
+                                if (!beneficiary.Bust)
+                                {
+                                    if (beneficiary.Money >= 4 * player.getCar().ability.leftVolume)
+                                    {
+                                        long costVolumeValue;
+                                        beneficiary.improvementRecord.addDefence(beneficiary, player.getCar().ability.leftVolume, out costVolumeValue, ref notifyMsg);
+                                        if (costVolumeValue > 0)
+                                        {
+                                            this.WebNotify(beneficiary, $"【{player.PlayerName}】提高了你的防御能力，你向其支付{(costVolumeValue / 100).ToString()}.{(costVolumeValue % 100).ToString()}银两。");
+                                            beneficiary.MoneySet(beneficiary.Money - costVolumeValue, ref notifyMsg);
+                                            car.ability.setCostVolume(car.ability.costBusiness + costVolumeValue, player, car, ref notifyMsg);
+                                            this.WebNotify(player, $"你提高了【{player.PlayerName}】的防御能力，其向你的司机支付{(costVolumeValue / 100).ToString()}.{(costVolumeValue % 100).ToString()}银两。");
+                                        }
+                                        else
+                                        {
+                                            this.WebNotify(player, $"【{player.PlayerName}】状态已满！");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.WebNotify(player, $"【{player.PlayerName}】资金匮乏！辅助失败");
+                                    }
+                                }
+                                else
+                                {
+                                    //这种情况也有可能存在。
+                                }
+
+                            }
+                            else
+                            {
+                                //这种情况有可能存在.
+                            }
+                            /*
+                             * 无论什么情况，直接返回。
+                             */
+                            //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
+                            {
+                                car.setState(player, ref notifyMsg, CarState.returning);
+                                that.retutnE.SetReturnT(0, new commandWithTime.returnning()
+                                {
+                                    c = "returnning",
+                                    key = ats.key,
+                                    // car = dOwner.car,
+                                    //returnPath = dOwner.returnPath,//returnPath_Record,
+                                    target = ats.target,
+                                    changeType = ats.changeType,
+                                    returningOjb = ats.returningOjb
                                 });
 
                             }

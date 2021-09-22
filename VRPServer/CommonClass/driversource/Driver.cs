@@ -324,7 +324,7 @@ namespace CommonClass.driversource
                     }; break;
                 case SkillEnum.Defense:
                     {
-                        this.skillName = "提抗";
+                        this.skillName = "守护";
                     }; break;
                 default:
                     {

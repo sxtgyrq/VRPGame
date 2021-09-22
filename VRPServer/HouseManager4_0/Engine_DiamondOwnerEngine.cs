@@ -25,19 +25,91 @@ namespace HouseManager4_0
             //throw new NotImplementedException();
         }
 
-        internal void StartDiamondOwnerThread(int startT, Car car, SetPromote sp, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro, int goMile)
+        internal void StartDiamondOwnerThread(int startT, int step, RoleInGame player, Car car, SetPromote sp, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro, int goMile, Node goPath)
         {
-            //throw new NotImplementedException();
-            this.startNewThread(startT + 100, new commandWithTime.diamondOwner()
+
+            System.Threading.Thread th = new System.Threading.Thread(() =>
             {
-                c = "diamondOwner",
-                key = sp.Key,
-                target = car.targetFpIndex,//新的起点
-                changeType = commandWithTime.returnning.ChangeType.BeforeTax,
-                costMile = goMile,
-                returningOjb = ro,
-                diamondType = sp.pType
-            }, this);
+                if (step >= goPath.path.Count - 1)
+                    this.startNewThread(startT + 100, new commandWithTime.diamondOwner()
+                    {
+                        c = "diamondOwner",
+                        key = sp.Key,
+                        target = car.targetFpIndex,//新的起点
+                        changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                        costMile = goMile,
+                        returningOjb = ro,
+                        diamondType = sp.pType
+                    }, this);
+                //that.debtE.setDebtT(startT, car, sa, goMile, ro);
+                //this.startNewThread(startT, new commandWithTime.defenseSet()
+                //{
+                //    c = command,
+                //    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                //    costMile = goMile,
+                //    key = ms.Key,
+                //    returningOjb = ro,
+                //    target = car.targetFpIndex,
+                //    beneficiary = ms.targetOwner
+                //}, this);
+                else
+                {
+                    if (step == 0)
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else
+                        {
+
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        step++;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        else
+                            newStartT = 0;
+
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                        StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
+                    }
+                    else
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else if (startT != 0)
+                        {
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+                        step++;
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        // else if(step==goPath.path.Count-1)
+                        //EditCarStateAfterSelect(step,player,ref car,)
+                        else
+                            throw new Exception("这种情况不会出现");
+                        //newStartT = 0;
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
+                    }
+                }
+            });
+            th.Start();
+            //throw new NotImplementedException();
+
             //Thread th = new Thread(() => setDiamondOwner(startT, ));
             //th.Name = $"{sp.Key}-DiamondOwner";
             //th.Start();

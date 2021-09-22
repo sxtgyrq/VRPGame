@@ -86,9 +86,10 @@ namespace HouseManager4_0.RoomMainF
                         }
                         else
                         {
+                            var deltaT = (DateTime.Now - other.getCar().animateData.recordTime).TotalMilliseconds;
                             var result = new
                             {
-                                deltaT = Convert.ToInt32((DateTime.Now - other.getCar().animateData.recordTime).TotalMilliseconds),
+                                deltaT = deltaT > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(deltaT),
                                 animateData = other.getCar().animateData.animateData,
                                 start = other.getCar().animateData.start,
                                 isParking = other.getCar().animateData.isParking
@@ -118,9 +119,10 @@ namespace HouseManager4_0.RoomMainF
             { }
             else
             {
+                var deltaT = (DateTime.Now - car.animateData.recordTime).TotalMilliseconds;
                 var result = new
                 {
-                    deltaT = Convert.ToInt32((DateTime.Now - car.animateData.recordTime).TotalMilliseconds),
+                    deltaT = deltaT > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(deltaT),
                     animateData = car.animateData.animateData,
                     start = car.animateData.start,
                     isParking = car.animateData.isParking
@@ -199,9 +201,10 @@ namespace HouseManager4_0.RoomMainF
             }
             else
             {
+                var deltaT = (DateTime.Now - self.getCar().animateData.recordTime).TotalMilliseconds;
                 var result = new
                 {
-                    deltaT = Convert.ToInt32((DateTime.Now - self.getCar().animateData.recordTime).TotalMilliseconds),
+                    deltaT = deltaT>Int32.MaxValue?Int32.MaxValue:Convert.ToInt32(deltaT),
                     animateData = self.getCar().animateData.animateData,
                     start = self.getCar().animateData.start,
                     isParking = self.getCar().animateData.isParking,

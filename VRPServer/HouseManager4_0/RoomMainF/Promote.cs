@@ -99,7 +99,7 @@ namespace HouseManager4_0.RoomMainF
         //        start = startPosition,
         //        animateData = result,
         //        recordTime = DateTime.Now,
-                    
+
         //    };
         //    car.setAnimateData(role, ref nofityMsgs, animateData);
         //    //car.animateData = new AnimateData()
@@ -137,6 +137,58 @@ namespace HouseManager4_0.RoomMainF
             {
                 return Program.rm.GetPromotePositionTo(this._pType);
                 //  throw new NotImplementedException();
+            }
+        }
+        public int getPlayerClosestPositionRankNum(RoleInGame player, Car car, RoleInGame victim)
+        {
+            return getAttackerClosestPositionRankNum(player, car, victim);
+        }
+        int getAttackerClosestPositionRankNum(RoleInGame player, Car car, interfaceOfHM.GetFPIndex getF)
+        {
+            int rank = 0;
+            if (car.state == CarState.waitAtBaseStation)
+            {
+                double distanceToDiamond;
+                var from = Program.dt.GetFpByIndex(getF.GetFPIndex());
+                {
+                    var fpTo = Program.dt.GetFpByIndex(player.StartFPIndex); ;//this.GetPromotePositionTo(pType);
+
+                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                }
+                foreach (var item in this._collectPosition)
+                {
+                    //  var from = Program.dt.GetFpByIndex(player.StartFPIndex);
+                    var fpTo = Program.dt.GetFpByIndex(item.Value);
+                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    if (distanceToMoney <= distanceToDiamond)
+                    {
+                        rank++;
+                    }
+                }
+                return rank;
+            }
+            else if (car.state == CarState.waitOnRoad)
+            {
+                var from = Program.dt.GetFpByIndex(getF.GetFPIndex());
+                double distanceToDiamond;
+                {
+                    var fpTo = Program.dt.GetFpByIndex(car.targetFpIndex);
+                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                }
+                foreach (var item in this._collectPosition)
+                {
+                    var fpTo = Program.dt.GetFpByIndex(item.Value);
+                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    if (distanceToMoney <= distanceToDiamond)
+                    {
+                        rank++;
+                    }
+                }
+                return rank;
+            }
+            else
+            {
+                throw new Exception("非法调用");
             }
         }
         public bool theNearestToDiamondIsCarNotMoney(RoleInGame player, Car car, string pType, out OssModel.FastonPosition fp)

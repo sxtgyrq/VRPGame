@@ -70,6 +70,13 @@ namespace WsOfWebClient
     {
     }
 
+    public class ViewAngle : CommonClass.Command
+    {
+        public double x1 { get; set; }
+        public double y1 { get; set; }
+        public double x2 { get; set; }
+        public double y2 { get; set; }
+    }
     public class Bust : Attack
     {
         public int Target { get; set; }

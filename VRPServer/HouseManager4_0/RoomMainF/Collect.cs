@@ -157,7 +157,11 @@ namespace HouseManager4_0.RoomMainF
 
 
 
-
+        /// <summary>
+        /// 将序号按距离进行排序
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns>返回的值为0至37的排序</returns>
         internal List<int> getCollectPositionsByDistance(FastonPosition target)
         {
             List<int> positions = new List<int>();
@@ -171,18 +175,18 @@ namespace HouseManager4_0.RoomMainF
             return positions;
         }
 
-        private long getCollectReWardByReward(int target)
-        {
-            foreach (var item in this._collectPosition)
-            {
-                if (item.Value == target)
-                {
-                    return this.GetCollectReWard(item.Key) * 100;
-                }
-            }
-            return 0;
-            // throw new NotImplementedException();
-        }
+        //private long getCollectReWardByReward(int target)
+        //{
+        //    foreach (var item in this._collectPosition)
+        //    {
+        //        if (item.Value == target)
+        //        {
+        //            return this.GetCollectReWard(item.Key) * 100;
+        //        }
+        //    }
+        //    return 0;
+        //    // throw new NotImplementedException();
+        //}
         ///// <summary>
         ///// 修改小车相关属性
         ///// </summary>

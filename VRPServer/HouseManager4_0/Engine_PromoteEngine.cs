@@ -86,9 +86,39 @@ namespace HouseManager4_0
                 throw new Exception($"数据传输错误！(传出类型为{c.c})");
             }
         }
+        //class PromoteObj : interfaceOfHM.ContactInterface
+        //{
+        //    public delegate void SetPromoteArrivalThreadM(int startT, Car car, SetPromote sp, int goMile, Node goPath, commandWithTime.ReturningOjb ro);
+        //    private SetPromote _sp;
 
+        //    SetPromoteArrivalThreadM _setPromoteArrivalThread;
+        //    public PromoteObj(SetPromote sp, SetPromoteArrivalThreadM spthread)
+        //    {
+        //        this._sp = sp;
+        //        this._setPromoteArrivalThread = spthread;
+        //    }
+
+        //    public string targetOwner
+        //    {
+        //        get { return ""; }
+        //        // get { return this._sp.ta}
+        //    }
+
+        //    public int target => throw new NotImplementedException();
+
+        //    public bool carLeftConditions(Car car)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        //    public void SetArrivalThread(int startT, Car car, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
         private commandWithTime.ReturningOjb promote(RoleInGame player, Car car, SetPromote sp, ref List<string> notifyMsg, out MileResultReason mrr)
         {
+
             RoleInGame boss;
             if (player.HasTheBoss(roomMain._Players, out boss))
             {
@@ -120,9 +150,9 @@ namespace HouseManager4_0
                                             var fp1 = Program.dt.GetFpByIndex(from);
                                             var fp2 = Program.dt.GetFpByIndex(to);
                                             var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                                            var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
+                                            var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
                                             // var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                                            var returnPath = that.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
+                                            var returnPath = that.GetAFromB_v2(to, player.StartFPIndex, player, ref notifyMsg);
 
                                             var goMile = that.GetMile(goPath);
                                             var returnMile = that.GetMile(returnPath);
@@ -135,7 +165,7 @@ namespace HouseManager4_0
                                                 this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
 
                                                 RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
-                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, car, sp, ro, goMile);
+                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
                                                 //  getAllCarInfomations(sp.Key, ref notifyMsg);
                                                 mrr = MileResultReason.Abundant;
                                                 return ro;
@@ -174,8 +204,8 @@ namespace HouseManager4_0
                                             var fp1 = Program.dt.GetFpByIndex(from);
                                             var fp2 = Program.dt.GetFpByIndex(to);
                                             var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                                            var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
-                                            var returnPath = that.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
+                                            var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
+                                            var returnPath = that.GetAFromB_v2(to, player.StartFPIndex, player, ref notifyMsg);
 
                                             var goMile = that.GetMile(goPath);
                                             var returnMile = that.GetMile(returnPath);
@@ -188,7 +218,7 @@ namespace HouseManager4_0
                                                 this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
 
                                                 RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
-                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, car, sp, ro, goMile);
+                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
                                                 mrr = MileResultReason.Abundant;
                                                 return ro;
                                             }
@@ -253,10 +283,10 @@ namespace HouseManager4_0
                                         var fp1 = Program.dt.GetFpByIndex(from);
                                         var fp2 = Program.dt.GetFpByIndex(to);
                                         var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                                        var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
+                                        var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
                                         // var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                                        var returnToBossPath = that.GetAFromB(to, boss.StartFPIndex, player, ref notifyMsg);
-                                        var returnToSelfPath = that.GetAFromB(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
+                                        var returnToBossPath = that.GetAFromB_v2(to, boss.StartFPIndex, player, ref notifyMsg);
+                                        var returnToSelfPath = that.GetAFromB_v2(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
 
                                         var goMile = that.GetMile(goPath);
                                         var returnToBossMile = that.GetMile(returnToBossPath);
@@ -268,7 +298,7 @@ namespace HouseManager4_0
                                             int startT;
                                             this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
                                             RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
-                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, car, sp, ro, goMile);
+                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
                                             //  getAllCarInfomations(sp.Key, ref notifyMsg);
                                             mrr = MileResultReason.Abundant;
                                             return ro;
@@ -308,10 +338,10 @@ namespace HouseManager4_0
                                         var fp1 = Program.dt.GetFpByIndex(from);
                                         var fp2 = Program.dt.GetFpByIndex(to);
                                         var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                                        var goPath = that.GetAFromB(from, to, player, ref notifyMsg);
+                                        var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
 
-                                        var returnToBossPath = that.GetAFromB(to, boss.StartFPIndex, player, ref notifyMsg);
-                                        var returnToSelfPath = that.GetAFromB(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
+                                        var returnToBossPath = that.GetAFromB_v2(to, boss.StartFPIndex, player, ref notifyMsg);
+                                        var returnToSelfPath = that.GetAFromB_v2(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
 
                                         var goMile = that.GetMile(goPath);
                                         var returnToBossMile = that.GetMile(returnToBossPath);
@@ -325,7 +355,7 @@ namespace HouseManager4_0
                                             this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
 
                                             RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
-                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, car, sp, ro, goMile);
+                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
                                             mrr = MileResultReason.Abundant;
                                             return ro;
                                         }

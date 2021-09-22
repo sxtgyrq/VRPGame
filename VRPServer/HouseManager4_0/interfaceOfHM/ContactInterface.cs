@@ -9,7 +9,7 @@ namespace HouseManager4_0.interfaceOfHM
         string targetOwner { get; }
         int target { get; }
 
-        void SetArrivalThread(int startT, HouseManager4_0.Car car, int goMile, RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb);
+        void SetArrivalThread(int startT, HouseManager4_0.Car car, int goMile, RoomMainF.RoomMain.Node goPath, RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb);
         bool carLeftConditions(HouseManager4_0.Car car);
     }
 }

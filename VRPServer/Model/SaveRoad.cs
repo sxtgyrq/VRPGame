@@ -21,6 +21,9 @@ namespace Model
             public double endLatitude { get; set; }
 
             public int CarInDirection { get; set; }
+            /// <summary>
+            /// 0代表单行，1代表双向。
+            /// </summary>
             public int CarInOpposeDirection { get; set; }
             public int EBicycleInDirection { get; set; }
             public int EBicycleInOpposeDirection { get; set; }
@@ -28,7 +31,13 @@ namespace Model
             public int WalkInOpposeDirection { get; set; }
             public int MaxSpeed { get; set; }
 
+            /// <summary>
+            /// cross中的 RoadCode1指向本身的的RoadCode
+            /// </summary>
             public DictCross[] Cross1 { get; set; }
+            /// <summary>
+            /// cross中的 RoadCode2指向本身的的RoadCode
+            /// </summary>
             public DictCross[] Cross2 { get; set; }
 
             public FastenPositionCalculate[] PassShop { get; set; }
@@ -41,6 +50,9 @@ namespace Model
             public double BDLongitude { get; set; }
             public double BDLatitude { get; set; }
             public int IsChanged { get; set; }
+            /// <summary>
+            /// 有3个取值，-1,0,1，分别代表未设置、不想交、相交。-1，不会出现在这里。
+            /// </summary>
             public int CrossState { get; set; }
             public int RoadOrder1 { get; set; }
             public int RoadOrder2 { get; set; }

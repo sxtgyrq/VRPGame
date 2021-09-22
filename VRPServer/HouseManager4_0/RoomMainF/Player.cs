@@ -1,4 +1,5 @@
 ﻿using CommonClass;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -157,7 +158,7 @@ namespace HouseManager4_0.RoomMainF
                             {36,-1},
                             {37,-1}
                         },
-                        returningOjb = commandWithTime.ReturningOjb.ojbWithoutBoss(new List<Model.MapGo.nyrqPosition>()),
+                        returningOjb = commandWithTime.ReturningOjb.ojbWithoutBoss(new Node() { path = new List<Node.pathItem>() }),
                         OpenMore = 0,
                         PromoteDiamondCount = new Dictionary<string, int>()
                         {
@@ -204,9 +205,9 @@ namespace HouseManager4_0.RoomMainF
                     newPlayer.ShowLevelOfPlayerF = this.ShowLevelOfPlayerF;
                     newPlayer.afterBroke = this.AfterPlayerBroken;
                     // newPlayer.driverSelected = this.driverSelected;
-                    newPlayer.confuseRecord = new Manager_Driver.ConfuseManger();
-                    newPlayer.improvementRecord = new Manager_Driver.ImproveManager();
-                    newPlayer.speedMagicChanged = this.speedMagicChanged;
+                    ConfigMagic(newPlayer);
+                    ((Player)this._Players[addItem.Key]).direciton = getComplex(Program.dt.GetFpByIndex(fpIndex));
+                    //  newPlayer.
                 }
             }
 
@@ -220,6 +221,66 @@ namespace HouseManager4_0.RoomMainF
                 return "ng";
             }
             //  throw new NotImplementedException();
+        }
+        private System.Numerics.Complex getComplex(View v, System.Numerics.Complex direciton)
+        {
+            double x1, y1, x2, y2;
+            x1 = v.x1;
+            x2 = v.x2;
+            y1 = v.y1;
+            y2 = v.y2;
+            var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+            System.Numerics.Complex c;
+            if (l > 1e-8)
+                c = new System.Numerics.Complex((x2 - x1) / l, (y2 - y1) / l);
+            else
+                c = direciton;
+            return c;
+            //throw new NotImplementedException();
+        }
+        public System.Numerics.Complex getComplex(FastonPosition fastonPosition)
+        {
+            double x1, y1, x2, y2;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.Longitude, fastonPosition.Latitde, out x1, out y1);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.positionLongitudeOnRoad, fastonPosition.positionLatitudeOnRoad, out x2, out y2);
+            // throw new NotImplementedException();
+            var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+            System.Numerics.Complex c;
+            if (l > 1e-8)
+                c = new System.Numerics.Complex((x1 - x2) / l, (y1 - y2) / l);
+            else
+                throw new Exception("");
+            return c;
+        }
+        internal bool isZero(Node.direction direction)
+        {
+            double x1, y1, x2, y2;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.start.BDlongitude, direction.start.BDlatitude, out x1, out y1);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.end.BDlongitude, direction.end.BDlatitude, out x2, out y2);
+            var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+            if (l > 1e-8)
+                return false;
+            else
+                return true; 
+        }
+        public System.Numerics.Complex getComplex(Node.direction direction)
+        {
+            double x1, y1, x2, y2;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.start.BDlongitude, direction.start.BDlatitude, out x1, out y1);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.end.BDlongitude, direction.end.BDlatitude, out x2, out y2);
+            // throw new NotImplementedException();
+            var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+            System.Numerics.Complex c;
+            if (l > 1e-8)
+                c = new System.Numerics.Complex((x2 - x1) / l, (y2 - y1) / l);
+            else
+                throw new Exception("");
+            return c;
+        }
+        internal double getAngle(System.Numerics.Complex complex)
+        {
+            //  complex.Imaginary
+            return Math.Acos(complex.Real);
         }
 
         private void AfterPlayerBroken(Player npc, ref List<string> notifyMsgs)

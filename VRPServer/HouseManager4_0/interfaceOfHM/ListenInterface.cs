@@ -104,5 +104,6 @@ namespace HouseManager4_0.interfaceOfHM
         void SendMsg(DialogMsg dm);
         void SelectDriver(SetSelectDriver dm);
         string updateMagic(MagicSkill ms);
+        string updateView(View v);
     }
 }

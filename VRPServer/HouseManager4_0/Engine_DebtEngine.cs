@@ -1,5 +1,6 @@
 ﻿using CommonClass;
 using CommonClass.driversource;
+using HouseManager4_0.interfaceOfEngine;
 using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,19 @@ namespace HouseManager4_0
         {
             this.roomMain = roomMain;
         }
-        class attackTool : interfaceOfHM.AttackT
+        internal class attackTool : interfaceOfHM.AttackT
         {
+            public bool isMagic { get { return false; } }
+
             public bool CheckCarState(Car car)
             {
                 return car.state == CarState.working;
+            }
+
+
+            public long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMain that)
+            {
+                return percentValue;
             }
 
             public Engine_DebtEngine.DebtCondition getCondition()
@@ -39,19 +48,69 @@ namespace HouseManager4_0
                 }
             }
 
+            public int GetDefensiveValue(Driver driver, bool defended)
+            {
+                if (defended)
+                {
+                    if (driver == null)
+                    {
+                        return Program.rm.magicE.DefencePhysicsAdd;
+                    }
+                    else
+                    {
+                        return driver.defensiveOfPhysics + Program.rm.magicE.DefencePhysicsAdd;
+                    }
+                }
+                else
+                {
+                    return GetDefensiveValue(driver);
+                }
+            }
+
             public string GetSkillName()
             {
                 return "业务切磋";
             }
 
-            public long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation)
+            //public long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation)
+            //{
+            //    return 0;
+            //    // return ambushInfomation.bussinessValue;
+            //}
+
+            public long ImproveAttack(RoleInGame role, long attackMoney, ref List<string> notifyMsgs)
             {
-                return ambushInfomation.bussinessValue;
+                if (role.improvementRecord.attackValue > 0)
+                {
+                    var larger = Program.rm.magicE.enlarge(attackMoney);
+                    if (larger - attackMoney > 0)
+                        role.improvementRecord.reduceAttack(role, larger, ref notifyMsgs);
+                    return larger;
+                }
+                else
+                    return attackMoney;
+                //throw new NotImplementedException();
+            }
+
+            public long ImproveAttack(RoleInGame role, long attackMoney)
+            {
+                if (role.improvementRecord.attackValue > 0)
+                {
+                    var larger = Program.rm.magicE.enlarge(attackMoney);
+                    return larger;
+                }
+                else
+                    return attackMoney;
             }
 
             public long leftValue(AbilityAndState ability)
             {
                 return ability.leftBusiness;
+            }
+
+            public void MagicAnimateShow(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs)
+            {
+                // throw new NotImplementedException();
             }
 
             public void setCost(long reduce, RoleInGame player, Car car, ref List<string> notifyMsg)
@@ -92,6 +151,7 @@ namespace HouseManager4_0
         }
 
 
+
         internal void setDebt(commandWithTime.debtOwner dOwner, interfaceOfHM.AttackT at)
         {
             List<string> notifyMsg = new List<string>();
@@ -124,33 +184,25 @@ namespace HouseManager4_0
                             if (!victim.Bust)
                             {
                                 var percentValue = getAttackPercentValue(player, victim);
-
+                                percentValue = at.DealWithPercentValue(percentValue, player, victim, this.that);
                                 //if(victim.Money*100/ car.ability.Business)
                                 long reduceSum = 0;
                                 var m = victim.Money - reduceSum;
                                 long reduce;
                                 if (m > 0)
                                 {
-                                    //car.ability.leftBusiness 
-                                    var attackMoney = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
-                                    reduce = attackMoney;
-                                    if (reduce > m)
-                                    {
-                                        reduce = m;
-                                    }
-                                    reduce = Math.Max(1, reduce);
-                                    at.setCost(reduce, player, car, ref notifyMsg);
-                                    this.WebNotify(victim, $"【{player.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
-
-                                    reduceSum += reduce;
+                                    this.DealWithReduceWhenAttack(at, player, car, victim, percentValue, ref notifyMsg, out reduce, m, ref reduceSum);
                                 }
                                 else
                                 {
                                     reduceSum = 0;
                                     reduce = 0;
                                 }
-
-                                that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref reduceSum);
+                                if (at.isMagic)
+                                {
+                                    that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref reduceSum);
+                                    at.MagicAnimateShow(player, victim, ref notifyMsg);
+                                }
 
                                 if (reduceSum > 0)
                                     victim.MoneySet(victim.Money - reduceSum, ref notifyMsg);
@@ -164,7 +216,6 @@ namespace HouseManager4_0
                                 {
                                     ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg);
                                 }
-
                             }
                             else
                             {
@@ -215,22 +266,58 @@ namespace HouseManager4_0
             // Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
 
         }
+        internal long DealWithReduceWhenSimulationWithoutDefendMagic(interfaceOfHM.AttackT at, RoleInGame player, Car car, RoleInGame victim, long percentValue)
+        {
+            var attackMoneyBeforeDefend = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
+            return attackMoneyBeforeDefend;
+        }
+        internal void DealWithReduceWhenAttack(interfaceOfHM.AttackT at, RoleInGame player, Car car, RoleInGame victim, long percentValue, ref List<string> notifyMsg, out long reduce, long m, ref long reduceSum)
+        {
+            var attackMoneyBeforeDefend = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
+            var attackMoneyAfterDefend = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100) * percentValue / 100;
+            attackMoneyBeforeDefend = Math.Max(1, attackMoneyBeforeDefend);
+            attackMoneyAfterDefend = Math.Max(1, attackMoneyAfterDefend);
+
+            long attackMoney;
+            if (attackMoneyBeforeDefend == attackMoneyAfterDefend)
+                attackMoney = attackMoneyBeforeDefend;
+            else
+            {
+                attackMoney = attackMoneyAfterDefend;
+                victim.improvementRecord.reduceDefend(victim, attackMoneyBeforeDefend, ref notifyMsg);
+            }
+
+            attackMoney = at.ImproveAttack(player, attackMoney, ref notifyMsg);
+            reduce = attackMoney;
+            if (reduce > m)
+            {
+                reduce = m;
+            }
+            reduce = Math.Max(1, reduce);
+            at.setCost(reduce, player, car, ref notifyMsg);
+            //this.WebNotify(victim, $"【{player.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
+            this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
+            this.WebNotify(victim, $"【{player.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
+            reduceSum += reduce;
+        }
+
+
 
         internal long getAttackPercentValue(RoleInGame player, RoleInGame victim)
         {
             if (player.TheLargestHolderKey == victim.Key)
             {
-                //Msg = $"[{victim.PlayerName}]是你的老大，只能发挥出攻击效率的10%";
-                return 10;
+                //Msg = $"[{victim.PlayerName}]是你的老大，只能发挥出攻击效率的1%";
+                return 1;
             }
             else if (victim.TheLargestHolderKey == player.Key)
             {
-                //Msg = $"[{victim.PlayerName}]是你的小弟，只能发挥出攻击效率的10%";
-                return 10;
+                //Msg = $"[{victim.PlayerName}]是你的小弟，只能发挥出攻击效率的1%";
+                return 1;
             }
             else if (victim.TheLargestHolderKey == player.TheLargestHolderKey)
             {
-                return 20;
+                return 1;
             }
             else
             {

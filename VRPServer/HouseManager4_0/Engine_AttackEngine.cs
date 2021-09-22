@@ -44,11 +44,11 @@ namespace HouseManager4_0
                     /*
                      * 在起始地点，攻击失败，说明最大里程内不能到达，故要重新换NPC.
                      */
-                    if (player.playerType == RoleInGame.PlayerType.NPC)
-                    {
-#warning 这里要考虑是否直接提升玩家等级。
-                        ((NPC)player).SetBust(true, ref notifyMsg);
-                    }
+                    //                    if (player.playerType == RoleInGame.PlayerType.NPC)
+                    //                    {
+                    //#warning 这里要考虑是否直接提升玩家等级。
+                    //                        ((NPC)player).SetBust(true, ref notifyMsg);
+                    //                    }
                 }
                 //this.carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
             }
@@ -169,15 +169,24 @@ namespace HouseManager4_0
             {
                 get { return this._sa.target; }
             }
-            public delegate void SetAttackArrivalThreadM(int startT, Car car, SetAttack sa, int goMile, commandWithTime.ReturningOjb ro);
-            public void SetArrivalThread(int startT, Car car, int goMile, commandWithTime.ReturningOjb returningOjb)
-            {
-                this._setAttackArrivalThread(startT, car, this._sa, goMile, returningOjb);
-            }
+            //public delegate void SetSpeedImproveArrivalThreadM(int startT, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb);
+
+            public delegate void SetAttackArrivalThreadM(int startT, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro);
+            //public void SetArrivalThread(int startT, Car car, int goMile, commandWithTime.ReturningOjb returningOjb)
+            //{
+            //    this._setAttackArrivalThread(startT, car, this._sa, goMile, returningOjb);
+            //}
 
             public bool carLeftConditions(Car car)
             {
                 return car.ability.leftBusiness > 0;
+            }
+
+            public void SetArrivalThread(int startT, Car car, int goMile, Node goPath, commandWithTime.ReturningOjb returningOjb)
+            {
+                this._setAttackArrivalThread(startT, car, this._sa, goMile, goPath, returningOjb);
+                // this._
+                // throw new NotImplementedException();
             }
         }
         // delegate 
@@ -192,45 +201,106 @@ namespace HouseManager4_0
         /// <param name="reason"></param>
         RoomMainF.RoomMain.commandWithTime.ReturningOjb attack(RoleInGame player, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
-            AttackObj ao = new AttackObj(sa, this.SetAttackArrivalThread);
-            return this.contact(player, car, ao, ref notifyMsg, out Mrr); 
+            AttackObj ao = new AttackObj(sa,
+                (int startT, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
+                {
+                    //this.SetAttackArrivalThread()
+                    List<string> notifyMsg = new List<string>();
+                    car.setState(player, ref notifyMsg, CarState.working);
+                    this.sendMsg(notifyMsg);
+                    this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro);
+                }
+              );
+            return this.contact(player, car, ao, ref notifyMsg, out Mrr);
         }
 
         internal commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
-            AttackObj ao = new AttackObj(sa, this.SetAttackArrivalThread);
+            AttackObj ao = new AttackObj(sa,
+              (int startT, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
+              {
+                  //this.SetAttackArrivalThread()
+                  List<string> notifyMsg = new List<string>();
+                  car.setState(player, ref notifyMsg, CarState.working);
+                  this.sendMsg(notifyMsg);
+                  this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro);
+              }
+            );
             return this.randomWhenConfused(player, boss, car, ao, ref notifyMsg, out Mrr);
         }
-
-        
-
-
-
-
-
-        private void SetAttackArrivalThread(int startT, Car car, SetAttack sa, int goMile, commandWithTime.ReturningOjb ro)
+        private void SetAttackArrivalThread(int startT, int step, RoleInGame player, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro)
         {
-            that.debtE.setDebtT(startT, car, sa, goMile, ro);
 
+            System.Threading.Thread th = new System.Threading.Thread(() =>
+            {
+                if (step >= goPath.path.Count - 1)
+                    that.debtE.setDebtT(startT, car, sa, goMile, ro);
+                //this.startNewThread(startT, new commandWithTime.defenseSet()
+                //{
+                //    c = command,
+                //    changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+                //    costMile = goMile,
+                //    key = ms.Key,
+                //    returningOjb = ro,
+                //    target = car.targetFpIndex,
+                //    beneficiary = ms.targetOwner
+                //}, this);
+                else
+                {
+                    if (step == 0)
+                    {
+                        this.ThreadSleep(startT);
+
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else
+                        {
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        step++;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        else
+                            newStartT = 0;
+
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                        SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+                    }
+                    else
+                    {
+                        this.ThreadSleep(startT);
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        {
+
+                        }
+                        else if (startT != 0)
+                        {
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        }
+                        step++;
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                        // else if(step==goPath.path.Count-1)
+                        //EditCarStateAfterSelect(step,player,ref car,)
+                        else
+                            throw new Exception("这种情况不会出现");
+                        //newStartT = 0;
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+                    }
+                }
+            });
+            th.Start();
         }
-
-
-
-        //private void SetAttackArrivalThread(int startT, Car car, SetAttack sa, List<Model.MapGo.nyrqPosition> returnToSelfAddrPath, int goMile)
-        //{
-        //    SetAttackArrivalThread(startT, car, sa, null, returnToSelfAddrPath, goMile, false, null);
-        //    //Thread th = new Thread(() => setDebt(startT, new commandWithTime.debtOwner()
-        //    //{
-        //    //    c = "debtOwner",
-        //    //    key = sa.Key,
-        //    //    //  car = sa.car,
-        //    //    returnPath = returnPath,
-        //    //    target = car.targetFpIndex,//新的起点
-        //    //    changeType = "Attack",
-        //    //    victim = sa.targetOwner
-        //    //}));
-        //    //th.Start();
-        //}
-
     }
 }

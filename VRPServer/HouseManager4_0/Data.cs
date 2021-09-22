@@ -44,8 +44,14 @@ namespace HouseManager4_0
             Console.WriteLine($"{this._road.Count}_{this._allFp.Count}");
         }
 
-
-
+        internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(OssModel.MapGo.nyrqPosition nyrqPosition)
+        {
+            return this._road[nyrqPosition.roadCode][nyrqPosition.roadOrder];
+        }
+        internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder)
+        {
+            return this._road[roadCode][roadOrder];
+        }
         static List<OssModel.FastonPosition> GetAllFp(string fpDictionary)
         {
             //  throw new Exception("");
@@ -156,6 +162,7 @@ namespace HouseManager4_0
                     var JsonByteFromDB = Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
                     var json = Encoding.ASCII.GetString(JsonByteFromDB);
 
+                    Console.WriteLine(json);
                     var objGet = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model.MapGo.nyrqPosition_Simple>>(json);
                     var result = new List<OssModel.MapGo.nyrqPosition>();
                     for (var i = 0; i < objGet.Count; i++)
@@ -203,6 +210,8 @@ namespace HouseManager4_0
                 throw new Exception(e.Message);
             }
         }
+
+
 
         private static byte[] GetDataOfPath(int dataIndex, int startPositionInDB, int length)
         {
@@ -260,6 +269,14 @@ namespace HouseManager4_0
             //public int r1 { get; set; }
             //public int t1 { get; set; }
         }
+
+
+        internal void GetSelection(List<OssModel.MapGo.nyrqPosition> goPath)
+        {
+            //  this._road[goPath[0].roadCode][goPath[0].roadOrder].
+            //    throw new NotImplementedException();
+        }
+
         //public class PathResult
         //{
         //    public double x0 { get; set; }
@@ -279,7 +296,7 @@ namespace HouseManager4_0
         /// <param name="speed">速度</param>
         /// <param name="result">ref path的结果。</param>
         /// <param name="startT">ref 时间结果</param>
-        internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
+         void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
         {
             for (var i = 0; i < dataResult.Count; i++)
             {
@@ -352,7 +369,7 @@ namespace HouseManager4_0
                     // var length = CommonClass.Geography.getLengthOfTwoPoint.
                     //  var interview =
                     var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
-                    
+
                     interview = Program.rm.magicE.shotTime(interview, speedImproved);
 
                     var animate1 = new Data.PathResult3()
@@ -381,6 +398,192 @@ namespace HouseManager4_0
                 }
             }
         }
+
+        
+        internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved)
+        {
+            for (var i = 0; i < dataResult.Count; i++)
+            {
+                if (i == 0)
+                {
+                    //var startX = result.Last().x1;
+                    //var startY = result.Last().y1;
+                    double startX, startY;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(position.BDlongitude, position.BDlatitude, out startX, out startY);
+
+                    //var length=
+
+                    double endX, endY;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
+                    //  var interview =
+                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(position.BDlatitude, position.BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+
+                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
+
+                    if (result.Count == 0)
+                    {
+                        var animate0 = new PathResult3()
+                        {
+                            t = startT,
+                            x = 0,
+                            y = 0
+                        };
+                        if (animate0.t != 0)
+                        {
+                            result.Add(animate0.x);
+                            result.Add(animate0.y);
+                            result.Add(animate0.t);
+                        }
+                        // result.Add(animate0);
+                    }
+                    var animate1 = new PathResult3()
+                    {
+                        t = interview,
+                        x = Convert.ToInt32((endX - startX) * 256),
+                        y = Convert.ToInt32((endY - startY) * 256),
+                    };
+                    if (animate1.t != 0)
+                    {
+                        result.Add(animate1.x);
+                        result.Add(animate1.y);
+                        result.Add(animate1.t);
+                    }
+                    startT += interview;
+                }
+                else if (dataResult[i].roadCode == dataResult[i - 1].roadCode)
+                {
+
+                    double startX, startY;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i - 1].BDlongitude, dataResult[i - 1].BDlatitude, out startX, out startY);
+
+                    double endX, endY;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
+
+                    // var length = CommonClass.Geography.getLengthOfTwoPoint.
+                    //  var interview =
+                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+
+                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
+
+                    var animate1 = new Data.PathResult3()
+                    {
+                        x = Convert.ToInt32((endX - startX) * 256),
+                        y = Convert.ToInt32((endY - startY) * 256),
+                        t = interview
+                    };
+                    startT += interview;
+                    if (animate1.t != 0)
+                    {
+                        result.Add(animate1.x);
+                        result.Add(animate1.y);
+                        result.Add(animate1.t);
+                    }
+                    // result.Add(animate1);
+                }
+            }
+        }
+        //internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
+        //{
+        //    for (var i = 0; i < dataResult.Count; i++)
+        //    {
+        //        if (i == 0)
+        //        {
+        //            //var startX = result.Last().x1;
+        //            //var startY = result.Last().y1;
+        //            double startX, startY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fpLast.positionLongitudeOnRoad, fpLast.positionLatitudeOnRoad, out startX, out startY);
+
+        //            //var length=
+
+        //            double endX, endY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
+        //            //  var interview =
+        //            var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fpLast.positionLatitudeOnRoad, fpLast.positionLongitudeOnRoad, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+
+        //            interview = Program.rm.magicE.shotTime(interview, speedImproved);
+
+        //            if (result.Count == 0)
+        //            {
+        //                var animate0 = new PathResult3()
+        //                {
+        //                    t = startT,
+        //                    x = 0,
+        //                    y = 0
+        //                };
+        //                if (animate0.t != 0)
+        //                {
+        //                    result.Add(animate0.x);
+        //                    result.Add(animate0.y);
+        //                    result.Add(animate0.t);
+        //                }
+        //                // result.Add(animate0);
+        //            }
+        //            var animate1 = new PathResult3()
+        //            {
+        //                t = interview,
+        //                x = Convert.ToInt32((endX - startX) * 256),
+        //                y = Convert.ToInt32((endY - startY) * 256),
+        //            };
+        //            if (animate1.t != 0)
+        //            {
+        //                result.Add(animate1.x);
+        //                result.Add(animate1.y);
+        //                result.Add(animate1.t);
+        //            }
+        //            //result.Add(animate1);
+        //            //var animate1 = new Data.PathResult()
+        //            //{
+        //            //    t0 = startT + 0,
+        //            //    x0 = startX,
+        //            //    y0 = startY,
+        //            //    t1 = startT + interview,
+        //            //    x1 = endX,
+        //            //    y1 = endY
+        //            //};
+        //            startT += interview;
+        //            // result.Add(animate1);
+        //        }
+        //        else if (dataResult[i].roadCode == dataResult[i - 1].roadCode)
+        //        {
+
+        //            double startX, startY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i - 1].BDlongitude, dataResult[i - 1].BDlatitude, out startX, out startY);
+
+        //            double endX, endY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
+
+        //            // var length = CommonClass.Geography.getLengthOfTwoPoint.
+        //            //  var interview =
+        //            var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+
+        //            interview = Program.rm.magicE.shotTime(interview, speedImproved);
+
+        //            var animate1 = new Data.PathResult3()
+        //            {
+        //                x = Convert.ToInt32((endX - startX) * 256),
+        //                y = Convert.ToInt32((endY - startY) * 256),
+        //                t = interview
+        //            };
+        //            //var animate1 = new Data.PathResult()
+        //            //{
+        //            //    t0 = startT + 0,
+        //            //    x0 = startX,
+        //            //    y0 = startY,
+        //            //    t1 = startT + interview,
+        //            //    x1 = endX,
+        //            //    y1 = endY
+        //            //};
+        //            startT += interview;
+        //            if (animate1.t != 0)
+        //            {
+        //                result.Add(animate1.x);
+        //                result.Add(animate1.y);
+        //                result.Add(animate1.t);
+        //            }
+        //            // result.Add(animate1);
+        //        }
+        //    }
+        //}
 
         public void getAll(out List<double[]> meshPoints, out List<object> listOfCrosses)
         {

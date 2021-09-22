@@ -25,7 +25,8 @@ namespace HouseManager4_0
             /// <summary>
             /// returning状态，只能在setReturn -ReturnThenSetComeBack是定义。
             /// </summary> 
-            returning
+            returning,
+            selecting
         }
 
 
@@ -71,13 +72,31 @@ namespace HouseManager4_0
                     ((NPC)player).dealWithWaitedNPC(ref notifyMsg);
                 }
             }
+            if (this._state != CarState.waitOnRoad)
+            {
+                if (string.IsNullOrEmpty(player.getCar().isControllingKey)) { }
+                else
+                {
+                    player.getCar().clearControllingObj();
+                    player.controlPrepareMagicChanged(player, ref notifyMsg);
+                }
+            }
         }
+
+        private void clearControllingObj()
+        {
+            this._isControllingKey = "";
+
+            // throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 汽车的目标地点。
         /// </summary>
         public int targetFpIndex { get; set; }
 
-
+        public string isControllingKey { get { return this._isControllingKey; } }
+        string _isControllingKey = "";
         /// <summary>
         /// 此函数主要用于动画变化！
         /// </summary>
@@ -132,6 +151,30 @@ namespace HouseManager4_0
             public List<int> animateData { get; private set; }
             public DateTime recordTime { get; private set; }
             public bool isParking { get; private set; }
+        }
+
+        public void setControllingObj(RoleInGame player, Car car, Manager_Driver.ConfuseManger.ControlAttackType controlAttackType, string key, ref List<string> notifyMsg)
+        {
+            this._isControllingKey = key;
+            if (!string.IsNullOrEmpty(this._isControllingKey))
+            {
+                switch (controlAttackType)
+                {
+                    case Manager_Driver.ConfuseManger.ControlAttackType.Confuse:
+                        {
+                            player.confusePrepareMagicChanged(player, ref notifyMsg);
+                        }; break;
+                    case Manager_Driver.ConfuseManger.ControlAttackType.Lost:
+                        {
+                            player.lostPrepareMagicChanged(player, ref notifyMsg);
+                        }; break;
+                    case Manager_Driver.ConfuseManger.ControlAttackType.Ambush: 
+                        {
+                            player.ambushPrepareMagicChanged(player, ref notifyMsg);
+                        };break;
+                }
+            }
+            //throw new NotImplementedException();
         }
     }
 

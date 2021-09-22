@@ -1,6 +1,7 @@
 ﻿using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using static HouseManager4_0.RoomMainF.RoomMain;
@@ -23,38 +24,174 @@ namespace HouseManager4_0
             "柳宗元"
         };
 
+        internal void ControlNPC()
+        {
+            var notifyMsgs = new List<string>();
+            // that.ControlNPC();
+            List<string> keys = new List<string>();
+            foreach (var item in that._Players)
+            {
+                var role = item.Value;
+                if (role.playerType == RoleInGame.PlayerType.NPC)
+                {
+                    if (role.getCar().state == Car.CarState.waitOnRoad)
+                    {
+                        if (role.getCar().ability.driver != null)
+                        {
+                            var npc = (NPC)role;
+                            if (npc.getCar().ability.driver.race == CommonClass.driversource.Race.people)
+                                keys.Add(item.Key);
+                        }
+
+                    }
+                    // 
+                }
+            }
+            for (int i = 0; i < keys.Count; i++)
+            {
+                var npc = (NPC)that._Players[keys[i]];
+                this.ControlNPCItem(npc, ref notifyMsgs);
+                //   ControlNPC(npc);
+            }
+            this.sendMsg(notifyMsgs);
+            ///throw new NotImplementedException();
+        }
+
+        private void ControlNPCItem(NPC npc, ref List<string> notifyMsgs)
+        {
+            if (npc.attackTag.aType == NPC.AttackTag.AttackType.ambush)
+            {
+                var imortalPartners = that.GetAllParner(CommonClass.driversource.Race.immortal, npc);
+                if (imortalPartners.Count(item => !item.confuseRecord.IsBeingControlled()) > 0)
+                {
+                    /*
+                     * 有输出系，继续等待！
+                     */
+                }
+                else
+                {
+                    /*
+                     * 没有输出系，攻击！
+                     */
+                    NPC.AttackTag tag = new NPC.AttackTag()
+                    {
+                        aType = NPC.AttackTag.AttackType.attack,
+                        HarmValue = 1,
+                        fpPass = npc.attackTag.fpPass,
+                        Target = npc.attackTag.Target
+                    };
+                    npc.attackTag = tag;//初始化自动包。
+                    this.counterAttack(npc, ref notifyMsgs);
+
+
+                }
+            }
+            else if (
+                npc.attackTag.aType == NPC.AttackTag.AttackType.lose ||
+                npc.attackTag.aType == NPC.AttackTag.AttackType.confuse)
+            {
+                if (that._Players.ContainsKey(npc.attackTag.Target))
+                {
+                    if (that._Players[npc.attackTag.Target].confuseRecord.IsBeingControlled())
+                    {
+                        NPC.AttackTag tag = new NPC.AttackTag()
+                        {
+                            aType = NPC.AttackTag.AttackType.attack,
+                            HarmValue = 1,
+                            fpPass = npc.attackTag.fpPass,
+                            Target = npc.attackTag.Target
+                        };
+                        npc.attackTag = tag;//初始化自动包。
+                        this.counterAttack(npc, ref notifyMsgs);
+                    }
+                    else
+                    {
+                        /*
+                         * 继续等待！！！
+                         */
+                    }
+                }
+                else
+                {
+                    returnF(npc.Key);
+                }
+            }
+        }
+        void returnF(string key)
+        {
+            CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+            {
+                c = "OrderToReturn",
+                Key = key
+            };
+            this.startNewCommandThread(200, otr, this);
+        }
         internal void ClearNPC()
         {
+            /*
+             * 获取玩家的最大等级A
+             * 找到所有NPC中级别大于A+1的NPC
+             * 将找到的NPC删除
+             * 同时删除没有敌人的NPC
+             */
+
             lock (that.PlayerLock)
             {
-                int maxLevel = -1;
-                foreach (var item in that._Players)
                 {
-                    if (item.Value.playerType == RoleInGame.PlayerType.player)
+                    int maxLevel = -1;
+                    foreach (var item in that._Players)
                     {
-                        var level = getLevelOfRole((Player)item.Value);
-                        if (maxLevel <= level)
+                        if (item.Value.playerType == RoleInGame.PlayerType.player)
                         {
-                            maxLevel = level;
+                            var level = getLevelOfRole((Player)item.Value);//
+                            if (maxLevel <= level)
+                            {
+                                maxLevel = level;
+                            }
                         }
                     }
-                }
-                List<string> keysOfNPCs = new List<string>();
-                foreach (var item in that._Players)
-                {
-                    if (item.Value.playerType == RoleInGame.PlayerType.NPC)
+                    List<string> keysOfNPCs = new List<string>();
+                    foreach (var item in that._Players)
                     {
-                        if (item.Value.Level > maxLevel + 1)
+                        if (item.Value.playerType == RoleInGame.PlayerType.NPC)
                         {
-                            keysOfNPCs.Add(item.Value.Key);
+                            if (item.Value.Level > maxLevel + 1)
+                            {
+                                keysOfNPCs.Add(item.Value.Key);
+                            }
                         }
                     }
+                    List<string> notifyMsgs = new List<string>();
+                    for (int i = 0; i < keysOfNPCs.Count; i++)
+                    {
+                        if (!that._Players[keysOfNPCs[i]].Bust)
+                            that._Players[keysOfNPCs[i]].SetBust(true, ref notifyMsgs);
+                    }
+                    this.sendMsg(notifyMsgs);
                 }
-                List<string> notifyMsgs = new List<string>();
-                for (int i = 0; i < keysOfNPCs.Count; i++)
                 {
-                    if (!that._Players[keysOfNPCs[i]].Bust)
-                        that._Players[keysOfNPCs[i]].SetBust(true, ref notifyMsgs);
+                    List<string> keysOfNPCs = new List<string>();
+                    foreach (var item in that._Players)
+                    {
+                        if (item.Value.playerType == RoleInGame.PlayerType.NPC)
+                        {
+                            var npc = (NPC)item.Value;
+                            if (!string.IsNullOrEmpty(npc.challenger))
+                            {
+                                if (!that.HasEnemy(npc))
+                                {
+                                    keysOfNPCs.Add(item.Value.Key);
+                                }
+                            }
+                        }
+                    }
+                    List<string> notifyMsgs = new List<string>();
+                    for (int i = 0; i < keysOfNPCs.Count; i++)
+                    {
+                        if (!that._Players[keysOfNPCs[i]].Bust)
+                            that._Players[keysOfNPCs[i]].SetBust(true, ref notifyMsgs);
+                    }
+                    this.sendMsg(notifyMsgs);
                 }
             }
         }
@@ -67,6 +204,12 @@ namespace HouseManager4_0
         {
             lock (that.PlayerLock)
             {
+                /*
+                 * 1.遍历player的级别+1
+                 * 2.遍历NPC的级别
+                 * 3.选择步骤1的数据，提出步骤2的数据
+                 * 4.新增NPC。
+                 */
                 List<int> levels = new List<int>();
                 foreach (var item in that._Players)
                 {
@@ -99,6 +242,11 @@ namespace HouseManager4_0
             }
         }
 
+        /// <summary>
+        /// 获取玩家的等级。如1,2,3,4,……
+        /// </summary>
+        /// <param name="playerValue"></param>
+        /// <returns></returns>
         private int getLevelOfRole(Player playerValue)
         {
             if (playerValue.TheLargestHolderKey == playerValue.Key)
@@ -212,7 +360,7 @@ namespace HouseManager4_0
                             {36,-1},
                             {37,-1}
                         },
-                        returningOjb = commandWithTime.ReturningOjb.ojbWithoutBoss(new List<Model.MapGo.nyrqPosition>()),
+                        returningOjb = commandWithTime.ReturningOjb.ojbWithoutBoss(new Node() { path = new List<Node.pathItem>() }),
                         PromoteDiamondCount = new Dictionary<string, int>()
                         {
                             {"mile",0},
@@ -250,8 +398,8 @@ namespace HouseManager4_0
                     that._Players[key].BustChangedF = that.BustChangedF;
                     that._Players[key].SetBust(false, ref notifyMsgs);
 
-                    that._Players[key].DrawSingleRoadF = that.DrawSingleRoadF;
-                    that._Players[key].addUsedRoad(Program.dt.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
+                    //that._Players[key].DrawSingleRoadF = that.DrawSingleRoadF;
+                    // that._Players[key].addUsedRoad(Program.dt.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
 
                     //   this._Players[addItem.Key].brokenParameterT1RecordChanged = this.brokenParameterT1RecordChanged;
                     //  this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
@@ -264,9 +412,10 @@ namespace HouseManager4_0
                     npc.afterBroke = this.afterBroke;
                     npc.BeingMolestedM = this.BeingMolestedM;
                     //npc.BeAttacked=
-                    npc.confuseRecord = new Manager_Driver.ConfuseManger();
-                    npc.improvementRecord = new Manager_Driver.ImproveManager();
-                    npc.speedMagicChanged = that.speedMagicChanged;
+
+                    that.ConfigMagic(npc);
+
+
                     //npc.confuseUsing = null;
                 }
             }
@@ -283,25 +432,30 @@ namespace HouseManager4_0
         private void afterBroke(NPC npc, ref List<string> notifyMsgs)
         {
             //   throw new NotImplementedException();
-            List<string> keys = new List<string>();
-            foreach (var item in that._Players)
+            //  if(this.)
+            if (!that.HasPartnerIsInGame(npc))
             {
-                if (item.Value.Key == npc.challenger)
+                List<string> keys = new List<string>();
+
+                foreach (var item in that._Players)
                 {
-                    if (item.Value.playerType == RoleInGame.PlayerType.player)
+                    if (item.Value.Key == npc.challenger)
                     {
-                        keys.Add(item.Key);
+                        if (item.Value.playerType == RoleInGame.PlayerType.player)
+                        {
+                            keys.Add(item.Key);
+                        }
                     }
                 }
-            }
-            for (int i = 0; i < keys.Count; i++)
-            {
-                // that._
-                ///that.
-                ///
-                if (that._Players[keys[i]].Level < npc.Level)
+                for (int i = 0; i < keys.Count; i++)
                 {
-                    that._Players[keys[i]].SetLevel(npc.Level, ref notifyMsgs);
+                    // that._
+                    ///that.
+                    ///
+                    if (that._Players[keys[i]].Level < npc.Level)
+                    {
+                        that._Players[keys[i]].SetLevel(npc.Level, ref notifyMsgs);
+                    }
                 }
             }
         }
@@ -373,8 +527,263 @@ namespace HouseManager4_0
 
         private void afterWaitedM(NPC npc, ref List<string> notifyMsgs)
         {
-            if (waitedFunctionM(npc, ref notifyMsgs, npc.challenger)) { }
+            if (waitedFunctionMWithChanllenger(npc, ref notifyMsgs, npc.challenger)) { }
             else if (waitedFunctionM(npc, ref notifyMsgs, npc.molester)) { }
+        }
+
+        bool waitedFunctionMWithChanllenger(NPC npc2, ref List<string> notifyMsgs, string operateKye)
+        {
+            if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                that.GetMaxHarmInfomation(npc2);
+            bool doNext;
+            if (!string.IsNullOrEmpty(operateKye))
+            {
+                if (npc2.attackTag != null)
+                {
+                    if (that._Players.ContainsKey(npc2.attackTag.Target))
+                    { }
+                    else
+                    {
+
+                    }
+                    var operatePlayer = that._Players[npc2.attackTag.Target];
+                    if (operatePlayer.Bust)
+                    {
+                        this.CollectNearSelf(npc2);
+                    }
+                    else
+                    {
+                        if (this.moneyIsEnoughToAttack(npc2))
+                        {
+                            switch (npc2.attackTag.aType)
+                            {
+                                case NPC.AttackTag.AttackType.attack:
+                                    {
+                                        Model.FastonPosition fp;
+                                        if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                        {
+                                            var sa = new CommonClass.SetAttack()
+                                            {
+                                                c = "SetAttack",
+                                                Key = npc2.Key,
+                                                target = operatePlayer.StartFPIndex,
+                                                targetOwner = operatePlayer.Key,
+                                            };
+                                            this.startNewCommandThread(200, sa, this);
+                                        }
+                                        else
+                                        {
+                                            CollectFp(npc2, fp, ref notifyMsgs);
+                                        }
+                                    }; break;
+                                case NPC.AttackTag.AttackType.fire:
+                                case NPC.AttackTag.AttackType.electric:
+                                    {
+                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                        {
+                                            var fp = npc2.attackTag.fpPass;
+                                            CollectFp(npc2, fp, ref notifyMsgs);
+                                        }
+                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                        {
+                                            //   npc2.attackTag.Target
+                                            var roleKey = npc2.attackTag.Target;
+                                            if (that._Players.ContainsKey(roleKey))
+                                            {
+                                                var role = that._Players[roleKey];
+                                                CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
+                                                {
+                                                    c = "MagicSkill",
+                                                    Key = npc2.Key,
+                                                    selectIndex = 2,
+                                                    target = role.StartFPIndex,
+                                                    targetOwner = roleKey
+                                                };
+                                                this.startNewCommandThread(200, ms, this);
+                                            }
+                                            else
+                                            {
+                                                /*
+                                                 * return
+                                                 */
+                                                CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+                                                {
+                                                    c = "OrderToReturn",
+                                                    Key = npc2.Key
+                                                };
+                                                this.startNewCommandThread(200, otr, this);
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("非法调用");
+                                        }
+                                    }; break;
+                                case NPC.AttackTag.AttackType.water:
+                                    {
+                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                        {
+                                            var fp = npc2.attackTag.fpPass;
+                                            CollectFp(npc2, fp, ref notifyMsgs);
+                                        }
+                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                        {
+                                            //   npc2.attackTag.Target
+                                            var roleKey = npc2.attackTag.Target;
+                                            if (that._Players.ContainsKey(roleKey))
+                                            {
+                                                var role = that._Players[roleKey];
+                                                CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
+                                                {
+                                                    c = "MagicSkill",
+                                                    Key = npc2.Key,
+                                                    selectIndex = 1,
+                                                    target = role.StartFPIndex,
+                                                    targetOwner = roleKey
+                                                };
+                                                this.startNewCommandThread(200, ms, this);
+                                            }
+                                            else
+                                            {
+                                                /*
+                                                 * return
+                                                 */
+                                                CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+                                                {
+                                                    c = "OrderToReturn",
+                                                    Key = npc2.Key
+                                                };
+                                                this.startNewCommandThread(200, otr, this);
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("非法调用");
+                                        }
+                                    }; break;
+                                case NPC.AttackTag.AttackType.lose:
+                                case NPC.AttackTag.AttackType.confuse:
+                                case NPC.AttackTag.AttackType.speed:
+                                case NPC.AttackTag.AttackType.defendImprove:
+                                    {
+                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                        {
+                                            var fp = npc2.attackTag.fpPass;
+                                            CollectFp(npc2, fp, ref notifyMsgs);
+                                        }
+                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                        {
+                                            Model.FastonPosition fp;
+                                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                            {
+                                                var roleKey = npc2.attackTag.Target;
+                                                if (that._Players.ContainsKey(roleKey))
+                                                {
+                                                    var role = that._Players[roleKey];
+                                                    CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
+                                                    {
+                                                        c = "MagicSkill",
+                                                        Key = npc2.Key,
+                                                        selectIndex = 2,
+                                                        target = role.StartFPIndex,
+                                                        targetOwner = roleKey
+                                                    };
+                                                    this.startNewCommandThread(200, ms, this);
+                                                }
+                                                else
+                                                {
+                                                    CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+                                                    {
+                                                        c = "OrderToReturn",
+                                                        Key = npc2.Key
+                                                    };
+                                                    this.startNewCommandThread(200, otr, this);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("非法调用");
+                                        }
+                                    }; break;
+                                case NPC.AttackTag.AttackType.ambush:
+                                case NPC.AttackTag.AttackType.attackImprove:
+                                    {
+                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                        {
+                                            var fp = npc2.attackTag.fpPass;
+                                            CollectFp(npc2, fp, ref notifyMsgs);
+                                        }
+                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                        {
+                                            Model.FastonPosition fp;
+                                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                            {
+                                                var roleKey = npc2.attackTag.Target;
+                                                if (that._Players.ContainsKey(roleKey))
+                                                {
+                                                    var role = that._Players[roleKey];
+                                                    CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
+                                                    {
+                                                        c = "MagicSkill",
+                                                        Key = npc2.Key,
+                                                        selectIndex = 1,
+                                                        target = role.StartFPIndex,
+                                                        targetOwner = roleKey
+                                                    };
+                                                    this.startNewCommandThread(200, ms, this);
+                                                }
+                                                else
+                                                {
+                                                    CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+                                                    {
+                                                        c = "OrderToReturn",
+                                                        Key = npc2.Key
+                                                    };
+                                                    this.startNewCommandThread(200, otr, this);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            throw new Exception("非法调用");
+                                        }
+                                    }; break;
+                                default:
+                                    {
+                                        throw new Exception("运行错误！");
+                                    };
+
+
+                            }
+                        }
+                        else
+                        {
+                            this.CollectNearSelf(npc2);
+                        }
+                    }
+                }
+                else
+                {
+                    this.CollectNearSelf(npc2);
+                }
+                doNext = false;
+            }
+            else
+            {
+                doNext = true;
+            }
+            return doNext;
         }
         bool waitedFunctionM(NPC npc2, ref List<string> notifyMsgs, string operateKye)
         {
@@ -473,6 +882,7 @@ namespace HouseManager4_0
                     {
 
                         npc.setChallenger(attacker.Key, ref notifyMsg);
+
                         if (npc.Bust)
                         {
                             //说明已经一步到位。
@@ -482,7 +892,173 @@ namespace HouseManager4_0
                         }
                         else
                         {
-                            counterAttack(npc, ref notifyMsg);
+                            if (npc.Level == 2)
+                            {
+                                /*
+                                 * 最低级的NPC，而玩家的最低级为1级。
+                                 * 2级的NPC不存在裂变。
+                                 * 在输出系(Immortal)/提升系中(Devil)中二选一。
+                                 */
+                                switch (that.rm.Next(0, 2))
+                                {
+                                    case 0:
+                                        {
+                                            that.driverM.SetAsDevil(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg);
+                                        }; break;
+                                    case 1:
+                                        {
+                                            that.driverM.SetAsImmortal(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg);
+                                        }; break;
+                                }
+                            }
+                            else if (npc.Level == 3)
+                            {
+                                var addNpcKey = this.AddNpcPlayer(npc.Level);
+                                this.GetNPCPosition(addNpcKey);
+                                var addNpc = (NPC)that._Players[addNpcKey];
+                                ///
+                                addNpc.SetTheLargestHolder(npc);
+                                addNpc.CopyChanlleger(npc.challenger);
+                                switch (that.rm.Next(0, 2))
+                                {
+                                    case 0:
+                                        {
+                                            that.driverM.SetAsDevil(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg);
+
+                                            that.driverM.SetAsImmortal(addNpc, ref notifyMsg);
+                                            counterAttack(addNpc, ref notifyMsg);
+                                        }; break;
+                                    case 1:
+                                        {
+                                            that.driverM.SetAsImmortal(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg);
+
+                                            that.driverM.SetAsDevil(addNpc, ref notifyMsg);
+                                            counterAttack(addNpc, ref notifyMsg);
+                                        }; break;
+                                }
+                                // throw new Exception("");
+                            }
+                            else if (npc.Level == 4)
+                            {
+                                List<NPC> roles = new List<NPC>() { null, null, null };
+
+
+                                {
+                                    List<int> indexOfRole = new List<int>();
+                                    int indexPosition;
+                                    do
+                                    {
+                                        indexPosition = that.rm.Next(0, 3);
+                                    }
+                                    while (roles[indexPosition] != null);
+                                    roles[indexPosition] = npc;
+                                }
+                                for (var i = 0; i < 2; i++)
+                                {
+                                    int indexPosition;
+                                    var addNpcKey = this.AddNpcPlayer(npc.Level);
+                                    this.GetNPCPosition(addNpcKey);
+                                    var addNpc = (NPC)that._Players[addNpcKey];
+                                    addNpc.SetTheLargestHolder(npc);
+                                    addNpc.CopyChanlleger(npc.challenger);
+                                    do
+                                    {
+                                        indexPosition = that.rm.Next(0, 3);
+                                    }
+                                    while (roles[indexPosition] != null);
+                                    roles[indexPosition] = addNpc;
+                                }
+                                for (var i = 0; i < roles.Count; i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        that.driverM.SetAsImmortal(roles[i], ref notifyMsg);
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        that.driverM.SetAsDevil(roles[i], ref notifyMsg);
+                                    }
+                                    else if (i == 2)
+                                    {
+                                        that.driverM.SetAsPeople(roles[i], ref notifyMsg);
+                                    }
+                                    counterAttack(roles[i], ref notifyMsg);
+                                }
+                            }
+                            else if (npc.Level > 4)
+                            {
+                                var max = npc.Level - 1;
+                                max = Math.Min(10, max);
+                                List<NPC> roles = new List<NPC>(max);
+                                for (int indexOfRole = 0; indexOfRole < max; max++)
+                                {
+                                    roles.Add(null);
+                                }
+                                {
+                                    List<int> indexOfRole = new List<int>();
+                                    int indexPosition;
+                                    do
+                                    {
+                                        indexPosition = that.rm.Next(0, max);
+                                    }
+                                    while (roles[indexPosition] != null);
+                                    roles[indexPosition] = npc;
+                                }
+                                for (int i = 0; i < npc.Level - 2; i++)
+                                {
+                                    int indexPosition;
+                                    var addNpcKey = this.AddNpcPlayer(npc.Level);
+                                    this.GetNPCPosition(addNpcKey);
+                                    var addNpc = (NPC)that._Players[addNpcKey];
+                                    addNpc.SetTheLargestHolder(npc);
+                                    addNpc.CopyChanlleger(npc.challenger);
+                                    do
+                                    {
+                                        indexPosition = that.rm.Next(0, 3);
+                                    }
+                                    while (roles[indexPosition] != null);
+                                    roles[indexPosition] = addNpc;
+                                }
+                                for (var i = 0; i < roles.Count; i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        that.driverM.SetAsImmortal(roles[i], ref notifyMsg);
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        that.driverM.SetAsDevil(roles[i], ref notifyMsg);
+                                    }
+                                    else if (i == 2)
+                                    {
+                                        that.driverM.SetAsPeople(roles[i], ref notifyMsg);
+                                    }
+                                    else
+                                    {
+                                        var rmNum = that.rm.Next(3);
+                                        switch (rmNum)
+                                        {
+                                            case 0:
+                                                {
+                                                    that.driverM.SetAsImmortal(roles[i], ref notifyMsg);
+                                                }; break;
+                                            case 1:
+                                                {
+                                                    that.driverM.SetAsDevil(roles[i], ref notifyMsg);
+                                                }; break;
+                                            case 2:
+                                                {
+                                                    that.driverM.SetAsPeople(roles[i], ref notifyMsg);
+                                                }; break;
+                                        }
+                                    }
+                                    counterAttack(roles[i], ref notifyMsg);
+                                }
+                            }
                         }
 
                     }
@@ -495,42 +1071,43 @@ namespace HouseManager4_0
             // throw new NotImplementedException();
         }
 
-        private void counterAttack(NPC npc, ref List<string> notifyMsg)
+        internal void counterAttack(NPC npc, ref List<string> notifyMsg)
         {
-            if (attackFunctionF(npc, ref notifyMsg, npc.challenger))
-            { }
-            else if (attackFunctionF(npc, ref notifyMsg, npc.molester)) { }
+            if (waitedFunctionMWithChanllenger(npc, ref notifyMsg, npc.challenger)) { }
+            else if (waitedFunctionM(npc, ref notifyMsg, npc.molester)) { }
         }
-        bool attackFunctionF(NPC npc_Operate, ref List<string> notifyMsg, string operateKey)
+        void dealWithChallenger(NPC npc_Operate, ref List<string> notifyMsg, string operateKey)
         {
-            bool next;
-            if (!string.IsNullOrEmpty(operateKey))
-            {
+            that.GetMaxHarmInfomation(npc_Operate);
+            //bool next;
+            //if (!string.IsNullOrEmpty(operateKey))
+            //{
 
-                if (npc_Operate.Bust) { }
-                else if (!that._Players.ContainsKey(operateKey))
-                {
-                    npc_Operate.SetBust(true, ref notifyMsg);
-                }
-                else
-                {
-                    if (that._Players[operateKey].Bust)
-                    {
-                        npc_Operate.SetBust(true, ref notifyMsg);
-                    }
-                    else if (that._Players[operateKey].playerType == RoleInGame.PlayerType.player)
-                    {
-                        this.afterWaitedM(npc_Operate, ref notifyMsg);
-                    }
-                }
-                next = false;
-            }
-            else
-            {
-                next = true;
-            }
-            return next;
+            //    if (npc_Operate.Bust) { }
+            //    else if (!that._Players.ContainsKey(operateKey))
+            //    {
+            //        npc_Operate.SetBust(true, ref notifyMsg);
+            //    }
+            //    else
+            //    {
+            //        if (that._Players[operateKey].Bust)
+            //        {
+            //            npc_Operate.SetBust(true, ref notifyMsg);
+            //        }
+            //        else if (that._Players[operateKey].playerType == RoleInGame.PlayerType.player)
+            //        {
+            //            this.afterWaitedM(npc_Operate, ref notifyMsg);
+            //        }
+            //    }
+            //    next = false;
+            //}
+            //else
+            //{
+            //    next = true;
+            //}
+            //return next;
         }
+
 
 
 
@@ -587,8 +1164,26 @@ namespace HouseManager4_0
                 var sa = (CommonClass.SetAttack)c;
                 that.attackE.updateAttack(sa);
             }
+            else if (c.c == "MagicSkill")
+            {
+                var ms = (CommonClass.MagicSkill)c;
+                that.magicE.updateMagic(ms);
+            }
+            else if (c.c == "OrderToReturn")
+            {
+                var otr = (CommonClass.OrderToReturn)c;
+                that.retutnE.OrderToReturn(otr);
+            }
         }
 
 
     }
+
+    /*
+     * 要触发NPC自动运行需要三个条件：
+     * A.NPC创建时
+     * B.NPC回到基地时
+     * C.轮巡NPC之时。
+     *   包括破产、取消、控制法术转攻击
+     */
 }

@@ -56,7 +56,7 @@ namespace WsOfWebClient
 
         public static string[] ProfileModel = new string[] { };
 
-        
+
 
         internal static int webSocketPort;
         internal static int tcpServerPort;
@@ -64,5 +64,33 @@ namespace WsOfWebClient
         public static string SpeedIconBase64 = "";
         public static string SpeedObj = "";
         public static string SpeedMtl = "";
+
+        public static string AttackIconBase64 = "";
+        public static string AttackObj = "";
+        public static string AttackMtl = "";
+
+        public static string ShieldIconBase64 = "";
+        public static string ShieldObj = "";
+        public static string ShieldMtl = "";
+
+        public static string ConfusePrepareIconBase64 = "";
+        public static string ConfusePrepareObj = "";
+        public static string ConfusePrepareMtl = "";
+
+        public static string LostPrepareIconBase64 = "";
+        public static string LostPrepareObj = "";
+        public static string LostPrepareMtl = "";
+
+        public static string AmbushPrepareIconBase64 = "";
+        public static string AmbushPrepareObj = "";
+        public static string AmbushPrepareMtl = "";
+
+        public static string WaterIconBase64 = "";
+        public static string WaterObj = "";
+        public static string WaterMtl = "";
+
+        public static string DirectionIconBase64 = "";
+        public static string DirectionObj = "";
+        public static string DirectionMtl = "";
     }
 }
