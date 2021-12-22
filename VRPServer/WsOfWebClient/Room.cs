@@ -431,6 +431,12 @@ namespace WsOfWebClient
                 {
                     return null;
                 }
+                ModelConfig.directionArrowIcon da = new ModelConfig.directionArrowIcon();
+                if (await SetModelCopy(da, webSocket)) { }
+                else
+                {
+                    return null;
+                }
 
                 result = await setState(s, webSocket, LoginState.OnLine);
 

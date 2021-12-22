@@ -92,5 +92,9 @@ namespace WsOfWebClient
         public static string DirectionIconBase64 = "";
         public static string DirectionObj = "";
         public static string DirectionMtl = "";
+
+        public static string DirectionArrowIconBase64 = "";
+        public static string DirectionArrowObj = "";
+        public static string DirectionArrowMtl = "";
     }
 }

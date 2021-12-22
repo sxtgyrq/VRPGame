@@ -58,6 +58,8 @@ namespace HouseManager4_0.RoomMainF
             };
         }
 
+     
+
         public string updateView(View v)
         {
             lock (this.PlayerLock) 

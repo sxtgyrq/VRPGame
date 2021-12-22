@@ -3,10 +3,13 @@
     "",
     "\\VRPServer",
     "\\VRPServer\\Server",
+    "\\VRPServer\\ShowDemo",
     "\\WebFileOnly",
     "\\Webshow",
-    "\\Webshow\\WebApplication1"
+    "\\Webshow\\WebApplication1",
+    "\\Webshow\\webHtml",
+    "\\Webshow\\webHtml\\ThreeJs"
   ],
-  "SelectedNode": "\\VRPServer\\Server\\Server.sln",
+  "SelectedNode": "\\Webshow\\webHtml\\ThreeJs\\OrbitControls_me.js",
   "PreviewInSolutionExplorer": false
 }

@@ -22,6 +22,12 @@ namespace HouseManager4_0
 
         public string IP { get; private set; }
 
+        public Dictionary<int, OssModel.SaveRoad.RoadInfo> GetFirst(out string roadCode)
+        {
+            var first = this._road.First();
+            roadCode = first.Key;
+            return first.Value;
+        }
         public void LoadRoad()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
@@ -296,7 +302,7 @@ namespace HouseManager4_0
         /// <param name="speed">速度</param>
         /// <param name="result">ref path的结果。</param>
         /// <param name="startT">ref 时间结果</param>
-         void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
+        void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
         {
             for (var i = 0; i < dataResult.Count; i++)
             {
@@ -399,7 +405,7 @@ namespace HouseManager4_0
             }
         }
 
-        
+
         internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved)
         {
             for (var i = 0; i < dataResult.Count; i++)

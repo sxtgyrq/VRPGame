@@ -276,6 +276,9 @@ THREE.OrbitControls = function (object, domElement) {
     var dollyEnd = new THREE.Vector2();
     var dollyDelta = new THREE.Vector2();
 
+    this.gamePad = [null, null, null, null];
+    this.gamePadThread = [null, null, null, null];
+
     function getAutoRotationAngle() {
 
         return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
@@ -633,8 +636,7 @@ THREE.OrbitControls = function (object, domElement) {
 
     }
 
-    function handleTouchMovePan(event)
-    {
+    function handleTouchMovePan(event) {
         panEnd.set(event.touches[0].clientX, event.touches[0].clientY);
 
         panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
@@ -994,6 +996,62 @@ THREE.OrbitControls = function (object, domElement) {
 
     }
 
+    function gamepadconnected(event) {
+        var Complex = window.c;
+        console.log("A gamepad connected:");
+        console.log(event.gamepad);
+        if (event.gamepad.index < 4) {
+            var indexV = null;
+            indexV = event.gamepad.index;
+            scope.gamePad[event.gamepad.index] = event.gamepad;
+            scope.gamePadThread[indexV] = setInterval(() => {
+                if (scope.gamePad[indexV] != null) {
+                    // a gamepad is connected and has an index
+                    const myGamepad = navigator.getGamepads()[indexV];
+                    //document.body.innerHTML = ""; // reset page
+                    //  if (myGamepad)
+                    // console.log('axes', myGamepad.axes);
+                    var x1 = myGamepad.axes[0];
+                    var y1 = myGamepad.axes[1];
+                    var l1 = Math.sqrt(x1 * x1 + y1 * y1);
+                    if (l1 > 0.05) {
+                        var c1 = new Complex(x1 / l1, -y1 / l1);
+                        var camara = scope.object;
+                        var target = scope.target;
+                        var x2 = target.x - camara.position.x;// - target.x;
+                        var y2 = target.z - camara.position.z;// - target.z;
+                        var l2 = Math.sqrt(x2 * x2 + y2 * y2);
+                        if (l2 > 0.001) {
+                            var c2 = new Complex(x2 / l2, -y2 / l2);
+                            var c3 = c2.divide(c1);
+
+                            if (Math.abs(c3.r) < 1) {
+                                var delta = Math.acos(c3.r);
+                                if (delta != NaN)
+                                    if (c3.i > 0)
+                                        rotateLeft(delta);
+                                    else
+                                        rotateLeft(-delta);
+                                //if (delta > 0.01)
+                            }
+                            //else
+                            //    rotateLeft(delta / 50);
+                            scope.update();
+                        }
+                    }
+                    //myGamepad.buttons.map(e => e.pressed).forEach((isPressed, buttonIndex) => {
+                    //    if (isPressed) {
+                    //        console.log('0', myGamepad.buttons[buttonIndex]);
+                    //        console.log('1', myGamepad);
+                    //        // button is pressed; indicate this on the page
+                    //        // document.body.innerHTML += `<h1>Button ${buttonIndex} is pressed</h1>`;
+                    //    }
+                    //})
+                }
+            }, 100)
+            //  scope.gamePad = event.gamepad;
+        }
+    }
     //
 
     scope.domElement.addEventListener('contextmenu', onContextMenu, false);
@@ -1005,6 +1063,7 @@ THREE.OrbitControls = function (object, domElement) {
     scope.domElement.addEventListener('touchend', onTouchEnd, false);
     scope.domElement.addEventListener('touchmove', onTouchMove, false);
 
+    window.addEventListener("gamepadconnected", gamepadconnected);
     // scope.domElement.addEventListener('click', function (event) { alert('µã»÷'); }, false);
 
     window.addEventListener('keydown', onKeyDown, false);
