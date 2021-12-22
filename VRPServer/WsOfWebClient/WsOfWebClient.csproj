@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BitCoin\BitCoin.csproj" />
     <ProjectReference Include="..\CommonClass\CommonClass.csproj" />
     <ProjectReference Include="..\TcpFunction\TcpFunction.csproj" />
   </ItemGroup>
@@ -93,6 +94,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="model\confuseicon\untitled.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="model\direcitonarrow\color.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="model\direcitonarrow\untitled.mtl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="model\direcitonarrow\untitled.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="model\direction\color.jpg">

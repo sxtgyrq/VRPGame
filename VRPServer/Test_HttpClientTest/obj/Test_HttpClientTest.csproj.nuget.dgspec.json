@@ -1,21 +1,18 @@
 {
   "format": 1,
   "restore": {
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj": {}
+    "E:\\Project\\VRPGame\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj": {}
   },
   "projects": {
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj",
         "projectName": "Test_HttpClientTest",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\Test_HttpClientTest\\Test_HttpClientTest.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Test_HttpClientTest\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\Test_HttpClientTest\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -67,14 +64,11 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

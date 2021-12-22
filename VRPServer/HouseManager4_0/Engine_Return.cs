@@ -63,7 +63,11 @@ namespace HouseManager4_0
             var boss = cmp.returningOjb.Boss;
 
             // Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath, Program.dt.GetFpByIndex(cmp.target), speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
-            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+
+            if (cmp.returningOjb.returnToSelfAddrPath.path.Count > 0)
+            {
+                Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT, player.improvementRecord.speedValue > 0);
+            }
             var self = player;
             //  that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
             // result.RemoveAll(item => item.t == 0);
@@ -72,10 +76,18 @@ namespace HouseManager4_0
             car.targetFpIndex = self.StartFPIndex;
 
             Data.PathStartPoint2 startPosition;
-            if (cmp.returningOjb.returnToSelfAddrPath.path[0].path.Count == 0)
+            if (cmp.returningOjb.returnToSelfAddrPath.path.Count == 0)
             {
-                that.getStartPositionByFp(out startPosition, cmp.returningOjb.returnToSelfAddrPath.path[0].position);
+                //that.getStartPositionByFp(out startPosition, cmp.returningOjb.returnToSelfAddrPath.path[0].position);
                 // that.getStartPositionByFp(out startPosition, Program.dt.GetFpByIndex(player.StartFPIndex));
+                var fp = Program.dt.GetFpByIndex(player.StartFPIndex);
+                double x, y;
+                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out x, out y);
+                startPosition = new Data.PathStartPoint2()
+                {
+                    x = Convert.ToInt32(x * 256),
+                    y = Convert.ToInt32(y * 256)
+                };
             }
             else
             {

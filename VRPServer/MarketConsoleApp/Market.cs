@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace MarketConsoleApp
 {
+
     class Market
     {
 

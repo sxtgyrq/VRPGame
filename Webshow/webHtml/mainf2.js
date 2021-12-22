@@ -51,6 +51,8 @@ var objMain =
     collectGroup: null,
     getOutGroup: null,
     robotModel: null,
+    buildingModel: {},
+    buildingGroup: null,
     cars: {},
     rmbModel: {},
     ModelInput: {
@@ -61,7 +63,8 @@ var objMain =
         lostPrepare: null,
         ambushPrepare: null,
         water: null,
-        direction: null
+        direction: null,
+        directionArrow: null
     },
     shieldGroup: null,
     confusePrepareGroup: null,
@@ -1154,11 +1157,24 @@ var objMain =
                             //objMain.ModelInput.ambushPrepare = objectInput;
                             objMain.ModelInput.direction = objectInput;
                         },
-                        //transparent: { opacity: 0.2 },
+                        transparent: { opacity: 0.3 },
                         //color: { r: 1, g: 1, b: 1 }
                         //transparent: { opacity: 0 }
                     });
                     objMain.ws.send('SetDirectionIcon');
+                }; break;
+            case 'SetDirectionArrowIcon':
+                {
+                    ModelOperateF.f(received_obj, {
+                        bind: function (objectInput) {
+                            //objMain.ModelInput.ambushPrepare = objectInput;
+                            objMain.ModelInput.directionArrow = objectInput;
+                        },
+                        transparent: { opacity: 0.3 },
+                        //color: { r: 1, g: 1, b: 1 }
+                        //transparent: { opacity: 0 }
+                    });
+                    objMain.ws.send('SetDirectionArrowIcon');
                 }; break;
             case 'BradCastAnimateOfCar':
                 {
@@ -1644,6 +1660,15 @@ var objMain =
             case 'ShowDirectionOperator':
                 {
                     DirectionOperator.show(received_obj);
+                }; break;
+            case 'ModelDataShow':
+                {
+                    var modelDataShow = received_obj;
+                    BuildingModelObj.f(modelDataShow);
+                    if (modelDataShow.existed) {
+
+                    }
+
                 }; break;
             default:
                 {
@@ -2314,32 +2339,32 @@ function animate() {
                                 }
 
                             }
-                            if (isSelf && isAnimation && objMain.carState.car == 'selecting') {
-                                //  console.log('');
-                                //  alert('selecting');
-                                objMain.controls.target.set(x, 0, -y);
-                                var angle = objMain.controls.getPolarAngle();
-                                //if(
-                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                                var distance = 8;
-                                if (dCal >= 9) {
-                                    distance = dCal * 0.99 - 0.01;
-                                }
-                                else if (dCal <= 7) {
-                                    distance = dCal * 1.01 + 0.01;
-                                }
-                                var unitY = distance * Math.cos(angle);
-                                var unitZX = distance * Math.sin(angle);
+                            //if (isSelf && isAnimation && objMain.carState.car == 'selecting') {
+                            //    //  console.log('');
+                            //    //  alert('selecting');
+                            //    objMain.controls.target.set(x, 0, -y);
+                            //    var angle = objMain.controls.getPolarAngle();
+                            //    //if(
+                            //    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                            //    var distance = 8;
+                            //    if (dCal >= 9) {
+                            //        distance = dCal * 0.99 - 0.01;
+                            //    }
+                            //    else if (dCal <= 7) {
+                            //        distance = dCal * 1.01 + 0.01;
+                            //    }
+                            //    var unitY = distance * Math.cos(angle);
+                            //    var unitZX = distance * Math.sin(angle);
 
-                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                                var unitX = unitZX * Math.sin(angleOfCamara);
-                                var unitZ = unitZX * Math.cos(angleOfCamara);
-                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+                            //    var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                            //    var unitX = unitZX * Math.sin(angleOfCamara);
+                            //    var unitZ = unitZX * Math.cos(angleOfCamara);
+                            //    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                            //    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
 
-                                objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                                objMain.camera.lookAt(x, 0, -y);
-                            }
+                            //    objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
+                            //    objMain.camera.lookAt(x, 0, -y);
+                            //}
                         }
                     }
                     //if (key == 'car_' + objMain.indexKey)
@@ -2349,8 +2374,38 @@ function animate() {
                 }
             }
 
-            if (objMain.carState == 'selecting') {
+            if (objMain.carState.car == 'selecting') {
+                objMain.directionGroup.visible = true;
+                if (objMain.directionGroup.children.length > 0) {
+                    var p = objMain.directionGroup.children[0].position;
+                    var x = p.x;
+                    var y = -p.z;
+                    objMain.controls.target.set(x, 0, -y);
+                    var angle = objMain.controls.getPolarAngle();
+                    //if(
+                    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                    var distance = 3;
+                    if (dCal >= 3.5) {
+                        distance = dCal * 0.99 - 0.01;
+                    }
+                    else if (dCal <= 2.5) {
+                        distance = dCal * 1.01 + 0.01;
+                    }
+                    var unitY = distance * Math.cos(angle);
+                    var unitZX = distance * Math.sin(angle);
 
+                    var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                    var unitX = unitZX * Math.sin(angleOfCamara);
+                    var unitZ = unitZX * Math.cos(angleOfCamara);
+                    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                    objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
+                    objMain.camera.lookAt(x, 0, -y);
+                }
+            }
+            else {
+                objMain.directionGroup.visible = false;
             }
             objMain.animation.animateCameraByCarAndTask();
 
@@ -2511,6 +2566,9 @@ var set3DHtml = function () {
 
     objMain.directionGroup = new THREE.Group();
     objMain.scene.add(objMain.directionGroup);
+
+    objMain.buildingGroup = new THREE.Group();
+    objMain.scene.add(objMain.buildingGroup);
 
     objMain.clock = new THREE.Clock();
 
@@ -3663,10 +3721,15 @@ var ModelOperateF =
                         if (config.transparent != undefined) {
                             for (var iOfO = 0; iOfO < object.children.length; iOfO++) {
                                 if (object.children[iOfO].isMesh) {
-                                    for (var mi = 0; mi < object.children[iOfO].material.length; mi++) {
-                                        object.children[iOfO].material[mi].transparent = true;
-                                        object.children[iOfO].material[mi].opacity = config.transparent.opacity;
+                                    if (object.children[iOfO].material.isMaterial) {
+                                        object.children[iOfO].material.transparent = true;
+                                        object.children[iOfO].material.opacity = config.transparent.opacity;
                                     }
+                                    else
+                                        for (var mi = 0; mi < object.children[iOfO].material.length; mi++) {
+                                            object.children[iOfO].material[mi].transparent = true;
+                                            object.children[iOfO].material[mi].opacity = config.transparent.opacity;
+                                        }
                                 }
                             }
                         }
@@ -4299,8 +4362,63 @@ var DirectionOperator =
         newDirectionModle.position.set(DirectionOperator.data.positionX, -0.1, -DirectionOperator.data.positionY);
 
         objMain.directionGroup.add(newDirectionModle);
+        for (var i = 0; i < DirectionOperator.data.direction.length; i++) {
+            var newArrow = objMain.ModelInput.directionArrow.clone();
+            newArrow.scale.set(0.03, 0.03, 0.03);//(Math.PI / 2);
+            newArrow.position.set(DirectionOperator.data.positionX, -0.1, -DirectionOperator.data.positionY);
+            newArrow.rotation.y = DirectionOperator.data.direction[i];
+            objMain.directionGroup.add(newArrow);
+
+        }
     }
 };
+
+var BuildingModelObj =
+{
+    f: function (received_obj) {
+        if (received_obj.existed) {
+            var amodel = received_obj.amodel;
+            BuildingModelObj.copy(amodel, received_obj);
+        }
+        else {
+            if (objMain.buildingGroup.getObjectByName(received_obj.modelID) == undefined) {
+                var manager = new THREE.LoadingManager();
+                new THREE.MTLLoader(manager)
+                    .loadTextOnly(received_obj.mtlText, 'data:image/jpeg;base64,' + received_obj.imageBase64, function (materials) {
+                        materials.preload();
+                        // materials.depthTest = false;
+                        new THREE.OBJLoader(manager)
+                            .setMaterials(materials)
+                            //.setPath('/Pic/')
+                            .loadTextOnly(received_obj.objText, function (object) {
+                                var amodel = received_obj.amodel;
+                                objMain.buildingModel[amodel] = object;
+                                BuildingModelObj.copy(amodel, received_obj);
+                            }, function () { }, function () { });
+                    });
+            }
+        }
+    },
+    copy: function (amodel, received_obj) {
+        if (objMain.buildingModel[amodel] == undefined) {
+
+        }
+        else {
+            if (objMain.buildingGroup.getObjectByName(received_obj.modelID) == undefined) {
+                var obj = objMain.buildingModel[amodel].clone();
+                obj.name = received_obj.modelID;
+                obj.position.set(received_obj.x, received_obj.y, received_obj.z);
+                obj.rotation.set(0, received_obj.rotatey, 0, 'XYZ');
+                objMain.buildingGroup.add(obj);
+            }
+        }
+    }
+};
+//////////
+/*
+ * 手柄类，此游戏只支持单手柄操作。
+ */
+
 /////////////
 /*
  * 复数类
@@ -4389,6 +4507,7 @@ Complex.parse = function (s) {
     }
 };
 Complex.parseRegExp = /^\{([\d\s]+[^,]*),([\d\s]+[^}]*)\}$/;
+window.c = Complex;
 // console.log(/^\{([\d\s]+[^,]*),([\d\s]+[^}]*)\}$/.exec('{2,3}'));
 // 示例代码 
 

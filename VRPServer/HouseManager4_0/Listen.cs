@@ -163,18 +163,71 @@ namespace HouseManager4_0
                             objI.SelectDriver(dm);
                             outPut = "ok";
                         }; break;
-                    case "MagicSkill": 
+                    case "MagicSkill":
                         {
                             CommonClass.MagicSkill ms = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MagicSkill>(notifyJson);
                             var result = objI.updateMagic(ms);
                             outPut = "ok";
                         }; break;
-                    case "View": 
+                    case "View":
                         {
-                            CommonClass.View v= Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.View>(notifyJson);
+                            CommonClass.View v = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.View>(notifyJson);
                             var result = objI.updateView(v);
                             outPut = "ok";
-                        };break;
+                        }; break;
+                    case "GetFirstRoad":
+                        {
+                            //CommonClass.View v = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.View>(notifyJson);
+                            var result = objI.GetFirstRoad();
+                            outPut = result;
+                        }; break;
+                    case "DrawRoad":
+                        {
+                            CommonClass.MapEditor.DrawRoad v = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.DrawRoad>(notifyJson);
+                            outPut = objI.DrawRoad(v);
+                        }; break;
+                    case "NextCross":
+                        {
+                            CommonClass.MapEditor.NextCross v = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.NextCross>(notifyJson);
+                            outPut = objI.NextCross(v);
+                        }; break;
+                    case "PreviousCross":
+                        {
+                            CommonClass.MapEditor.PreviousCross v = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.PreviousCross>(notifyJson);
+                            outPut = objI.PreviousCross(v);
+                        }; break;
+                    case "GetCatege":
+                        {
+                            CommonClass.MapEditor.GetCatege gc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetCatege>(notifyJson);
+                            outPut = objI.GetCatege(gc);
+                            // Console.WriteLine(outPut);
+                        }; break;
+                    case "GetAbtractModels":
+                        {
+                            CommonClass.MapEditor.GetAbtractModels gam = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetAbtractModels>(notifyJson);
+                            outPut = objI.GetAbtractModels(gam);
+                            // Console.WriteLine(outPut);
+                        }; break;
+                    case "SaveObjInfo":
+                        {
+                            CommonClass.MapEditor.SaveObjInfo soi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.SaveObjInfo>(notifyJson);
+                            outPut = objI.SaveObjInfo(soi);
+                        }; break;
+                    case "ShowOBJFile":
+                        {
+                            CommonClass.MapEditor.ShowOBJFile sof = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.ShowOBJFile>(notifyJson);
+                            outPut = objI.ShowOBJFile(sof);
+                        }; break;
+                    case "UpdateObjInfo":
+                        {
+                            CommonClass.MapEditor.UpdateObjInfo uoi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.UpdateObjInfo>(notifyJson);
+                            outPut = objI.UpdateObjInfo(uoi);
+                        }; break;
+                    case "DelObjInfo":
+                        {
+                            CommonClass.MapEditor.DelObjInfo doi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.DelObjInfo>(notifyJson);
+                            outPut = objI.DelObjInfo(doi);
+                        }; break;
                 }
             }
             {

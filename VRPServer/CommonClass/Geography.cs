@@ -62,6 +62,51 @@ namespace CommonClass
                 x = MercatorGetXbyLongitude(longitude);
                 y = MercatorGetYbyLatitude(latitude);
             }
+
+            public static double getBaiduPositionLatWithAccuracy(double MercatorY, double accuracy)
+            {
+
+                var maxLat = 89.9;
+                var minLat = -89.9;
+                var midLat = (maxLat + minLat) / 2;
+
+                var maxM = MercatorGetYbyLatitude(maxLat);
+                var midM = MercatorGetYbyLatitude(midLat);
+                var minM = MercatorGetYbyLatitude(minLat);
+
+
+                while (Math.Abs(midM - MercatorY) > accuracy)
+                {
+                    if (MercatorY > maxM)
+                    {
+                        return midLat;
+                    }
+                    else if (MercatorY > midM)
+                    {
+                        minLat = midLat;
+                        midLat = (maxLat + minLat) / 2;
+                        midM = MercatorGetYbyLatitude(midLat);
+                        minM = MercatorGetYbyLatitude(minLat);
+                    }
+                    else if (MercatorY > minM)
+                    {
+                        maxLat = midLat;
+                        midLat = (maxLat + minLat) / 2;
+                        maxM = MercatorGetYbyLatitude(maxLat);
+                        midM = MercatorGetYbyLatitude(midLat);
+                    }
+                    else
+                    {
+                        return midLat;
+                    }
+                }
+                return midLat;
+            }
+            public static double getBaiduPositionLon(double MercatorX)
+            {
+                var Zoom = 19;
+                return MercatorX * 360 / Math.Pow(2, LongitudeK + (Zoom - 19));
+            }
         }
     }
 }

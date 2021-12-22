@@ -4,11 +4,312 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using static CommonClass.PathCal;
 using OssModel = Model;
 namespace HouseManager4_0
 {
-    public class Data
+    public partial class Data
     {
+
+        public class PathCal
+        {
+            List<int> allDirect;
+            List<int> fpDirect;
+            int countFpCount { get; set; }
+            List<CommonClass.PathCal.CalModel_V2> calMaterial = new List<CommonClass.PathCal.CalModel_V2>();
+            int countOFMaterial;
+            Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> road;
+            Data data;
+
+            string dataDictionary;
+
+            public PathCal(Data data_, string dataDictionary_)
+            {
+                this.data = data_;
+                this.countFpCount = this.data.GetFpCount();
+                this.data.GetData(out road);
+                this.dataDictionary = dataDictionary_;
+            }
+
+            internal void cal()
+            {
+                this.calMaterial = new List<CalModel_V2>();
+                for (int indexOfFP = 0; indexOfFP < countFpCount; indexOfFP++)
+                {
+                    var fp = data.GetFpByIndex(indexOfFP);
+                    // var end = dt.GetFpByIndex(98);
+
+                    calMaterial.Add(new CalModel_V2()
+                    {
+                        RoadCode = fp.RoadCode,
+                        RoadOrder = fp.RoadOrder,
+                        Percent = fp.RoadPercent,
+                        AnotherRoadCode = "",
+                        AnotherRoadOrder = -1,
+                        AnotherIndex = -1,
+                        Last = -1,
+                        MType = ModelType.End,
+                        ToNext = -1,
+                        ToPrevious = -1,
+                        Pass = 0,
+                        FastenPositionID = fp.FastenPositionID
+                    });
+                }
+                foreach (var roadsItem in this.road)
+                {
+                    string RoadCode = roadsItem.Key;
+                    var roads = roadsItem.Value;
+                    foreach (var roadItem in roads)
+                    {
+                        int RoadOrder = roadItem.Key;
+                        var road = roadItem.Value;
+                        foreach (var cross in road.Cross1)
+                        {
+                            if (cross.CrossState == 1)
+                            {
+                                var Percent = cross.Percent1;
+                                var AnotherRoadCode = cross.RoadCode2;
+                                var AnotherRoadOrder = cross.RoadOrder2;
+                                calMaterial.Add(new CalModel_V2()
+                                {
+                                    RoadCode = RoadCode,
+                                    RoadOrder = RoadOrder,
+                                    Percent = Percent,
+                                    AnotherRoadCode = AnotherRoadCode,
+                                    AnotherRoadOrder = AnotherRoadOrder,
+                                    AnotherIndex = -1,
+                                    Last = -1,
+                                    MType = ModelType.Cross,
+                                    ToNext = -1,
+                                    ToPrevious = -1,
+                                    Pass = 0,
+                                    FastenPositionID = ""
+                                });
+                            }
+                        }
+                        foreach (var cross in road.Cross2)
+                        {
+                            if (cross.CrossState == 1)
+                            {
+                                var Percent = cross.Percent2;
+                                var AnotherRoadCode = cross.RoadCode1;
+                                var AnotherRoadOrder = cross.RoadOrder1;
+                                calMaterial.Add(new CalModel_V2()
+                                {
+                                    RoadCode = RoadCode,
+                                    RoadOrder = RoadOrder,
+                                    Percent = Percent,
+                                    AnotherRoadCode = AnotherRoadCode,
+                                    AnotherRoadOrder = AnotherRoadOrder,
+                                    AnotherIndex = -1,
+                                    Last = -1,
+                                    MType = ModelType.Cross,
+                                    ToNext = -1,
+                                    ToPrevious = -1,
+                                    Pass = 0,
+                                    FastenPositionID = ""
+                                });
+                            }
+                        }
+                    }
+                }
+                var newMaterial = (from item in calMaterial orderby item.RoadCode ascending, item.RoadOrder ascending, item.Percent ascending select item).ToList();
+                this.countOFMaterial = newMaterial.Count;
+                this.calMaterial = newMaterial;
+                var conten1 = File.ReadAllText($"{ this.dataDictionary}fpOrder.json");
+                this.fpDirect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(conten1);
+                var conten2 = File.ReadAllText($"{ this.dataDictionary}resultommm22x.txt");
+                this.allDirect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(conten2);
+                Console.WriteLine($"加载的数据{ this.fpDirect.Count},{this.allDirect.Count}{"\r\n"}任意键继续");
+                Console.ReadLine();
+            }
+
+            internal List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
+            {
+                if (start == end)
+                {
+                    return new List<OssModel.MapGo.nyrqPosition>();
+                }
+                else
+                {
+                    // var result = new List<OssModel.MapGo.nyrqPosition>();
+                    var endIndex = this.fpDirect[end];
+                    Console.WriteLine($"{endIndex}");
+                    var startIndex = start;
+                    var listResult = new List<int>();
+                    int direct = endIndex;
+                    int calCount = 0;
+                    do
+                    {
+                        listResult.Insert(0, direct + 0);
+                        direct = this.allDirect[direct + startIndex * this.countOFMaterial];
+                        calCount++;
+                        if (calCount >= this.countOFMaterial)
+                        {
+                            throw new Exception("错误");
+                        }
+                    }
+                    while (direct >= 0);
+                    if (direct == -2)
+                    {
+                        //表示结果正确
+                    }
+                    else
+                    {
+                        throw new Exception("数据错误！");
+                    }
+
+                    List<CommonClass.PathCal.CalModel_V2> pathCal = new List<CommonClass.PathCal.CalModel_V2>();
+                    for (int i = 0; i < listResult.Count; i++)
+                    {
+                        pathCal.Add(this.calMaterial[listResult[i]]);
+                    }
+                    delMidMoreInfo(ref pathCal);
+                    var result = changeType(pathCal);
+                    addMidUsefulInfo(ref result);
+                    return result;
+                }
+            }
+
+            private List<OssModel.MapGo.nyrqPosition> changeType(List<CalModel_V2> pathCal)
+            {
+                var result = new List<OssModel.MapGo.nyrqPosition>();
+                for (int i = 0; i < pathCal.Count; i++)
+                {
+                    var io = pathCal[i];
+                    var lon = this.road[io.RoadCode][io.RoadOrder].startLongitude + (this.road[io.RoadCode][io.RoadOrder].endLongitude - this.road[io.RoadCode][io.RoadOrder].startLongitude) * io.Percent;
+                    var lat = this.road[io.RoadCode][io.RoadOrder].startLatitude + (this.road[io.RoadCode][io.RoadOrder].endLatitude - this.road[io.RoadCode][io.RoadOrder].startLatitude) * io.Percent;
+                    var maxSpeed = this.road[io.RoadCode][io.RoadOrder].MaxSpeed;
+                    result.Add(new OssModel.MapGo.nyrqPosition(io.RoadCode, io.RoadOrder, io.Percent, lon, lat, maxSpeed));
+                }
+                return result;
+            }
+
+            enum Direction { Up, Down, Null }
+            class UsefulInfoMation
+            {
+                public string roadCode;
+                public int roadOrder;
+                public Direction direction;
+            }
+            private void addMidUsefulInfo(ref List<OssModel.MapGo.nyrqPosition> result)
+            {
+                string roadCode;
+                int roadOrder;
+                Direction direction;
+                int indexFound;
+                while (findIndexWhichNeedToFix(ref result, out indexFound, out roadCode, out roadOrder, out direction))
+                {
+                    {
+                        double percent, lon, lat;
+                        if (direction == Direction.Up)
+                        {
+                            percent = 0;
+                            lon = this.road[roadCode][roadOrder].startLongitude;
+                            lat = this.road[roadCode][roadOrder].startLatitude;
+                        }
+                        else if (direction == Direction.Down)
+                        {
+                            percent = 1;
+                            lon = this.road[roadCode][roadOrder].endLongitude;
+                            lat = this.road[roadCode][roadOrder].endLatitude;
+                        }
+                        else
+                        {
+                            throw new Exception("");
+                        }
+                        result.Insert(indexFound, new OssModel.MapGo.nyrqPosition(roadCode, roadOrder, percent, lon, lat, this.road[roadCode][roadOrder].MaxSpeed));
+                    }
+                    {
+                        double percent, lon, lat;
+                        // int roadOrder;
+                        if (direction == Direction.Up)
+                        {
+                            roadOrder--;
+                            percent = 1;
+                            lon = this.road[roadCode][roadOrder].endLongitude;
+                            lat = this.road[roadCode][roadOrder].endLatitude;
+                        }
+                        else if (direction == Direction.Down)
+                        {
+                            roadOrder++;
+                            percent = 0;
+                            lon = this.road[roadCode][roadOrder].startLongitude;
+                            lat = this.road[roadCode][roadOrder].startLatitude;
+                        }
+                        else
+                        {
+                            throw new Exception("");
+                        }
+                        result.Insert(indexFound, new OssModel.MapGo.nyrqPosition(roadCode, roadOrder, percent, lon, lat, this.road[roadCode][roadOrder].MaxSpeed));
+                    }
+                }
+                // throw new NotImplementedException();
+            }
+
+            private bool findIndexWhichNeedToFix(ref List<OssModel.MapGo.nyrqPosition> result, out int indexFound, out string roadCode, out int roadOrder, out Direction direction)
+            {
+                for (int i = 1; i < result.Count; i += 2)
+                {
+                    if (result[i].roadCode != result[i - 1].roadCode)
+                    {
+                        throw new Exception("格式错误");
+                    }
+                    else if (result[i].roadOrder != result[i - 1].roadOrder)
+                    {
+                        if (result[i].roadOrder > result[i - 1].roadOrder)
+                        {
+                            direction = Direction.Up;
+                        }
+                        else
+                            direction = Direction.Down;
+                        indexFound = i;
+                        roadCode = result[i].roadCode;
+                        roadOrder = result[i].roadOrder;
+                        return true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                indexFound = -1;
+                roadCode = null;
+                roadOrder = -1;
+                direction = Direction.Null;
+                return false;
+                //  throw new NotImplementedException();
+            }
+
+            private void delMidMoreInfo(ref List<CalModel_V2> pathCal)
+            {
+                int indexWhichIsMore;
+                while (findIndexWhichIsMore(ref pathCal, out indexWhichIsMore))
+                {
+                    pathCal.RemoveAt(indexWhichIsMore);
+                }
+                if (pathCal.Count % 2 != 0)
+                {
+                    throw new Exception("意料之外");
+                }
+                // throw new NotImplementedException();
+            }
+
+            private bool findIndexWhichIsMore(ref List<CalModel_V2> pathCal, out int index)
+            {
+                for (int i = 1; i < pathCal.Count - 1; i++)
+                {
+                    if (pathCal[i].RoadCode == pathCal[i - 1].RoadCode && pathCal[i].RoadCode == pathCal[i + 1].RoadCode)
+                    {
+                        index = i;
+                        return true;
+                    }
+                }
+                index = -1;
+                return false;
+                // throw new NotImplementedException();
+            }
+        }
         /// <summary>
         /// all road infomation
         /// </summary>
@@ -22,6 +323,14 @@ namespace HouseManager4_0
 
         public string IP { get; private set; }
 
+        public Dictionary<int, OssModel.SaveRoad.RoadInfo> GetFirst(out string roadCode)
+        {
+            var first = this._road.First();
+            roadCode = first.Key;
+            return first.Value;
+        }
+
+        PathCal pathCal;
         public void LoadRoad()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
@@ -42,7 +351,11 @@ namespace HouseManager4_0
             this._allFp = GetAllFp(fpDictionary);
 
             Console.WriteLine($"{this._road.Count}_{this._allFp.Count}");
+
+            this.pathCal = new PathCal(this, fpDictionary);
+            this.pathCal.cal();
         }
+
 
         internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(OssModel.MapGo.nyrqPosition nyrqPosition)
         {
@@ -136,48 +449,50 @@ namespace HouseManager4_0
         static string PathDataAll = "";
         public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
         {
-            if (start == end)
-            {
-                return new List<OssModel.MapGo.nyrqPosition>();
-            }
-            else
-            {
-                byte[] data;
-                int count = this.GetFpCount();
-                int startPosition = (start * count + end) * 8;
-                if (Read(ref startPosition, out data))
-                {
-                    var dataIndex = data[0] * 1;
-                    var startPositionInDB =
-                        data[1] * 1 +
-                        data[2] * 256 +
-                        data[3] * 256 * 256 +
-                        data[4] * 256 * 256 * 256;
-                    var length =
-                        data[5] * 1 +
-                        data[6] * 256 +
-                        data[7] * 256 * 256;
-                    Console.WriteLine($"{dataIndex},{startPositionInDB},{length}");
+            return this.pathCal.GetAFromB(start, end);
 
-                    var JsonByteFromDB = Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
-                    var json = Encoding.ASCII.GetString(JsonByteFromDB);
+            //if (start == end)
+            //{
+            //    return new List<OssModel.MapGo.nyrqPosition>();
+            //}
+            //else
+            //{
+            //    byte[] data;
+            //    int count = this.GetFpCount();
+            //    int startPosition = (start * count + end) * 8;
+            //    if (Read(ref startPosition, out data))
+            //    {
+            //        var dataIndex = data[0] * 1;
+            //        var startPositionInDB =
+            //            data[1] * 1 +
+            //            data[2] * 256 +
+            //            data[3] * 256 * 256 +
+            //            data[4] * 256 * 256 * 256;
+            //        var length =
+            //            data[5] * 1 +
+            //            data[6] * 256 +
+            //            data[7] * 256 * 256;
+            //        Console.WriteLine($"{dataIndex},{startPositionInDB},{length}");
 
-                    Console.WriteLine(json);
-                    var objGet = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model.MapGo.nyrqPosition_Simple>>(json);
-                    var result = new List<OssModel.MapGo.nyrqPosition>();
-                    for (var i = 0; i < objGet.Count; i++)
-                    {
-                        result.Add(objGet[i].copy());
-                    }
-                    return result;
-                    // Console.WriteLine($"fromDB:{json}");
+            //        var JsonByteFromDB = Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
+            //        var json = Encoding.ASCII.GetString(JsonByteFromDB);
 
-                }
-                else
-                {
-                    throw new Exception("具体看代码！");
-                }
-            }
+            //        Console.WriteLine(json);
+            //        var objGet = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model.MapGo.nyrqPosition_Simple>>(json);
+            //        var result = new List<OssModel.MapGo.nyrqPosition>();
+            //        for (var i = 0; i < objGet.Count; i++)
+            //        {
+            //            result.Add(objGet[i].copy());
+            //        }
+            //        return result;
+            //        // Console.WriteLine($"fromDB:{json}");
+
+            //    }
+            //    else
+            //    {
+            //        throw new Exception("具体看代码！");
+            //    }
+            //}
         }
 
         private static byte[] Decompress(byte[] data, int comPressLength)
@@ -296,7 +611,7 @@ namespace HouseManager4_0
         /// <param name="speed">速度</param>
         /// <param name="result">ref path的结果。</param>
         /// <param name="startT">ref 时间结果</param>
-         void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
+        void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
         {
             for (var i = 0; i < dataResult.Count; i++)
             {
@@ -399,7 +714,7 @@ namespace HouseManager4_0
             }
         }
 
-        
+
         internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved)
         {
             for (var i = 0; i < dataResult.Count; i++)
@@ -820,6 +1135,49 @@ namespace HouseManager4_0
         {
             var l = Math.Sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
             return new double[] { vec[0] / l, vec[1] / l };
+        }
+    }
+    public partial class Data
+    {
+
+
+        public Dictionary<string, CommonClass.databaseModel.abtractmodels> material { get; set; }
+
+        public class detailmodel : CommonClass.databaseModel.detailmodel
+        {
+            public double lon { get; set; }
+            public double lat { get; set; }
+        }
+        public List<detailmodel> models { get; set; }
+        // List<aModel> material { get; set; }
+        internal void LoadModel()
+        {
+            this.material = new Dictionary<string, CommonClass.databaseModel.abtractmodels>();
+            //throw new NotImplementedException();
+            var list = DalOfAddress.AbtractModels.GetCatege();
+            for (int i = 0; i < list.Count; i += 2)
+            {
+                var amInfomation = DalOfAddress.AbtractModels.GetAbtractModelItem(list[i].Trim());
+                this.material.Add(list[i].Trim(), amInfomation);
+            }
+
+            this.models = new List<detailmodel>();
+            var modelList = DalOfAddress.detailmodel.GetList();
+            for (int i = 0; i < modelList.Count; i++)
+            {
+                //   CommonClass.Geography.calculatBaideMercatorIndex
+                models.Add(new detailmodel()
+                {
+                    amodel = modelList[i].amodel,
+                    modelID = modelList[i].modelID,
+                    rotatey = modelList[i].rotatey,
+                    x = modelList[i].x,
+                    y = modelList[i].y,
+                    z = modelList[i].z,
+                    lon = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLon(modelList[i].x),
+                    lat = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLatWithAccuracy(0 - modelList[i].z, 1e-7),
+                });
+            }
         }
     }
 }

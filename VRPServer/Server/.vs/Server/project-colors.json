@@ -1,0 +1,56 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "杂项文件",
+      "ColorIndex": -1
+    },
+    "12f38116-8d9f-40e6-bc40-e8b896a5569a": {
+      "ProjectGuid": "12f38116-8d9f-40e6-bc40-e8b896a5569a",
+      "DisplayName": "HouseManager4_0",
+      "ColorIndex": 0
+    },
+    "c39a70eb-4086-48d8-8d0c-e8c3f6256fbe": {
+      "ProjectGuid": "c39a70eb-4086-48d8-8d0c-e8c3f6256fbe",
+      "DisplayName": "WsOfWebClient",
+      "ColorIndex": 1
+    },
+    "6ed19806-d1f5-428e-b1f9-516b400dbb12": {
+      "ProjectGuid": "6ed19806-d1f5-428e-b1f9-516b400dbb12",
+      "DisplayName": "DalOfAddress",
+      "ColorIndex": 2
+    },
+    "63a61b0d-e434-4b88-867f-9f49ccca090e": {
+      "ProjectGuid": "63a61b0d-e434-4b88-867f-9f49ccca090e",
+      "DisplayName": "CommonClass",
+      "ColorIndex": 3
+    },
+    "8be7f452-568a-47ee-8644-8e4347c3226f": {
+      "ProjectGuid": "8be7f452-568a-47ee-8644-8e4347c3226f",
+      "DisplayName": "Model",
+      "ColorIndex": 4
+    },
+    "dc55d105-c8e8-4db0-83fb-08a6c7b250a8": {
+      "ProjectGuid": "dc55d105-c8e8-4db0-83fb-08a6c7b250a8",
+      "DisplayName": "AllPathGenerator",
+      "ColorIndex": 5
+    },
+    "9bfdc0b6-c3bc-47c5-8ea7-523da009a41b": {
+      "ProjectGuid": "9bfdc0b6-c3bc-47c5-8ea7-523da009a41b",
+      "DisplayName": "HouseManager",
+      "ColorIndex": 6
+    },
+    "a4cd1da7-30f8-4895-9f5d-327f6bde90c8": {
+      "ProjectGuid": "a4cd1da7-30f8-4895-9f5d-327f6bde90c8",
+      "DisplayName": "TcpFunction",
+      "ColorIndex": 7
+    },
+    "6ef35380-695d-4359-b981-31a1917c34d4": {
+      "ProjectGuid": "6ef35380-695d-4359-b981-31a1917c34d4",
+      "DisplayName": "Server",
+      "ColorIndex": 8
+    }
+  },
+  "NextColorIndex": 9
+}

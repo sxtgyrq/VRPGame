@@ -45,6 +45,10 @@ namespace TestAllPath
             {
                 multhread_writeC.multhread_write();
             }
+            else if (select.ToLower() == "read")
+            {
+                Read.readF();
+            }
             Console.WriteLine("Hello World!");
 
             Console.ReadLine();

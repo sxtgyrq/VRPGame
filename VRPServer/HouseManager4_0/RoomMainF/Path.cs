@@ -28,6 +28,7 @@ namespace HouseManager4_0.RoomMainF
                 public OssModel.MapGo.nyrqPosition start { get; set; }
                 public OssModel.MapGo.nyrqPosition end { get; set; }
                 public bool right { get; set; }
+                public bool isTheEndOfTheRoad { get; set; }
             }
             public List<pathItem> path { get; set; }
             public class pathItem
@@ -270,13 +271,13 @@ namespace HouseManager4_0.RoomMainF
                                         {
                                             start = path[indexOfPath],
                                             end = path[indexOfPath + 1],
-                                            right = false
+                                            right = true
                                         });
                                         selections.Add(new Node.direction()
                                         {
                                             start = path[indexOfPath + 1],
                                             end = path[indexOfPath],
-                                            right = true
+                                            right = false
                                         });
                                     }
                                     string otherRoadCode;

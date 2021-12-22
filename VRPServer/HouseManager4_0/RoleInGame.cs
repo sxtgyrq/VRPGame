@@ -1,4 +1,5 @@
 ﻿using CommonClass;
+using CommonClass.databaseModel;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -439,8 +440,155 @@ namespace HouseManager4_0
                 {
                     this.usedRoad.Add(roadCode, true);
                     this.DrawSingleRoadF((Player)this, roadCode, ref notifyMsgs);
+
+                    Dictionary<string, Dictionary<int, Model.SaveRoad.RoadInfo>> result;
+                    Program.dt.GetData(out result);
+
+                    var roads = result[roadCode];
+
+                    var cloesdMaterial = getMaterialNearby(roads, Program.dt.models);
+
+                    for (int i = 0; i < cloesdMaterial.Count; i++)
+                    {
+
+                        if (((Player)this).modelHasShowed.ContainsKey(cloesdMaterial[i].modelID)) { }
+                        else
+                        {
+                            var player = (Player)this;
+                            if (Program.dt.material.ContainsKey(cloesdMaterial[i].amodel))
+                            {
+                                if (player.aModelHasShowed.ContainsKey(cloesdMaterial[i].amodel))
+                                {
+                                    var m2 = cloesdMaterial[i];
+                                    ((Player)this).DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m2.rotatey, true, "", "", "", ref notifyMsgs);
+
+                                }
+                                else
+                                {
+                                    player.aModelHasShowed.Add(cloesdMaterial[i].amodel, true);
+                                    var m1 = Program.dt.material[cloesdMaterial[i].amodel];
+                                    var m2 = cloesdMaterial[i];
+                                    ((Player)this).DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
+                                }
+                            }
+                            else
+                            { }
+                            ((Player)this).modelHasShowed.Add(cloesdMaterial[i].modelID, true);
+                        }
+                    }
                 }
         }
+
+        private List<Data.detailmodel> getMaterialNearby(Dictionary<int, SaveRoad.RoadInfo> roads, List<Data.detailmodel> models)
+        {
+            List<Data.detailmodel> result = new List<Data.detailmodel>();
+            foreach (var road in roads)
+            {
+                var v = road.Value;
+                //
+                MaterialNearby mn = new MaterialNearby(v.startLongitude, v.startLatitude, v.endLongitude, v.endLatitude);
+
+                foreach (var model in models)
+                {
+                    if (mn.Contain(model.lon, model.lat))
+                    {
+                        result.Add(model);
+                    }
+                }
+            }
+            return result;
+        }
+        class MaterialNearby
+        {
+            double startLongitude { get; set; }
+            double startLatitude { get; set; }
+            double endLongitude { get; set; }
+            double endLatitude { get; set; }
+
+
+            double length { get; set; }
+
+            System.Numerics.Complex c1;
+            System.Numerics.Complex c2;
+            System.Numerics.Complex c3;
+            System.Numerics.Complex c4;
+
+            double D1;
+            double D2;
+            double D3;
+            double D4;
+
+            double c1Longitude { get; set; }
+            double c1Latitude { get; set; }
+
+            double c2Longitude { get; set; }
+            double c2Latitude { get; set; }
+
+            const double limitedLength = 0.02;//道路两侧将近2km，实际宽度为4km
+            public MaterialNearby(double startLongitude, double startLatitude, double endLongitude, double endLatitude)
+            {
+                this.startLongitude = startLongitude;
+                this.startLatitude = startLatitude;
+                this.endLongitude = endLongitude;
+                this.endLatitude = endLatitude;
+                var v = this;
+                this.length = Math.Sqrt((v.endLongitude - v.startLongitude) * (v.endLongitude - v.startLongitude) + (v.endLatitude - v.startLatitude) * (v.endLatitude - v.startLatitude));
+
+                if (this.length >= 1e-8)
+                {
+                    System.Numerics.Complex c0 = new System.Numerics.Complex((v.endLongitude - v.startLongitude) / length, (v.endLatitude - v.startLatitude) / length);
+                    c1 = c0 * new System.Numerics.Complex(0, 1);
+                    c2 = c1 * new System.Numerics.Complex(0, 1);
+                    c3 = c2 * new System.Numerics.Complex(0, 1);
+                    c4 = c3 * new System.Numerics.Complex(0, 1);
+
+                    c1Longitude = this.endLongitude + limitedLength * (c4 + c1).Real;
+                    c1Latitude = this.endLatitude + limitedLength * (c4 + c1).Imaginary;
+
+                    c2Longitude = this.startLongitude + limitedLength * (c2 + c3).Real;
+                    c2Latitude = this.startLatitude + limitedLength * (c2 + c3).Imaginary;
+                    //
+                    //一个虚数 a+bi
+                    //其对应的斜率为b/a 那么其直线为 y=b/ax+d;
+                    //D=-(ay-bx),实现ay-bx+D=0;
+                    // a b
+                    // x y
+
+
+
+                    D1 = -(c1Latitude * c1.Real - c1Longitude * c1.Imaginary);
+                    D2 = -(c1Latitude * c2.Real - c1Longitude * c2.Imaginary);
+                    D3 = -(c2Latitude * c3.Real - c2Longitude * c3.Imaginary);
+                    D4 = -(c2Latitude * c4.Real - c2Longitude * c4.Imaginary);
+                }
+            }
+
+            internal bool Contain(double lon, double lat)
+            {
+                if (this.length <= 1e-8)
+                {
+                    return false;
+                }
+                else
+                {
+                    return
+                     lat * this.c1.Real - lon * this.c1.Imaginary + this.D1 > 0 &&
+                     lat * this.c2.Real - lon * this.c2.Imaginary + this.D2 > 0 &&
+                     lat * this.c3.Real - lon * this.c3.Imaginary + this.D3 > 0 &&
+                     lat * this.c4.Real - lon * this.c4.Imaginary + this.D4 > 0;
+                }
+            }
+        }
+
+        //private object getMaterialNearby(Dictionary<int, SaveRoad.RoadInfo> roads, Dictionary<string, detailmodel> models)
+        //{
+        //    foreach (var road in roads)
+        //    {
+        //        //road.Value.
+        //    }
+        //    // throw new NotImplementedException();
+        //}
+
         internal void clearUsedRoad()
         {
             this.usedRoad.Clear();
@@ -557,6 +705,12 @@ namespace HouseManager4_0
             this.afterBroke(this, ref notifyMsg);
         }
         public System.Numerics.Complex direciton = 0;
+
+        public Dictionary<string, bool> modelHasShowed { get; set; }
+        public Dictionary<string, bool> aModelHasShowed { get; set; }
+
+        public delegate void DrawModel(Player player, string modelID, double x, double y, double z, string amodel, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg);
+        public DrawModel DrawObj3DModelF { get; set; }
     }
     public class NPC : RoleInGame
     {

@@ -11,7 +11,7 @@ namespace TestAllPath
         public static void CheckAll()
         {
             Program.dt = new Data();
-            Program.dt.LoadRoad(); 
+            Program.dt.LoadRoad();
             {
                 var count = Program.dt.Get61Fp();
                 for (var i = 0; i < count; i++)
@@ -39,7 +39,7 @@ namespace TestAllPath
                                     data[6] * 256 +
                                     data[7] * 256 * 256;
                                 Console.WriteLine($"{dataIndex},{startPositionInDB},{length}");
-                            
+
                                 var JsonByteFromDB = Program.Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
                                 var json = Encoding.ASCII.GetString(JsonByteFromDB);
                                 Console.WriteLine($"fromDB:{json}");

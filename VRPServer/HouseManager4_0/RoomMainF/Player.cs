@@ -196,6 +196,8 @@ namespace HouseManager4_0.RoomMainF
                     this._Players[addItem.Key].SetBust(false, ref notifyMsgs);
 
                     this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
+                    ((Player)this._Players[addItem.Key]).DrawObj3DModelF = this.DrawObj3DModelF;
+
                     this._Players[addItem.Key].addUsedRoad(Program.dt.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
 
                     //   this._Players[addItem.Key].brokenParameterT1RecordChanged = this.brokenParameterT1RecordChanged;
@@ -208,6 +210,8 @@ namespace HouseManager4_0.RoomMainF
                     ConfigMagic(newPlayer);
                     ((Player)this._Players[addItem.Key]).direciton = getComplex(Program.dt.GetFpByIndex(fpIndex));
                     //  newPlayer.
+                    ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
+                    ((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
                 }
             }
 
@@ -261,7 +265,7 @@ namespace HouseManager4_0.RoomMainF
             if (l > 1e-8)
                 return false;
             else
-                return true; 
+                return true;
         }
         public System.Numerics.Complex getComplex(Node.direction direction)
         {
@@ -379,8 +383,8 @@ namespace HouseManager4_0.RoomMainF
                             ((Player)Program.rm._Players[checkItem.Key]).OpenMore++;
                             Program.rm._Players[checkItem.Key].clearUsedRoad();
                             Program.rm._Players[checkItem.Key] = player;
-
-
+                            ((Player)this._Players[checkItem.Key]).modelHasShowed.Clear();
+                            ((Player)this._Players[checkItem.Key]).aModelHasShowed.Clear();
                         }
                         else
                         {

@@ -11,6 +11,32 @@ namespace HouseManager4_0
         public static RoomMainF.RoomMain rm;
         static void Main(string[] args)
         {
+            Console.WriteLine(@"
+--------- readConnectInfomation
+--------- addModel
+--------- calMercator
+--------- 
+");
+            var commandInput = Console.ReadLine();
+            switch (commandInput)
+            {
+                case "readConnectInfomation":
+                    {
+                        OtherFunction.readConnectInfomation();
+                        return;
+                    };
+                case "addModel":
+                    {
+                        OtherFunction.addModel();
+                        return;
+                    }; break;
+                case "calMercator":
+                    {
+                        OtherFunction.calMercator();
+                        return;
+                    }; break;
+                    
+            }
 
             // Console.WriteLine("Hello World!");
             var version = "4.0.0";
@@ -26,6 +52,7 @@ namespace HouseManager4_0
 
             Program.dt = new Data();
             Program.dt.LoadRoad();
+            Program.dt.LoadModel();
 
             Program.rm = new RoomMainF.RoomMain();
 
@@ -87,7 +114,7 @@ namespace HouseManager4_0
                 Program.rm.ClearPlayers();
                 Program.rm.SetNPC();
                 Thread.Sleep(30 * 1000);
-                
+
             }
             //  throw new NotImplementedException();
         }

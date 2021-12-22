@@ -23,5 +23,27 @@ namespace HouseManager4_0.RoomMainF
             notifyMsg.Add(player.FromUrl);
             notifyMsg.Add(json);
         }
+
+        public void DrawObj3DModelF(Player player, string modelID, double x, double y, double z, string amodel, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg)
+        {
+            ModelDataShow srpd = new ModelDataShow()
+            {
+                c = "ModelDataShow",
+                WebSocketID = player.WebSocketID,
+                modelID = modelID,
+                amodel = amodel,
+                existed = existed,
+                imageBase64 = imageBase64,
+                objText = objText,
+                mtlText = mtlText,
+                rotatey = rotatey,
+                x = x,
+                y = y,
+                z = z
+            };
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(srpd);
+            notifyMsg.Add(player.FromUrl);
+            notifyMsg.Add(json);
+        }
     }
 }

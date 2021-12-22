@@ -6,7 +6,7 @@ using static HouseManager4_0.RoomMainF.RoomMain;
 
 namespace HouseManager4_0.interfaceOfHM
 {
-    interface ListenInterface
+    interface ListenInterface : MapEditor
     {
         /// <summary>
         /// 新增玩家
@@ -105,5 +105,20 @@ namespace HouseManager4_0.interfaceOfHM
         void SelectDriver(SetSelectDriver dm);
         string updateMagic(MagicSkill ms);
         string updateView(View v);
+
+    }
+
+    interface MapEditor
+    {
+        string GetFirstRoad();
+        string DrawRoad(CommonClass.MapEditor.DrawRoad dr);
+        string NextCross(CommonClass.MapEditor.NextCross dr);
+        string PreviousCross(CommonClass.MapEditor.PreviousCross dr);
+        string GetCatege(CommonClass.MapEditor.GetCatege gc);
+        string GetAbtractModels(CommonClass.MapEditor.GetAbtractModels gam);
+        string SaveObjInfo(CommonClass.MapEditor.SaveObjInfo soi);
+        string ShowOBJFile(CommonClass.MapEditor.ShowOBJFile sof);
+        string UpdateObjInfo(CommonClass.MapEditor.UpdateObjInfo uoi);
+        string DelObjInfo(CommonClass.MapEditor.DelObjInfo doi);
     }
 }

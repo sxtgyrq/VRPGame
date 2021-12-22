@@ -199,6 +199,21 @@ namespace CommonClass
         public List<int> meshPoints { get; set; }
         public List<int> basePoint { get; set; }
     }
+
+    public class ModelDataShow : CommandNotify
+    {
+        public string modelID { get; set; }
+        public double x { get; set; }
+        public double y { get; set; }
+        public double z { get; set; }
+        public string amodel { get; set; }
+        public double rotatey { get; set; }
+        public bool existed { get; set; }
+        public string imageBase64 { get; set; }
+        public string objText { get; set; }
+        public string mtlText { get; set; }
+    }
+
     public class SupportNotify : CommandNotify
     {
         public long Money { get; set; }

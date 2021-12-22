@@ -492,21 +492,17 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sxtgy\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\sxtgy\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Server\\Server.csproj",
+      "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\Server\\Server.csproj",
       "projectName": "Server",
-      "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Server\\Server.csproj",
+      "projectPath": "E:\\Project\\VRPGame\\VRPServer\\Server\\Server.csproj",
       "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-      "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Server\\obj\\",
+      "outputPath": "E:\\Project\\VRPGame\\VRPServer\\Server\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
         "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -522,11 +518,11 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CityRunServerRouteApp\\CityRunServerRouteApp.csproj": {
-              "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CityRunServerRouteApp\\CityRunServerRouteApp.csproj"
+            "E:\\Project\\VRPGame\\VRPServer\\CityRunServerRouteApp\\CityRunServerRouteApp.csproj": {
+              "projectPath": "E:\\Project\\VRPGame\\VRPServer\\CityRunServerRouteApp\\CityRunServerRouteApp.csproj"
             },
-            "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj": {
-              "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj"
+            "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj": {
+              "projectPath": "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj"
             }
           }
         }
@@ -565,14 +561,11 @@
         "assetTargetFallback": true,
         "warn": true,
         "frameworkReferences": {
-          "Microsoft.AspNetCore.App": {
-            "privateAssets": "none"
-          },
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

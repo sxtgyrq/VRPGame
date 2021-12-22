@@ -1,21 +1,18 @@
 {
   "format": 1,
   "restore": {
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\FileUpload\\FileUpload.csproj": {}
+    "E:\\Project\\VRPGame\\VRPServer\\FileUpload\\FileUpload.csproj": {}
   },
   "projects": {
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\FileUpload\\FileUpload.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\FileUpload\\FileUpload.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\FileUpload\\FileUpload.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\FileUpload\\FileUpload.csproj",
         "projectName": "FileUpload",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\FileUpload\\FileUpload.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\FileUpload\\FileUpload.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\FileUpload\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\FileUpload\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -57,7 +54,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

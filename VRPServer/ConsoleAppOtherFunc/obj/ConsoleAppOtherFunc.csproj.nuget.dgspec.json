@@ -1,21 +1,18 @@
 {
   "format": 1,
   "restore": {
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj": {}
+    "E:\\Project\\VRPGame\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj": {}
   },
   "projects": {
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\BitCoin\\BitCoin.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\BitCoin\\BitCoin.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj",
         "projectName": "BitCoin",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\BitCoin\\BitCoin.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\BitCoin\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -63,22 +60,19 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CommonClass\\CommonClass.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CommonClass\\CommonClass.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj",
         "projectName": "CommonClass",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CommonClass\\CommonClass.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CommonClass\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -94,8 +88,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj": {
-                "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj"
+              "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj": {
+                "projectPath": "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj"
               }
             }
           }
@@ -124,22 +118,19 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj",
         "projectName": "ConsoleAppOtherFunc",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\ConsoleAppOtherFunc\\ConsoleAppOtherFunc.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\ConsoleAppOtherFunc\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\ConsoleAppOtherFunc\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -155,11 +146,11 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\BitCoin\\BitCoin.csproj": {
-                "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\BitCoin\\BitCoin.csproj"
+              "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj": {
+                "projectPath": "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj"
               },
-              "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\DalOfAddress\\DalOfAddress.csproj": {
-                "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\DalOfAddress\\DalOfAddress.csproj"
+              "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj": {
+                "projectPath": "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj"
               }
             }
           }
@@ -198,29 +189,23 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\DalOfAddress\\DalOfAddress.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\DalOfAddress\\DalOfAddress.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj",
         "projectName": "DalOfAddress",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\DalOfAddress\\DalOfAddress.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\DalOfAddress\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -236,8 +221,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CommonClass\\CommonClass.csproj": {
-                "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\CommonClass\\CommonClass.csproj"
+              "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj": {
+                "projectPath": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj"
               }
             }
           }
@@ -272,22 +257,19 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj": {
+    "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj",
+        "projectUniqueName": "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj",
         "projectName": "Model",
-        "projectPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\Model.csproj",
+        "projectPath": "E:\\Project\\VRPGame\\VRPServer\\Model\\Model.csproj",
         "packagesPath": "C:\\Users\\sxtgy\\.nuget\\packages\\",
-        "outputPath": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\VRPWithZhangkun\\VRPServer\\Model\\obj\\",
+        "outputPath": "E:\\Project\\VRPGame\\VRPServer\\Model\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\sxtgy\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -329,7 +311,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }
