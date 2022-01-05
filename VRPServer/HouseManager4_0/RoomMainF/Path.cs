@@ -91,6 +91,11 @@ namespace HouseManager4_0.RoomMainF
                                     start = path[indexOfPath],
                                     end = path[indexOfPath + 1]
                                 };
+                                //path[path]
+                                if (thePointIsEnd(path[indexOfPath], path[indexOfPath + 1]))
+                                {
+
+                                }
                                 var wrong = new Node.direction()
                                 {
                                     right = false,
@@ -408,6 +413,54 @@ namespace HouseManager4_0.RoomMainF
                 };
                 return node;
             }
+        }
+
+        private bool thePointIsEnd(MapGo.nyrqPosition curren, MapGo.nyrqPosition next)
+        {
+            if (curren.roadCode == next.roadCode)
+            {
+                return false;
+            }
+            else
+            {
+                Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> result;
+                Program.dt.GetData(out result);
+                var x = (from item in result[curren.roadCode][curren.roadOrder].Cross1
+                         where item.RoadCode2 == next.roadCode && item.RoadOrder2 == next.roadOrder
+                         select item).ToList();
+                double percent;
+                if (x.Count == 1)
+                {
+                    percent = x[0].Percent1;
+                }
+                else
+                {
+                    x = (from item in result[curren.roadCode][curren.roadOrder].Cross2
+                         where item.RoadCode1 == next.roadCode && item.RoadOrder1 == next.roadOrder
+                         select item).ToList();
+                    percent = x[0].Percent2;
+                }
+
+                //   bool isEnd = true;
+                int countOfOut1 = 0;
+                {
+                    int roadOrder = curren.roadOrder;
+                    do
+                    {
+                        countOfOut1 += result[curren.roadCode][roadOrder].Cross1.Count(item => item.Percent1 + item.RoadOrder1 > percent + curren.roadOrder);
+                        countOfOut1 += result[curren.roadCode][roadOrder].Cross2.Count(item => item.Percent2 + item.RoadOrder2 > percent + curren.roadOrder);
+                    }
+                    while (result[curren.roadCode].ContainsKey(roadOrder));
+
+                }
+                {
+                    
+                }
+                //result[curren.roadCode]
+                //return false;
+            }
+            //nyrqPosition.
+            //  throw new NotImplementedException();
         }
 
         delegate string getRoadCodeParameter(SaveRoad.DictCross c);
