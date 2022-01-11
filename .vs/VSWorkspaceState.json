@@ -4,7 +4,8 @@
     "\\VRPServer",
     "\\VRPServer\\HouseManager4_0",
     "\\VRPServer\\HouseManager4_0\\RoomMainF",
-    "\\VRPServer\\Server"
+    "\\VRPServer\\Server",
+    "\\VRPServer\\WsOfWebClient"
   ],
   "PreviewInSolutionExplorer": false
 }
