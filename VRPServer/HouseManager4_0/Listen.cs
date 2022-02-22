@@ -15,12 +15,17 @@ namespace HouseManager4_0
         }
         private static async Task<string> DealWith(string notifyJson)
         {
-            Console.WriteLine($"notify receive:{notifyJson}");
-            File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
-            //File.AppendText("",)
-            // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
-            CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
-            return DealWithInterfaceAndObj(Program.rm, c, notifyJson);
+            try
+            {
+                CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
+                return DealWithInterfaceAndObj(Program.rm, c, notifyJson);
+            }
+            catch
+            {
+                Console.WriteLine($"notify receive:{notifyJson}");
+                File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
+                return "haveNothingToReturn";
+            }
         }
 
         static string DealWithInterfaceAndObj(interfaceOfHM.ListenInterface objI, CommonClass.Command c, string notifyJson)
@@ -202,11 +207,16 @@ namespace HouseManager4_0
                             outPut = objI.GetCatege(gc);
                             // Console.WriteLine(outPut);
                         }; break;
+                    case "GetModelType":
+                        {
+                            CommonClass.MapEditor.GetCatege gc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetCatege>(notifyJson);
+                            outPut = objI.GetModelType(gc);
+                        }; break;
                     case "GetAbtractModels":
                         {
                             CommonClass.MapEditor.GetAbtractModels gam = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetAbtractModels>(notifyJson);
                             outPut = objI.GetAbtractModels(gam);
-                            // Console.WriteLine(outPut);
+                            //Console.WriteLine(outPut);
                         }; break;
                     case "SaveObjInfo":
                         {
@@ -227,6 +237,87 @@ namespace HouseManager4_0
                         {
                             CommonClass.MapEditor.DelObjInfo doi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.DelObjInfo>(notifyJson);
                             outPut = objI.DelObjInfo(doi);
+                        }; break;
+                    case "CreateNew":
+                        {
+                            CommonClass.MapEditor.CreateNew cn = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.CreateNew>(notifyJson);
+                            outPut = objI.CreateNew(cn);
+                        }; break;
+                    case "GetModelDetail":
+                        {
+                            CommonClass.MapEditor.GetModelDetail cn = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetModelDetail>(notifyJson);
+                            outPut = objI.GetModelDetail(cn);
+                        }; break;
+                    case "UseModelObj":
+                        {
+                            CommonClass.MapEditor.UseModelObj cn = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.UseModelObj>(notifyJson);
+                            outPut = objI.UseModelObj(cn);
+                        }; break;
+                    case "LockModelObj":
+                        {
+                            CommonClass.MapEditor.UseModelObj cn = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.UseModelObj>(notifyJson);
+                            outPut = objI.LockModelObj(cn);
+                        }; break;
+                    case "ClearModelObj":
+                        {
+                            outPut = objI.ClearModelObj();
+                        }; break;
+                    case "GetUnLockedModel":
+                        {
+                            //GetUnLockedModel
+                            CommonClass.MapEditor.GetUnLockedModel gulm = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetUnLockedModel>(notifyJson);
+                            outPut = objI.GetUnLockedModel(gulm);
+                            // Console.WriteLine(outPut);
+                        }; break;
+                    case "GetModelByID":
+                        {
+                            CommonClass.ModelTranstraction.GetModelByID gmbid = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetModelByID>(notifyJson);
+                            outPut = objI.GetModelByID(gmbid);
+                        }; break;
+                    case "GetAllModelPosition":
+                        {
+                            CommonClass.ModelTranstraction.GetAllModelPosition gfm = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetAllModelPosition>(notifyJson);
+                            outPut = objI.GetAllModelPosition();
+                        }; break;
+                    case "GetTransctionModelDetail":
+                        {
+                            CommonClass.ModelTranstraction.GetTransctionModelDetail gtmd = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetTransctionModelDetail>(notifyJson);
+                            outPut = objI.GetTransctionModelDetail(gtmd);
+                        }; break;
+                    case "GetRoadNearby":
+                        {
+                            CommonClass.ModelTranstraction.GetRoadNearby grn = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetRoadNearby>(notifyJson);
+                            outPut = objI.GetRoadNearby(grn);
+                        }; break;
+                    case "TradeCoin":
+                        {
+                            CommonClass.ModelTranstraction.TradeCoin tc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.TradeCoin>(notifyJson);
+                            outPut = objI.TradeCoinF(tc);
+                        }; break;
+                    case "TradeIndex":
+                        {
+                            CommonClass.ModelTranstraction.TradeIndex tc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.TradeIndex>(notifyJson);
+                            outPut = objI.TradeIndex(tc);
+                        }; break;
+                    case "SetBackgroundScene":
+                        {
+                            CommonClass.MapEditor.SetBackgroundScene sbs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.SetBackgroundScene>(notifyJson);
+                            outPut = objI.SetBackgroundSceneF(sbs);
+                        }; break;
+                    case "GetBackgroundScene":
+                        {
+                            CommonClass.MapEditor.GetBackgroundScene gbs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetBackgroundScene>(notifyJson);
+                            outPut = objI.GetBackgroundSceneF(gbs);
+                        }; break;
+                    case "UseBackgroundScene":
+                        {
+                            CommonClass.MapEditor.UseBackgroundScene sbs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.UseBackgroundScene>(notifyJson);
+                            outPut = objI.UseBackgroundSceneF(sbs);
+                        }; break;
+                    case "CheckCarState":
+                        {
+                            CommonClass.CheckCarState ccs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CheckCarState>(notifyJson);
+                            outPut = objI.CheckCarStateF(ccs);
                         }; break;
                 }
             }

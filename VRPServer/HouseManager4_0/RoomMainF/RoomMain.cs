@@ -29,6 +29,7 @@ namespace HouseManager4_0.RoomMainF
             this.diamondOwnerE = new Engine_DiamondOwnerEngine(this);
             this.attachE = new Engine_Attach(this);
             this.magicE = new Engine_MagicEngine(this);
+            this.checkE = new Engine_Check(this);
             //  this.npcc = new NPCControle();
 
             this.NPCM = new Manager_NPC(this);
@@ -58,26 +59,29 @@ namespace HouseManager4_0.RoomMainF
             };
         }
 
-     
+        public string CheckCarStateF(CheckCarState ccs)
+        {
+            return this.checkE.CheckCarStateF(ccs); 
+        }
 
         public string updateView(View v)
         {
-            lock (this.PlayerLock) 
+            lock (this.PlayerLock)
             {
-                if (this._Players.ContainsKey(v.Key)) 
+                if (this._Players.ContainsKey(v.Key))
                 {
                     var player = this._Players[v.Key];
-                    if (player.playerType == RoleInGame.PlayerType.player) 
+                    if (player.playerType == RoleInGame.PlayerType.player)
                     {
                         ((Player)player).direciton = getComplex(v, ((Player)player).direciton);
                     }
                 }
             }
             return "";
-         //   throw new NotImplementedException();
+            //   throw new NotImplementedException();
         }
 
-       
+
 
         public class commandWithTime
         {
@@ -107,7 +111,7 @@ namespace HouseManager4_0.RoomMainF
                         returnToBossAddrPath = returnToBossAddrPath,
                         returnToSelfAddrPath = returnToSelfAddrPath
                     };
-                } 
+                }
                 internal static ReturningOjb ojbWithoutBoss(Node returnToSelfAddrPath)
                 {
                     return new ReturningOjb()

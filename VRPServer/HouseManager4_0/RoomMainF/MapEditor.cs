@@ -3,6 +3,7 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using OssModel = Model;
 
@@ -10,6 +11,45 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.MapEditor
     {
+        public string CalMD5(string _str)
+        {
+            //字符串转成字节数组
+            byte[] bytes = System.Text.Encoding.Default.GetBytes(_str);
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] jmbytes = md5.ComputeHash(bytes);
+
+            string str = BitConverter.ToString(jmbytes);
+            return str.Replace("-", "");
+        }
+        public string CreateNew(MapEditor.CreateNew cn)
+        {
+            string amID = CalMD5(cn.imageBase64 + cn.objText + cn.mtlText);
+            string modelType = cn.modelType;
+            string imageBase64 = cn.imageBase64;
+            string objText = cn.objText;
+            string mtlText = cn.mtlText;
+            string animation = cn.animation;
+            string author = cn.author;
+            int amState = cn.amState;
+            string modelName = cn.modelName;
+
+            CommonClass.databaseModel.detailmodel dm = new CommonClass.databaseModel.detailmodel()
+            {
+                amodel = amID,
+                modelID = cn.modelID,
+                rotatey = Convert.ToSingle(cn.rotatey),
+                x = Convert.ToSingle(cn.x),
+                y = Convert.ToSingle(cn.y),
+                z = Convert.ToSingle(cn.z),
+                dmState = 0,
+
+            };
+
+            DalOfAddress.AbtractModels.Insert(amID, modelType, imageBase64, objText, mtlText, animation, author, amState, modelName, dm);
+            return "";
+            // throw new NotImplementedException();
+        }
+
         public string DelObjInfo(MapEditor.DelObjInfo doi)
         {
             DalOfAddress.detailmodel.Delete(doi.modelID);
@@ -34,7 +74,7 @@ namespace HouseManager4_0.RoomMainF
 
         public string GetAbtractModels(MapEditor.GetAbtractModels gam)
         {
-            var item = DalOfAddress.AbtractModels.GetAbtractModelItem(gam.modelName);
+            var item = DalOfAddress.AbtractModels.GetAbtractModelItem(gam.amID);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(item);
             return json;
         }
@@ -135,6 +175,28 @@ namespace HouseManager4_0.RoomMainF
             while (road.ContainsKey(indexValue));
             throw new Exception("");
         }
+
+        public string GetModelDetail(MapEditor.GetModelDetail cn)
+        {
+            var obj = DalOfAddress.detailmodel.GetItem(cn.modelID);
+            if (obj == null)
+            {
+                return "";
+            }
+            else
+            {
+                return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            }
+        }
+
+        public string GetModelType(MapEditor.GetCatege gc)
+        {
+            var list = DalOfAddress.AbtractModels.GetModelType();
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+            return json;
+        }
+
+
 
         public string NextCross(MapEditor.NextCross nc)
         {
@@ -358,7 +420,7 @@ namespace HouseManager4_0.RoomMainF
         {
             CommonClass.databaseModel.detailmodel dm = new CommonClass.databaseModel.detailmodel()
             {
-                amodel = soi.amodel,
+                amodel = soi.amID,
                 modelID = soi.modelID,
                 rotatey = Convert.ToSingle(soi.rotatey),
                 x = Convert.ToSingle(soi.x),
@@ -394,6 +456,142 @@ namespace HouseManager4_0.RoomMainF
             };
             DalOfAddress.detailmodel.Update(dm);
             return "";
+        }
+
+        public string UseModelObj(MapEditor.UseModelObj cn)
+        {
+            DalOfAddress.detailmodel.UpdateUsed(cn);
+            return "";
+            // throw new NotImplementedException();
+        }
+        public string LockModelObj(MapEditor.UseModelObj cn)
+        {
+            DalOfAddress.detailmodel.UpdateLocked(cn);
+            return "";
+        }
+
+        public string ClearModelObj()
+        {
+            DalOfAddress.AbtractModels.ClearModelObj();
+            return "";
+        }
+
+        public string GetUnLockedModel(MapEditor.GetUnLockedModel gulm)
+        {
+            bool previous;
+            if (gulm.direction == "up")
+            {
+                previous = true;
+            }
+            else
+            {
+                previous = false;
+            }
+            bool HasValue;
+            var positon = DalOfAddress.detailmodel.GetPositionOfUnlockedObj(ref gulm.startIndex, previous, out HasValue);
+            if (HasValue)
+            {
+                MapEditor.GetUnLockedModelResult r = new MapEditor.GetUnLockedModelResult()
+                {
+                    x = positon[0],
+                    y = positon[1],
+                    z = positon[2],
+                    hasValue = HasValue,
+                    newStartIndex = gulm.startIndex,
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+            else
+            {
+                MapEditor.GetUnLockedModelResult r = new MapEditor.GetUnLockedModelResult()
+                {
+                    x = positon[0],
+                    y = positon[1],
+                    z = positon[2],
+                    hasValue = HasValue,
+                    newStartIndex = gulm.startIndex,
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+        }
+
+        public string SetBackgroundSceneF(MapEditor.SetBackgroundScene sbs)
+        {
+            DalOfAddress.backgroundjpg.Insert(sbs);
+            return "";
+            //
+        }
+
+        public string GetBackgroundSceneF(MapEditor.GetBackgroundScene gbs)
+        {
+            MapEditor.GetBackgroundScene.Result r = DalOfAddress.backgroundjpg.Get(gbs.crossID);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+        }
+
+        public string UseBackgroundSceneF(MapEditor.UseBackgroundScene sbs)
+        {
+            DalOfAddress.backgroundjpg.SetUse(sbs);
+            return "";
+        }
+    }
+
+    public partial class RoomMain : interfaceOfHM.ModelTranstractionI
+    {
+        public string GetAllModelPosition()
+        {
+            var result = DalOfAddress.detailmodel.GetAll();
+            return Newtonsoft.Json.JsonConvert.SerializeObject(result);
+        }
+
+        //public string GetFirstModelAddr(ModelTranstraction.GetFirstModelAddr gfm)
+        //{
+
+        //}
+
+        public string GetModelByID(ModelTranstraction.GetModelByID gmbid)
+        {
+            if (CommonClass.Format.IsModelID(gmbid.modelID))
+            {
+                var result = DalOfAddress.detailmodel.GetByID(gmbid.modelID);
+                if (result == null)
+                {
+                    return "";
+                }
+                else
+                {
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(result);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"{gmbid.modelID}不符合规则");
+                return "";
+            }
+        }
+        public string GetRoadNearby(ModelTranstraction.GetRoadNearby grn)
+        {
+
+            HouseManager4_0.OperateObj_Model op = new OperateObj_Model(this);
+            op.GetRoadNearby(grn);
+            return "";
+        }
+
+        public string GetTransctionModelDetail(ModelTranstraction.GetTransctionModelDetail gtmd)
+        {
+            var r = DalOfAddress.TradeRecord.GetAll(gtmd.bussinessAddr);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+        }
+
+        public string TradeCoinF(ModelTranstraction.TradeCoin tc)
+        {
+            DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin);
+            return "";
+        }
+
+        public string TradeIndex(ModelTranstraction.TradeIndex tc)
+        {
+            var Index = DalOfAddress.TradeRecord.GetCount(tc.addrBussiness, tc.addrFrom);
+            return Index.ToString();
         }
     }
 }

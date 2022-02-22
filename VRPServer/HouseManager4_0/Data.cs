@@ -133,9 +133,9 @@ namespace HouseManager4_0
                 else
                 {
                     // var result = new List<OssModel.MapGo.nyrqPosition>();
-                    var endIndex = this.fpDirect[end];
-                    Console.WriteLine($"{endIndex}");
-                    var startIndex = start;
+                    var endIndex = this.fpDirect[end];//目标地点
+                    //Console.WriteLine($"{endIndex}");
+                    var startIndex = start;//起始地点
                     var listResult = new List<int>();
                     int direct = endIndex;
                     int calCount = 0;
@@ -310,6 +310,13 @@ namespace HouseManager4_0
                 // throw new NotImplementedException();
             }
         }
+
+        internal void LoadCrossBackground()
+        {
+
+            //  throw new NotImplementedException();
+        }
+
         /// <summary>
         /// all road infomation
         /// </summary>
@@ -364,6 +371,28 @@ namespace HouseManager4_0
         internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder)
         {
             return this._road[roadCode][roadOrder];
+        }
+        internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder, out bool existed)
+        {
+            if (this._road.ContainsKey(roadCode))
+            {
+                if (this._road[roadCode].ContainsKey(roadOrder))
+                {
+                    existed = true;
+                    return this._road[roadCode][roadOrder];
+                }
+                else
+                {
+                    existed = false;
+                    return null;
+                }
+            }
+            else
+            {
+                existed = false;
+                return null;
+            }
+
         }
         static List<OssModel.FastonPosition> GetAllFp(string fpDictionary)
         {
@@ -526,7 +555,37 @@ namespace HouseManager4_0
             }
         }
 
-
+        internal List<string> GetRoadNearby(double x, double z)
+        {
+            var lon = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLon(x);
+            var lat = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLatWithAccuracy(-z, 0.0000001);
+            // Console.WriteLine($"lon:{lon},lat:{lat}");
+            List<string> roads = new List<string>();
+            Dictionary<string, double> lengthOfRoad = new Dictionary<string, double>();
+            foreach (var road in this._road)
+            {
+                double minLength = double.MaxValue;
+                var roadsValue = road.Value;
+                for (int i = 0; i < roadsValue.Count; i++)
+                {
+                    var lonMid = (roadsValue[i].startLongitude + roadsValue[i].endLongitude) / 2;
+                    var latMid = (roadsValue[i].startLatitude + roadsValue[i].endLatitude) / 2;
+                    var l = Math.Sqrt((lon - lonMid) * (lon - lonMid) + (lat - latMid) * (lat - latMid));
+                    if (l < minLength)
+                    {
+                        minLength = l;
+                    }
+                }
+                lengthOfRoad.Add(road.Key, minLength);
+            }
+            var closeRoads = lengthOfRoad.ToArray().OrderBy(item => item.Value).ToList();
+            var length = Math.Min(15, closeRoads.Count);
+            for (int i = 0; i < length; i++)
+            {
+                roads.Add(closeRoads[i].Key);
+            }
+            return roads;
+        }
 
         private static byte[] GetDataOfPath(int dataIndex, int startPositionInDB, int length)
         {
@@ -1141,7 +1200,7 @@ namespace HouseManager4_0
     {
 
 
-        public Dictionary<string, CommonClass.databaseModel.abtractmodels> material { get; set; }
+        public Dictionary<string, CommonClass.databaseModel.abtractmodelsPassData> material { get; set; }
 
         public class detailmodel : CommonClass.databaseModel.detailmodel
         {
@@ -1152,13 +1211,14 @@ namespace HouseManager4_0
         // List<aModel> material { get; set; }
         internal void LoadModel()
         {
-            this.material = new Dictionary<string, CommonClass.databaseModel.abtractmodels>();
+            this.material = new Dictionary<string, CommonClass.databaseModel.abtractmodelsPassData>();
             //throw new NotImplementedException();
-            var list = DalOfAddress.AbtractModels.GetCatege();
+            var list = DalOfAddress.AbtractModels.GetCategeAm1();
             for (int i = 0; i < list.Count; i += 2)
             {
-                var amInfomation = DalOfAddress.AbtractModels.GetAbtractModelItem(list[i].Trim());
-                this.material.Add(list[i].Trim(), amInfomation);
+                var amInfomationData = DalOfAddress.AbtractModels.GetAbtractModelItem(list[i].Trim());
+                //  var amInfomation= DalOfAddress.AbtractModels.GetAbtractModelItem(amInfomationData);
+                this.material.Add(list[i].Trim(), amInfomationData);
             }
 
             this.models = new List<detailmodel>();

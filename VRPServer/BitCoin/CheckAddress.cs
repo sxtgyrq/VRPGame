@@ -9,7 +9,11 @@ namespace BitCoin
     {
         public static bool CheckAddressIsUseful(string address)
         {
-            var regx = new Regex("^[1][a-km-zA-HJ-NP-Z0-9]{26,33}$");
+            if (address == null)
+            {
+                return false;
+            }
+            var regx = new Regex("^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$");
             if (regx.Match(address).Success)
             {
                 return true;

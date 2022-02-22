@@ -10,74 +10,75 @@ namespace HouseManager
     {
         internal async Task<string> SetAbility(SetAbility sa)
         {
-            if (string.IsNullOrEmpty(sa.car))
-            {
-                return "wrong car";
-            }
-            else if (!(sa.car == "carA" || sa.car == "carB" || sa.car == "carC" || sa.car == "carD" || sa.car == "carE"))
-            {
-                return $"wrong car:{sa.car}";
-            }
-            else if (string.IsNullOrEmpty(sa.pType))
-            {
-                return $"wrong pType:{sa.pType}";
-            }
-            else if (!(sa.pType == "mile" || sa.pType == "business" || sa.pType == "volume" || sa.pType == "speed"))
-            {
-                return $"wrong pType:{sa.pType}"; ;
-            }
-            else
-            {
+            return "";
+            //            if (string.IsNullOrEmpty(sa.car))
+            //            {
+            //                return "wrong car";
+            //            }
+            //            else if (!(sa.car == "carA" || sa.car == "carB" || sa.car == "carC" || sa.car == "carD" || sa.car == "carE"))
+            //            {
+            //                return $"wrong car:{sa.car}";
+            //            }
+            //            else if (string.IsNullOrEmpty(sa.pType))
+            //            {
+            //                return $"wrong pType:{sa.pType}";
+            //            }
+            //            else if (!(sa.pType == "mile" || sa.pType == "business" || sa.pType == "volume" || sa.pType == "speed"))
+            //            {
+            //                return $"wrong pType:{sa.pType}"; ;
+            //            }
+            //            else
+            //            {
 
-                List<string> notifyMsg = new List<string>();
-                lock (this.PlayerLock)
-                {
-                    if (this._Players.ContainsKey(sa.Key))
-                    {
-                        var carIndex = getCarIndex(sa.car);
-                        var player = this._Players[sa.Key];
-                        var car = player.getCar(carIndex);
-                        if (player.Bust)
-                        {
-                            WebNotify(player, "您已破产");
-                            return $"{player.Key} go bust!";
-#warning 这里要提示前台，已经进行破产清算了。
-                        }
-                        else
-                        {
-                                switch (sa.pType)
-                                {
-                                    case "mile":
-                                    case "business":
-                                    case "volume":
-                                    case "speed":
-                                        {
-                                            if (player.PromoteDiamondCount[sa.pType] > 0)
-                                            {
-                                                car.ability.AbilityAdd(sa.pType, player, car, ref notifyMsg);
-                                                player.PromoteDiamondCount[sa.pType]--;
-                                                SendPromoteCountOfPlayer(sa.pType, player, ref notifyMsg);
-                                            }
-                                        }; break;
-                                }
-                        }
-                    }
-                    else 
-                    {
-                         return $"not has player-{sa.Key}!";
-                    }
+            //                List<string> notifyMsg = new List<string>();
+            //                lock (this.PlayerLock)
+            //                {
+            //                    if (this._Players.ContainsKey(sa.Key))
+            //                    {
+            //                        var carIndex = getCarIndex(sa.car);
+            //                        var player = this._Players[sa.Key];
+            //                        var car = player.getCar(carIndex);
+            //                        if (player.Bust)
+            //                        {
+            //                            WebNotify(player, "您已破产");
+            //                            return $"{player.Key} go bust!";
+            //#warning 这里要提示前台，已经进行破产清算了。
+            //                        }
+            //                        else
+            //                        {
+            //                                switch (sa.pType)
+            //                                {
+            //                                    case "mile":
+            //                                    case "business":
+            //                                    case "volume":
+            //                                    case "speed":
+            //                                        {
+            //                                            if (player.PromoteDiamondCount[sa.pType] > 0)
+            //                                            {
+            //                                                car.ability.AbilityAdd(sa.pType, player, car, ref notifyMsg);
+            //                                                player.PromoteDiamondCount[sa.pType]--;
+            //                                                SendPromoteCountOfPlayer(sa.pType, player, ref notifyMsg);
+            //                                            }
+            //                                        }; break;
+            //                                }
+            //                        }
+            //                    }
+            //                    else 
+            //                    {
+            //                         return $"not has player-{sa.Key}!";
+            //                    }
 
-                }
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
+            //                }
+            //                for (var i = 0; i < notifyMsg.Count; i += 2)
+            //                {
+            //                    var url = notifyMsg[i];
+            //                    var sendMsg = notifyMsg[i + 1];
+            //                    Console.WriteLine($"url:{url}");
 
-                    await Startup.sendMsg(url, sendMsg);
-                }
-                return "ok";
-            }
+            //                    await Startup.sendMsg(url, sendMsg);
+            //                }
+            //                return "ok";
+            //            }
         }
 
         //  enum CostOrSum { Cost, Sum }

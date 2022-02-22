@@ -6,6 +6,26 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title></title>
     <style type="text/css">
+
+        @keyframes contanerChange {
+            from {
+                width: 100%;
+                height: 100%;
+                top: 0px;
+                left: 0px;
+                border: solid red 0px;
+            }
+
+            to {
+                width: 300px;
+                height: 300px;
+                position: absolute;
+                top: 20px;
+                left: calc(50% - 151px);
+                border: solid red 1px;
+            }
+        }
+
         .container {
             width: 100%;
             height: 100%;
@@ -15,12 +35,42 @@
             margin-top: 0px;
         }
 
+            .container.small {
+                animation: contanerChange 4s forwards;
+                animation-fill-mode: forwards;
+            }
+
+            .container.max {
+                /* animation-name: example;
+                animation-duration: 4s;*/
+            }
+
+        .container_Editor {
+            width: 300px;
+            height: auto;
+            position: absolute;
+            top: 320px;
+            left: calc(50% - 151px);
+            margin-top: 0px;
+            border: solid red 1px;
+        }
+
         .renderDom {
             position: absolute;
             left: 0px;
             right: 0px;
             width: 100%;
             height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .renderDom_Trans {
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            width: 300px;
+            height: 300px;
             overflow: hidden;
             z-index: 2;
         }
@@ -34,6 +84,22 @@
             right: 0px;
             width: 100%;
             height: 100%;
+            /*cursor: pointer;*/
+            /*labelRenderer .domElement.style.position = 'absolute';
+            labelRenderer .domElement.style.top = 0;
+            labelRenderer .domElement.style.overflow = 'hidden';
+            labelRenderer .domElement.style.z = 'hidden';*/
+        }
+
+        .labelRenderer_Trans {
+            position: absolute;
+            top: 0px;
+            overflow: hidden;
+            z-index: 3;
+            left: 0px;
+            right: 0px;
+            width: 300px;
+            height: 300px;
             /*cursor: pointer;*/
             /*labelRenderer .domElement.style.position = 'absolute';
             labelRenderer .domElement.style.top = 0;
@@ -191,6 +257,21 @@
             padding: 5px;
             border-radius: 10px;
         }
+
+        #rootContainer {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+
+            #rootContainer.lookForBuildings {
+                overflow: scroll;
+                overflow-x: hidden;
+                overflow-y: scroll;
+            }
     </style>
     <script src="ThreeJs/three.js"></script>
     <script src="fire.js"></script>
@@ -214,7 +295,8 @@
     <link href="css/driver.css" rel="stylesheet" />
     <script src="Scripts/jquery-3.5.1.js"></script>
     <script src="Scripts/notify.min.js"></script>
-
+    <script src="transactionBussiness.js"></script>
+    <script src="Scripts/qrcode.js"></script>
 </head>
 <body style="width:100%;height:100%;">
     <audio id="backGroudMusick">
@@ -222,8 +304,7 @@
         <source src="bgm/changshoucunwai.mp3" type="audio/mpeg" />
     </audio>
 
-    <div id="rootContainer" style="width: 100%; height: 100%; overflow: hidden;position:absolute;left:0px;top:0px;">
-
+    <div id="rootContainer">
     </div>
     <script src="SocialResponsibility.js"></script>
     <script src="theLargestHolderKeyChanged.js"></script>

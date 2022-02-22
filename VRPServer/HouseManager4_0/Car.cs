@@ -95,6 +95,10 @@ namespace HouseManager4_0
         /// </summary>
         public int targetFpIndex { get; set; }
 
+
+        /// <summary>
+        ///  控制法术的被施对象的Key
+        /// </summary>
         public string isControllingKey { get { return this._isControllingKey; } }
         string _isControllingKey = "";
         /// <summary>
@@ -168,10 +172,10 @@ namespace HouseManager4_0
                         {
                             player.lostPrepareMagicChanged(player, ref notifyMsg);
                         }; break;
-                    case Manager_Driver.ConfuseManger.ControlAttackType.Ambush: 
+                    case Manager_Driver.ConfuseManger.ControlAttackType.Ambush:
                         {
                             player.ambushPrepareMagicChanged(player, ref notifyMsg);
-                        };break;
+                        }; break;
                 }
             }
             //throw new NotImplementedException();

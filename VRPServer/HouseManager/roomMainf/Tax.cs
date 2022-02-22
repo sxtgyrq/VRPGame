@@ -116,256 +116,258 @@ namespace HouseManager
 
         internal async Task<string> updateTax(SetTax st)
         {
-            if (string.IsNullOrEmpty(st.car))
-            {
-                return "";
-            }
-            else if (!(st.car == "carA" || st.car == "carB" || st.car == "carC" || st.car == "carD" || st.car == "carE"))
-            {
-                return "";
-            }
-            else
-            {
-                var carIndex = getCarIndex(st.car);
-                List<string> notifyMsg = new List<string>();
-                lock (this.PlayerLock)
-                {
-                    if (this._Players.ContainsKey(st.Key))
-                    {
-                        if (this._Players[st.Key].Bust) { }
-                        else if (this._Players[st.Key].TaxContainsKey(st.target))
-                        {
-                            var player = this._Players[st.Key];
-                            var car = this._Players[st.Key].getCar(carIndex);
-                            switch (car.state)
-                            {
-                                case CarState.waitAtBaseStation:
-                                    {
-                                        if (car.purpose == Purpose.@null)
-                                        {
-                                            if (car.ability.leftBusiness > 0)
-                                            {
-                                                MileResultReason reason;
-                                                DoCollectTaxF(player, car, st, ref notifyMsg, out reason);
-                                                if (reason == MileResultReason.Abundant)
-                                                {
-                                                    printState(player, car, "已经在收税的路上了");
-                                                }
-                                                else
-                                                {
-                                                    printState(player, car, "没有能启动税收！");
-                                                }
-                                            }
-                                            else
-                                            {
-                                                throw new Exception("从基地里出来，leftBusiness 就不为0！");
-                                            }
+            return "";
+            //if (string.IsNullOrEmpty(st.car))
+            //{
+            //    return "";
+            //}
+            //else if (!(st.car == "carA" || st.car == "carB" || st.car == "carC" || st.car == "carD" || st.car == "carE"))
+            //{
+            //    return "";
+            //}
+            //else
+            //{
+            //    var carIndex = getCarIndex(st.car);
+            //    List<string> notifyMsg = new List<string>();
+            //    lock (this.PlayerLock)
+            //    {
+            //        if (this._Players.ContainsKey(st.Key))
+            //        {
+            //            if (this._Players[st.Key].Bust) { }
+            //            else if (this._Players[st.Key].TaxContainsKey(st.target))
+            //            {
+            //                var player = this._Players[st.Key];
+            //                var car = this._Players[st.Key].getCar(carIndex);
+            //                switch (car.state)
+            //                {
+            //                    case CarState.waitAtBaseStation:
+            //                        {
+            //                            if (car.purpose == Purpose.@null)
+            //                            {
+            //                                if (car.ability.leftBusiness > 0)
+            //                                {
+            //                                    MileResultReason reason;
+            //                                    DoCollectTaxF(player, car, st, ref notifyMsg, out reason);
+            //                                    if (reason == MileResultReason.Abundant)
+            //                                    {
+            //                                        printState(player, car, "已经在收税的路上了");
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        printState(player, car, "没有能启动税收！");
+            //                                    }
+            //                                }
+            //                                else
+            //                                {
+            //                                    throw new Exception("从基地里出来，leftBusiness 就不为0！");
+            //                                }
 
-                                        }
-                                    }; break;
-                                case CarState.waitOnRoad:
-                                    {
-                                        if (car.purpose == Purpose.@null || car.purpose == Purpose.tax)
-                                        {
-                                            if (car.ability.leftBusiness > 0)
-                                            {
-                                                MileResultReason reason;
-                                                DoCollectTaxF(player, car, st, ref notifyMsg, out reason);
-                                                if (reason == MileResultReason.Abundant)
-                                                {
-                                                    printState(player, car, "已经在税收的路上了");
-                                                }
-                                                else
-                                                {
-                                                    printState(player, car, $"里程问题，被安排回去");
-                                                    getTaxFailedThenReturn(car, player, st, ref notifyMsg);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                printState(player, car, $"业务已满，被安排回去");
-                                                getTaxFailedThenReturn(car, player, st, ref notifyMsg);
-                                            }
-                                        }
-                                    }; break;
-                                case CarState.waitForTaxOrAttack:
-                                    {
-                                        if (car.purpose == Purpose.tax)
-                                        {
-                                            if (car.ability.leftBusiness > 0)
-                                            {
-                                                MileResultReason reason;
-                                                DoCollectTaxF(player, car, st, ref notifyMsg, out reason);
-                                                if (reason == MileResultReason.Abundant)
-                                                {
-                                                    printState(player, car, "已经在税收的路上了");
-                                                }
-                                                else
-                                                {
-                                                    printState(player, car, $"里程问题，被安排回去");
-                                                    getTaxFailedThenReturn(car, player, st, ref notifyMsg);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                printState(player, car, $"业务已满，被安排回去");
-                                                getTaxFailedThenReturn(car, player, st, ref notifyMsg);
-                                            }
-                                        }
-                                    }; break;
+            //                            }
+            //                        }; break;
+            //                    case CarState.waitOnRoad:
+            //                        {
+            //                            if (car.purpose == Purpose.@null || car.purpose == Purpose.tax)
+            //                            {
+            //                                if (car.ability.leftBusiness > 0)
+            //                                {
+            //                                    MileResultReason reason;
+            //                                    DoCollectTaxF(player, car, st, ref notifyMsg, out reason);
+            //                                    if (reason == MileResultReason.Abundant)
+            //                                    {
+            //                                        printState(player, car, "已经在税收的路上了");
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        printState(player, car, $"里程问题，被安排回去");
+            //                                        getTaxFailedThenReturn(car, player, st, ref notifyMsg);
+            //                                    }
+            //                                }
+            //                                else
+            //                                {
+            //                                    printState(player, car, $"业务已满，被安排回去");
+            //                                    getTaxFailedThenReturn(car, player, st, ref notifyMsg);
+            //                                }
+            //                            }
+            //                        }; break;
+            //                    case CarState.waitForTaxOrAttack:
+            //                        {
+            //                            if (car.purpose == Purpose.tax)
+            //                            {
+            //                                if (car.ability.leftBusiness > 0)
+            //                                {
+            //                                    MileResultReason reason;
+            //                                    DoCollectTaxF(player, car, st, ref notifyMsg, out reason);
+            //                                    if (reason == MileResultReason.Abundant)
+            //                                    {
+            //                                        printState(player, car, "已经在税收的路上了");
+            //                                    }
+            //                                    else
+            //                                    {
+            //                                        printState(player, car, $"里程问题，被安排回去");
+            //                                        getTaxFailedThenReturn(car, player, st, ref notifyMsg);
+            //                                    }
+            //                                }
+            //                                else
+            //                                {
+            //                                    printState(player, car, $"业务已满，被安排回去");
+            //                                    getTaxFailedThenReturn(car, player, st, ref notifyMsg);
+            //                                }
+            //                            }
+            //                        }; break;
 
-                            }
-                        }
-                        {
-                            //  case "findWork":
-                            {
+            //                }
+            //            }
+            //            {
+            //                //  case "findWork":
+            //                {
 
 
 
-                            };
-                        }
-                    }
-                }
+            //                };
+            //            }
+            //        }
+            //    }
 
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
+            //    for (var i = 0; i < notifyMsg.Count; i += 2)
+            //    {
+            //        var url = notifyMsg[i];
+            //        var sendMsg = notifyMsg[i + 1];
+            //        Console.WriteLine($"url:{url}");
 
-                    await Startup.sendMsg(url, sendMsg);
-                }
-                return "";
-            }
+            //        await Startup.sendMsg(url, sendMsg);
+            //    }
+            //    return "";
+            //}
         }
 
         private void getTaxFailedThenReturn(Car car, Player player, SetTax st, ref List<string> notifyMsg)
         {
-            if (car.state == CarState.waitForTaxOrAttack || car.state == CarState.waitOnRoad)
-            {
-                //Console.Write($"现在剩余业务为{car.ability.leftBusiness}，总业务为{car.ability.Business}");
-                //Console.Write($"你装不下了！");
-                Console.Write($"该汽车被安排回去了");
-                var from = getFromWhenDoCollectTax(this._Players[st.Key], car);
-                int startT = 1;
-                var returnPath_Record = this._Players[st.Key].returningRecord[st.car];
-                Thread th = new Thread(() => setReturn(startT, new commandWithTime.returnning()
-                {
-                    c = "returnning",
-                    key = st.Key,
-                    car = st.car,
-                    returnPath = returnPath_Record,
-                    target = from,
-                    changeType = "tax-return",
-                }));
-                th.Start();
+            //if (car.state == CarState.waitForTaxOrAttack || car.state == CarState.waitOnRoad)
+            //{
+            //    //Console.Write($"现在剩余业务为{car.ability.leftBusiness}，总业务为{car.ability.Business}");
+            //    //Console.Write($"你装不下了！");
+            //    Console.Write($"该汽车被安排回去了");
+            //    var from = getFromWhenDoCollectTax(this._Players[st.Key], car);
+            //    int startT = 1;
+            //    var returnPath_Record = this._Players[st.Key].returningRecord[st.car];
+            //    Thread th = new Thread(() => setReturn(startT, new commandWithTime.returnning()
+            //    {
+            //        c = "returnning",
+            //        key = st.Key,
+            //        car = st.car,
+            //        returnPath = returnPath_Record,
+            //        target = from,
+            //        changeType = "tax-return",
+            //    }));
+            //    th.Start();
 
-                // car.changeState++;//更改状态  
+            //    // car.changeState++;//更改状态  
 
-            }
+            //}
         }
 
 
         void DoCollectTaxF(Player player, Car car, SetTax st, ref List<string> notifyMsg, out MileResultReason reason)
         {
-            var from = this.getFromWhenDoCollectTax(player, car);
-            var to = st.target;
-            var fp1 = Program.dt.GetFpByIndex(from);
-            var fp2 = Program.dt.GetFpByIndex(to);
-            var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
+            throw new Exception("");
+            //            var from = this.getFromWhenDoCollectTax(player, car);
+            //            var to = st.target;
+            //            var fp1 = Program.dt.GetFpByIndex(from);
+            //            var fp2 = Program.dt.GetFpByIndex(to);
+            //            var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
 
-            // var goPath = Program.dt.GetAFromB(from, to);
-            var goPath = this.GetAFromB(from, to, player, ref notifyMsg);
-            // var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-            var returnPath = this.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
+            //            // var goPath = Program.dt.GetAFromB(from, to);
+            //            var goPath = this.GetAFromB(from, to, player, ref notifyMsg);
+            //            // var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
+            //            var returnPath = this.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
 
-            var goMile = GetMile(goPath);
-            var returnMile = GetMile(returnPath);
+            //            var goMile = GetMile(goPath);
+            //            var returnMile = GetMile(returnPath);
 
-            if (car.ability.leftMile >= goMile + returnMile)
-            {
-                car.targetFpIndex = to;
-                Console.WriteLine($"{car.name}的目标设置成了{Program.dt.GetFpByIndex(to).FastenPositionName}");
+            //            if (car.ability.leftMile >= goMile + returnMile)
+            //            {
+            //                car.targetFpIndex = to;
+            //                Console.WriteLine($"{car.name}的目标设置成了{Program.dt.GetFpByIndex(to).FastenPositionName}");
 
-                car.setPurpose(player, ref notifyMsg, Purpose.tax);
-                //car.purpose = Purpose.tax;
-                var speed = car.ability.Speed;
-                int startT = 0;
-                List<Data.PathResult> result;
-                if (car.state == CarState.waitAtBaseStation)
-                    result = getStartPositon(fp1, st.car, ref startT);
-                else if (car.state == CarState.waitForTaxOrAttack)
-                    result = new List<Data.PathResult>();
-                else if (car.state == CarState.waitOnRoad && car.ability.diamondInCar == "" && (car.purpose == Purpose.@null || car.purpose == Purpose.tax))
-                {
-                    result = new List<Data.PathResult>();
-                }
-                else
-                {
-                    throw new Exception($"未知情况！{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
-                }
-                car.setState(player, ref notifyMsg, CarState.roadForTax);
-                //car.state = CarState.roadForTax;
-                Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
-                result.RemoveAll(item => item.t0 == item.t1);
+            //                car.setPurpose(player, ref notifyMsg, Purpose.tax);
+            //                //car.purpose = Purpose.tax;
+            //                var speed = car.ability.Speed;
+            //                int startT = 0;
+            //                List<Data.PathResult> result;
+            //                if (car.state == CarState.waitAtBaseStation)
+            //                    result = getStartPositon(fp1, st.car, ref startT);
+            //                else if (car.state == CarState.waitForTaxOrAttack)
+            //                    result = new List<Data.PathResult>();
+            //                else if (car.state == CarState.waitOnRoad && car.ability.diamondInCar == "" && (car.purpose == Purpose.@null || car.purpose == Purpose.tax))
+            //                {
+            //                    result = new List<Data.PathResult>();
+            //                }
+            //                else
+            //                {
+            //                    throw new Exception($"未知情况！{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
+            //                }
+            //                car.setState(player, ref notifyMsg, CarState.roadForTax);
+            //                //car.state = CarState.roadForTax;
+            //                Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
+            //                result.RemoveAll(item => item.t0 == item.t1);
 
-                var animateData = new AnimateData()
-                {
-                    animateData = result,
-                    recordTime = DateTime.Now
-                };
-                car.setAnimateData(player, ref notifyMsg, animateData);
+            //                var animateData = new AnimateData()
+            //                {
+            //                    animateData = result,
+            //                    recordTime = DateTime.Now
+            //                };
+            //                car.setAnimateData(player, ref notifyMsg, animateData);
 
-                //car.animateData = new AnimateData()
-                //{
-                //    animateData = result,
-                //    recordTime = DateTime.Now
-                //};
-                Thread th = new Thread(() => setArrive(startT, new commandWithTime.placeArriving()
-                {
-                    c = "placeArriving",
-                    key = st.Key,
-                    car = st.car,
-                    returnPath = returnPath,
-                    target = to,
-                    costMile = goMile
-                }));
-                th.Start();
+            //                //car.animateData = new AnimateData()
+            //                //{
+            //                //    animateData = result,
+            //                //    recordTime = DateTime.Now
+            //                //};
+            //                Thread th = new Thread(() => setArrive(startT, new commandWithTime.placeArriving()
+            //                {
+            //                    c = "placeArriving",
+            //                    key = st.Key,
+            //                    car = st.car,
+            //                    returnPath = returnPath,
+            //                    target = to,
+            //                    costMile = goMile
+            //                }));
+            //                th.Start();
 
 
-                reason = MileResultReason.Abundant;
+            //                reason = MileResultReason.Abundant;
 
-                //   car.changeState++;//更改状态  
-                car.setPurpose(player, ref notifyMsg, Purpose.tax);
-                //car.purpose = Purpose.tax;
+            //                //   car.changeState++;//更改状态  
+            //                car.setPurpose(player, ref notifyMsg, Purpose.tax);
+            //                //car.purpose = Purpose.tax;
 
-                //getAllCarInfomations(st.Key, ref notifyMsg);
-            }
+            //                //getAllCarInfomations(st.Key, ref notifyMsg);
+            //            }
 
-            else if (car.ability.leftMile >= goMile)
-            {
-                //当攻击失败，必须返回
-                Console.Write($"去程{goMile}，回程{returnMile}");
-                Console.Write($"你去了回不来");
+            //            else if (car.ability.leftMile >= goMile)
+            //            {
+            //                //当攻击失败，必须返回
+            //                Console.Write($"去程{goMile}，回程{returnMile}");
+            //                Console.Write($"你去了回不来");
 
-#warning 这里要在前台进行提示 
-                reason = MileResultReason.CanNotReturn;
-            }
-            else
-            {
-#warning 这里要在web前台进行提示
-                //当攻击失败，必须返回
-                Console.Write($"去程{goMile}，回程{returnMile}");
-                Console.Write($"你去不了");
-                reason = MileResultReason.CanNotReach;
-            }
+            //#warning 这里要在前台进行提示 
+            //                reason = MileResultReason.CanNotReturn;
+            //            }
+            //            else
+            //            {
+            //#warning 这里要在web前台进行提示
+            //                //当攻击失败，必须返回
+            //                Console.Write($"去程{goMile}，回程{returnMile}");
+            //                Console.Write($"你去不了");
+            //                reason = MileResultReason.CanNotReach;
+            //            }
         }
         private void arriveThenGetTax(ref Player player, ref Car car, commandWithTime.placeArriving pa, ref List<string> notifyMsg)
         {
             if (car.targetFpIndex == -1)
             {
                 throw new Exception("这个地点应该是执行税收和即将要等待的地点！");
-            } 
+            }
             if (player.GetTaxByPositionIndex(car.targetFpIndex) > 0)
             {
                 //确定税收的值
@@ -404,9 +406,9 @@ namespace HouseManager
             }
             else
             {
-                var tax = 0;  
+                var tax = 0;
                 printState(player, car, $"{Program.dt.GetFpByIndex(car.targetFpIndex).FastenPositionName}收取{tax}");
-                 
+
                 car.ability.setCostMiles(car.ability.costMiles + pa.costMile, player, car, ref notifyMsg);
 
                 //AbilityChanged(player, car, ref notifyMsg, "mile");

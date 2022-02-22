@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace MarketConsoleApp
 {
@@ -9,13 +10,25 @@ namespace MarketConsoleApp
         static Market m = null;
         static void Main(string[] args)
         {
-            Program.m = new Market();
-            m.loadCount();
-            m.loadSevers();
-            // m.loadCountInMarket();
-            m.tellMarketIsOn();
-            m.sendInteview();
-            m.waitToBeTelled();
+
+            //TradeInfo tradeInfo = new TradeInfo("1D6cunZ4xRqKt8ysyjyqUNcYTyLFV1oL2n");
+            //// await tradeInfo.GetTradeInfomationFromChain();
+            //Task.Run(() => tradeInfo.GetTradeInfomationFromChain());
+            //TradeInfo info = new TradeInfo();
+            //var s =Task.Run<string>(()=>  info.GetTradeInfomation("1D6cunZ4xRqKt8ysyjyqUNcYTyLFV1oL2n")).Result;
+            //Console.WriteLine(s);
+            if (true)
+            {
+                Program.m = new Market();
+                m.loadCount();
+                m.loadSevers();
+                // m.loadCountInMarket();
+                m.tellMarketIsOn();
+                m.sendInteview();
+                m.GetDetailOfPayer();
+                m.waitToBeTelled();
+                //m.
+            }
             while (true)
             {
                 if (Console.ReadLine().Trim().ToUpper() == "EXIT")

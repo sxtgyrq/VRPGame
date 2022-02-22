@@ -55,7 +55,47 @@
       "ProjectGuid": "9b4c1214-0d81-4917-bf1e-004334a5c1b4",
       "DisplayName": "MateWsAndHouse",
       "ColorIndex": 9
+    },
+    "b1c0e10a-6f0e-47db-bf08-c6776847a338": {
+      "ProjectGuid": "b1c0e10a-6f0e-47db-bf08-c6776847a338",
+      "DisplayName": "ShowDemo",
+      "ColorIndex": 10
+    },
+    "82cb3aa1-ccf7-4679-b4ce-5c2f193a7d34": {
+      "ProjectGuid": "82cb3aa1-ccf7-4679-b4ce-5c2f193a7d34",
+      "DisplayName": "ConsoleAppOtherFunc",
+      "ColorIndex": 11
+    },
+    "f3a15926-6864-48dc-9748-7f42b256207d": {
+      "ProjectGuid": "f3a15926-6864-48dc-9748-7f42b256207d",
+      "DisplayName": "AppDoProgramFunction",
+      "ColorIndex": 12
+    },
+    "9bec2b5b-897a-49ed-8115-6f90244c9803": {
+      "ProjectGuid": "9bec2b5b-897a-49ed-8115-6f90244c9803",
+      "DisplayName": "BitCoin",
+      "ColorIndex": 13
+    },
+    "58b48ce4-a5f7-474d-b7bb-21025c363695": {
+      "ProjectGuid": "58b48ce4-a5f7-474d-b7bb-21025c363695",
+      "DisplayName": "ConsoleTestAPP",
+      "ColorIndex": 14
+    },
+    "5f44e6fa-b5db-4c53-9a72-e76974eac71c": {
+      "ProjectGuid": "5f44e6fa-b5db-4c53-9a72-e76974eac71c",
+      "DisplayName": "HouseManagerController",
+      "ColorIndex": 15
+    },
+    "12582b75-b5cb-4524-8861-5baf907ce649": {
+      "ProjectGuid": "12582b75-b5cb-4524-8861-5baf907ce649",
+      "DisplayName": "MarketConsoleApp",
+      "ColorIndex": 0
+    },
+    "54a14ee3-82dc-4ddb-80a3-0b2798d686b5": {
+      "ProjectGuid": "54a14ee3-82dc-4ddb-80a3-0b2798d686b5",
+      "DisplayName": "FileUpload",
+      "ColorIndex": 1
     }
   },
-  "NextColorIndex": 10
+  "NextColorIndex": 2
 }

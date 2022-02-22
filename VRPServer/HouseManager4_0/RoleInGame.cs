@@ -711,6 +711,7 @@ namespace HouseManager4_0
 
         public delegate void DrawModel(Player player, string modelID, double x, double y, double z, string amodel, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg);
         public DrawModel DrawObj3DModelF { get; set; }
+        public string BTCAddress = "";
     }
     public class NPC : RoleInGame
     {

@@ -200,10 +200,7 @@ namespace BitCoin
                 // var public_key = PublicKeyF.GetAddressOfcompressed(Q);
                 if (compressed)
                 {
-                    var compressedAdress = PublicKeyF.GetAddressOfcompressed(Q);
-                    Console.WriteLine($"compressed Adress:{compressedAdress}");
-                    return compressedAdress == address;
-
+                    return PublicKeyF.GetAddressOfcompressed(Q) == address || PublicKeyF.GetAddressOfP2SH(Q) == address;
                 }
                 else
                 {

@@ -125,6 +125,7 @@ namespace CommonClass
         public int mctX { get; set; }
         public int mctY { get; set; }
     }
+    //public class SetBG:
     public class AttackNotify : CommandNotify
     {
         public string Key { get; set; }
@@ -592,5 +593,11 @@ namespace CommonClass
         public string CheckMd5 { get; set; }
 
         public string RoomIndexWithAes { get; set; }
+    }
+
+    public class CheckCarState : Command
+    {
+        public string State { get; set; }
+        public string Key { get; set; }
     }
 }

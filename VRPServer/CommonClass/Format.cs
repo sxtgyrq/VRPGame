@@ -13,5 +13,12 @@ namespace CommonClass
             Regex r = new Regex(reg);
             return r.Match(input).Success;
         }
+
+        public static bool IsModelID(string input)
+        {
+            var reg = "^n[A-Za-z0-9]{4,100}$";
+            Regex r = new Regex(reg);
+            return r.Match(input).Success;
+        }
     }
 }

@@ -18,6 +18,7 @@ B.地图编辑器WebSocket服务");
 
             if (select == "B")
             {
+                Room.SetWhenStart();
                 var ip = "127.0.0.1";
                 int websocketPort = 21001;
                 Console.WriteLine($"输入ip，如{ip}  (默认)");

@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title></title>
+    <style type="text/css">
+        .container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            margin-top: 0px;
+        }
+
+        .container_Show {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            top: 20px;
+            left: calc(50% - 151px);
+            margin-top: 0px;
+            border: solid red 1px;
+        }
+
+        .container_Editor {
+            width: 300px;
+            height: auto;
+            position: absolute;
+            top: 320px;
+            left: calc(50% - 151px);
+            margin-top: 0px;
+            border: solid red 1px;
+        }
+
+        .renderDom {
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .renderDom_Trans {
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            width: 300px;
+            height: 300px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .labelRenderer {
+            position: absolute;
+            top: 0px;
+            overflow: hidden;
+            z-index: 3;
+            left: 0px;
+            right: 0px;
+            width: 100%;
+            height: 100%;
+            /*cursor: pointer;*/
+            /*labelRenderer .domElement.style.position = 'absolute';
+            labelRenderer .domElement.style.top = 0;
+            labelRenderer .domElement.style.overflow = 'hidden';
+            labelRenderer .domElement.style.z = 'hidden';*/
+        }
+
+        .labelRenderer_Trans {
+            position: absolute;
+            top: 0px;
+            overflow: hidden;
+            z-index: 3;
+            left: 0px;
+            right: 0px;
+            width: 300px;
+            height: 300px;
+            /*cursor: pointer;*/
+            /*labelRenderer .domElement.style.position = 'absolute';
+            labelRenderer .domElement.style.top = 0;
+            labelRenderer .domElement.style.overflow = 'hidden';
+            labelRenderer .domElement.style.z = 'hidden';*/
+        }
+        /*
+
+        */
+        @keyframes mymove {
+            0% {
+                background: rgba(255, 216, 0, 0.00);
+                border-color: yellowgreen;
+            }
+
+            50% {
+                background: rgba(255, 0, 220, 0.99);
+                border-color: #ff00dc;
+            }
+
+            100% {
+                background: rgba(255, 216, 0, 0.00);
+                border-color: yellowgreen;
+            }
+        }
+
+        .chatdialog {
+        }
+
+            .chatdialog.msg {
+                animation: mymove 1.9s infinite;
+                -webkit-animation: mymove 1.9s infinite;
+            }
+
+        .friendMsg {
+            animation: mymove 1.9s infinite;
+            -webkit-animation: mymove 1.9s infinite;
+        }
+
+        #abilityCanvasContainer {
+            z-index: 4;
+            position: absolute;
+            top: 4px;
+            right: calc(50% - 100px - 1px);
+            border: double 2px rgba(247, 245, 126, 0.28);
+            height: 60px;
+            width: 200px;
+            font-size: 14px;
+            color: white;
+            text-align: center;
+            border-radius: 3px;
+        }
+
+            #abilityCanvasContainer.Horizontal {
+                top: calc(4px + 3em);
+                left: 5px;
+            }
+
+        #chanleOfCarAbility {
+            width: 140px;
+            height: 60px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            opacity: 0.6;
+        }
+
+        #TextOfCarAbility {
+            width: 140px;
+            height: calc(100%);
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .TextOfCarAbilityItem {
+            width: 100%;
+            height: calc(33.3%);
+            background-color: transparent;
+            text-align: center;
+        }
+
+        .speedValueContainer {
+            vertical-align: middle;
+            position: absolute;
+            top: 0px;
+            left: 140px;
+            border: solid 1px red;
+            width: 58px;
+            height: 58px;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+            .speedValueContainer > span {
+                vertical-align: middle;
+                width: 100%;
+                height: 100%;
+                line-height: 60px;
+            }
+
+        @keyframes isWaiting {
+            0% {
+                background: rgba(0, 0, 0, 0.00);
+            }
+
+            50% {
+                background: rgba(0,191,255, 0.5);
+            }
+
+            100% {
+                background: rgba(0, 0, 0, 0.00);
+            }
+        }
+
+        .carState {
+            border: 1px solid transparent;
+            width: calc( 1em - 2px);
+            height: calc(100% - 3px);
+            text-align: center;
+            border-radius: 0.5em;
+            /*margin-top: 2px;
+            margin-bottom: 2px;*/
+            /* position:relative;*/
+            /* position:absolute;*/
+            left: 0px;
+            display: inline-block;
+            /*position:*/
+        }
+
+            .carState.wait {
+                animation: isWaiting 1.9s infinite;
+                -webkit-animation: isWaiting 1.9s infinite;
+                border: 1px solid deepskyblue;
+            }
+
+            .carState.volumefull {
+                border-bottom-left-radius: 0.1em;
+                border-bottom-right-radius: 0.1em;
+                /*border: 1px solid deepskyblue;*/
+            }
+
+            .carState.businessfull {
+                border-top-left-radius: 0.1em;
+                border-top-right-radius: 0.1em;
+                /*border: 1px solid deepskyblue;*/
+            }
+
+        .notifyjs-foo-base {
+            opacity: 0.85;
+            width: 90%;
+            max-width: 90%;
+            background: #F5F5F5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+    </style>
+
+</head>
+<body style="width:100%;height:100%;">
+    <audio id="backGroudMusick">
+        <source src="bgm/changshoucunwai.ogg" type="audio/ogg" />
+        <source src="bgm/changshoucunwai.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="rootContainer" style="width: 100%; height: 100%; overflow:  scroll;position:absolute;left:0px;top:0px;">
+        <div class="container_Show"></div>
+        <div class="container_Editor">
+            <label>建筑物账号</label>
+            <div style="width:calc(100% - 2px);word-wrap:anywhere;">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</div>
+            <div style="text-align:center;">
+                <img src="Pic/test/a5aab08a44db9be028a9f0b83a340fbd.png" />
+            </div>
+
+            <div style="width:calc(100% - 5px);word-wrap:anywhere;border:solid 2px green;">
+                <div style="color:red;margin-top:20px;">错误错误五！</div>
+                <label>自</label>
+                <div>
+                    <textarea id="addrFrom" style="width: calc(100% - 20px);"></textarea>
+                </div>
+                <label>转</label>
+                <div>
+                    <textarea id="addrTo" style="width: calc(100% - 20px);"></textarea>
+                </div>
+                <div>
+                    <input type="number" min="0.00000001" max="500" value="0.001" />
+                </div>
+                <div>
+                    <input type="button" value="生成协议" onclick="generateAgreement();" />
+                </div>
+                <div>
+                    <label>协议</label>
+                    <textarea style="width: calc(100% - 20px);" readonly rows="10"></textarea>
+                </div>
+                <div>
+                    <label>签名</label>
+                    <textarea style="width: calc(100% - 20px);" rows="10"></textarea>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <input type="button" value="转让" />
+                </div>
+            </div>
+
+
+            <table border="1" style="margin-bottom:20px"><thead>股份</thead></table>
+            <table border="1" style="margin-bottom:20px">
+                <thead>股份</thead>
+                <tr>
+                    <td style="word-wrap:anywhere;border:solid 1px #0a481c;">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td style="border:solid 1px #0a481c;vertical-align:middle;">0.00000001</td>
+                    <td style="border:solid 1px #0a481c;">34.23%</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                    <td>34.23%</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                    <td>34.23%</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                    <td>34.23%</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                    <td>34.23%</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                    <td>34.23%</td>
+                </tr>
+            </table>
+
+
+            <table border="1" style="margin-bottom: 20px;border: solid black 1px;"><thead>转让过程</thead></table>
+            <table border="1" style="margin-bottom:20px;border:solid black 1px;">
+                <thead><tr><th colspan="2">转让过程</th></tr></thead>
+                <tr>
+                    <td colspan="2" style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK->31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:middle;">协议</td>
+                    <td style="word-wrap:anywhere">12@31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK:31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK->31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK#0.000001</td>
+                </tr>
+                <tr>
+                    <td>签名</td>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK->31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                </tr>
+            </table>
+
+            <table border="1" style="margin-bottom:20px"> 
+                <thead><tr><th colspan="2">原始股份</th></tr></thead> 
+            </table>
+            <table border="1" style="margin-bottom:20px">
+                <thead>原始股份</thead>
+                <thead><tr><th colspan="2">原始股份</th></tr></thead>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere;vertical-align:middle;border:solid 1px black;">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                </tr>
+                <tr>
+                    <td style="word-wrap:anywhere">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</td>
+                    <td>0.00000001</td>
+                </tr>
+            </table>
+
+            <label>建筑物创建者</label>
+            <div style="width:calc(100% - 2px);word-wrap:anywhere;">31hDthp5SGvqS9iQCtKapQXNvBFvm3ZhVK</div>
+        </div>
+    </div>
+</body>
+</html>

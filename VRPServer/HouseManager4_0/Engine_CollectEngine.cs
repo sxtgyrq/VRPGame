@@ -397,6 +397,11 @@ namespace HouseManager4_0
                     that.GetMusic((Player)role, ref notifyMsg);
                 if (role.playerType == RoleInGame.PlayerType.player)
                     that.GetBackground((Player)role, ref notifyMsg);
+
+                if (role.playerType == RoleInGame.PlayerType.player)
+                {
+                    //startPlaceReward((Player)role,);
+                }
             }
             else
             {
@@ -421,6 +426,11 @@ namespace HouseManager4_0
             }
             // NPCAutoControlCollect(role);
 
+        }
+
+        private void startPlaceReward()
+        {
+            throw new NotImplementedException();
         }
 
         private void setCollectPosition(int target)

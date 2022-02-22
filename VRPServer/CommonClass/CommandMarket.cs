@@ -43,4 +43,9 @@ namespace CommonClass
         public int count { get; set; }
         public string pType { get; set; }
     }
+    public class Transaction : Command 
+    {
+        public string adress { get; set; }
+    }
+
 }

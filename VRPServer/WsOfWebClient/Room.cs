@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace WsOfWebClient
 {
-    public class Room
+    public partial class Room
     {
         //public static List<string> roomUrls = new List<string>()
         //{
@@ -454,6 +454,9 @@ namespace WsOfWebClient
             }
             return result;
         }
+
+
+
         private static async Task<bool> SetModelCopy(interfaceTag.modelForCopy mp, WebSocket webSocket)
         {
             if (string.IsNullOrEmpty(mp.Tag))
@@ -878,7 +881,8 @@ namespace WsOfWebClient
         /// <returns></returns>
         private static async Task<bool> CheckRespon(WebSocket webSocket, string checkValue)
         {
-            var resultAsync = await Startup.ReceiveStringAsync(webSocket);
+            var timeOut = new CancellationTokenSource(1500).Token;
+            var resultAsync = await Startup.ReceiveStringAsync(webSocket, timeOut);
             if (resultAsync.result == checkValue)
             {
                 return true;
@@ -1614,7 +1618,12 @@ namespace WsOfWebClient
                 return false;
             }
         }
-
+        internal static async Task checkCarState(State s, CommonClass.CheckCarState ccs)
+        {
+            ccs.Key = s.Key;
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ccs);
+            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+        }
         internal static async Task<string> setPromote(State s, Promote promote)
         {
             if (promote.pType == "mile" || promote.pType == "business" || promote.pType == "volume" || promote.pType == "speed")
@@ -1735,6 +1744,8 @@ namespace WsOfWebClient
             }
             else
             {
+                Console.WriteLine($"没有组队服务IP");
+                Console.ReadLine();
                 //Console.WriteLine($"请market输入IP即端口，如127.0.0.1:11200");
                 //teamUrl = Console.ReadLine();
                 //Console.WriteLine("请market输入端口");

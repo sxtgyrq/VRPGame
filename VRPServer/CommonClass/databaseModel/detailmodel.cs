@@ -12,6 +12,7 @@ namespace CommonClass.databaseModel
         public float z { get; set; }
         public string amodel { get; set; }
         public float rotatey { get; set; }
-
+        public bool locked { get; set; }
+        public int dmState { get; set; }
     }
 }

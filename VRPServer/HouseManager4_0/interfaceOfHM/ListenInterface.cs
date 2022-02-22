@@ -6,7 +6,7 @@ using static HouseManager4_0.RoomMainF.RoomMain;
 
 namespace HouseManager4_0.interfaceOfHM
 {
-    interface ListenInterface : MapEditor
+    interface ListenInterface : MapEditor, ModelTranstractionI
     {
         /// <summary>
         /// 新增玩家
@@ -105,20 +105,42 @@ namespace HouseManager4_0.interfaceOfHM
         void SelectDriver(SetSelectDriver dm);
         string updateMagic(MagicSkill ms);
         string updateView(View v);
-
+        string CheckCarStateF(CheckCarState ccs);
+       
     }
 
     interface MapEditor
     {
+        string UseBackgroundSceneF(CommonClass.MapEditor.UseBackgroundScene sbs);
+        string GetBackgroundSceneF(CommonClass.MapEditor.GetBackgroundScene gbs);
+        string SetBackgroundSceneF(CommonClass.MapEditor.SetBackgroundScene sbs);
         string GetFirstRoad();
         string DrawRoad(CommonClass.MapEditor.DrawRoad dr);
         string NextCross(CommonClass.MapEditor.NextCross dr);
         string PreviousCross(CommonClass.MapEditor.PreviousCross dr);
         string GetCatege(CommonClass.MapEditor.GetCatege gc);
+        string GetModelType(CommonClass.MapEditor.GetCatege gc);
         string GetAbtractModels(CommonClass.MapEditor.GetAbtractModels gam);
         string SaveObjInfo(CommonClass.MapEditor.SaveObjInfo soi);
         string ShowOBJFile(CommonClass.MapEditor.ShowOBJFile sof);
         string UpdateObjInfo(CommonClass.MapEditor.UpdateObjInfo uoi);
         string DelObjInfo(CommonClass.MapEditor.DelObjInfo doi);
+        string CreateNew(CommonClass.MapEditor.CreateNew cn);
+        string GetModelDetail(CommonClass.MapEditor.GetModelDetail cn);
+        string UseModelObj(CommonClass.MapEditor.UseModelObj cn);
+        string LockModelObj(CommonClass.MapEditor.UseModelObj cn);
+        string ClearModelObj();
+        string GetUnLockedModel(CommonClass.MapEditor.GetUnLockedModel gulm);
+    }
+
+    interface ModelTranstractionI
+    {
+        // string GetFirstModelAddr(ModelTranstraction.GetFirstModelAddr gfm);
+        string GetTransctionModelDetail(ModelTranstraction.GetTransctionModelDetail gtmd);
+        string GetRoadNearby(ModelTranstraction.GetRoadNearby grn);
+        string TradeCoinF(ModelTranstraction.TradeCoin tc);
+        string GetAllModelPosition();
+        string GetModelByID(ModelTranstraction.GetModelByID gmbid);
+        string TradeIndex(ModelTranstraction.TradeIndex tc);
     }
 }

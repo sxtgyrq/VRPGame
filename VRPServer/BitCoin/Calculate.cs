@@ -239,7 +239,28 @@ namespace BitCoin
             }
             return result;
         }
+        public static string Encode5(byte[] data)
+        {
+            //Contract.Requires<ArgumentNullException>(data != null);
+            //Contract.Ensures(Contract.Result<string>() != null);
 
+            // Decode byte[] to BigInteger
+            BigInteger intData = 0;
+            for (int i = 0; i < data.Length; i++)
+            {
+                intData = intData * 256 + data[i];
+            }
+
+            // Encode BigInteger to Base58 string
+            string result = "";
+            while (intData > 0)
+            {
+                int remainder = (int)(intData % 58);
+                intData /= 58;
+                result = Digits[remainder] + result;
+            }
+            return result;
+        }
         private static bool[] get(BigInteger bigIntegers)
         {
             List<bool> result = new List<bool>();

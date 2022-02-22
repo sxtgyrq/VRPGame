@@ -202,20 +202,20 @@ namespace HouseManager4_0
             }
 
         }
-        private void StartSelectThread(List<Node.direction> selections)
-        {
-            int k = 0;
-            while (true)
-            {
-                ThreadSleep(250);
-                k++;
-                Console.WriteLine($"提示，让玩家进行选择！！！");
-                if (k >= 2)
-                {
-                    break;
-                }
-            }
-        }
+        //private void StartSelectThread(List<Node.direction> selections)
+        //{
+        //    int k = 0;
+        //    while (true)
+        //    {
+        //        ThreadSleep(250);
+        //        k++;
+        //        Console.WriteLine($"提示，让玩家进行选择！！！");
+        //        if (k >= 2)
+        //        {
+        //            break;
+        //        }
+        //    }
+        //}
 
         //enum ArriveType
         //{
@@ -237,13 +237,13 @@ namespace HouseManager4_0
                     if (step == 0)
                     {
                         this.ThreadSleep(startT);
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
                         {
 
                         }
                         else
                         {
-                            StartSelectThread(goPath.path[step].selections);
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
                         }
                         step++;
                         List<string> notifyMsg = new List<string>();
@@ -260,13 +260,13 @@ namespace HouseManager4_0
                     else
                     {
                         this.ThreadSleep(startT);
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                        if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
                         {
 
                         }
                         else if (startT != 0)
                         {
-                            StartSelectThread(goPath.path[step].selections);
+                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
                         }
                         step++;
                         List<string> notifyMsg = new List<string>();

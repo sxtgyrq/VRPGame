@@ -255,6 +255,13 @@ namespace HouseManager4_0
                     }
             }
         }
+
+        /// <summary>
+        /// 进行方向选择
+        /// </summary>
+        /// <param name="selections"></param>
+        /// <param name="selectionCenter"></param>
+        /// <param name="player"></param>
         protected void StartSelectThread(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player)
         {
             selections.RemoveAll(item => that.isZero(item));

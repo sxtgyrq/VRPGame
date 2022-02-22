@@ -10,11 +10,13 @@ namespace WsOfWebClient
         public LoginState Ls { get; set; }
         public int roomIndex { get; set; }
         public string mapRoadAndCrossMd5 { get; internal set; }
-        
+
         /// <summary>
         /// AddPlayer产生的唯一ID
         /// </summary>
         public string Key { get; internal set; }
+
+        public int indexOfModelToTranstract = 0;
     }
     public enum LoginState
     {
@@ -22,6 +24,7 @@ namespace WsOfWebClient
         selectSingleTeamJoin,
         OnLine,
         WaitingToStart,
-        WaitingToGetTeam
+        WaitingToGetTeam,
+        LookForBuildings
     }
 }

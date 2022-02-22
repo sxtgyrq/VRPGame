@@ -30,7 +30,12 @@ TaskClass.prototype.__defineSetter__("carSelect", function (val) {
 });
 var objMain =
 {
-    debug: true,
+    debug: (function () {
+        if (window.location.hostname == 'www.nyrq123.com') {
+            return false;
+        }
+        else { return true; }
+    })(),
     indexKey: '',
     displayName: '',
     positionInStation: 0,
@@ -138,6 +143,24 @@ var objMain =
 
                 objMain.controls.target.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
                 objMain.camera.lookAt(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
+            }
+        },
+        lookAtPosition2: function () {
+
+            //var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
+            //var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+
+            var cc = new Complex(1, 0);
+            cc.toOne();
+            var minDistance = objMain.controls.minDistance * 1.1;
+            var maxPolarAngle = objMain.controls.maxPolarAngle - Math.PI / 30;
+            {
+                var start = objMain.transtractionData;
+                var planePosition = new THREE.Vector3(start.x + cc.r * minDistance * Math.sin(maxPolarAngle), start.y + minDistance * Math.cos(maxPolarAngle), start.z + cc.i * minDistance * Math.sin(maxPolarAngle));
+                objMain.camera.position.set(planePosition.x, planePosition.y, planePosition.z);
+
+                objMain.controls.target.set(start.x, 0, start.z);
+                objMain.camera.lookAt(start.x, 0, start.z);
             }
         },
         initilizeCars: function (fp, color, key, isSelf, postionInStation) {
@@ -785,17 +808,27 @@ var objMain =
                             }; break;
                         case 'OnLine':
                             {
-                                set3DHtml();
-                                //  objMain.state = objMain.receivedState;
-                                objMain.ws.send('SetOnLine');
-                                for (var key in objMain.othersBasePoint) {
-                                    var indexKey = key;
-                                    var basePoint = objMain.othersBasePoint[key].basePoint;
-                                    drawPoint('orange', basePoint, indexKey);
-                                    objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'green', indexKey);
-                                    objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, objMain.othersBasePoint[key].positionInStation);
-                                    console.log('哦哦', '出现了预料的情况！！！');
-                                    //alert();
+                                switch (objMain.state) {
+                                    case 'LookForBuildings': {
+                                        objMain.state = objMain.receivedState;
+                                        setTransactionHtml.cancle();
+                                        setTransactionHtml.change();
+                                    }; break;
+                                    default: {
+                                        set3DHtml();
+                                        //  objMain.state = objMain.receivedState;
+                                        objMain.ws.send('SetOnLine');
+                                        for (var key in objMain.othersBasePoint) {
+                                            var indexKey = key;
+                                            var basePoint = objMain.othersBasePoint[key].basePoint;
+                                            drawPoint('orange', basePoint, indexKey);
+                                            objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'green', indexKey);
+                                            objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, objMain.othersBasePoint[key].positionInStation);
+                                            console.log('哦哦', '出现了预料的情况！！！');
+                                            //alert();
+                                        }
+                                        objMain.state = objMain.receivedState;
+                                    }; break;
                                 }
                                 objMain.state = objMain.receivedState;
                             }; break;
@@ -806,6 +839,18 @@ var objMain =
                         case 'WaitingToGetTeam':
                             {
                                 setWaitingToGetTeam();
+                            }; break;
+                        case 'LookForBuildings':
+                            {
+                                //set3DTransactionHtml();
+
+                                if (objMain.state == 'OnLine') {
+                                    objMain.state = objMain.receivedState;
+                                    setTransactionHtml.change();
+                                }
+                                //setTransactionHtml.draw3D();
+                                //// ws.send(JSON.stringify({ c: 'GetBuildings' }));
+                                //objMain.ws.send('GetBuildings');
                             }; break;
                     }
                 }; break;
@@ -1340,9 +1385,7 @@ var objMain =
                         MapData.meshPoints.push(itemData);
                         // MapData.meshPoints.push(received_obj.meshPoints[i]);
                     }
-                    //for (var i = 0; i < received_obj.meshPoints.length; i++) {
-                    //    MapData.meshPoints.push(received_obj.meshPoints[i]);
-                    //}
+
                     var drawRoadInfomation = function () {
 
                         objMain.mainF.removeF.clearGroup(objMain.roadGroup);
@@ -1512,7 +1555,8 @@ var objMain =
                     objMain.carState[received_obj.carID] = received_obj.State;
                     objNotify.notifyCar(received_obj.carID, received_obj.State);
                     operatePanel.refresh();
-                    //  marketOperate.refresh();
+                    var checkObj = { 'c': 'CheckCarState', 'State': objMain.carState[received_obj.carID], 'Key': 'Key' };
+                    objMain.ws.send(JSON.stringify({ checkObj })); //当两个状态的间隔很小时，需要check.
                 }; break;
             case 'BradCastCollectInfoDetail_v2':
                 {
@@ -1670,6 +1714,71 @@ var objMain =
                     }
 
                 }; break;
+            case 'ReceiveResult':
+                {
+                    console.log('ReceiveResult', received_obj);
+                    var modelDataShow = received_obj;
+                    objMain.transtractionData = { x: received_obj.x, y: received_obj.y, z: received_obj.z };
+                    //BuildingModelObj.f(modelDataShow);
+                    setTransactionHtml.editRootContainer();
+                    setTransactionHtml.drawAddr(received_obj.bussinessAddress);
+                    setTransactionHtml.drawAgreementEditor();
+                    setTransactionHtml.drawStockTable();
+                    setTransactionHtml.drawTradeTable();
+                    setTransactionHtml.originalTable();
+                    transactionBussiness().showAuthor(received_obj.author);
+
+                    operatePanel.refresh();
+
+                    objMain.ws.send('TradeDetail');
+
+                }; break;
+            case 'TradeDetail':
+                {
+                    var addrStr = received_obj.addr;
+                    var valueStr = received_obj.value;
+                    var indexStr = received_obj.index;
+                    transactionBussiness().addOriginItem(addrStr, valueStr);
+                    // objMain.ws.send(indexStr);
+                }; break;
+            case 'TradeDetail2':
+                {
+                    var mainAddr = received_obj.mainAddr;
+                    var agreeMent = received_obj.agreeMent;
+                    var sign = received_obj.sign;
+                    //  var indexStr = received_obj.index;
+                    transactionBussiness().addTradeItem(mainAddr, agreeMent, sign);
+                    // objMain.ws.send(indexStr);
+                }; break;
+            case 'TradeDetail3':
+                {
+                    var detail = received_obj.detail;
+                    //  detail = [];
+
+                    var addrStr = received_obj.addrStr;
+                    var valueStr = received_obj.valueStr;
+                    // var indexStr = received_obj.indexStr;
+                    var percentValue = received_obj.percentValue;
+                    transactionBussiness().addStockItem(addrStr, valueStr, percentValue);
+                    // objMain.ws.send(indexStr);
+                }; break;
+            case 'ShowAgreement':
+                {
+                    transactionBussiness().showAgreement(received_obj.agreement);
+                }; break;
+            case 'ShowAgreementMsg':
+                {
+
+                }; break;
+            case 'ShowAllPts':
+                {
+                    //   transactionBussiness().ShowAllPts(received_obj.list);
+                }; break;
+            case 'ClearTradeInfomation':
+                {
+                    transactionBussiness().ClearItem();
+                    objMain.ws.send('ClearTradeInfomation');
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -1692,7 +1801,8 @@ var objMain =
         skill2: { name: '', skillIndex: -1 },
         race: ''
     },
-    camaraAnimateData: null
+    camaraAnimateData: null,
+    transtractionData: null
 };
 var startA = function () {
     var connected = false;
@@ -1850,6 +1960,10 @@ function animate() {
                     objMain.columnGroup.children[i].scale.setZ(1);
                 }
             }
+            for (var i = 0; i < objMain.buildingGroup.children.length; i++) {
+                objMain.buildingGroup.children[i].scale.setX(1);
+                objMain.buildingGroup.children[i].scale.setZ(1);
+            }
             {
                 var lengthOfObjs = objMain.groupOfOperatePanle.children.length;
                 for (var i = lengthOfObjs - 1; i >= 0; i--) {
@@ -1947,6 +2061,20 @@ function animate() {
                                         }
                                     }
                             }
+                        }
+                    }
+
+                    for (var i = 0; i < objMain.buildingGroup.children.length; i++) {
+                        {
+                            var position = objMain.buildingGroup.children[i].position;
+                            var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                            var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                            if (cosA > 0.984807753)
+                                if (cosA > maxCosA) {
+                                    maxCosA = cosA;
+                                    objMain.Task.state = 'building';
+                                    selectObj = objMain.buildingGroup.children[i];
+                                }
                         }
                     }
 
@@ -2183,6 +2311,13 @@ function animate() {
                                     objMain.groupOfOperatePanle.add(object);
                                 }
                             }; break;
+                        case 'building':
+                            {
+                                objMain.selectObj.obj = selectObj;
+                                objMain.selectObj.type = objMain.Task.state;
+                                selectObj.scale.setX(Math.cos(Date.now() % 2000 / 2000 * Math.PI * 2) * -0.2 + 1);
+                                selectObj.scale.setZ(Math.cos(Date.now() % 2000 / 2000 * Math.PI * 2) * -0.2 + 1);
+                            }; break;
                     }
                 }
             }
@@ -2414,6 +2549,19 @@ function animate() {
             objMain.labelRenderer.render(objMain.scene, objMain.camera);
             objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
         }
+        else if ('LookForBuildings' == objMain.state) {
+            //if (objMain.transtractionData != null)
+            {
+
+                if (objMain.transtractionData != null) {
+                    objMain.camera.lookAt(objMain.transtractionData.x, objMain.transtractionData.y, objMain.transtractionData.z);
+                    objMain.controls.target.set(objMain.transtractionData.x, objMain.transtractionData.y, objMain.transtractionData.z);
+                }
+                objMain.renderer.render(objMain.scene, objMain.camera);
+                objMain.labelRenderer.render(objMain.scene, objMain.camera);
+                objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
+            }
+        }
     }
 }
 animate();
@@ -2452,11 +2600,242 @@ var buttonClick = function (v) {
                     selectSingleTeamJoinHtmlF.setCarsNameHtmlShow();
                     objMain.ws.send(JSON.stringify({ c: 'GetCarsName' }));
                 }; break;
+            //case 'lookForBuildings':
+            //    {
+            //        objMain.ws.send(JSON.stringify({ c: 'LookForBuildings' }));
+            //        objMain.receivedState = '';
+            //    }; break;
         }
         // objMain.receivedState = '';
     }
 
 }
+var setTransactionHtml =
+{
+    bussinessAddress: '',
+    draw3D: function () {
+        //var text = "";
+        //text += "  <div>";
+        //text += "            3D界面";
+        //text += "        </div>";
+        //document.getElementById('rootContainer').innerHTML = text;
+        document.getElementById('rootContainer').innerHTML = '';
+
+        //<div id="mainC" class="container" onclick="testTop();">
+        //    <!--<img />-->
+        //    <!--<a href="DAL/MapImage.ashx">DAL/MapImage.ashx</a>-->
+        //    <img src="Pic/11.png" />
+        //</div>
+        var mainC = document.createElement('div');
+        mainC.id = 'mainC';
+
+        mainC.className = 'container_Show';
+        document.getElementById('rootContainer').appendChild(mainC);
+        document.getElementById('rootContainer').style.overflow = 'scroll';
+        objMain.scene = new THREE.Scene();
+        //objMain.scene.background = new THREE.Color(0x7c9dd4);
+        //objMain.scene.fog = new THREE.FogExp2(0x7c9dd4, 0.2);
+
+        var cubeTextureLoader = new THREE.CubeTextureLoader();
+        cubeTextureLoader.setPath('Pic/');
+        //var cubeTexture = cubeTextureLoader.load([
+        //    "xi_r.jpg", "dong_r.jpg",
+        //    "ding_r.jpg", "di_r.jpg",
+        //    "nan_r.jpg", "bei_r.jpg"
+        //]);
+        var cubeTexture = cubeTextureLoader.load([
+            "px.jpg", "nx.jpg",
+            "py.jpg", "ny.jpg",
+            "pz.jpg", "nz.jpg"
+        ]);
+        objMain.scene.background = cubeTexture;
+
+        objMain.renderer = new THREE.WebGLRenderer({ alpha: true });
+        objMain.renderer.setClearColor(0x000000, 0); // the default
+        objMain.renderer.setPixelRatio(window.devicePixelRatio);
+        objMain.renderer.setSize(300, 300);
+        objMain.renderer.domElement.className = 'renderDom_Trans';
+        document.getElementById('mainC').appendChild(objMain.renderer.domElement);
+        //  document.body
+
+        objMain.labelRenderer = new THREE.CSS2DRenderer();
+        objMain.labelRenderer.setSize(300, 300);
+        objMain.labelRenderer.domElement.className = 'labelRenderer_Trans';
+        //objMain.labelRenderer.domElement.style.curs
+        document.getElementById('mainC').appendChild(objMain.labelRenderer.domElement);
+
+        objMain.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 30000);
+        objMain.camera.position.set(4000, 2000, 0);
+        objMain.camera.position.set(MercatorGetXbyLongitude(objMain.centerPosition.lon), 20, -MercatorGetYbyLatitude(objMain.centerPosition.lat));
+
+        objMain.controls = new THREE.OrbitControls(objMain.camera, objMain.labelRenderer.domElement);
+        objMain.controls.center.set(MercatorGetXbyLongitude(objMain.centerPosition.lon), 0, -MercatorGetYbyLatitude(objMain.centerPosition.lat));
+
+        objMain.roadGroup = new THREE.Group();
+        objMain.scene.add(objMain.roadGroup);
+
+        objMain.playerGroup = new THREE.Group();
+        objMain.scene.add(objMain.playerGroup);
+
+        objMain.promoteDiamond = new THREE.Group();
+        objMain.scene.add(objMain.promoteDiamond);
+
+        objMain.columnGroup = new THREE.Group();
+        objMain.scene.add(objMain.columnGroup);
+
+        objMain.carGroup = new THREE.Group();
+        objMain.scene.add(objMain.carGroup);
+
+        objMain.groupOfOperatePanle = new THREE.Group();
+        objMain.scene.add(objMain.groupOfOperatePanle);
+
+        objMain.collectGroup = new THREE.Group();
+        objMain.scene.add(objMain.collectGroup);
+
+        objMain.getOutGroup = new THREE.Group();
+        objMain.scene.add(objMain.getOutGroup);
+
+        objMain.taxGroup = new THREE.Group();
+        objMain.scene.add(objMain.taxGroup);
+
+        objMain.shieldGroup = new THREE.Group();
+        objMain.scene.add(objMain.shieldGroup);
+
+        objMain.confusePrepareGroup = new THREE.Group();
+        objMain.scene.add(objMain.confusePrepareGroup);
+
+        objMain.lostPrepareGroup = new THREE.Group();
+        objMain.scene.add(objMain.lostPrepareGroup);
+
+        objMain.ambushPrepareGroup = new THREE.Group();
+        objMain.scene.add(objMain.ambushPrepareGroup);
+
+        objMain.waterGroup = new THREE.Group();
+        objMain.scene.add(objMain.waterGroup);
+
+        objMain.fireGroup = new THREE.Group();
+        objMain.scene.add(objMain.fireGroup);
+
+        objMain.lightningGroup = new THREE.Group();
+        objMain.scene.add(objMain.lightningGroup);
+
+        objMain.directionGroup = new THREE.Group();
+        objMain.scene.add(objMain.directionGroup);
+
+        objMain.buildingGroup = new THREE.Group();
+        objMain.scene.add(objMain.buildingGroup);
+
+        objMain.clock = new THREE.Clock();
+
+        {
+            objMain.light1 = new THREE.PointLight(0xffffff);
+            objMain.light1.position.set(-100, 300, -100);
+            objMain.light1.intensity = 2;
+            objMain.scene.add(objMain.light1);
+        }
+
+        {
+            //objMain.controls.minDistance = 3;
+            // objMain.controls.maxPolarAngle = Math.PI;
+            objMain.controls.minPolarAngle = Math.PI / 600;
+            objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 36;
+            objMain.controls.minDistance = 2;
+            objMain.controls.maxDistance = 256;
+        }
+
+        objMain.raycaster = new THREE.Raycaster();
+        objMain.raycaster.linePrecision = 0.2;
+
+        objMain.raycasterOfSelector = new THREE.Raycaster();
+        //objMain.raycasterOfSelector.linePrecision = 100;
+
+        objMain.mouse = new THREE.Vector2();
+
+        //objMain.labelRenderer.domElement.addEventListener
+
+        var operateEnd = function (event) {
+            operatePanel.refresh();
+
+            var json = JSON.stringify({ c: 'ViewAngle', x1: objMain.camera.position.x, y1: -objMain.camera.position.z, x2: objMain.controls.target.x, y2: -objMain.controls.target.z });
+            objMain.ws.send(json);
+            //objMain.ws
+            return;
+        }
+        var operateStart = function (event) {
+            objMain.canSelect = true;
+            objMain.music.change();
+        }
+        objMain.labelRenderer.domElement.addEventListener('mouseup', operateEnd, false);
+        objMain.labelRenderer.domElement.addEventListener('mousedown', operateStart, false);
+
+
+        objMain.labelRenderer.domElement.addEventListener('touchstart', operateStart, false);
+        objMain.labelRenderer.domElement.addEventListener('touchend', operateEnd, false);
+        //scope.domElement.removeEventListener('touchstart', onTouchStart, false);
+        //scope.domElement.removeEventListener('touchend', onTouchEnd, false);
+        //drawCarBtnsFrame();
+        //objNotify.carNotifyShow();
+        window.addEventListener('resize', onWindowResize, false);
+    },
+    change: function () {
+        switch (objMain.state) {
+            case 'LookForBuildings':
+                {
+                    var mainC = document.getElementById('mainC');
+                    mainC.classList.add('small');
+                    objMain.renderer.setSize(300, 300);
+                    objMain.labelRenderer.setSize(300, 300);
+                    objMain.camera.aspect = 1;
+                    objMain.camera.updateProjectionMatrix();
+                }; break;
+            default:
+                {
+                    var mainC = document.getElementById('mainC');
+                    mainC.classList.remove('small');
+                    objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+                    objMain.renderer.setSize(window.innerWidth, window.innerHeight);
+                    objMain.camera.aspect = window.innerWidth / window.innerHeight;
+                    objMain.camera.updateProjectionMatrix();
+                }; break;
+        }
+
+
+    },
+    drawAddr: function (addr) {
+        transactionBussiness().drawAddr(addr);
+        setTransactionHtml.bussinessAddress = addr;
+    },
+    drawAgreementEditor: function () {
+        transactionBussiness().drawAgreementEditor();
+    },
+    drawStockTable: function () {
+        transactionBussiness().drawStockTable();
+    },
+    drawTradeTable: function () {
+        transactionBussiness().drawTradeTable();
+    },
+    originalTable: function () {
+        transactionBussiness().originalTable();
+    },
+    generateAgreement: function () {
+        objMain.ws.send(transactionBussiness().generateAgreement(setTransactionHtml.bussinessAddress));
+    },
+    transSign: function () {
+        objMain.ws.send(transactionBussiness().transSign(setTransactionHtml.bussinessAddress));
+    },
+    editRootContainer: function () {
+        transactionBussiness().editRootContainer();
+        //objMain.camera.aspect = 1;
+        //objMain.camera.updateProjectionMatrix();
+        //objMain.labelRenderer.setSize(300, 300);
+        //objMain.renderer.setSize(300, 300);
+    },
+    cancle: function () {
+        transactionBussiness().Cancle();
+    }
+}
+
+
 
 var set3DHtml = function () {
     //var text = "";
@@ -2623,13 +3002,22 @@ var set3DHtml = function () {
     window.addEventListener('resize', onWindowResize, false);
 }
 function onWindowResize() {
+    if (objMain.state == 'OnLine') {
+        objMain.camera.aspect = window.innerWidth / window.innerHeight;
+        objMain.camera.updateProjectionMatrix();
 
-    objMain.camera.aspect = window.innerWidth / window.innerHeight;
-    objMain.camera.updateProjectionMatrix();
+        objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        objMain.renderer.setSize(window.innerWidth, window.innerHeight);
+        carAbility.refreshPosition();
+    }
+    else if (objMain.state == 'LookForBuildings') {
+        objMain.camera.aspect = 1;
+        objMain.camera.updateProjectionMatrix();
 
-    objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    objMain.renderer.setSize(window.innerWidth, window.innerHeight);
-    carAbility.refreshPosition();
+        objMain.labelRenderer.setSize(300, 300);
+        objMain.renderer.setSize(300, 300);
+        //  carAbility.refreshPosition();
+    }
 }
 
 
@@ -3530,6 +3918,49 @@ var operatePanel =
                 }
             });
         };
+        var cancelBuildingDetailF = function () {
+            addItemToTaskOperatingPanle('取消', 'cancelBuildingDetailF', function () {
+                objMain.canSelect = false;
+                if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                    objMain.ws.send(JSON.stringify({ c: 'CancleLookForBuildings' }));
+                    objMain.selectObj.obj = null;
+                    objMain.selectObj.type = '';
+                }
+            });
+        };
+        var buildingDetailF = function () {
+            addItemToTaskOperatingPanle('详情', 'buildingDetailBtn', function () {
+                objMain.canSelect = false;
+                if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
+                    var selectObj = objMain.selectObj.obj;
+                    var animationData =
+                    {
+                        old: {
+                            x: objMain.controls.target.x,
+                            y: objMain.controls.target.y,
+                            z: objMain.controls.target.z,
+                            t: Date.now()
+                        },
+                        newT:
+                        {
+                            x: objMain.selectObj.obj.position.x,
+                            y: objMain.selectObj.obj.position.y,
+                            z: objMain.selectObj.obj.position.z,
+                            t: Date.now() + 3000
+                        }
+                    };
+                    objMain.camaraAnimateData = animationData;
+                    if (objMain.selectObj.obj != null) {
+                        var selectObjName = objMain.selectObj.obj.name;
+                        objMain.ws.send(JSON.stringify({ c: 'LookForBuildings', 'selectObjName': selectObjName }));
+                    }
+                    objMain.selectObj.obj = null;
+                    objMain.selectObj.type = '';
+                    operatePanel.refresh();
+                }
+            });
+        };
+
         switch (carState) {
             case 'waitAtBaseStation':
                 {
@@ -3624,6 +4055,14 @@ var operatePanel =
                                 lookUp();
                                 //if (objMain
                             }; break;
+                        case 'building':
+                            {
+                                if (objMain.state == 'LookForBuildings') {
+                                    cancelBuildingDetailF();
+                                }
+                                else if (objMain.state == 'OnLine')
+                                    buildingDetailF();
+                            }; break;
                     }
                 }; break;
             case 'waitOnRoad':
@@ -3675,17 +4114,26 @@ var operatePanel =
                                 }
                                 lookUp();
                             }; break;
+                        case 'building':
+                            {
+                                if (objMain.state == 'LookForBuildings') {
+                                    cancelBuildingDetailF();
+                                }
+                                else if (objMain.state == 'OnLine')
+                                    buildingDetailF();
+                            }; break;
                     }
-                    addItemToTaskOperatingPanle('回基地', 'goBackBtn', function () {
-                        objMain.canSelect = false;
-                        if (objMain.carState["car"] == 'waitOnRoad') {
-                            var selectObj = objMain.selectObj.obj;
-                            objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn' }));
-                            objMain.selectObj.obj = null;
-                            objMain.selectObj.type = '';
-                            operatePanel.refresh();
-                        }
-                    });
+                    if (objMain.state == 'OnLine')
+                        addItemToTaskOperatingPanle('回基地', 'goBackBtn', function () {
+                            objMain.canSelect = false;
+                            if (objMain.carState["car"] == 'waitOnRoad') {
+                                var selectObj = objMain.selectObj.obj;
+                                objMain.ws.send(JSON.stringify({ 'c': 'SetCarReturn' }));
+                                objMain.selectObj.obj = null;
+                                objMain.selectObj.type = '';
+                                operatePanel.refresh();
+                            }
+                        });
                 }; break;
         }
     }
@@ -4376,6 +4824,9 @@ var DirectionOperator =
 var BuildingModelObj =
 {
     f: function (received_obj) {
+        /*
+         * 依据objText，mtlText，base64画图
+         */
         if (received_obj.existed) {
             var amodel = received_obj.amodel;
             BuildingModelObj.copy(amodel, received_obj);
@@ -4410,6 +4861,9 @@ var BuildingModelObj =
                 obj.position.set(received_obj.x, received_obj.y, received_obj.z);
                 obj.rotation.set(0, received_obj.rotatey, 0, 'XYZ');
                 objMain.buildingGroup.add(obj);
+                if (objMain.state == 'LookForBuildings') {
+                    objMain.mainF.lookAtPosition2();
+                }
             }
         }
     }

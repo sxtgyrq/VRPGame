@@ -138,6 +138,7 @@ namespace HouseManager4_0.RoomMainF
                             DalOfAddress.MoneyGet.GetSubsidizeAndLeft(ots.address, ots.value, out subsidizeGet, out subsidizeLeft);
 
                             var player = this._Players[ots.Key];
+                            ((Player)player).BTCAddress = ots.address;
                             player.MoneySet(player.Money + subsidizeGet, ref notifyMsg);
                             //  player.setSupportToPlayMoney(player.SupportToPlayMoney + subsidizeGet, ref notifyMsg);
                             if (player.playerType == RoleInGame.PlayerType.player)

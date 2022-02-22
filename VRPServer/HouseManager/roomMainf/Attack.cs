@@ -15,245 +15,246 @@ namespace HouseManager
          */
         internal async Task<string> updateAttack(SetAttack sa)
         {
+            return "";
             //  Attack a = new Attack(sa, this);
             //a.doAttack();
-            if (string.IsNullOrEmpty(sa.car))
-            {
-                return "";
-            }
-            else if (!(sa.car == "carA" || sa.car == "carB" || sa.car == "carC" || sa.car == "carD" || sa.car == "carE"))
-            {
-                return "";
-            }
-            else if (!(this._Players.ContainsKey(sa.targetOwner)))
-            {
-                return "";
-            }
-            else if (this._Players[sa.targetOwner].StartFPIndex != sa.target)
-            {
-                return "";
-            }
-            else if (sa.targetOwner == sa.Key)
-            {
-#warning 这里要加日志，出现了自己攻击自己！！！
-                return "";
-            }
-            else
-            {
-                var carIndex = getCarIndex(sa.car);
-                List<string> notifyMsg = new List<string>();
-                lock (this.PlayerLock)
-                {
-                    if (this._Players.ContainsKey(sa.Key))
-                    {
-                        if (this._Players[sa.Key].Bust) { }
-                        else
-                        {
-                            //  case "findWork":
-                            {
-                                var player = this._Players[sa.Key];
-                                var car = this._Players[sa.Key].getCar(carIndex);
-                                switch (car.state)
-                                {
-                                    case CarState.waitAtBaseStation:
-                                        {
-                                            if (car.purpose == Purpose.@null)
-                                            {
-                                                var moneyIsEnoughToStart = giveMoneyFromPlayerToCarForAttack(player, car, ref notifyMsg);
-                                                if (moneyIsEnoughToStart)
-                                                {
-                                                    var state = CheckTargetState(sa.targetOwner);
-                                                    if (state == CarStateForBeAttacked.CanBeAttacked)
-                                                    {
-                                                        MileResultReason mrr;
-                                                        attack(player, car, sa, ref notifyMsg, out mrr);
-                                                        if (mrr == MileResultReason.Abundant)
-                                                        {
+//            if (string.IsNullOrEmpty(sa.car))
+//            {
+//                return "";
+//            }
+//            else if (!(sa.car == "carA" || sa.car == "carB" || sa.car == "carC" || sa.car == "carD" || sa.car == "carE"))
+//            {
+//                return "";
+//            }
+//            else if (!(this._Players.ContainsKey(sa.targetOwner)))
+//            {
+//                return "";
+//            }
+//            else if (this._Players[sa.targetOwner].StartFPIndex != sa.target)
+//            {
+//                return "";
+//            }
+//            else if (sa.targetOwner == sa.Key)
+//            {
+//#warning 这里要加日志，出现了自己攻击自己！！！
+//                return "";
+//            }
+//            else
+//            {
+//                var carIndex = getCarIndex(sa.car);
+//                List<string> notifyMsg = new List<string>();
+//                lock (this.PlayerLock)
+//                {
+//                    if (this._Players.ContainsKey(sa.Key))
+//                    {
+//                        if (this._Players[sa.Key].Bust) { }
+//                        else
+//                        {
+//                            //  case "findWork":
+//                            {
+//                                var player = this._Players[sa.Key];
+//                                var car = this._Players[sa.Key].getCar(carIndex);
+//                                switch (car.state)
+//                                {
+//                                    case CarState.waitAtBaseStation:
+//                                        {
+//                                            if (car.purpose == Purpose.@null)
+//                                            {
+//                                                var moneyIsEnoughToStart = giveMoneyFromPlayerToCarForAttack(player, car, ref notifyMsg);
+//                                                if (moneyIsEnoughToStart)
+//                                                {
+//                                                    var state = CheckTargetState(sa.targetOwner);
+//                                                    if (state == CarStateForBeAttacked.CanBeAttacked)
+//                                                    {
+//                                                        MileResultReason mrr;
+//                                                        attack(player, car, sa, ref notifyMsg, out mrr);
+//                                                        if (mrr == MileResultReason.Abundant)
+//                                                        {
 
-                                                        }
-                                                        else
-                                                        {
-                                                            if (mrr == MileResultReason.CanNotReach)
-                                                            {
+//                                                        }
+//                                                        else
+//                                                        {
+//                                                            if (mrr == MileResultReason.CanNotReach)
+//                                                            {
 
-                                                            }
-                                                            else if (mrr == MileResultReason.CanNotReturn)
-                                                            {
-                                                            }
-                                                            else if (mrr == MileResultReason.MoneyIsNotEnougt)
-                                                            { }
-                                                            giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
-                                                        }
-                                                        // doAttack(player, car, sa, ref notifyMsg);
-                                                    }
-                                                    else if (state == CarStateForBeAttacked.HasBeenBust)
-                                                    {
-                                                        Console.WriteLine($"攻击对象已经破产！");
-                                                        giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
-                                                    }
-                                                    else if (state == CarStateForBeAttacked.NotExisted)
-                                                    {
-                                                        Console.WriteLine($"攻击对象已经退出了游戏！");
-                                                        giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
-                                                    }
-                                                    else
-                                                    {
-                                                        throw new Exception($"{state.ToString()}未注册！");
-                                                    }
-                                                }
-                                                else
-                                                {
-#warning 前端要提示
-                                                    Console.WriteLine($"金钱不足以展开攻击！");
-                                                    giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
-                                                    //carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                }
-                                            }
-                                        }; break;
-                                    case CarState.waitOnRoad:
-                                        {
-                                            /*
-                                             * 在接收到攻击指令时，如果小车在路上，说明，
-                                             * 其上一个任务是抢能力宝石，结果是没抢到。其
-                                             * 目的应该应该为purpose=null 
-                                             */
-                                            if (car.purpose == Purpose.@null)
-                                            {
-                                                var state = CheckTargetState(sa.targetOwner);
-                                                if (state == CarStateForBeAttacked.CanBeAttacked)
-                                                {
-                                                    MileResultReason mrr;
-                                                    attack(player, car, sa, ref notifyMsg, out mrr);
-                                                    if (mrr == MileResultReason.Abundant) { }
-                                                    else if (mrr == MileResultReason.CanNotReach)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    else if (mrr == MileResultReason.CanNotReturn)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    else if (mrr == MileResultReason.MoneyIsNotEnougt)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    // doAttack(player, car, sa, ref notifyMsg);
-                                                }
-                                                else if (state == CarStateForBeAttacked.HasBeenBust)
-                                                {
-                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    Console.WriteLine($"攻击对象已经破产！");
-                                                }
-                                                else if (state == CarStateForBeAttacked.NotExisted)
-                                                {
-                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
-                                                }
-                                                else
-                                                {
-                                                    throw new Exception($"{state.ToString()}未注册！");
-                                                }
-                                            }
+//                                                            }
+//                                                            else if (mrr == MileResultReason.CanNotReturn)
+//                                                            {
+//                                                            }
+//                                                            else if (mrr == MileResultReason.MoneyIsNotEnougt)
+//                                                            { }
+//                                                            giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
+//                                                        }
+//                                                        // doAttack(player, car, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (state == CarStateForBeAttacked.HasBeenBust)
+//                                                    {
+//                                                        Console.WriteLine($"攻击对象已经破产！");
+//                                                        giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
+//                                                    }
+//                                                    else if (state == CarStateForBeAttacked.NotExisted)
+//                                                    {
+//                                                        Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                        giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
+//                                                    }
+//                                                    else
+//                                                    {
+//                                                        throw new Exception($"{state.ToString()}未注册！");
+//                                                    }
+//                                                }
+//                                                else
+//                                                {
+//#warning 前端要提示
+//                                                    Console.WriteLine($"金钱不足以展开攻击！");
+//                                                    giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
+//                                                    //carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                }
+//                                            }
+//                                        }; break;
+//                                    case CarState.waitOnRoad:
+//                                        {
+//                                            /*
+//                                             * 在接收到攻击指令时，如果小车在路上，说明，
+//                                             * 其上一个任务是抢能力宝石，结果是没抢到。其
+//                                             * 目的应该应该为purpose=null 
+//                                             */
+//                                            if (car.purpose == Purpose.@null)
+//                                            {
+//                                                var state = CheckTargetState(sa.targetOwner);
+//                                                if (state == CarStateForBeAttacked.CanBeAttacked)
+//                                                {
+//                                                    MileResultReason mrr;
+//                                                    attack(player, car, sa, ref notifyMsg, out mrr);
+//                                                    if (mrr == MileResultReason.Abundant) { }
+//                                                    else if (mrr == MileResultReason.CanNotReach)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (mrr == MileResultReason.CanNotReturn)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (mrr == MileResultReason.MoneyIsNotEnougt)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    // doAttack(player, car, sa, ref notifyMsg);
+//                                                }
+//                                                else if (state == CarStateForBeAttacked.HasBeenBust)
+//                                                {
+//                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    Console.WriteLine($"攻击对象已经破产！");
+//                                                }
+//                                                else if (state == CarStateForBeAttacked.NotExisted)
+//                                                {
+//                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                }
+//                                                else
+//                                                {
+//                                                    throw new Exception($"{state.ToString()}未注册！");
+//                                                }
+//                                            }
 
-                                        }; break;
-                                    case CarState.waitForTaxOrAttack:
-                                        {
-                                            if (car.purpose == Purpose.tax)
-                                            {
-                                                var state = CheckTargetState(sa.targetOwner);
-                                                if (state == CarStateForBeAttacked.CanBeAttacked)
-                                                {
-                                                    MileResultReason mrr;
-                                                    attack(player, car, sa, ref notifyMsg, out mrr);
-                                                    if (mrr == MileResultReason.Abundant) { }
-                                                    else if (mrr == MileResultReason.CanNotReach)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    else if (mrr == MileResultReason.CanNotReturn)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    else if (mrr == MileResultReason.MoneyIsNotEnougt)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    // doAttack(player, car, sa, ref notifyMsg);
-                                                }
-                                                else if (state == CarStateForBeAttacked.HasBeenBust)
-                                                {
-                                                    Console.WriteLine($"攻击对象已经破产！");
-                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                }
-                                                else if (state == CarStateForBeAttacked.NotExisted)
-                                                {
-                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
-                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                }
-                                                else
-                                                {
-                                                    throw new Exception($"{state.ToString()}未注册！");
-                                                }
-                                            }
-                                        }; break;
-                                    case CarState.waitForCollectOrAttack:
-                                        {
-                                            if (car.purpose == Purpose.collect)
-                                            {
-                                                var state = CheckTargetState(sa.targetOwner);
-                                                if (state == CarStateForBeAttacked.CanBeAttacked)
-                                                {
-                                                    MileResultReason mrr;
-                                                    attack(player, car, sa, ref notifyMsg, out mrr);
-                                                    if (mrr == MileResultReason.Abundant) { }
-                                                    else if (mrr == MileResultReason.CanNotReach)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    else if (mrr == MileResultReason.CanNotReturn)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                    else if (mrr == MileResultReason.MoneyIsNotEnougt)
-                                                    {
-                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    }
-                                                }
-                                                else if (state == CarStateForBeAttacked.HasBeenBust)
-                                                {
-                                                    Console.WriteLine($"攻击对象已经破产！");
-                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                }
-                                                else if (state == CarStateForBeAttacked.NotExisted)
-                                                {
-                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
-                                                }
-                                                else
-                                                {
-                                                    throw new Exception($"{state.ToString()}未注册！");
-                                                }
-                                            }
-                                        }; break;
+//                                        }; break;
+//                                    case CarState.waitForTaxOrAttack:
+//                                        {
+//                                            if (car.purpose == Purpose.tax)
+//                                            {
+//                                                var state = CheckTargetState(sa.targetOwner);
+//                                                if (state == CarStateForBeAttacked.CanBeAttacked)
+//                                                {
+//                                                    MileResultReason mrr;
+//                                                    attack(player, car, sa, ref notifyMsg, out mrr);
+//                                                    if (mrr == MileResultReason.Abundant) { }
+//                                                    else if (mrr == MileResultReason.CanNotReach)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (mrr == MileResultReason.CanNotReturn)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (mrr == MileResultReason.MoneyIsNotEnougt)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    // doAttack(player, car, sa, ref notifyMsg);
+//                                                }
+//                                                else if (state == CarStateForBeAttacked.HasBeenBust)
+//                                                {
+//                                                    Console.WriteLine($"攻击对象已经破产！");
+//                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                }
+//                                                else if (state == CarStateForBeAttacked.NotExisted)
+//                                                {
+//                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                }
+//                                                else
+//                                                {
+//                                                    throw new Exception($"{state.ToString()}未注册！");
+//                                                }
+//                                            }
+//                                        }; break;
+//                                    case CarState.waitForCollectOrAttack:
+//                                        {
+//                                            if (car.purpose == Purpose.collect)
+//                                            {
+//                                                var state = CheckTargetState(sa.targetOwner);
+//                                                if (state == CarStateForBeAttacked.CanBeAttacked)
+//                                                {
+//                                                    MileResultReason mrr;
+//                                                    attack(player, car, sa, ref notifyMsg, out mrr);
+//                                                    if (mrr == MileResultReason.Abundant) { }
+//                                                    else if (mrr == MileResultReason.CanNotReach)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (mrr == MileResultReason.CanNotReturn)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                    else if (mrr == MileResultReason.MoneyIsNotEnougt)
+//                                                    {
+//                                                        carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    }
+//                                                }
+//                                                else if (state == CarStateForBeAttacked.HasBeenBust)
+//                                                {
+//                                                    Console.WriteLine($"攻击对象已经破产！");
+//                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                }
+//                                                else if (state == CarStateForBeAttacked.NotExisted)
+//                                                {
+//                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
+//                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                }
+//                                                else
+//                                                {
+//                                                    throw new Exception($"{state.ToString()}未注册！");
+//                                                }
+//                                            }
+//                                        }; break;
 
-                                }
-                            };
-                        }
-                    }
-                }
+//                                }
+//                            };
+//                        }
+//                    }
+//                }
 
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
-                    if (!string.IsNullOrEmpty(url))
-                    {
-                        await Startup.sendMsg(url, sendMsg);
-                    }
-                }
-                return "";
-            }
+//                for (var i = 0; i < notifyMsg.Count; i += 2)
+//                {
+//                    var url = notifyMsg[i];
+//                    var sendMsg = notifyMsg[i + 1];
+//                    Console.WriteLine($"url:{url}");
+//                    if (!string.IsNullOrEmpty(url))
+//                    {
+//                        await Startup.sendMsg(url, sendMsg);
+//                    }
+//                }
+//                return "";
+//            }
         }
 
         enum CarStateForBeAttacked
@@ -440,67 +441,68 @@ namespace HouseManager
 
         private void SetAttackArrivalThread(int startT, Car car, SetAttack sa, List<Model.MapGo.nyrqPosition> returnPath)
         {
-            Thread th = new Thread(() => setDebt(startT, new commandWithTime.debtOwner()
-            {
-                c = "debtOwner",
-                key = sa.Key,
-                car = sa.car,
-                returnPath = returnPath,
-                target = car.targetFpIndex,//新的起点
-                changeType = "Attack",
-                victim = sa.targetOwner
-            }));
-            th.Start();
+            //Thread th = new Thread(() => setDebt(startT, new commandWithTime.debtOwner()
+            //{
+            //    c = "debtOwner",
+            //    key = sa.Key,
+            //    car = sa.car,
+            //    returnPath = returnPath,
+            //    target = car.targetFpIndex,//新的起点
+            //    changeType = "Attack",
+            //    victim = sa.targetOwner
+            //}));
+            //th.Start();
         }
 
         private void EditCarStateWhenAttackStartOK(Player player, ref Car car, int to, Model.FastonPosition fp1, SetAttack sa, List<Model.MapGo.nyrqPosition> goPath, out int startT, ref List<string> notifyMsg)
         {
-            car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
-            car.setPurpose(this._Players[sa.Key], ref notifyMsg, Purpose.attack);
-            // car.purpose = Purpose.attack;//B.更改小车目的，小车变为攻击状态！
-            //  car.changeState++;//C.更改状态用去前台更新动画  
+            throw new Exception("作废");
+            //car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
+            //car.setPurpose(this._Players[sa.Key], ref notifyMsg, Purpose.attack);
+            //// car.purpose = Purpose.attack;//B.更改小车目的，小车变为攻击状态！
+            ////  car.changeState++;//C.更改状态用去前台更新动画  
 
-            /*
-            * D.更新小车动画参数
-            */
-            var speed = car.ability.Speed;
-            startT = 0;
-            List<Data.PathResult> result;
-            if (car.state == CarState.waitAtBaseStation)
-            {
-                result = getStartPositon(fp1, sa.car, ref startT);
-            }
-            else if (car.state == CarState.waitForCollectOrAttack)
-            {
-                result = new List<Data.PathResult>();
-            }
-            else if (car.state == CarState.waitForTaxOrAttack)
-            {
-                result = new List<Data.PathResult>();
-            }
-            else if (car.state == CarState.waitOnRoad)
-            {
-                result = new List<Data.PathResult>();
-            }
-            else
-            {
-                throw new Exception("错误的汽车类型！！！");
-            }
-            car.setState(this._Players[sa.Key], ref notifyMsg, CarState.roadForAttack);
-            //car.state = CarState.roadForAttack;
-            //  this.SendStateAndPurpose(this._Players[sa.Key], car, ref notifyMsg);
+            ///*
+            //* D.更新小车动画参数
+            //*/
+            //var speed = car.ability.Speed;
+            //startT = 0;
+            //List<Data.PathResult> result;
+            //if (car.state == CarState.waitAtBaseStation)
+            //{
+            //    result = getStartPositon(fp1, sa.car, ref startT);
+            //}
+            //else if (car.state == CarState.waitForCollectOrAttack)
+            //{
+            //    result = new List<Data.PathResult>();
+            //}
+            //else if (car.state == CarState.waitForTaxOrAttack)
+            //{
+            //    result = new List<Data.PathResult>();
+            //}
+            //else if (car.state == CarState.waitOnRoad)
+            //{
+            //    result = new List<Data.PathResult>();
+            //}
+            //else
+            //{
+            //    throw new Exception("错误的汽车类型！！！");
+            //}
+            //car.setState(this._Players[sa.Key], ref notifyMsg, CarState.roadForAttack);
+            ////car.state = CarState.roadForAttack;
+            ////  this.SendStateAndPurpose(this._Players[sa.Key], car, ref notifyMsg);
 
 
-            Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
-            result.RemoveAll(item => item.t0 == item.t1);
+            //Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);
+            //result.RemoveAll(item => item.t0 == item.t1);
 
-            var animateData = new AnimateData()
-            {
-                animateData = result,
-                recordTime = DateTime.Now
-            };
+            //var animateData = new AnimateData()
+            //{
+            //    animateData = result,
+            //    recordTime = DateTime.Now
+            //};
 
-            car.setAnimateData(player, ref notifyMsg, animateData);
+            //car.setAnimateData(player, ref notifyMsg, animateData);
             //car.animateData = new AnimateData()
             //{
             //    animateData = result,
@@ -611,25 +613,25 @@ namespace HouseManager
         //}
         private void carsAttackFailedThenMustReturn(Car car, Player player, SetAttack sc, ref List<string> notifyMsg)
         {
-            // if (car.state == CarState.waitAtBaseStation)
-            {
-                //Console.Write($"现在剩余容量为{car.ability.leftVolume}，总容量为{car.ability.Volume}");
-                Console.WriteLine($"由于里程安排问题，必须返回！");
-                var from = getFromWhenAttack(this._Players[sc.Key], car);
-                int startT = 1;
-                //var carKey = $"{}_{}";
-                var returnPath_Record = this._Players[sc.Key].returningRecord[sc.car];
-                Thread th = new Thread(() => setReturn(startT, new commandWithTime.returnning()
-                {
-                    c = "returnning",
-                    key = sc.Key,
-                    car = sc.car,
-                    returnPath = returnPath_Record,
-                    target = from,
-                    changeType = AttackFailedReturn,
-                }));
-                th.Start();
-            }
+            //// if (car.state == CarState.waitAtBaseStation)
+            //{
+            //    //Console.Write($"现在剩余容量为{car.ability.leftVolume}，总容量为{car.ability.Volume}");
+            //    Console.WriteLine($"由于里程安排问题，必须返回！");
+            //    var from = getFromWhenAttack(this._Players[sc.Key], car);
+            //    int startT = 1;
+            //    //var carKey = $"{}_{}";
+            //    var returnPath_Record = this._Players[sc.Key].returningRecord[sc.car];
+            //    Thread th = new Thread(() => setReturn(startT, new commandWithTime.returnning()
+            //    {
+            //        c = "returnning",
+            //        key = sc.Key,
+            //        car = sc.car,
+            //        returnPath = returnPath_Record,
+            //        target = from,
+            //        changeType = AttackFailedReturn,
+            //    }));
+            //    th.Start();
+            //}
         }
 
 

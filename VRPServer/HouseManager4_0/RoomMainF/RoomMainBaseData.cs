@@ -197,8 +197,8 @@ namespace HouseManager4_0.RoomMainF
         public Engine_Attach attachE;
 
         public Engine_MagicEngine magicE;
-
-
+        
+        public Engine_Check checkE; 
         //以上为Engine
         //以下为Manager
 

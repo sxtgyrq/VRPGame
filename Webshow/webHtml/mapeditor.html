@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -241,184 +241,332 @@
     <script src="mainf2MapEditor.js"></script>
     <img id="confirmAlert" style="z-index:-10;position:absolute;left:calc(50% - 182px);top:calc(50% - 42px);" src="Pic/editor/delConfirm.png" />
 
-    <img id="instruction" style="z-index:-10;position:absolute;left:calc(50% - 333px);top:calc(50% - 220px);" src="Pic/editor/instruction.png" />
-    <!--<div id="dialog" class="dialog show">
-        <div class="dialogPanel1">
-            <header id="panelHeader-5" class="dialogPanelheader">
+    <img id="instruction" style="z-index:-10;position:absolute;left:calc(50% - 302px);top:calc(50% - 163px);" src="Pic/editor/instruction.png" />
+
+    <div id="dataInputFrame" style="z-index:999;width:100%;height:100%;position:absolute;top:0px;left:0px;">
+        <div style="height:2em;">
+            <button id="windowsEditBtn">最小化</button>
+            <script>
+                var maxWindow = function () {
+                    var el = document.getElementById('dataInputFrame');;
+                    el.style.height = '100%';
+                    el.style.overflow = '';
+                    document.getElementById('windowsEditBtn').innerText = '最小化';
+                    document.getElementById('windowsEditBtn').onclick = function () {
+                        minWindow();
+                    }
+                }
+                var minWindow = function () {
+                    var el = document.getElementById('dataInputFrame');;
+                    el.style.height = '2em';
+                    el.style.overflow = 'hidden';
+                    document.getElementById('windowsEditBtn').innerText = '最大化';
+                    document.getElementById('windowsEditBtn').onclick = function () {
+                        maxWindow();
+                    }
+                }
+                minWindow();
+            </script>
 
-                <button id="panelLeftButtonGoBack" class="dialogPanelLeftButton">
-                    <span class="dialogBtn_text">返回</span>
-                </button>
-
-                <h1 id="panelTitleDialogTo" class="dialogPanelTitleName" style="padding-left:2em;" onclick="gotoOtherRolePage();">
-                    ☭玩家AAAeee
-
-                </h1>
-
-
-
-            </header>
-            <div id="panelBodyShowMsg" class="dialogPanel_body" onscroll="getHeight(this);">
-
-
-
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group self  " _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>哈希码</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-                <div class="dialogChat_content_group buddy" _sender_uin="1322410987">
-
-
-
-                    <p class="dialogChat_nick"> <a>不好</a></p>
-
-
-                    <p class="chat_content ">你好好好</p>
-                </div>
-            </div>
-
-            <footer id="panelFooter-5" class="dialogChat_toolbar_footer">
-                <ul>
-                    <li class="dialogSession left">
-                        <a style="margin-top:5px;">
-
-                            <span style="display: block;
-    bottom: 4px;
-    width: 100%;
-    font-size: 28px;">✚</span>
-                        </a>
-                    </li>
-                    <li class="dialogSession input">
-                        <textarea class="dialogChat_textareaStyle" maxlength="120"></textarea>
-
-                    </li>
-                    <li class="dialogSession right">
-                        <a style="margin-top:5px;">
-
-                            <span style="display: block;
-    bottom: 4px;
-    width: 100%;
-    font-size: 28px;">发送</span>
-                        </a>
-                    </li>
-                </ul>
-
-            </footer>
         </div>
-    </div>-->
+        <div style="background :yellowgreen;">
+            <span>建筑名:</span>
+            <textarea id="modelName" style="width:60%;" rows="1"></textarea>
+        </div>
+        <div id="dropObj_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop obj file here</div>
+        <textarea id="objTextareaValue" style="width:80%; height:100px;" readonly></textarea>
+        <div id="dropMtl_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop mtl file here</div>
+        <textarea id="mtlTextareaValue" style="width:80%; height:100px;" readonly></textarea>
+        <div id="dropPic_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList"></output>
+        <textarea id="jpgBase64TextareaValue" style="width:80%; height:100px;" readonly></textarea>
+        <!--<div id="dropImg_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="imgList"></output>-->
+        <script>
+            var loadText = function (operateID, showID) {
+                function handleFileSelect(evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+
+                    var files = evt.dataTransfer.files; // FileList object.
+
+                    var reader = new FileReader();
+                    var file = files[0];
+                    var name = file.name;
+                    var length = name.lastIndexOf('.');
+                    if (length > 0) {
+                        name = name.substr(0, length)
+                    }
+                    switch (showID) {
+                        case 'objTextareaValue':
+                            {
+                                document.getElementById('modelName').value = name;
+                            }; break;
+                    }
+
+                    //  console.log('file', file);
+                    reader.onloadend = function (evt) {
+                        if (evt.target.readyState == FileReader.DONE) {
+                            document.getElementById(showID).value = evt.target.result;
+                        }
+                    };
+                    reader.readAsBinaryString(file);
+                }
+
+                function handleDragOver(evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+                }
+
+                // Setup the dnd listeners.
+                var dropObj_zone = document.getElementById(operateID);
+                dropObj_zone.addEventListener('dragover', handleDragOver, false);
+                dropObj_zone.addEventListener('drop', handleFileSelect, false);
+            }
+            loadText('dropObj_zone', 'objTextareaValue');
+            loadText('dropMtl_zone', 'mtlTextareaValue');
+            var loadImg = function (operateID, showID, dataShowID) {
+                function handleFileSelect(evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+
+                    var files = evt.dataTransfer.files; // FileList object.
+
+                    var reader = new FileReader();
+                    var file = files[0];
+                    console.log('type', file.type);
+                    if (file.type != 'image/jpeg') {
+                        alert('请上传jpg格式的图片');
+                        return;
+                    }
+                    reader.onload = (function (theFile) {
+                        return function (e) {
+                            // Render thumbnail.
+                            console.log('dd', e.target.result);
+                            var span = document.createElement('span');
+                            span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                '" title="', escape(theFile.name), '"/>'].join('');
+                            document.getElementById(showID).insertBefore(span, null);
+                            document.getElementById(dataShowID).value = e.target.result.split(',')[1];
+                        };
+                    })(file);
+                    reader.readAsDataURL(file);
+                }
+
+                function handleDragOver(evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+                }
+
+                // Setup the dnd listeners.
+                var dropObj_zone = document.getElementById(operateID);
+                dropObj_zone.addEventListener('dragover', handleDragOver, false);
+                dropObj_zone.addEventListener('drop', handleFileSelect, false);
+            }
+            loadImg('dropPic_zone', 'picList', 'jpgBase64TextareaValue');
+            /*  loadImg('dropImg_zone', 'imgList');*/
+        </script>
+        <div>
+            <select id="modelTypes">
+                <!--<option value="volvo">Volvo</option>
+                <option value="saab">Saab</option>
+                <option value="mercedes">Mercedes</option>
+                <option value="audi">Audi</option>-->
+            </select>
+        </div>
+        <div style="background :#ffffff64;" id="BTCAddress"></div>
+
+        <div>
+
+            <!--<div>
+                <input type="range" id="zoomValue" name="points" min="0.1" max="2" step="0.01">
+                <div>1</div>
+            </div>-->
+
+
+            <button>清空</button>
+            <button id="useDataBtn" onclick="useDataF();">引用</button>
+            <script>
+                var useDataF = function () {
+                    var obj = document.getElementById('objTextareaValue').value;
+                    var mtl = document.getElementById('mtlTextareaValue').value;
+                    var base64 = document.getElementById('jpgBase64TextareaValue').value;
+                    var modelTypes = document.getElementById('modelTypes').value;
+                    var modelName = document.getElementById('modelName').value;
+                    uploadObj.setValue(obj, mtl, base64, modelTypes, modelName);
+                }
+            </script>
+        </div>
+
+    </div>
+
+    <div id="scenseDataInputFrame" style="z-index:999;width:calc(100% - 100px);height:100%;position:absolute;top:0;left:100px;">
+        <div style="height:2em;left:calc(100% - 100px);">
+            <button id="scenseDataInputFrameEditBtn">最小化</button>
+            <script>
+                var maxWindow2 = function () {
+                    var el = document.getElementById('scenseDataInputFrame');;
+                    el.style.height = '100%';
+                    el.style.overflow = '';
+                    document.getElementById('scenseDataInputFrameEditBtn').innerText = '最小化';
+                    document.getElementById('scenseDataInputFrameEditBtn').onclick = function () {
+                        minWindow2();
+                    }
+                }
+                var minWindow2 = function () {
+                    var el = document.getElementById('scenseDataInputFrame');;
+                    el.style.height = '2em';
+                    el.style.overflow = 'hidden';
+                    document.getElementById('scenseDataInputFrameEditBtn').innerText = '最大化';
+                    document.getElementById('scenseDataInputFrameEditBtn').onclick = function () {
+                        maxWindow2();
+                    }
+                }
+                minWindow2();
+            </script>
+
+        </div>
+        <div style="background :yellowgreen;">
+            <span>建筑名:</span>
+            <textarea id="modelName" style="width:60%;" rows="1"></textarea>
+        </div>
+
+        <div id="dropPicPz_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList_Pz"></output>
+        <textarea id="jpgBase64Text_Pz" style="width:80%; height:100px;" readonly></textarea>
+
+        <div id="dropPicNz_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList_Nz"></output>
+        <textarea id="jpgBase64Text_Nz" style="width:80%; height:100px;" readonly></textarea>
+
+        <div id="dropPicPy_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList_Py"></output>
+        <textarea id="jpgBase64Text_Py" style="width:80%; height:100px;" readonly></textarea>
+
+        <div id="dropPicNy_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList_Ny"></output>
+        <textarea id="jpgBase64Text_Ny" style="width:80%; height:100px;" readonly></textarea>
+
+        <div id="dropPicPx_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList_Px"></output>
+        <textarea id="jpgBase64Text_Px" style="width:80%; height:100px;" readonly></textarea>
+
+        <div id="dropPicNx_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+        <output id="picList_Nx"></output>
+        <textarea id="jpgBase64Text_Nx" style="width:80%; height:100px;" readonly></textarea>
+        <!--<div id="dropImg_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
+    <output id="imgList"></output>-->
+        <script>
+            //var loadText = function (operateID, showID) {
+            //    function handleFileSelect(evt) {
+            //        evt.stopPropagation();
+            //        evt.preventDefault();
+
+            //        var files = evt.dataTransfer.files; // FileList object.
+
+            //        var reader = new FileReader();
+            //        var file = files[0];
+            //        var name = file.name;
+            //        var length = name.lastIndexOf('.');
+            //        if (length > 0) {
+            //            name = name.substr(0, length)
+            //        }
+            //        switch (showID) {
+            //            case 'objTextareaValue':
+            //                {
+            //                    document.getElementById('modelName').value = name;
+            //                }; break;
+            //        }
+
+            //        //  console.log('file', file);
+            //        reader.onloadend = function (evt) {
+            //            if (evt.target.readyState == FileReader.DONE) {
+            //                document.getElementById(showID).value = evt.target.result;
+            //            }
+            //        };
+            //        reader.readAsBinaryString(file);
+            //    }
+
+            //    function handleDragOver(evt) {
+            //        evt.stopPropagation();
+            //        evt.preventDefault();
+            //        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+            //    }
+
+            //    // Setup the dnd listeners.
+            //    var dropObj_zone = document.getElementById(operateID);
+            //    dropObj_zone.addEventListener('dragover', handleDragOver, false);
+            //    dropObj_zone.addEventListener('drop', handleFileSelect, false);
+            //}
+            var loadImg = function (operateID, showID, dataShowID) {
+                function handleFileSelect(evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+
+                    var files = evt.dataTransfer.files; // FileList object.
+
+                    var reader = new FileReader();
+                    var file = files[0];
+                    console.log('type', file.type);
+                    if (file.type != 'image/jpeg') {
+                        alert('请上传jpg格式的图片');
+                        return;
+                    }
+                    reader.onload = (function (theFile) {
+                        return function (e) {
+                            // Render thumbnail.
+                            console.log('dd', e.target.result);
+                            var span = document.createElement('span');
+                            span.innerHTML = ['<img class="thumb" src="', e.target.result,
+                                '" title="', escape(theFile.name), '"/>'].join('');
+                            document.getElementById(showID).insertBefore(span, null);
+                            document.getElementById(dataShowID).value = e.target.result.split(',')[1];
+                        };
+                    })(file);
+                    reader.readAsDataURL(file);
+                }
+
+                function handleDragOver(evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+                }
+
+                // Setup the dnd listeners.
+                var dropObj_zone = document.getElementById(operateID);
+                dropObj_zone.addEventListener('dragover', handleDragOver, false);
+                dropObj_zone.addEventListener('drop', handleFileSelect, false);
+            }
+            loadImg('dropPicPx_zone', 'picList_Px', 'jpgBase64Text_Px');
+            /*  loadImg('dropImg_zone', 'imgList');*/
+        </script>
+
+        <div style="background :#ffffff64;" id="BTCAddress2"></div>
+
+        <div>
+
+            <!--<div>
+            <input type="range" id="zoomValue" name="points" min="0.1" max="2" step="0.01">
+            <div>1</div>
+        </div>-->
+
+
+            <button>清空</button>
+            <button id="useDataBtn" onclick="useDataF();">引用</button>
+            <script>
+                var useDataF = function () {
+                    var obj = document.getElementById('objTextareaValue').value;
+                    var mtl = document.getElementById('mtlTextareaValue').value;
+                    var base64 = document.getElementById('jpgBase64TextareaValue').value;
+                    var modelTypes = document.getElementById('modelTypes').value;
+                    var modelName = document.getElementById('modelName').value;
+                    uploadObj.setValue(obj, mtl, base64, modelTypes, modelName);
+                }
+            </script>
+        </div>
+
+    </div>
 </body>
 </html>

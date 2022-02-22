@@ -11,6 +11,14 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Path
     {
+        /// <summary>
+        /// 返回路径，并且按照路口（cross)进行拆分
+        /// </summary>
+        /// <param name="from">起始地点</param>
+        /// <param name="to">目标地点</param>
+        /// <param name="player"></param>
+        /// <param name="notifyMsgs"></param>
+        /// <returns></returns>
         List<OssModel.MapGo.nyrqPosition> GetAFromB_Path(int from, int to, RoleInGame player, ref List<string> notifyMsgs)
         {
             var path = Program.dt.GetAFromB(from, to);
@@ -91,11 +99,463 @@ namespace HouseManager4_0.RoomMainF
                                     start = path[indexOfPath],
                                     end = path[indexOfPath + 1]
                                 };
-                                //path[path]
-                                if (thePointIsEnd(path[indexOfPath], path[indexOfPath + 1]))
+                                var wrong = new Node.direction()
                                 {
-
+                                    right = false,
+                                    start = path[indexOfPath + 1],
+                                    end = path[indexOfPath],
+                                };
+                                List<Node.direction> selections;
+                                if (FoundCross(wrong, path[indexOfPath]))
+                                {
+                                    selections = new List<Node.direction>()
+                                    {
+                                        right, wrong
+                                    };
                                 }
+                                else
+                                {
+                                    selections = new List<Node.direction>()
+                                    {
+                                        right
+                                    };
+                                }
+                                node.path.Add(new Node.pathItem()
+                                {
+                                    path = new List<MapGo.nyrqPosition>() { },
+                                    selections = selections,
+                                    position = path[indexOfPath],
+                                    selectionCenter = new Node.pathItem.Postion()
+                                    {
+                                        longitude = path[indexOfPath].BDlongitude,
+                                        latitude = path[indexOfPath].BDlatitude,
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                var right = new Node.direction()
+                                {
+                                    right = true,
+                                    start = path[indexOfPath],
+                                    end = path[indexOfPath + 1]
+                                };
+                                /*
+                                 * 这里只有1个选项是为了不进行选择。
+                                 */
+                                node.path.Add(new Node.pathItem()
+                                {
+                                    path = new List<MapGo.nyrqPosition>() { },
+                                    selections = new List<Node.direction>()
+                                    {
+                                        right
+                                    },
+                                    position = path[indexOfPath],
+                                    selectionCenter = new Node.pathItem.Postion()
+                                    {
+                                        longitude = path[indexOfPath].BDlongitude,
+                                        latitude = path[indexOfPath].BDlatitude,
+                                    }
+                                });
+                            }
+                            lastPoint = path[0];
+                            cursor = indexOfPath + 1;
+                        }
+                        else
+                        {
+
+                            var current = Program.dt.GetItemRoadInfo(path[indexOfPath]);
+                            var next = Program.dt.GetItemRoadInfo(path[indexOfPath + 1]);
+                            var position = lastPoint.copy();
+                            if (current.RoadCode == next.RoadCode)
+                            {
+                                //   cursor = i;
+                                List<CalCross> calCross = new List<CalCross>();
+
+                                double ascendingValue;
+                                if (path[indexOfPath].roadOrder + path[indexOfPath].percent < path[indexOfPath + 1].roadOrder + path[indexOfPath + 1].percent)
+                                {
+                                    ascendingValue = 1;
+                                }
+                                else if (path[indexOfPath].roadOrder + path[indexOfPath].percent > path[indexOfPath + 1].roadOrder + path[indexOfPath + 1].percent)
+                                {
+                                    ascendingValue = -1;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                                {
+                                    var findCrosses = findCrossesF(current.Cross1,
+                                        current,
+                                        path[indexOfPath], path[indexOfPath + 1], ascendingValue,
+                                         (SaveRoad.DictCross c) =>
+                                         {
+                                             return c.RoadCode1;
+                                         },
+                                         (SaveRoad.DictCross c) =>
+                                         {
+                                             return c.RoadOrder1;
+                                         },
+                                         (SaveRoad.DictCross c) =>
+                                         {
+                                             return c.Percent1;
+                                         }
+                                        );
+                                    for (var indexOfC = 0; indexOfC < findCrosses.Count; indexOfC++)
+                                    {
+                                        calCross.Add(new CalCross()
+                                        {
+                                            cross = findCrosses[indexOfC],
+                                            calType = 1
+                                        });
+                                    }
+                                }
+                                {
+                                    var findCrosses = findCrossesF(current.Cross2,
+                                        current,
+                                        path[indexOfPath], path[indexOfPath + 1], ascendingValue,
+                                         (SaveRoad.DictCross c) =>
+                                         {
+                                             return c.RoadCode2;
+                                         },
+                                         (SaveRoad.DictCross c) =>
+                                         {
+                                             return c.RoadOrder2;
+                                         },
+                                         (SaveRoad.DictCross c) =>
+                                         {
+                                             return c.Percent2;
+                                         }
+                                        );
+                                    for (var indexOfC = 0; indexOfC < findCrosses.Count; indexOfC++)
+                                    {
+                                        calCross.Add(new CalCross()
+                                        {
+                                            cross = findCrosses[indexOfC],
+                                            calType = 2
+                                        });
+                                    }
+                                }
+
+                                calCross = (from item in calCross
+                                            orderby (item.calType == 1 ? (item.cross.RoadOrder1 + item.cross.Percent1) : (item.cross.RoadOrder2 + item.cross.Percent2)) * ascendingValue ascending
+                                            select item).ToList();
+                                for (int indexOfCalCross = 0; indexOfCalCross < calCross.Count; indexOfCalCross++)
+                                {
+                                    var pathItem = new List<MapGo.nyrqPosition>();
+                                    pathItem.Add(lastPoint.copy());//增加最后一点。
+                                    for (int start = cursor; start < indexOfPath; start++)
+                                    {
+                                        pathItem.Add(path[start]);
+                                    }
+                                    cursor = indexOfPath + 1;//将光标指向下一个位置。在一个线段内的第二个cross，不会执行上面的循环
+                                    var newLast = new MapGo.nyrqPosition
+                                        (
+                                        calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadCode1 : calCross[indexOfCalCross].cross.RoadCode2,
+                                        calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadOrder1 : calCross[indexOfCalCross].cross.RoadOrder2,
+                                        calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.Percent1 : calCross[indexOfCalCross].cross.Percent2,
+                                        calCross[indexOfCalCross].cross.BDLongitude,
+                                        calCross[indexOfCalCross].cross.BDLatitude,
+                                        lastPoint.maxSpeed);
+                                    pathItem.Add(newLast);
+                                    lastPoint = newLast.copy();
+                                    Node.pathItem.Postion selectionCenter = new Node.pathItem.Postion()
+                                    {
+                                        longitude = calCross[indexOfCalCross].cross.BDLongitude,
+                                        latitude = calCross[indexOfCalCross].cross.BDLatitude,
+                                    };
+                                    var selections = new List<Node.direction>();
+                                    {
+                                        var directionCreate = new Node.direction()
+                                        {
+                                            start = path[indexOfPath],
+                                            end = path[indexOfPath + 1],
+                                            right = true
+                                        };
+                                        if (FoundCross(directionCreate, path[indexOfPath]))
+                                        {
+                                            selections.Add(directionCreate);
+                                        }
+                                    }
+
+                                    string otherRoadCode;
+                                    int otherRoadOrder;
+                                    double otherPencent;
+                                    double otherLon, otherLat;
+                                    otherLon = calCross[indexOfCalCross].cross.BDLongitude;
+                                    otherLat = calCross[indexOfCalCross].cross.BDLatitude;
+                                    if (calCross[indexOfCalCross].calType == 1)
+                                    {
+                                        otherRoadCode = calCross[indexOfCalCross].cross.RoadCode2;
+                                        otherRoadOrder = calCross[indexOfCalCross].cross.RoadOrder2;
+                                        otherPencent = calCross[indexOfCalCross].cross.Percent2;
+                                    }
+                                    else
+                                    {
+                                        otherRoadCode = calCross[indexOfCalCross].cross.RoadCode1;
+                                        otherRoadOrder = calCross[indexOfCalCross].cross.RoadOrder1;
+                                        otherPencent = calCross[indexOfCalCross].cross.Percent1;
+                                    }
+                                    var otherRoad = Program.dt.GetItemRoadInfo(otherRoadCode, otherRoadOrder);
+                                    {
+                                        var directionCreate = new Node.direction()
+                                        {
+                                            start = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 0, otherRoad.startLongitude, otherRoad.startLatitude, otherRoad.MaxSpeed),
+                                            end = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 1, otherRoad.endLongitude, otherRoad.endLatitude, otherRoad.MaxSpeed),
+                                            right = false
+                                        };
+                                        var otherPosition = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, otherPencent, otherLon, otherLat, otherRoad.MaxSpeed);
+                                        if (FoundCross(directionCreate, otherPosition))
+                                            selections.Add(directionCreate);
+                                    }
+                                    if (otherRoad.CarInOpposeDirection == 1)
+                                    {
+                                        var directionCreate = new Node.direction()
+                                        {
+                                            end = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 0, otherRoad.startLongitude, otherRoad.startLatitude, otherRoad.MaxSpeed),
+                                            start = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 1, otherRoad.endLongitude, otherRoad.endLatitude, otherRoad.MaxSpeed),
+                                            right = false
+                                        };
+                                        var otherPosition = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, otherPencent, otherLon, otherLat, otherRoad.MaxSpeed);
+                                        if (FoundCross(directionCreate, otherPosition))
+                                            selections.Add(directionCreate);
+                                    }
+                                    node.path.Add(new Node.pathItem()
+                                    {
+                                        path = pathItem,
+                                        selections = selections,
+                                        position = position,
+                                        selectionCenter = selectionCenter
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                var pathItem = new List<MapGo.nyrqPosition>();
+                                pathItem.Add(lastPoint);
+                                for (int start = cursor; start < indexOfPath; start++)
+                                {
+                                    pathItem.Add(path[start]);
+                                }
+                                cursor = indexOfPath + 2;//将光标指向下一个位置。在一个线段内的第二个cross，不会执行上面的循环
+                                var newLast = path[indexOfPath].copy();
+                                pathItem.Add(newLast);
+
+                                var selections = new List<Node.direction>();
+                                Node.pathItem.Postion selectionCenter = new Node.pathItem.Postion()
+                                {
+                                    longitude = path[indexOfPath].BDlongitude,
+                                    latitude = path[indexOfPath].BDlatitude,
+                                };
+                                selections.Add(new Node.direction()
+                                {
+                                    start = path[indexOfPath + 1],
+                                    end = path[indexOfPath + 2],
+                                    right = true
+                                });
+                                if (next.CarInOpposeDirection == 1)
+                                {
+                                    var direction = new Node.direction()
+                                    {
+                                        start = path[indexOfPath + 2],
+                                        end = path[indexOfPath + 1],
+                                        right = false
+                                    };
+                                    if (FoundCross(direction, path[indexOfPath + 1]))
+                                    {
+                                        selections.Add(direction);
+                                    }
+                                }
+                                {
+                                    var direction = new Node.direction()
+                                    {
+                                        start = path[indexOfPath - 1],
+                                        end = path[indexOfPath],
+                                        right = false
+                                    };
+                                    if (FoundCross(direction, path[indexOfPath])) 
+                                    {
+                                        selections.Add(direction);
+                                    }
+                                }  
+                                node.path.Add(new Node.pathItem()
+                                {
+                                    path = pathItem,
+                                    selections = selections,
+                                    position = position,
+                                    selectionCenter = selectionCenter
+                                });
+                                lastPoint = path[indexOfPath + 1].copy();
+                            }
+                        }
+                    }
+                }
+
+                {
+                    var pathItem = new List<MapGo.nyrqPosition>();
+                    pathItem.Add(lastPoint);
+                    for (var indexOfLeft = cursor; indexOfLeft < path.Count; indexOfLeft++)
+                    {
+                        pathItem.Add(path[indexOfLeft]);
+                    }
+                    var selections = new List<Node.direction>();
+                    node.path.Add(new Node.pathItem()
+                    {
+                        path = pathItem,
+                        selections = selections,
+                        position = lastPoint,
+                        selectionCenter = new Node.pathItem.Postion()
+                        {
+                            longitude = path[path.Count - 1].BDlongitude,
+                            latitude = path[path.Count - 1].BDlatitude,
+                        }
+                    });
+                }
+                return node;
+            }
+            else
+            {
+                /*
+                 * 如果path.count=1或2，返回空结果。
+                 */
+                var node = new Node()
+                {
+                    path = new List<Node.pathItem>()
+                };
+                return node;
+            }
+        }
+
+        private bool FoundCross(Node.direction wrong, MapGo.nyrqPosition startPosition)
+        {
+            var roadCode = startPosition.roadCode;
+            var roadOrder = startPosition.roadOrder + 0;
+            var percent = startPosition.percent;
+            MapGo.nyrqPosition firstEndPosition;
+
+
+            double ascendingValue;
+            if (wrong.end.roadOrder + wrong.end.percent > wrong.start.roadOrder + wrong.start.percent)
+            {
+                ascendingValue = 1;
+                //  endPosition=new MapGo.nyrqPosition(roadCode,roadOrder,1)
+                var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder);
+                firstEndPosition = new MapGo.nyrqPosition(roadCode, roadOrder, 1, current.endLongitude, current.endLatitude, current.MaxSpeed);
+            }
+            else
+            {
+                ascendingValue = -1;
+                var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder);
+                firstEndPosition = new MapGo.nyrqPosition(roadCode, roadOrder, 0, current.startLongitude, current.startLatitude, current.MaxSpeed);
+            }
+            //  if (wrong.end.roadOrder + wrong.end.percent > wrong.start.roadOrder + wrong.start.percent)
+            {
+                {
+                    //var start=
+                    var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder);
+                    var findCrosses1 = findCrossesF(current.Cross1,
+                                           current,
+                                           startPosition, firstEndPosition, ascendingValue,
+                                            (SaveRoad.DictCross c) =>
+                                            {
+                                                return c.RoadCode1;
+                                            },
+                                            (SaveRoad.DictCross c) =>
+                                            {
+                                                return c.RoadOrder1;
+                                            },
+                                            (SaveRoad.DictCross c) =>
+                                            {
+                                                return c.Percent1;
+                                            }
+                                           );
+                    var findCrosses2 = findCrossesF(current.Cross2,
+                                           current,
+                                           startPosition, firstEndPosition, ascendingValue,
+                                            (SaveRoad.DictCross c) =>
+                                            {
+                                                return c.RoadCode2;
+                                            },
+                                            (SaveRoad.DictCross c) =>
+                                            {
+                                                return c.RoadOrder2;
+                                            },
+                                            (SaveRoad.DictCross c) =>
+                                            {
+                                                return c.Percent2;
+                                            }
+                                           );
+                    if (findCrosses1.Count + findCrosses2.Count == 0)
+                    {
+                        if (ascendingValue > 0)
+                            roadOrder++;
+                        else
+                            roadOrder--;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                while (true)
+                {
+                    bool existed;
+                    var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder, out existed);
+                    if (existed)
+                    {
+                        if (current.Cross1.Length + current.Cross2.Length > 0)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            if (ascendingValue > 0)
+                                roadOrder++;
+                            else
+                                roadOrder--;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public Node GetAFromB_v3(int from, int to, RoleInGame player, ref List<string> notifyMsgs)
+        {
+            // throw new Exception("");
+            int cursor = 0;//光标所在位置
+
+            var path = this.GetAFromB_Path(from, to, player, ref notifyMsgs);
+            if (path.Count > 1)
+            {
+                var lastPoint = path[0];//第一个点作为起点
+                var node = new Node()
+                {
+                    path = new List<Node.pathItem>()
+                };//初始化node
+                for (var indexOfPath = 0; indexOfPath < path.Count; indexOfPath++)
+                {
+
+                    if (indexOfPath + 1 < path.Count)
+                    {
+                        if (indexOfPath == 0)
+                        {
+                            /*
+                             * 第一个点
+                             */
+                            var firstRoad = Program.dt.GetItemRoadInfo(path[0]);
+                            if (firstRoad.CarInOpposeDirection == 1)
+                            {
+                                var right = new Node.direction()
+                                {
+                                    right = true,
+                                    start = path[indexOfPath],
+                                    end = path[indexOfPath + 1]
+                                }; 
                                 var wrong = new Node.direction()
                                 {
                                     right = false,
@@ -415,57 +875,23 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-        private bool thePointIsEnd(MapGo.nyrqPosition curren, MapGo.nyrqPosition next)
-        {
-            if (curren.roadCode == next.roadCode)
-            {
-                return false;
-            }
-            else
-            {
-                Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> result;
-                Program.dt.GetData(out result);
-                var x = (from item in result[curren.roadCode][curren.roadOrder].Cross1
-                         where item.RoadCode2 == next.roadCode && item.RoadOrder2 == next.roadOrder
-                         select item).ToList();
-                double percent;
-                if (x.Count == 1)
-                {
-                    percent = x[0].Percent1;
-                }
-                else
-                {
-                    x = (from item in result[curren.roadCode][curren.roadOrder].Cross2
-                         where item.RoadCode1 == next.roadCode && item.RoadOrder1 == next.roadOrder
-                         select item).ToList();
-                    percent = x[0].Percent2;
-                }
-
-                //   bool isEnd = true;
-                int countOfOut1 = 0;
-                {
-                    int roadOrder = curren.roadOrder;
-                    do
-                    {
-                        countOfOut1 += result[curren.roadCode][roadOrder].Cross1.Count(item => item.Percent1 + item.RoadOrder1 > percent + curren.roadOrder);
-                        countOfOut1 += result[curren.roadCode][roadOrder].Cross2.Count(item => item.Percent2 + item.RoadOrder2 > percent + curren.roadOrder);
-                    }
-                    while (result[curren.roadCode].ContainsKey(roadOrder));
-
-                }
-                {
-                    
-                }
-                //result[curren.roadCode]
-                //return false;
-            }
-            //nyrqPosition.
-            //  throw new NotImplementedException();
-        }
+      
 
         delegate string getRoadCodeParameter(SaveRoad.DictCross c);
         delegate int getRoadOrderParameter(SaveRoad.DictCross c);
         delegate double getPercentParameter(SaveRoad.DictCross c);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cross"></param>
+        /// <param name="current"></param>
+        /// <param name="p1">起点</param>
+        /// <param name="p2">终点</param>
+        /// <param name="ascendingValue"></param>
+        /// <param name="codeF"></param>
+        /// <param name="orderF"></param>
+        /// <param name="percentF"></param>
+        /// <returns></returns>
         private List<SaveRoad.DictCross> findCrossesF(SaveRoad.DictCross[] cross, SaveRoad.RoadInfo current, MapGo.nyrqPosition p1, MapGo.nyrqPosition p2, double ascendingValue, getRoadCodeParameter codeF, getRoadOrderParameter orderF, getPercentParameter percentF)
         {
             var findCrosses = (from item in cross

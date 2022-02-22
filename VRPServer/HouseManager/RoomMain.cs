@@ -274,33 +274,33 @@ namespace HouseManager
         /// <param name="notifyMsg"></param>
         private void collectFailedThenReturn(Car car, Player player, SetCollect sc, ref List<string> notifyMsg)
         {
-            if (car.state == CarState.waitForCollectOrAttack || car.state == CarState.waitOnRoad)
-            {
-                //Console.Write($"现在剩余容量为{car.ability.leftVolume}，总容量为{car.ability.Volume}");
-                //Console.Write($"你装不下了！");
-                Console.Write($"该汽车被安排回去了");
-                var from = GetFromWhenUpdateCollect(this._Players[sc.Key], sc.cType, car);
-                int startT = 1;
-                //var carKey = $"{sc.car}_{}";
-                var returnPath_Record = this._Players[sc.Key].returningRecord[sc.car];
-                // var returnPath_Record = this.returningRecord(carKey];
-                Thread th = new Thread(() => setReturn(startT, new commandWithTime.returnning()
-                {
-                    c = "returnning",
-                    key = sc.Key,
-                    car = sc.car,
-                    returnPath = returnPath_Record,
-                    target = from,
-                    changeType = CollectReturn,
-                }));
-                th.Start();
-                //car.changeState++;//更改状态   
-                //getAllCarInfomations(sc.Key, ref notifyMsg);
-            }
-            else if (car.state == CarState.waitAtBaseStation)
-            {
+            //if (car.state == CarState.waitForCollectOrAttack || car.state == CarState.waitOnRoad)
+            //{
+            //    //Console.Write($"现在剩余容量为{car.ability.leftVolume}，总容量为{car.ability.Volume}");
+            //    //Console.Write($"你装不下了！");
+            //    Console.Write($"该汽车被安排回去了");
+            //    var from = GetFromWhenUpdateCollect(this._Players[sc.Key], sc.cType, car);
+            //    int startT = 1;
+            //    //var carKey = $"{sc.car}_{}";
+            //    var returnPath_Record = this._Players[sc.Key].returningRecord[sc.car];
+            //    // var returnPath_Record = this.returningRecord(carKey];
+            //    Thread th = new Thread(() => setReturn(startT, new commandWithTime.returnning()
+            //    {
+            //        c = "returnning",
+            //        key = sc.Key,
+            //        car = sc.car,
+            //        returnPath = returnPath_Record,
+            //        target = from,
+            //        changeType = CollectReturn,
+            //    }));
+            //    th.Start();
+            //    //car.changeState++;//更改状态   
+            //    //getAllCarInfomations(sc.Key, ref notifyMsg);
+            //}
+            //else if (car.state == CarState.waitAtBaseStation)
+            //{
 
-            }
+            //}
         }
 
 

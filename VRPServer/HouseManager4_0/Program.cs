@@ -12,8 +12,7 @@ namespace HouseManager4_0
         static void Main(string[] args)
         {
             Console.WriteLine(@"
---------- readConnectInfomation
---------- addModel
+--------- readConnectInfomation 
 --------- calMercator
 --------- 
 ");
@@ -25,17 +24,17 @@ namespace HouseManager4_0
                         OtherFunction.readConnectInfomation();
                         return;
                     };
-                case "addModel":
-                    {
-                        OtherFunction.addModel();
-                        return;
-                    }; break;
+                //case "addModel":
+                //    {
+                //        OtherFunction.addModel();
+                //        return;
+                //    }; break;
                 case "calMercator":
                     {
                         OtherFunction.calMercator();
                         return;
-                    }; break;
-                    
+                    };
+
             }
 
             // Console.WriteLine("Hello World!");
@@ -53,6 +52,7 @@ namespace HouseManager4_0
             Program.dt = new Data();
             Program.dt.LoadRoad();
             Program.dt.LoadModel();
+            Program.dt.LoadCrossBackground();
 
             Program.rm = new RoomMainF.RoomMain();
 

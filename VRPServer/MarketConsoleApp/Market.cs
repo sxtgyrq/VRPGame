@@ -25,6 +25,17 @@ namespace MarketConsoleApp
             Console.ReadLine();
         }
 
+        internal void GetDetailOfPayer()
+        {
+            Thread th = new Thread(() => this.RefreshPayerInfo());
+            th.Start();
+        }
+
+        private void RefreshPayerInfo()
+        {
+            // throw new NotImplementedException();
+        }
+
         internal void sendInteview()
         {
             Thread th = new Thread(() => this.sendInteview(true));
@@ -168,6 +179,15 @@ namespace MarketConsoleApp
                                         saveCount(mo.pType, this.speedCount);
                                     }
                                 }; break;
+                        }
+                    }; break;
+                case "Transaction":
+                    {
+                        CommonClass.Transaction trant = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Transaction>(notifyJson);
+                        if (BitCoin.CheckAddress.CheckAddressIsUseful(trant.adress))
+                        {
+                            TradeInfo tradeInfo = new TradeInfo(trant.adress);
+                            await tradeInfo.GetTradeInfomationFromChain();
                         }
                     }; break;
             }

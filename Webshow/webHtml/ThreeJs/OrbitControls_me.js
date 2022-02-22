@@ -1090,7 +1090,7 @@ THREE.OrbitControls = function (object, domElement) {
                                     // objMain.ws.send(JSON.stringify({ c: 'changeRoad' }));
                                     objMain.gamePadKeyState[bi] = Date.now();
                                 }
-                                else if (Date.now() - objMain.gamePadKeyState[bi] > 300) {
+                                else if (Date.now() - objMain.gamePadKeyState[bi] > 800) {
                                     f1();
                                     //objMain.ws.send(JSON.stringify({ c: 'changeRoad' }));
                                     objMain.gamePadKeyState[bi] = Date.now();
@@ -1108,15 +1108,45 @@ THREE.OrbitControls = function (object, domElement) {
                                     switch (objMain.gamePadState) {
                                         case 'shop':
                                             {
-                                                if (myGamepad.buttons[6].pressed) {
+                                                if (myGamepad.buttons[6].pressed && !myGamepad.buttons[7].pressed) {
                                                     if (objMain.closestObjName != '') {
                                                         keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'EditModel', name: objMain.closestObjName })) }, buttonIndex);
                                                     }
                                                 }
+                                                else if (myGamepad.buttons[7].pressed && !myGamepad.buttons[6].pressed) {
+                                                    keyFunction(function () {
+                                                        objMain.useAddNew = true;
+                                                        drawObjInFrontPage();
+                                                    }, buttonIndex);
+                                                }
+                                                else if (myGamepad.buttons[7].pressed && myGamepad.buttons[6].pressed) {
+                                                    if (objMain.closestObjName != '') {
+                                                        keyFunction(function () {
+                                                            var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                            objMain.ws.send(JSON.stringify({ c: 'UseModelObj', name: objMain.closestObjName, used: true }));
+                                                        }, buttonIndex);
+                                                        objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                        $.notify('use obj');
+                                                    }
+                                                }
                                                 else {
-                                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'AddModel' })) }, buttonIndex);
+                                                    keyFunction(function () {
+                                                        if (objMain.useAddNew) {
+                                                            sendNewModelToServer();
+                                                        }
+                                                        else {
+                                                            //= false;
+                                                            objMain.ws.send(JSON.stringify({ c: 'AddModel' }));
+                                                        }
+                                                    }, buttonIndex);
                                                     //objMain.editingState = 'add';
                                                 }
+                                            }; break;
+                                        case 'road':
+                                            {
+                                                /*é“è·¯*/
+                                                keyFunction(function () { setScense(); }, buttonIndex);
+
                                             }; break;
                                     }
                                 }
@@ -1134,7 +1164,7 @@ THREE.OrbitControls = function (object, domElement) {
                                             }; break;
                                         case 'shop':
                                             {
-                                                if (myGamepad.buttons[7].pressed) {
+                                                if ((!myGamepad.buttons[6].pressed) && myGamepad.buttons[7].pressed) {
                                                     if (objMain.closestObjName != '') {
                                                         document.getElementById('confirmAlert').style.zIndex = '10';
                                                         document.getElementById('confirmAlert').confirmF = function () {
@@ -1148,8 +1178,28 @@ THREE.OrbitControls = function (object, domElement) {
                                                         }
                                                     }
                                                 }
+                                                else if (myGamepad.buttons[6].pressed && (!myGamepad.buttons[7].pressed)) {
+                                                    //clearObj
+                                                    keyFunction(function () {
+                                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                        objMain.ws.send(JSON.stringify({ c: 'ClearModelObj' }));
+                                                    }, buttonIndex);
+                                                    $.notify('æ¸…é™¤å¤šä½™çš„Model');
+                                                }
+                                                else if (myGamepad.buttons[6].pressed && myGamepad.buttons[7].pressed) {
+                                                    if (objMain.closestObjName != '') {
+                                                        keyFunction(function () {
+                                                            var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                            objMain.ws.send(JSON.stringify({ c: 'UseModelObj', name: objMain.closestObjName, used: false }));
+                                                        }, buttonIndex);
+                                                        objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                        $.notify('not use obj');
+                                                    }
+                                                }
                                                 else {
+                                                    objMain.useAddNew = false;
                                                     objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                    objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
                                                     keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'ShowOBJFile', x: objMain.controls.target.x, z: objMain.controls.target.z })) }, buttonIndex);
                                                 }
                                             }; break;
@@ -1157,32 +1207,94 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                             }
                             if (buttonIndex == 2) {
-                                //Key X
+                                //Key X 
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
                                 switch (objMain.gamePadState) {
                                     case 'shop':
                                         {
-                                            if (objMain.buildingGroup.children.length > 0) {
-                                                var x = objMain.buildingGroup.children[0].position.x;
-                                                var y = objMain.buildingGroup.children[0].position.y;
-                                                var z = objMain.buildingGroup.children[0].position.z;
-                                                var rotationY = objMain.buildingGroup.children[0].rotation.y;
-                                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'SaveObj', x: x, y: y, z: z, rotationY: rotationY })) }, buttonIndex);
+                                            if (myGamepad.buttons[7].pressed && !myGamepad.buttons[6].pressed) {
+                                                if (objMain.closestObjName != '') {
+                                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'GetModelDetail', name: objMain.closestObjName })) }, buttonIndex);
+                                                }
+                                            }
+                                            else if (myGamepad.buttons[6].pressed && !myGamepad.buttons[7].pressed) {
+                                                //downloadModel
+                                                if (objMain.closestObjName != '') {
+                                                    keyFunction(function () {
+                                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                        objMain.ws.send(JSON.stringify({ c: 'DownloadModel', name: objMain.closestObjName }));
+                                                    }, buttonIndex);
+                                                }
+                                            }
+                                            else if (myGamepad.buttons[6].pressed && myGamepad.buttons[7].pressed) {
+                                                keyFunction(function () {
+                                                    var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                    objMain.ws.send(JSON.stringify({ c: 'LockModelObj', name: objMain.closestObjName, used: true }));
+                                                }, buttonIndex);
                                                 objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                $.notify('lock obj');
+                                            }
+                                            else if (objMain.buildingGroup.children.length > 0) {
+                                                if (objMain.useAddNew == true) {
+                                                    var x = objMain.buildingGroup.children[0].position.x;
+                                                    var y = objMain.buildingGroup.children[0].position.y;
+                                                    var z = objMain.buildingGroup.children[0].position.z;
+                                                    var rotationY = objMain.buildingGroup.children[0].rotation.y;
+                                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'CreateNewObj', x: x, y: y, z: z, rotationY: rotationY, objNew: uploadObj.objNew() })) }, buttonIndex);
+                                                    objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                }
+                                                else {
+                                                    var x = objMain.buildingGroup.children[0].position.x;
+                                                    var y = objMain.buildingGroup.children[0].position.y;
+                                                    var z = objMain.buildingGroup.children[0].position.z;
+                                                    var rotationY = objMain.buildingGroup.children[0].rotation.y;
+                                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'SaveObj', x: x, y: y, z: z, rotationY: rotationY })) }, buttonIndex);
+                                                    objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                }
                                             }
 
+                                        }; break;
+                                    case 'road':
+                                        {
+                                            /*é“è·¯*/
+                                            keyFunction(function () { uploadBackground(); }, buttonIndex);
+                                            // uploadBackground();
                                         }; break;
                                 }
                             }
                             if (buttonIndex == 3) {
                                 //key Y  
-                                if (document.getElementById('confirmAlert').style.zIndex == '10') {
-                                    document.getElementById('confirmAlert').style.zIndex = '-10';
+                                if (myGamepad.buttons[6].pressed && !myGamepad.buttons[7].pressed) {
+                                    keyFunction(function () {
+                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                        objMain.ws.send(JSON.stringify({ c: 'PreviousUnLockedModel' }));
+                                    }, buttonIndex);
+                                    $.notify('PreviousUnLockedModel');
                                 }
-                                objMain.mainF.removeF.clearNearObj(objMain.controls.target.x, objMain.controls.target.z, objMain.buildingShowGroup);
-                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'ShowOBJFile', x: objMain.controls.target.x, z: objMain.controls.target.z })) }, buttonIndex);
+                                else if (myGamepad.buttons[7].pressed && !myGamepad.buttons[6].pressed) {
+                                    keyFunction(function () {
+                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                        objMain.ws.send(JSON.stringify({ c: 'NextUnLockedModel' }));
+                                    }, buttonIndex);
+                                    $.notify('NextUnLockedModel');
+                                }
+                                else if (myGamepad.buttons[7].pressed && myGamepad.buttons[6].pressed) {
+                                    keyFunction(function () {
+                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                        objMain.ws.send(JSON.stringify({ c: 'LockModelObj', name: objMain.closestObjName, used: false }));
+                                    }, buttonIndex);
+                                    objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                    $.notify('unlock obj');
+                                }
+                                else {
+                                    if (document.getElementById('confirmAlert').style.zIndex == '10') {
+                                        document.getElementById('confirmAlert').style.zIndex = '-10';
+                                    }
+                                    objMain.mainF.removeF.clearNearObj(objMain.controls.target.x, objMain.controls.target.z, objMain.buildingShowGroup);
+                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'ShowOBJFile', x: objMain.controls.target.x, z: objMain.controls.target.z })) }, buttonIndex);
+                                }
                             }
                             if (buttonIndex == 4) {
                                 //key LB
@@ -1206,6 +1318,11 @@ THREE.OrbitControls = function (object, domElement) {
                                         case 'road':
                                             {
                                                 keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'previousCross' })) }, buttonIndex);
+                                            }; break;
+                                        case 'road':
+                                            {
+                                                /*é“è·¯*/
+                                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'useBackground' })) }, buttonIndex);
                                             }; break;
                                     }
                                 }
@@ -1232,19 +1349,22 @@ THREE.OrbitControls = function (object, domElement) {
                                             {
                                                 keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'nextCross' })) }, buttonIndex);
                                             }; break;
+                                        case 'road':
+                                            {
+                                                /*é“è·¯*/
+                                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'unuseBackground' })) }, buttonIndex);
+                                            }; break;
                                     }
                                 }
                             }
-                            if (buttonIndex == 8)
-                            {
+                            if (buttonIndex == 8) {
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
                                 if (document.getElementById('instruction').style.zIndex == '10') {
                                     document.getElementById('instruction').style.zIndex = '-10';
                                 }
-                                else
-                                {
+                                else {
                                     document.getElementById('instruction').style.zIndex = '10';
                                 }
                             }
@@ -1257,7 +1377,7 @@ THREE.OrbitControls = function (object, domElement) {
                             }
 
                             if (buttonIndex == 12) {
-                                //key ¡ü
+                                //key â†‘
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
@@ -1283,7 +1403,7 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                             }
                             if (buttonIndex == 13) {
-                                //¡ý
+                                //â†“
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
@@ -1309,18 +1429,24 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                             }
                             if (buttonIndex == 14) {
-                                //key ¡û
+                                //key â†
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
                                 if (myGamepad.buttons[6].pressed) {
                                     if (objMain.buildingGroup.children.length > 0) {
-                                        keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'PreviousModel' })) }, buttonIndex);
+                                        keyFunction(function () {
+                                            objMain.useAddNew = false;
+                                            objMain.ws.send(JSON.stringify({ c: 'PreviousModel' }))
+                                        }, buttonIndex);
                                     }
                                 }
                                 else if (myGamepad.buttons[7].pressed) {
                                     if (objMain.buildingGroup.children.length > 0) {
-                                        keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'PreviousCategory' })) }, buttonIndex);
+                                        keyFunction(function () {
+                                            objMain.useAddNew = false;
+                                            objMain.ws.send(JSON.stringify({ c: 'PreviousUser' }))
+                                        }, buttonIndex);
                                     }
                                 }
                                 else {
@@ -1340,7 +1466,7 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                             }
                             if (buttonIndex == 15) {
-                                //key ¡ú
+                                //key â†’
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
@@ -1351,7 +1477,7 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                                 else if (myGamepad.buttons[7].pressed) {
                                     if (objMain.buildingGroup.children.length > 0) {
-                                        keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'NextCategory' })) }, buttonIndex);
+                                        keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'NextUser' })) }, buttonIndex);
                                     }
                                 }
                                 else {
@@ -1395,7 +1521,7 @@ THREE.OrbitControls = function (object, domElement) {
     scope.domElement.addEventListener('touchmove', onTouchMove, false);
 
     window.addEventListener("gamepadconnected", gamepadconnected);
-    // scope.domElement.addEventListener('click', function (event) { alert('µã»÷'); }, false);
+    // scope.domElement.addEventListener('click', function (event) { alert('ç‚¹å‡»'); }, false);
 
     window.addEventListener('keydown', onKeyDown, false);
 

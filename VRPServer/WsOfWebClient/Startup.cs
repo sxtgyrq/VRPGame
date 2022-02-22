@@ -199,6 +199,7 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.selectSingleTeamJoin)
                                     {
                                         s = await Room.GetRoomThenStart(s, webSocket, playerName, carsNames);
+
                                     }
 
                                 }; break;
@@ -313,6 +314,27 @@ namespace WsOfWebClient
                                                 }
                                             }
                                         }
+                                    }
+                                }; break;
+                            case "LookForBuildings":
+                                {
+                                    LookForBuildings joinType = Newtonsoft.Json.JsonConvert.DeserializeObject<LookForBuildings>(returnResult.result);
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+
+                                        s = await Room.setState(s, webSocket, LoginState.LookForBuildings);
+                                        s = await Room.receiveState2(s, joinType, webSocket);
+                                        // s = await Room.GetAllModelPosition(s, webSocket);
+                                        // s = await Room.receiveState(s, webSocket);
+                                    }
+                                }; break;
+                            case "CancleLookForBuildings":
+                                {
+                                    CancleLookForBuildings cancle = Newtonsoft.Json.JsonConvert.DeserializeObject<CancleLookForBuildings>(returnResult.result);
+
+                                    if (s.Ls == LoginState.LookForBuildings)
+                                    {
+                                        s = await Room.setState(s, webSocket, LoginState.OnLine);
                                     }
                                 }; break;
                             case "GetCarsName":
@@ -499,6 +521,25 @@ namespace WsOfWebClient
                                         await Room.view(s, va);
                                     }
                                 }; break;
+                            case "GetBuildings":
+                                {
+
+                                }; break;
+                            case "GenerateAgreement":
+                                {
+                                    GenerateAgreement ga = Newtonsoft.Json.JsonConvert.DeserializeObject<GenerateAgreement>(returnResult.result);
+                                    await Room.GenerateAgreementF(s, webSocket, ga);
+                                }; break;
+                            case "ModelTransSign":
+                                {
+                                    ModelTransSign mts = Newtonsoft.Json.JsonConvert.DeserializeObject<ModelTransSign>(returnResult.result);
+                                    await Room.ModelTransSignF(s, webSocket, mts);
+                                }; break;
+                            case "CheckCarState": 
+                                {
+                                    CommonClass.CheckCarState ccs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CheckCarState>(returnResult.result);
+                                      await Room.checkCarState(s, ccs);
+                                };break;
                         }
                     }
                     catch (Exception e)
@@ -592,7 +633,7 @@ namespace WsOfWebClient
 
         public static async Task<ReceiveObj> ReceiveStringAsync(System.Net.WebSockets.WebSocket socket, CancellationToken ct = default(CancellationToken))
         {
-            return await ReceiveStringAsync(socket, webWsSize);
+            return await ReceiveStringAsync(socket, webWsSize, ct);
         }
         public static async Task<ReceiveObj> ReceiveStringAsync(System.Net.WebSockets.WebSocket socket, int size, CancellationToken ct = default(CancellationToken))
         {

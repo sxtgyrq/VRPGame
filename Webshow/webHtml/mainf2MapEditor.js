@@ -1,4 +1,4 @@
-﻿function TaskClass(s, c) {
+function TaskClass(s, c) {
     this._state = s;
     this._carSelect = c;
 }
@@ -30,7 +30,12 @@ TaskClass.prototype.__defineSetter__("carSelect", function (val) {
 });
 var objMain =
 {
-    debug: false,
+    debug: (function () {
+        if (window.location.hostname == 'www.nyrq123.com') {
+            return false;
+        }
+        else { return true; }
+    })(),
     indexKey: '',
     displayName: '',
     positionInStation: 0,
@@ -429,64 +434,151 @@ var objMain =
                 }
             }
         },
-        drawPanelOfCollect: function (endF) {
-
+        drawPanelOfDetail: function (modelDetail) {
+            //  var modelDetail = { "c": "modelDetail", "x": 97873.8828125, "y": 0.0, "z": -35051.9609375, "locked": false, "dmState": 0, "bussinessAddress": "", "Content": "指引", "author": "1MhoP61wXyV5uCAZk36JFFQfV95mzfLFdw", "amState": 0, "modelName": "n4a4c065aa4794388a6b27f8a28c11b62", "createTime": "2022-03-04 10:34:13" }
             var lengthOfObjs = objMain.groupOfOperatePanle.children.length;
             for (var i = lengthOfObjs - 1; i >= 0; i--) {
                 objMain.groupOfOperatePanle.remove(objMain.groupOfOperatePanle.children[i]);
             }
-            for (var i = 0; i < 38; i++) {
-                if (objMain.CollectPosition[i] == undefined) {
-                    continue;
+
+            var element = document.createElement('div');
+            var table = document.createElement('table');
+            table.border = "1";
+            table.style.backgroundColor = "yellowgreen";
+            {
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "锁定";
+                    td.innerText = modelDetail['locked'] ? "是" : "否";
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
                 }
-                var element = document.createElement('div');
-                element.style.width = '10em';
-                //element.style.marginLeft = 'calc(5em + 20px)';
-                element.style.marginTop = '3em';
-                var color = '#ff0000';
-                //var colorName = '红';
-                //switch (type) {
-                //    case 'mile':
-                //        {
-                //            color = '#ff0000';
-                //            colorName = '红';
-                //        }; break;
-                //    case 'business': {
-                //        color = '#00ff00';
-                //        colorName = '绿';
-                //    }; break;
-                //    case 'volume': {
-
-                //        color = '#0000ff';
-                //        colorName = '蓝';
-                //    }; break;
-                //    case 'speed': {
-
-                //        color = '#000000';
-                //        colorName = '黑';
-                //    }; break;
-
-                //}
-                element.style.border = '2px solid ' + color;
-                element.style.borderTopLeftRadius = '0.5em';
-                element.style.backgroundColor = 'rgba(155, 55, 255, 0.3)';
-                element.style.color = '#1504f6';
-
-                var div2 = document.createElement('div');
-                div2.style.fontSize = '0.5em';
-
-                var b = document.createElement('b');
-                b.innerHTML = '到[<span style="color:#05ffba">' + objMain.CollectPosition[i].Fp.FastenPositionName + '</span>]回收<span style="color:#05ffba">' + (objMain.CollectPosition[i].collectMoney).toFixed(2) + '元</span>现金。';
-                div2.appendChild(b);
-
-                element.appendChild(div2);
-
-                var object = new THREE.CSS2DObject(element);
-                var fp = objMain.CollectPosition[i].Fp;
-                object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-
-                objMain.groupOfOperatePanle.add(object);
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "个体状态";
+                    switch (modelDetail['dmState']) {
+                        case 0:
+                            {
+                                td.innerText = "没有使用";
+                            }; break;
+                        case 1:
+                            {
+                                td.innerText = "正在使用";
+                            }; break;
+                    }
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "业务地址";
+                    td.innerText = modelDetail['bussinessAddress'];
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "模型类型";
+                    td.innerText = modelDetail['Content'];
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "建造者";
+                    td.innerText = modelDetail['author'];
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "模型状态";
+                    switch (modelDetail['amState']) {
+                        case 0:
+                            {
+                                td.innerText = "未通过";
+                            }; break;
+                        case 1:
+                            {
+                                td.innerText = "审核OK";
+                            }; break;
+                    }
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "模型名称";
+                    td.innerText = modelDetail['modelName'];
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
+                {
+                    var tr = document.createElement('tr');
+                    var th = document.createElement('th');
+                    var td = document.createElement('td');
+                    th.innerText = "创建时间";
+                    td.innerText = modelDetail['createTime'];
+                    th.style.border = "3px solid red";
+                    td.style.border = "3px solid red";
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    table.appendChild(tr);
+                }
             }
+            //Object.keys(modelDetail).forEach(function (key) {
+
+            //    //console.log(key, modelDetail[key]);
+            //    var tr = document.createElement('tr');
+            //    var th = document.createElement('th');
+            //    var td = document.createElement('td');
+            //    th.innerText = key;
+            //    td.innerText = modelDetail[key];
+            //    tr.appendChild(th);
+            //    tr.appendChild(td);
+            //    table.appendChild(tr);
+            //});  
+            element.appendChild(table);
+
+            var object = new THREE.CSS2DObject(element);
+            object.position.set(modelDetail.x, 0, modelDetail.z);
+
+            objMain.groupOfOperatePanle.add(object);
 
 
 
@@ -785,7 +877,7 @@ var objMain =
             case 'SetHash':
                 {
                     //  { "c": "SetHash", "hash": "d75845a7b891986477998d904b6e5e0c" }
-                    var ss = prompt(received_obj.hash, received_obj.hash);
+                    var ss = prompt('对信息进行签名', received_obj.hash);
                     objMain.ws.send(ss);
                     set3DHtml();
                     objMain.state = 'OnLine';
@@ -915,6 +1007,47 @@ var objMain =
                         ModelOperateF.f2(received_obj);
                     }
                 }; break;
+            case 'ShowModelTypes':
+                {
+                    objMain.modelTypes = received_obj.modelTypes;
+                    var c = document.getElementById('modelTypes');
+                    c.innerHTML = '';
+                    for (var i = 0; i < objMain.modelTypes.length; i += 2) {
+                        var op = document.createElement('option');
+                        op.value = objMain.modelTypes[i];
+                        op.innerText = objMain.modelTypes[i + 1];
+                        c.appendChild(op);
+                    }
+                }; break;
+            case 'InputAddress':
+                {
+                    var ss = prompt('InputAddress', '');
+                    document.getElementById('BTCAddress').innerText = ss;
+                    objMain.ws.send(ss);
+                }; break;
+            case 'modelDetail':
+                {
+                    console.log('modelDetail', received_msg);
+                    objMain.mainF.drawPanelOfDetail(received_obj);
+                }; break;
+            case 'DownloadModel':
+                {
+                    var url = "";
+                    if (objMain.debug)
+                        url = 'http://127.0.0.1:21001/file?amid=' + received_obj.amID;
+                    else
+                        url = 'https://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + 'editor/file?amid=' + received_obj.amID;
+                    window.open(url, '_blank');
+                }; break;
+            case 'ShowMsg':
+                {
+                    $.notify(received_obj.Msg);
+                }; break;
+            case 'SetBackgroundScene':
+                {
+                    setScenseFromData(received_obj.r);
+                }; break;
+
         }
     },
 
@@ -923,16 +1056,18 @@ var objMain =
     gamePadState: 'road',
     gamePadKeyState: {},
     editingState: 'add',
-    closestObjName: ''
-
+    closestObjName: '',
+    useAddNew: false,
+    modelTypes: [],
+    defaultCube: null
 };
 var startA = function () {
     var connected = false;
     var wsConnect = '';
     if (objMain.debug)
-        wsConnect = 'ws://127.0.0.1:21001/websocket';
+        wsConnect = 'ws://127.0.0.1:21001/editor';
     else
-        wsConnect = 'wss://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + 'editor/';
+        wsConnect = 'wss://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + 'editor/editor';
     var ws = new WebSocket(wsConnect);
     ws.onopen = function () {
         {
@@ -1486,75 +1621,10 @@ function animate() {
                                 if (!complexV.isZero()) {
                                     objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
                                 }
-
                             }
-                            //if (isSelf && isAnimation && objMain.carState.car == 'selecting') {
-                            //    //  console.log('');
-                            //    //  alert('selecting');
-                            //    objMain.controls.target.set(x, 0, -y);
-                            //    var angle = objMain.controls.getPolarAngle();
-                            //    //if(
-                            //    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                            //    var distance = 8;
-                            //    if (dCal >= 9) {
-                            //        distance = dCal * 0.99 - 0.01;
-                            //    }
-                            //    else if (dCal <= 7) {
-                            //        distance = dCal * 1.01 + 0.01;
-                            //    }
-                            //    var unitY = distance * Math.cos(angle);
-                            //    var unitZX = distance * Math.sin(angle);
-
-                            //    var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                            //    var unitX = unitZX * Math.sin(angleOfCamara);
-                            //    var unitZ = unitZX * Math.cos(angleOfCamara);
-                            //    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                            //    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                            //    objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                            //    objMain.camera.lookAt(x, 0, -y);
-                            //}
                         }
                     }
-                    //if (key == 'car_' + objMain.indexKey)
-                    //{
-
-                    //}
                 }
-            }
-
-            if (objMain.carState.car == 'selecting') {
-                objMain.directionGroup.visible = true;
-                if (objMain.directionGroup.children.length > 0) {
-                    var p = objMain.directionGroup.children[0].position;
-                    var x = p.x;
-                    var y = -p.z;
-                    objMain.controls.target.set(x, 0, -y);
-                    var angle = objMain.controls.getPolarAngle();
-                    //if(
-                    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                    var distance = 3;
-                    if (dCal >= 3.5) {
-                        distance = dCal * 0.99 - 0.01;
-                    }
-                    else if (dCal <= 2.5) {
-                        distance = dCal * 1.01 + 0.01;
-                    }
-                    var unitY = distance * Math.cos(angle);
-                    var unitZX = distance * Math.sin(angle);
-
-                    var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                    var unitX = unitZX * Math.sin(angleOfCamara);
-                    var unitZ = unitZX * Math.cos(angleOfCamara);
-                    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                    objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                    objMain.camera.lookAt(x, 0, -y);
-                }
-            }
-            else {
-                objMain.directionGroup.visible = false;
             }
             objMain.animation.animateCameraByCarAndTask();
 
@@ -1602,7 +1672,9 @@ var set3DHtml = function () {
         "py.jpg", "ny.jpg",
         "pz.jpg", "nz.jpg"
     ]);
-    objMain.scene.background = cubeTexture;
+
+    objMain.defaultCube = cubeTexture;
+    objMain.scene.background = objMain.defaultCube;
 
     objMain.renderer = new THREE.WebGLRenderer({ alpha: true });
     objMain.renderer.setClearColor(0x000000, 0); // the default
@@ -1754,125 +1826,6 @@ var MapData =
     roadAndCross: null,
     meshPoints: []
 };
-
-
-
-
-var createTeam = function (teamCreateFinish) {
-    document.getElementById('rootContainer').innerHTML = '';
-    var div1 = document.createElement('div');
-    div1.style.textAlign = 'center';
-    var addDiv = function (title, content) {
-        var div = document.createElement('div');
-        var label = document.createElement('label');
-        var b = document.createElement('b');
-        label.innerText = title;
-        b.innerText = content;
-        div.appendChild(label);
-        div.appendChild(b);
-        return div;
-    }
-    div1.appendChild(addDiv('房间号：', teamCreateFinish.TeamNum));
-    div1.appendChild(addDiv('队长：', teamCreateFinish.PlayerName));
-
-    document.getElementById('rootContainer').appendChild(div1);
-
-    var div2 = document.createElement('div');
-    div2.style.textAlign = 'center';
-
-    var button = document.createElement("button");
-    button.innerText = '开始';
-    button.style.width = "5em";
-    button.style.height = "3em";
-    button.style.marginTop = "1em";
-    button.onclick = function () {
-        objMain.ws.send(token.CommandStart);
-    };
-    div2.appendChild(button);
-    document.getElementById('rootContainer').appendChild(div2);
-}
-
-var setWaitingToGetTeam = function () {
-    document.getElementById('rootContainer').innerHTML = '';
-    var div1 = document.createElement('div');
-    div1.style.textAlign = 'center';
-    div1.style.marginTop = '2em';
-    var label = document.createElement('label');
-    label.innerText = '房间号';
-    var input = document.createElement('input');
-    input.id = 'roomNumInput';
-    input.type = 'number';
-    div1.appendChild(label);
-    div1.appendChild(input);
-    document.getElementById('rootContainer').appendChild(div1);
-
-    var div2 = document.createElement('div');
-    div2.style.textAlign = 'center';
-
-    var button = document.createElement("button");
-    button.innerText = '加入';
-    button.style.width = "5em";
-    button.style.height = "3em";
-    button.style.marginTop = "1em";
-    button.onclick = function () {
-        console.log('提示', '加入事件还没有写写哦');
-        var roomNumInput = document.getElementById('roomNumInput').value;
-        if (roomNumInput == '') {
-            alert('不要输入空');
-        }
-        else {
-            objMain.ws.send(roomNumInput);
-            this.onclick = function () { };
-        }
-    };
-    div2.appendChild(button);
-    document.getElementById('rootContainer').appendChild(div2);
-}
-
-
-var joinTeamDetail = function (teamJoinFinish) {
-    document.getElementById('rootContainer').innerHTML = '';
-    var div1 = document.createElement('div');
-    div1.style.textAlign = 'center';
-
-    var addDiv = function (title, content) {
-        var div = document.createElement('div');
-        var label = document.createElement('label');
-        var b = document.createElement('b');
-        label.innerText = title;
-        b.innerText = content;
-        div.appendChild(label);
-        div.appendChild(b);
-        return div;
-    }
-    div1.appendChild(addDiv('房间号：', teamJoinFinish.TeamNum));
-    div1.appendChild(addDiv('队长：', teamJoinFinish.PlayerNames[0]));
-
-    for (var i = 1; i < teamJoinFinish.PlayerNames.length; i++) {
-        div1.appendChild(addDiv('队员：', teamJoinFinish.PlayerNames[i]));
-    }
-
-    document.getElementById('rootContainer').appendChild(div1);
-
-    var div2 = document.createElement('div');
-    div2.style.textAlign = 'center';
-
-    document.getElementById('rootContainer').appendChild(div2);
-}
-
-var broadTeamJoin = function (teamJoinBroadInfo) {
-    var addDiv = function (title, content) {
-        var div = document.createElement('div');
-        var label = document.createElement('label');
-        var b = document.createElement('b');
-        label.innerText = title;
-        b.innerText = content;
-        div.appendChild(label);
-        div.appendChild(b);
-        return div;
-    }
-    document.getElementById('rootContainer').children[0].appendChild(addDiv('队员：', teamJoinBroadInfo.PlayerName));
-}
 
 var marketOperate =
 {
@@ -2931,6 +2884,114 @@ var DirectionOperator =
         }
     }
 };
+
+var drawObjInFrontPage = function () {
+    if (objMain.useAddNew) {
+        if (objMain.buildingGroup.children.length > 0) {
+            objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+        }
+        var model =
+        {
+            mtlText: uploadObj.mtl,
+            imageBase64: uploadObj.imgBase64,
+            objText: uploadObj.obj
+        };
+        var received_obj =
+        {
+            aModel: model
+        };
+        ModelOperateF.f(received_obj);
+    }
+}
+var sendNewModelToServer = function () { };
+var uploadObj =
+{
+    obj: '',
+    mtl: '',
+    imgBase64: '',
+    modelTypes: '',
+    modelName: '',
+    setValue: function (objInput, mtlInput, base64Input, modelTypes, modelName) {
+        uploadObj.obj = objInput;
+        uploadObj.mtl = mtlInput;
+        uploadObj.imgBase64 = base64Input;
+        uploadObj.modelTypes = modelTypes;
+        if (modelName != null && modelName != '' && modelName != undefined) {
+            uploadObj.modelName = modelName;
+        }
+    },
+    objNew: function () {
+        return [uploadObj.obj, uploadObj.mtl, uploadObj.imgBase64, uploadObj.modelTypes, uploadObj.modelName];
+    }
+    //uploadObj
+};
+
+var setScense = function () {
+    if (window.localStorage.px != undefined) {
+        var cubeTextureLoader = new THREE.CubeTextureLoader();
+        cubeTextureLoader.setPath('');
+        //var cubeTexture = cubeTextureLoader.load([
+        //    "xi_r.jpg", "dong_r.jpg",
+        //    "ding_r.jpg", "di_r.jpg",
+        //    "nan_r.jpg", "bei_r.jpg"
+        //]);
+        var cubeTexture = cubeTextureLoader.load([
+            window.localStorage.px, window.localStorage.nx,
+            window.localStorage.py, window.localStorage.ny,
+            window.localStorage.pz, window.localStorage.nz
+        ]);
+        objMain.scene.background = cubeTexture;
+    }
+}
+var setScenseFromData = function (r) {
+    if (window.localStorage.px != undefined) {
+        if (r.hasValue) {
+            var cubeTextureLoader = new THREE.CubeTextureLoader();
+            cubeTextureLoader.setPath('');
+            //var cubeTexture = cubeTextureLoader.load([
+            //    "xi_r.jpg", "dong_r.jpg",
+            //    "ding_r.jpg", "di_r.jpg",
+            //    "nan_r.jpg", "bei_r.jpg"
+            //]);
+            var cubeTexture = cubeTextureLoader.load([
+                r.px, r.nx,
+                r.py, r.ny,
+                r.pz, r.nz
+            ]);
+            objMain.scene.background = cubeTexture;
+
+            if (r.crossState == 0) {
+                $.notify('路口没有被使用');
+            }
+            else {
+                $.notify('路口使用中');
+            }
+        }
+        else {
+            objMain.scene.background = objMain.defaultCube;
+        }
+
+    }
+}
+var uploadBackground = function () {
+    // var image
+    if (window.localStorage.px != undefined) {
+        var backgroundData =
+        {
+            'c': 'SetBG',
+            'px': window.localStorage.px,
+            'nx': window.localStorage.nx,
+            'py': window.localStorage.py,
+            'ny': window.localStorage.ny,
+            'pz': window.localStorage.pz,
+            'nz': window.localStorage.nz,
+        };
+        var json = JSON.stringify(backgroundData);
+        objMain.ws.send(json);
+    }
+    //var json = JSON.stringify({ c: 'ViewAngle', x1: objMain.camera.position.x, y1: -objMain.camera.position.z, x2: objMain.controls.target.x, y2: -objMain.controls.target.z });
+    //objMain.ws.send(json);
+}
 //////////
 /*
  * 手柄类，此游戏只支持单手柄操作。

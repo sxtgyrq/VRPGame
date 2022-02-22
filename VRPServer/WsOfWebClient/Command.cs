@@ -19,6 +19,13 @@ namespace WsOfWebClient
     {
     }
 
+    public class CancleLookForBuildings : CommonClass.Command { }
+    public class LookForBuildings : CommonClass.Command
+    {
+        public string selectObjName { get; set; }
+        public double x { get; set; }
+        public double z { get; set; }
+    }
     public class CreateTeam : CommonClass.Command
     {
     }
@@ -133,4 +140,17 @@ namespace WsOfWebClient
         public string To { get; set; }
     }
 
+    public class GenerateAgreement : CommonClass.Command
+    {
+        public string addrFrom { get; set; }
+        public string addrTo { get; set; }
+        public double tranNum { get; set; }
+        public string addrBussiness { get; set; }
+    }
+    public class ModelTransSign : CommonClass.Command
+    {
+        public string msg { get; set; }
+        public string sign { get; set; }
+        public string addrBussiness { get; set; }
+    }
 }
