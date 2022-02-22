@@ -2,10 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\VRPServer",
-    "\\VRPServer\\HouseManager4_0",
-    "\\VRPServer\\HouseManager4_0\\RoomMainF",
+    "\\VRPServer\\DalOfAddress",
     "\\VRPServer\\Server",
-    "\\VRPServer\\WsOfWebClient"
+    "\\VRPServer\\TcpFunction",
+    "\\VRPServer\\TestAllPath",
+    "\\VRPServer\\WsOfWebClient",
+    "\\Webshow"
   ],
+  "SelectedNode": "\\VRPServer\\DalOfAddress\\Connection.cs",
   "PreviewInSolutionExplorer": false
 }

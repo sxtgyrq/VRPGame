@@ -50,7 +50,12 @@
       "ProjectGuid": "6ef35380-695d-4359-b981-31a1917c34d4",
       "DisplayName": "Server",
       "ColorIndex": 8
+    },
+    "9b4c1214-0d81-4917-bf1e-004334a5c1b4": {
+      "ProjectGuid": "9b4c1214-0d81-4917-bf1e-004334a5c1b4",
+      "DisplayName": "MateWsAndHouse",
+      "ColorIndex": 9
     }
   },
-  "NextColorIndex": 9
+  "NextColorIndex": 10
 }
