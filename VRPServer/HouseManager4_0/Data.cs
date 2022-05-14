@@ -313,7 +313,7 @@ namespace HouseManager4_0
 
         internal void LoadCrossBackground()
         {
-
+            DalOfAddress.backgroundjpg.GetAll();
             //  throw new NotImplementedException();
         }
 

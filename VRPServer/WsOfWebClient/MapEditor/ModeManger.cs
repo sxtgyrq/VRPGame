@@ -175,7 +175,7 @@ namespace WsOfWebClient.MapEditor
             //    throw new NotImplementedException();
             //}
 
-            internal async Task GetCrossBG(Position firstRoad)
+            internal async Task GetCrossBG(Position firstRoad, WebSocket webSocket, Random rm)
             {
                 string crossKey;
                 if (firstRoad.roadCode.CompareTo(firstRoad.anotherRoadCode) > 0)
@@ -189,21 +189,23 @@ namespace WsOfWebClient.MapEditor
                 GetBackgroundScene ubs = new GetBackgroundScene()
                 {
                     c = "GetBackgroundScene",
-                    crossID = crossKey, 
+                    crossID = crossKey,
                 };
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ubs);
                 var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-                //GetBackgroundScene.Result r = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBackgroundScene.Result>(respon);
-                //var sm = new
-                //{
-                //    c = "SetBackgroundScene",
-                //    r = r,
-                //};
-                //sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
-                //var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                //await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                Console.WriteLine($"respon:{respon}");
+                GetBackgroundScene.Result r = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBackgroundScene.Result>(respon);
+                var sm = new
+                {
+                    c = "SetBackgroundScene",
+                    r = r,
+                };
+                sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
+                var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
 
             }
 
@@ -250,7 +252,8 @@ namespace WsOfWebClient.MapEditor
                 {
                     image = Image.FromStream(ms);
                 }
-                return image;
+
+                return new Bitmap(image, 512, 512);
             }
 
             public string ImageToBase64(Image image)
@@ -319,12 +322,12 @@ namespace WsOfWebClient.MapEditor
                         c = "SetBackgroundScene",
                         crossID = crossKey,
                         author = address,
-                        nx = sb.nx,
-                        ny = sb.ny,
-                        nz = sb.nz,
-                        px = sb.px,
-                        py = sb.py,
-                        pz = sb.pz,
+                        nx = ImageToBase64(LoadBase64(sb.nx.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
+                        ny = ImageToBase64(LoadBase64(sb.ny.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
+                        nz = ImageToBase64(LoadBase64(sb.nz.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
+                        px = ImageToBase64(LoadBase64(sb.px.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
+                        py = ImageToBase64(LoadBase64(sb.py.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
+                        pz = ImageToBase64(LoadBase64(sb.pz.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
                     };
                     var index = rm.Next(0, roomUrls.Count);
                     var roomUrl = roomUrls[index];

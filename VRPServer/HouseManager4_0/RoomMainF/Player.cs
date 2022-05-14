@@ -212,6 +212,7 @@ namespace HouseManager4_0.RoomMainF
                     //  newPlayer.
                     ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
                     ((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
+                    ((Player)this._Players[addItem.Key]).backgroundData = new Dictionary<string, bool>();
                 }
             }
 
@@ -385,6 +386,7 @@ namespace HouseManager4_0.RoomMainF
                             Program.rm._Players[checkItem.Key] = player;
                             ((Player)this._Players[checkItem.Key]).modelHasShowed.Clear();
                             ((Player)this._Players[checkItem.Key]).aModelHasShowed.Clear();
+                            ((Player)this._Players[checkItem.Key]).backgroundData.Clear();
                         }
                         else
                         {

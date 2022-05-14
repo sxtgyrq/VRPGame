@@ -95,7 +95,12 @@
       "ProjectGuid": "54a14ee3-82dc-4ddb-80a3-0b2798d686b5",
       "DisplayName": "FileUpload",
       "ColorIndex": 1
+    },
+    "ea57cf6e-9b33-41b7-9af7-f33bf4f13cd1": {
+      "ProjectGuid": "ea57cf6e-9b33-41b7-9af7-f33bf4f13cd1",
+      "DisplayName": "CubeImageTool",
+      "ColorIndex": 2
     }
   },
-  "NextColorIndex": 2
+  "NextColorIndex": 3
 }

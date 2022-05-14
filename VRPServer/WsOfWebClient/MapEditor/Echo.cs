@@ -131,14 +131,12 @@ namespace WsOfWebClient.MapEditor
                                                 case "nextCross":
                                                     {
                                                         firstRoad = await getNextCross(firstRoad, rm);
-                                                        await mm.GetCross(firstRoad);
-                                                        await mm.GetBG(firstRoad);
+                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "previousCross":
                                                     {
                                                         firstRoad = await getPreviousCross(firstRoad, rm);
-                                                        await mm.GetCrossBG(firstRoad);
-                                                        await mm.GetBG(firstRoad);
+                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "changeRoad":
                                                     {
@@ -153,19 +151,23 @@ namespace WsOfWebClient.MapEditor
                                                             longitude = firstRoad.longitude
                                                         };
                                                         firstRoad = secondRoad;
+                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "SetBG":
                                                     {
                                                         var sb = Newtonsoft.Json.JsonConvert.DeserializeObject<SetBG>(returnResult.result);
                                                         await mm.SetBackground(sb, firstRoad, address, rm, webSocket);
+                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "useBackground":
                                                     {
                                                         await mm.SetBackground(true, firstRoad, address, rm, webSocket);
+                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "unuseBackground":
                                                     {
                                                         await mm.SetBackground(false, firstRoad, address, rm, webSocket);
+                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                     //case "addModel":
                                                     //    {

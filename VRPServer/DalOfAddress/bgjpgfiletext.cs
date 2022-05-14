@@ -43,5 +43,22 @@ namespace DalOfAddress
                 }
             }
         }
+
+        internal static string Get(MySqlConnection con, MySqlTransaction tran, string crossID, string direction)
+        {
+            string text = "";
+            string sQL = $"SELECT jpgTextValue FROM bgjpgfiletext WHERE direction='{direction}' AND crossID='{crossID}' ORDER BY textIndex";
+            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        text += reader.GetString(0);
+                    }
+                }
+            }
+            return text;
+        }
     }
 }

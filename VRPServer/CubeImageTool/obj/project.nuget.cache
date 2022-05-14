@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "/nCTj6ZObIg7mEn+83ownx69fhRMHGZ2FVUmYcD4gMemyVgutrOgTtEthBQ7Mv/hR0aukUK9rLQ00UAlrfTzdQ==",
+  "success": true,
+  "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\CubeImageTool\\CubeImageTool.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

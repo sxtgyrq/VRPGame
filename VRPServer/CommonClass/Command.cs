@@ -600,4 +600,15 @@ namespace CommonClass
         public string State { get; set; }
         public string Key { get; set; }
     }
+
+    public class SetCrossBG : CommandNotify
+    {
+        public string CrossID { get; set; }
+        public string px { get; set; }
+        public string nx { get; set; }
+        public string py { get; set; }
+        public string ny { get; set; }
+        public string pz { get; set; }
+        public string nz { get; set; }
+    }
 }

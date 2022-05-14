@@ -45,6 +45,7 @@ namespace HouseManager4_0.RoomMainF
                 {
                     public double longitude { get; set; }
                     public double latitude { get; set; }
+                    public string crossKey { get; set; }
                 }
                 /// <summary>
                 /// 供选择的矢量，这里的start是矢量的起点，并不是选择的起点。end为矢量的终点。
@@ -129,6 +130,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = path[indexOfPath].BDlongitude,
                                         latitude = path[indexOfPath].BDlatitude,
+                                        crossKey = null
                                     }
                                 });
                             }
@@ -155,6 +157,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = path[indexOfPath].BDlongitude,
                                         latitude = path[indexOfPath].BDlatitude,
+                                        crossKey = null
                                     }
                                 });
                             }
@@ -264,6 +267,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = calCross[indexOfCalCross].cross.BDLongitude,
                                         latitude = calCross[indexOfCalCross].cross.BDLatitude,
+                                        crossKey = getID(calCross[indexOfCalCross].cross)
                                     };
                                     var selections = new List<Node.direction>();
                                     {
@@ -347,6 +351,7 @@ namespace HouseManager4_0.RoomMainF
                                 {
                                     longitude = path[indexOfPath].BDlongitude,
                                     latitude = path[indexOfPath].BDlatitude,
+                                    crossKey = null
                                 };
                                 selections.Add(new Node.direction()
                                 {
@@ -374,11 +379,11 @@ namespace HouseManager4_0.RoomMainF
                                         end = path[indexOfPath],
                                         right = false
                                     };
-                                    if (FoundCross(direction, path[indexOfPath])) 
+                                    if (FoundCross(direction, path[indexOfPath]))
                                     {
                                         selections.Add(direction);
                                     }
-                                }  
+                                }
                                 node.path.Add(new Node.pathItem()
                                 {
                                     path = pathItem,
@@ -409,6 +414,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             longitude = path[path.Count - 1].BDlongitude,
                             latitude = path[path.Count - 1].BDlatitude,
+                            crossKey = null
                         }
                     });
                 }
@@ -425,6 +431,20 @@ namespace HouseManager4_0.RoomMainF
                 };
                 return node;
             }
+        }
+
+        private string getID(SaveRoad.DictCross cross)
+        {
+            string crossKey;
+            if (cross.RoadCode1.CompareTo(cross.RoadCode2) > 0)
+            {
+                crossKey = $"{cross.RoadCode1}{cross.RoadOrder1}{cross.RoadCode2}{cross.RoadOrder2}";
+            }
+            else
+            {
+                crossKey = $"{cross.RoadCode2}{cross.RoadOrder2}{cross.RoadCode1}{cross.RoadOrder1}";
+            }
+            return crossKey;
         }
 
         private bool FoundCross(Node.direction wrong, MapGo.nyrqPosition startPosition)
@@ -555,7 +575,7 @@ namespace HouseManager4_0.RoomMainF
                                     right = true,
                                     start = path[indexOfPath],
                                     end = path[indexOfPath + 1]
-                                }; 
+                                };
                                 var wrong = new Node.direction()
                                 {
                                     right = false,
@@ -575,6 +595,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = path[indexOfPath].BDlongitude,
                                         latitude = path[indexOfPath].BDlatitude,
+                                        crossKey = null
                                     }
                                 });
                             }
@@ -601,6 +622,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = path[indexOfPath].BDlongitude,
                                         latitude = path[indexOfPath].BDlatitude,
+                                        crossKey = null
                                     }
                                 });
                             }
@@ -710,6 +732,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = calCross[indexOfCalCross].cross.BDLongitude,
                                         latitude = calCross[indexOfCalCross].cross.BDLatitude,
+                                        crossKey = getID(calCross[indexOfCalCross].cross)
                                     };
                                     var selections = new List<Node.direction>();
                                     if (ascendingValue > 0)
@@ -799,6 +822,7 @@ namespace HouseManager4_0.RoomMainF
                                 {
                                     longitude = path[indexOfPath].BDlongitude,
                                     latitude = path[indexOfPath].BDlatitude,
+                                    crossKey = null
                                 };
                                 selections.Add(new Node.direction()
                                 {
@@ -857,6 +881,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             longitude = path[path.Count - 1].BDlongitude,
                             latitude = path[path.Count - 1].BDlatitude,
+                            crossKey = null
                         }
                     });
                 }
@@ -875,7 +900,7 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-      
+
 
         delegate string getRoadCodeParameter(SaveRoad.DictCross c);
         delegate int getRoadOrderParameter(SaveRoad.DictCross c);

@@ -283,6 +283,20 @@ namespace HouseManager4_0
                         player.getCar().setState(player, ref notifyMsg, CarState.selecting);
                         that.showDirecitonAndSelection(player, selections, selectionCenter, ref notifyMsg);
                         this.sendMsg(notifyMsg);
+
+                        {
+                            
+                            //selections[0].start.ro
+                            //string crossKey;
+                            //if (.roadCode.CompareTo(firstRoad.anotherRoadCode) > 0)
+                            //{
+                            //    crossKey = $"{firstRoad.roadCode}{firstRoad.roadOrder}{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}";
+                            //}
+                            //else
+                            //{
+                            //    crossKey = $"{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}{firstRoad.roadCode}{firstRoad.roadOrder}";
+                            //}
+                        }
                     }
                     this.ThreadSleep(80);
                 }

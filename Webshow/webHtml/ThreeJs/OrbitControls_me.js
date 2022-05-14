@@ -1319,11 +1319,11 @@ THREE.OrbitControls = function (object, domElement) {
                                             {
                                                 keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'previousCross' })) }, buttonIndex);
                                             }; break;
-                                        case 'road':
-                                            {
-                                                /*道路*/
-                                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'useBackground' })) }, buttonIndex);
-                                            }; break;
+                                        //case 'road':
+                                        //    {
+                                        //        /*道路*/
+                                        //        keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'useBackground' })) }, buttonIndex);
+                                        //    }; break;
                                     }
                                 }
                             }
@@ -1349,11 +1349,11 @@ THREE.OrbitControls = function (object, domElement) {
                                             {
                                                 keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'nextCross' })) }, buttonIndex);
                                             }; break;
-                                        case 'road':
-                                            {
-                                                /*道路*/
-                                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'unuseBackground' })) }, buttonIndex);
-                                            }; break;
+                                        //case 'road':
+                                        //    {
+                                        //        /*道路*/
+                                        //        keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'unuseBackground' })) }, buttonIndex);
+                                        //    }; break;
                                     }
                                 }
                             }
@@ -1400,6 +1400,11 @@ THREE.OrbitControls = function (object, domElement) {
                                                 objMain.scene.getObjectByName('axesHelper').position.z -= lengthOfCC;
                                             }
                                         }; break;
+                                    case 'road':
+                                        {
+                                            /*道路*/
+                                            keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'useBackground' })) }, buttonIndex);
+                                        }; break;
                                 }
                             }
                             if (buttonIndex == 13) {
@@ -1426,6 +1431,12 @@ THREE.OrbitControls = function (object, domElement) {
                                                 objMain.scene.getObjectByName('axesHelper').position.z += lengthOfCC;
                                             }
                                         }; break;
+                                    case 'road':
+                                        {
+                                            /*道路*/
+                                            keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'unuseBackground' })) }, buttonIndex);
+                                        }; break;
+
                                 }
                             }
                             if (buttonIndex == 14) {

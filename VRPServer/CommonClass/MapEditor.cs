@@ -141,7 +141,7 @@ namespace CommonClass
         public class GetBackgroundScene : Command
         {
             public string crossID { get; set; }
-            public class Result : Command
+            public class Result  
             {
                 public bool hasValue { get; set; }
                 public int crossState { get; set; }
