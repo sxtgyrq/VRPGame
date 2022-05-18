@@ -311,10 +311,12 @@ namespace HouseManager4_0
             }
         }
 
+        public Dictionary<string, Dictionary<string, string>> AllCrossesBGData { get; private set; }
+        public Dictionary<string, int> CrossesNotHaveBGData { get; private set; }
         internal void LoadCrossBackground()
         {
-            DalOfAddress.backgroundjpg.GetAll();
-            //  throw new NotImplementedException();
+            this.AllCrossesBGData = DalOfAddress.backgroundjpg.GetAll();
+            this.CrossesNotHaveBGData = new Dictionary<string, int>(); 
         }
 
         /// <summary>

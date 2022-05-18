@@ -200,18 +200,13 @@ namespace HouseManager4_0
                     var returnMile = that.GetMile(returnPath);
                     if (car.ability.leftMile >= goMile + returnMile)
                     {
-                        int startT;
-                        this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
+                        int startT_FirstPath;
+                        // car.setAnimateData(player, ref notifyMsg, goPath);
+                        this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT_FirstPath);
                         var ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
                         //  Thread th=new Thread() { }
                         car.setState(player, ref notifyMsg, CarState.working);
-                        StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);
-                        //if (player.playerType == RoleInGame.PlayerType.NPC)
-                        //    StartArriavalThread(startT, car, sc, ro, goMile);
-                        //else
-                        //    StartArriavalThread(startT, car, sc, ro, goMile);
-                        //   StartSelectThread(0, startT, car, sc, ro, goMile, goPath);
-                        //  getAllCarInfomations(sc.Key, ref notifyMsg);
+                        StartArriavalThread(startT_FirstPath, 0, player, car, sc, ro, goMile, goPath);
                         Mrr = MileResultReason.Abundant;//返回原因
                         return ro;
                     }
@@ -288,7 +283,7 @@ namespace HouseManager4_0
                         int newStartT;
                         step++;
                         if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                         else
                             newStartT = 0;
 
@@ -311,7 +306,7 @@ namespace HouseManager4_0
                         List<string> notifyMsg = new List<string>();
                         int newStartT;
                         if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                         // else if(step==goPath.path.Count-1)
                         //EditCarStateAfterSelect(step,player,ref car,)
                         else
@@ -430,7 +425,7 @@ namespace HouseManager4_0
 
         private void startPlaceReward()
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         private void setCollectPosition(int target)

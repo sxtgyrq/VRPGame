@@ -34418,7 +34418,7 @@
 
             }).call(this)
         }).call(this, require("buffer").Buffer)
-    }, { "./util/buffer": 241, "./util/js": 242, "./util/preconditions": 243, "buffer": 67, "lodash": 269 }], 222: [function (require, module, exports) {
+    }, { "./util/buffer": 241, "./util/js": 242, "./util/preconditions": 243, "buffer": 67, "lodash": 269, }], 222: [function (require, module, exports) {
         (function (Buffer) {
             (function () {
                 'use strict';
@@ -34433,7 +34433,10 @@
                 var PublicKey = require('./publickey');
                 var Random = require('./crypto/random');
                 var $ = require('./util/preconditions');
+                var Hash = require('./crypto/hash');
+                // var Script = require('../../script'); // ../../script
 
+                //"../../script": 224,
                 /**
                  * Instantiate a PrivateKey from a BN, Buffer and WIF.
                  *
@@ -34787,6 +34790,37 @@
                 };
 
                 /**
+               * Will return script for the private key
+               * @param {Network=} network - optional parameter specifying
+               * the desired network for the address
+               *
+               * @returns {Address} An address generated from the private key
+               */
+                PrivateKey.prototype.toAddressOfP2SH = function (network) {
+                    var pubkey = this.toPublicKey();
+                    var resultAdd;
+                    if (pubkey.point.y.isEven()) {
+                        resultAdd = [0x02].concat(pubkey.point.x.toArray());
+                    }
+                    else {
+                        resultAdd = [0x03].concat(pubkey.point.x.toArray());
+                    }
+
+                    var step3 = Hash.ripemd160(Hash.sha256(new Buffer.from(resultAdd)));
+                    var changeOfArray = function (buffer) {
+                        let array = [];
+                        for (var i = 0; i < buffer.length; i++) {
+                            array[i] = buffer[i];
+                        }
+                        return array;
+                    }
+                    var step4 = [0x00, 0x14].concat(changeOfArray(step3));
+                    var step5 = Hash.sha256(new Buffer.from(step4));
+                    var step6 = Hash.ripemd160(step5);
+                    return Address.fromScriptHash(step6, network || this.network);
+                };
+
+                /**
                  * @returns {Object} A plain object representation
                  */
                 PrivateKey.prototype.toObject = PrivateKey.prototype.toJSON = function toObject() {
@@ -34811,7 +34845,7 @@
 
             }).call(this)
         }).call(this, require("buffer").Buffer)
-    }, { "./address": 199, "./crypto/bn": 204, "./crypto/point": 207, "./crypto/random": 208, "./encoding/base58check": 211, "./networks": 220, "./publickey": 223, "./util/js": 242, "./util/preconditions": 243, "buffer": 67, "lodash": 269 }], 223: [function (require, module, exports) {
+    }, { "./address": 199, "./crypto/bn": 204, "./crypto/hash": 206, "./crypto/point": 207, "./crypto/random": 208, "./encoding/base58check": 211, "./networks": 220, "./publickey": 223, "./util/js": 242, "./util/preconditions": 243, "buffer": 67, "lodash": 269 }], 223: [function (require, module, exports) {
         (function (Buffer) {
             (function () {
                 'use strict';
@@ -37593,7 +37627,8 @@
         module.exports.MultiSig = require('./multisig.js');
         module.exports.MultiSigScriptHash = require('./multisigscripthash.js');
 
-    }, { "./input": 229, "./multisig.js": 230, "./multisigscripthash.js": 231, "./publickey": 232, "./publickeyhash": 233 }], 229: [function (require, module, exports) {
+    },
+    { "./input": 229, "./multisig.js": 230, "./multisigscripthash.js": 231, "./publickey": 232, "./publickeyhash": 233 }], 229: [function (require, module, exports) {
         'use strict';
 
         var _ = require('lodash');
@@ -60517,15 +60552,33 @@
                     ecdsa.sig = signature;
                     var publicKey = ecdsa.toPublicKey();
 
-                    var signatureAddress = Address.fromPublicKey(publicKey, bitcoinAddress.network);
+                    var signatureAddress;// = Address.fromPublicKey(publicKey, bitcoinAddress.network);
 
-                    // check that the recovered address and specified address match
-                    if (bitcoinAddress.toString() !== signatureAddress.toString()) {
-                        this.error = 'The signature did not match the message digest';
+                    if (bitcoinAddress.type === 'scripthash') {
+                        signatureAddress = Address.fromScriptHash(bitcoinAddress.hashBuffer);
+                        if (bitcoinAddress.toString() !== signatureAddress.toString()) {
+                            this.error = 'The signature did not match the message digest';
+                            return false;
+                        }
+                        else {
+                            return this._verify(publicKey, signature);
+                        }
+                    }
+                    else if (bitcoinAddress.type === 'pubkeyhash') {
+                        // check that the recovered address and specified address match
+                        signatureAddress = Address.fromPublicKey(publicKey, bitcoinAddress.network);
+                        if (bitcoinAddress.toString() !== signatureAddress.toString()) {
+                            this.error = 'The signature did not match the message digest';
+                            return false;
+                        }
+                        else {
+                            return this._verify(publicKey, signature);
+                        }
+                    }
+                    else {
                         return false;
                     }
 
-                    return this._verify(publicKey, signature);
                 };
 
                 /**
@@ -60592,10 +60645,18 @@
     }, { "bitcore-lib": 198, "buffer": 67 }], 273: [function (require, module, exports) {
         var bitcore = require('bitcore-lib');
         var Message = require('bitcore-message');
-        window.yrqSign = function (privateKeyValueInput, msgNeedToSign) {
+        window.yrqSign = function (privateKeyValueInput, msgNeedToSign, isP2SH) {
+
+            //isP2SH=false;
             var privateKey = bitcore.PrivateKey.fromWIF(privateKeyValueInput);
             //console.log(':privateKey: ', privateKey);
-            var address = privateKey.toAddress().toString();
+            var address;
+            if (isP2SH) {
+                address = privateKey.toAddressOfP2SH().toString();
+            }
+            else {
+                address = privateKey.toAddress().toString();
+            }
             var signature = Message(msgNeedToSign).sign(privateKey);
             return [signature, address];
         }
@@ -60622,8 +60683,12 @@
         }
 
         window.yrqCheckAddress = function (addressInput) {
-            var regex = /^[1][1-9A-Za-z][^OIl]{20,40}$/;
-            if (regex.test(addressInput)) {
+            var regex1 = /^[1][1-9A-Za-z][^OIl]{20,40}$/;
+            var regex2 = /^[3][1-9A-Za-z][^OIl]{20,40}$/;
+            if (regex1.test(addressInput)) {
+                return bitcore.encoding.Base58Check.checkSha256Sign(addressInput);
+            }
+            else if (regex2.test(addressInput)) {
                 return bitcore.encoding.Base58Check.checkSha256Sign(addressInput);
             }
             else {

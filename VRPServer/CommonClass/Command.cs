@@ -225,18 +225,39 @@ namespace CommonClass
         public string address { get; set; }
     }
 
-    public class BradCastAnimateOfCar : CommandNotify
+    public class AnimationEncryptedItem
     {
-        public string carID;
-
-        public object Animate { get; set; }
+        public List<Int64> dataEncrypted { get; set; }
+        public int startT { get; set; }
+        public int privateKey { get; set; }
+        public string Md5Code { get; set; }
+        public bool isParking { get; set; }
     }
-    public class BradCastAnimateOfOthersCar2 : CommandNotify
+    public class AnimationData
+    {
+        public int deltaT { get; set; }
+        public AnimationEncryptedItem[] animateData { get; set; }
+        public string currentMd5 { get; set; }
+        public string previousMd5 { get; set; }
+        public int[] privateKeys { get; set; }
+    }
+
+    //public class BradCastAnimateOfOthersCar2 : CommandNotify
+    //{
+    //    public string carID;
+
+    //    public AnimationData Animate { get; set; }
+    //    public string parentID { get; set; }
+
+
+    //}
+    public class BradCastAnimateOfOthersCar3 : CommandNotify
     {
         public string carID;
 
-        public object Animate { get; set; }
+        public AnimationData Animate { get; set; }
         public string parentID { get; set; }
+        public bool passPrivateKeysOnly { get; set; }
 
 
     }
@@ -281,11 +302,16 @@ namespace CommonClass
         public string pType { get; set; }
         public string sumOrCost { get; set; }
     }
+
+    public class AnimateC
+    {
+
+    }
     public class BradCastAnimateOfSelfCar : CommandNotify
     {
         public string carID;
 
-        public object Animate { get; set; }
+        public AnimationData Animate { get; set; }
         public string parentID { get; set; }
         public decimal CostMile { get; set; }
         public int LeftMile { get; set; }
@@ -604,6 +630,8 @@ namespace CommonClass
     public class SetCrossBG : CommandNotify
     {
         public string CrossID { get; set; }
+        public bool IsDetalt { get; set; }
+        public bool AddNew { get; set; }
         public string px { get; set; }
         public string nx { get; set; }
         public string py { get; set; }

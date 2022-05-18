@@ -106,14 +106,14 @@ namespace HouseManager4_0.interfaceOfHM
         string updateMagic(MagicSkill ms);
         string updateView(View v);
         string CheckCarStateF(CheckCarState ccs);
-       
+
     }
 
     interface MapEditor
     {
         string UseBackgroundSceneF(CommonClass.MapEditor.UseBackgroundScene sbs);
         string GetBackgroundSceneF(CommonClass.MapEditor.GetBackgroundScene gbs);
-        string SetBackgroundSceneF(CommonClass.MapEditor.SetBackgroundScene sbs);
+        string SetBackgroundSceneF(CommonClass.MapEditor.SetBackgroundScene_BLL sbs);
         string GetFirstRoad();
         string DrawRoad(CommonClass.MapEditor.DrawRoad dr);
         string NextCross(CommonClass.MapEditor.NextCross dr);

@@ -175,21 +175,31 @@ namespace WsOfWebClient.MapEditor
             //    throw new NotImplementedException();
             //}
 
-            internal async Task GetCrossBG(Position firstRoad, WebSocket webSocket, Random rm)
+            internal async Task GetCrossBG(Position baseCross, WebSocket webSocket, Random rm)
             {
-                string crossKey;
-                if (firstRoad.roadCode.CompareTo(firstRoad.anotherRoadCode) > 0)
+                string firstRoadcode, secondRoadcode;
+                int firstRoadorder, secondRoadorder;
+                if (baseCross.roadCode.CompareTo(baseCross.anotherRoadCode) > 0)
                 {
-                    crossKey = $"{firstRoad.roadCode}{firstRoad.roadOrder}{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}";
+                    firstRoadcode = baseCross.roadCode;
+                    secondRoadcode = baseCross.anotherRoadCode;
+                    firstRoadorder = baseCross.roadOrder;
+                    secondRoadorder = baseCross.anotherRoadOrder;
                 }
                 else
                 {
-                    crossKey = $"{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}{firstRoad.roadCode}{firstRoad.roadOrder}";
+                    firstRoadcode = baseCross.anotherRoadCode;
+                    secondRoadcode = baseCross.roadCode;
+                    firstRoadorder = baseCross.anotherRoadOrder;
+                    secondRoadorder = baseCross.roadOrder;
                 }
                 GetBackgroundScene ubs = new GetBackgroundScene()
                 {
                     c = "GetBackgroundScene",
-                    crossID = crossKey,
+                    firstRoadcode = firstRoadcode,
+                    secondRoadorder = secondRoadorder,
+                    firstRoadorder = firstRoadorder,
+                    secondRoadcode = secondRoadcode
                 };
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
@@ -272,22 +282,32 @@ namespace WsOfWebClient.MapEditor
                 Console.WriteLine(result);
                 return result;
             }
-            internal async Task SetBackground(bool isUsed, Position firstRoad, string address, Random rm, WebSocket webSocket)
+            internal async Task SetBackground(bool isUsed, Position baseCross, string address, Random rm, WebSocket webSocket)
             {
-                string crossKey;
-                if (firstRoad.roadCode.CompareTo(firstRoad.anotherRoadCode) > 0)
+                string firstRoadcode, secondRoadcode;
+                int firstRoadorder, secondRoadorder;
+                if (baseCross.roadCode.CompareTo(baseCross.anotherRoadCode) > 0)
                 {
-                    crossKey = $"{firstRoad.roadCode}{firstRoad.roadOrder}{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}";
+                    firstRoadcode = baseCross.roadCode;
+                    secondRoadcode = baseCross.anotherRoadCode;
+                    firstRoadorder = baseCross.roadOrder;
+                    secondRoadorder = baseCross.anotherRoadOrder;
                 }
                 else
                 {
-                    crossKey = $"{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}{firstRoad.roadCode}{firstRoad.roadOrder}";
+                    firstRoadcode = baseCross.anotherRoadCode;
+                    secondRoadcode = baseCross.roadCode;
+                    firstRoadorder = baseCross.anotherRoadOrder;
+                    secondRoadorder = baseCross.roadOrder;
                 }
                 {
                     UseBackgroundScene ubs = new UseBackgroundScene()
                     {
                         c = "UseBackgroundScene",
-                        crossID = crossKey,
+                        firstRoadcode = firstRoadcode,
+                        firstRoadorder = firstRoadorder,
+                        secondRoadcode = secondRoadcode,
+                        secondRoadorder = secondRoadorder,
                         used = isUsed,
                     };
                     var index = rm.Next(0, roomUrls.Count);
@@ -305,22 +325,34 @@ namespace WsOfWebClient.MapEditor
                     //await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
             }
-            internal async Task SetBackground(SetBG sb, Position firstRoad, string address, Random rm, WebSocket webSocket)
+            internal async Task SetBackground(SetBG sb, Position baseCross, string address, Random rm, WebSocket webSocket)
             {
-                string crossKey;
-                if (firstRoad.roadCode.CompareTo(firstRoad.anotherRoadCode) > 0)
+                string firstRoadcode, secondRoadcode;
+                int firstRoadorder, secondRoadorder;
+                if (baseCross.roadCode.CompareTo(baseCross.anotherRoadCode) > 0)
                 {
-                    crossKey = $"{firstRoad.roadCode}{firstRoad.roadOrder}{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}";
+                    firstRoadcode = baseCross.roadCode;
+                    secondRoadcode = baseCross.anotherRoadCode;
+                    firstRoadorder = baseCross.roadOrder;
+                    secondRoadorder = baseCross.anotherRoadOrder;
+                    // crossKey = $"{baseCross.roadCode}{baseCross.roadOrder}{baseCross.anotherRoadCode}{baseCross.anotherRoadOrder}";
                 }
                 else
                 {
-                    crossKey = $"{firstRoad.anotherRoadCode}{firstRoad.anotherRoadOrder}{firstRoad.roadCode}{firstRoad.roadOrder}";
+                    firstRoadcode = baseCross.anotherRoadCode;
+                    secondRoadcode = baseCross.roadCode;
+                    firstRoadorder = baseCross.anotherRoadOrder;
+                    secondRoadorder = baseCross.roadOrder;
+                    //  crossKey = $"{baseCross.anotherRoadCode}{baseCross.anotherRoadOrder}{baseCross.roadCode}{baseCross.roadOrder}";
                 }
                 {
-                    SetBackgroundScene sbgs = new SetBackgroundScene()
+                    SetBackgroundScene_BLL sbgs = new SetBackgroundScene_BLL()
                     {
                         c = "SetBackgroundScene",
-                        crossID = crossKey,
+                        firstRoadcode = firstRoadcode,
+                        firstRoadorder = firstRoadorder,
+                        secondRoadcode = secondRoadcode,
+                        secondRoadorder = secondRoadorder,
                         author = address,
                         nx = ImageToBase64(LoadBase64(sb.nx.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
                         ny = ImageToBase64(LoadBase64(sb.ny.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),

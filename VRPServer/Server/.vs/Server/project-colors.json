@@ -100,7 +100,17 @@
       "ProjectGuid": "ea57cf6e-9b33-41b7-9af7-f33bf4f13cd1",
       "DisplayName": "CubeImageTool",
       "ColorIndex": 2
+    },
+    "31fb4972-ea06-4b28-a363-82707d21eeda": {
+      "ProjectGuid": "31fb4972-ea06-4b28-a363-82707d21eeda",
+      "DisplayName": "WindowsFormsController",
+      "ColorIndex": 3
+    },
+    "dc25001c-597b-435e-8bab-cc5e0d9ec6ff": {
+      "ProjectGuid": "dc25001c-597b-435e-8bab-cc5e0d9ec6ff",
+      "DisplayName": "Test_HttpClientTest",
+      "ColorIndex": 4
     }
   },
-  "NextColorIndex": 3
+  "NextColorIndex": 5
 }

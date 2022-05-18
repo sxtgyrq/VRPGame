@@ -515,22 +515,133 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-        public string SetBackgroundSceneF(MapEditor.SetBackgroundScene sbs)
+        public string SetBackgroundSceneF(MapEditor.SetBackgroundScene_BLL sbs)
         {
-            DalOfAddress.backgroundjpg.Insert(sbs);
+            Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> road;
+            Program.dt.GetData(out road);
+
+            var road1 = road[sbs.firstRoadcode][sbs.firstRoadorder];
+            var road2 = road[sbs.secondRoadcode][sbs.secondRoadorder];
+
+            double x, y;
+            var r = get_line_intersection(
+                road1.startLongitude, road1.startLatitude,
+                road1.endLongitude, road1.endLatitude,
+                road2.startLongitude, road2.startLatitude,
+                road2.endLongitude, road2.endLatitude, out x, out y);
+            if (r)
+            {
+                string crossID = $"{x.ToString("F5")},{y.ToString("F5")}";
+                MapEditor.SetBackgroundScene_DAL sbsd = new MapEditor.SetBackgroundScene_DAL()
+                {
+                    author = sbs.author,
+                    crossID = crossID,
+                    c = sbs.c,
+                    nx = sbs.nx,
+                    ny = sbs.ny,
+                    nz = sbs.nz,
+                    px = sbs.px,
+                    py = sbs.py,
+                    pz = sbs.pz,
+                };
+                DalOfAddress.backgroundjpg.Insert(sbsd);
+            }
+
             return "";
             //
+        }
+        /// <summary>
+        /// 线段1(p0，p1)与线段2(p2,p3)求交点
+        /// </summary>
+        /// <param name="p0_x">线段1</param>
+        /// <param name="p0_y">线段1</param>
+        /// <param name="p1_x">线段1</param>
+        /// <param name="p1_y">线段1</param>
+        /// <param name="p2_x">线段2</param>
+        /// <param name="p2_y">线段2</param>
+        /// <param name="p3_x">线段2</param>
+        /// <param name="p3_y">线段2</param>
+        /// <param name="x">结果</param>
+        /// <param name="y">结果</param>
+        /// <returns></returns>
+        bool get_line_intersection(double p0_x, double p0_y, double p1_x, double p1_y, double p2_x, double p2_y, double p3_x, double p3_y, out double x, out double y)
+        {
+            double s1_x, s1_y, s2_x, s2_y;
+            s1_x = p1_x - p0_x;
+            s1_y = p1_y - p0_y;
+            s2_x = p3_x - p2_x;
+            s2_y = p3_y - p2_y;
+
+            double s, t;
+            s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+            t = (s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+            if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+            {
+                x = p0_x + (t * s1_x);
+                y = p0_y + (t * s1_y);
+                return true;
+            }
+            else
+            {
+                x = p0_x + (t * s1_x);
+                y = p0_y + (t * s1_y);
+                return false;
+            }
+
         }
 
         public string GetBackgroundSceneF(MapEditor.GetBackgroundScene gbs)
         {
-            MapEditor.GetBackgroundScene.Result r = DalOfAddress.backgroundjpg.Get(gbs.crossID);
-            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> road;
+            Program.dt.GetData(out road);
+
+            var road1 = road[gbs.firstRoadcode][gbs.firstRoadorder];
+            var road2 = road[gbs.secondRoadcode][gbs.secondRoadorder];
+
+            double x, y;
+            var r1 = get_line_intersection(
+                road1.startLongitude, road1.startLatitude,
+                road1.endLongitude, road1.endLatitude,
+                road2.startLongitude, road2.startLatitude,
+                road2.endLongitude, road2.endLatitude, out x, out y);
+            if (r1)
+            {
+                string crossID = $"{x.ToString("F5")},{y.ToString("F5")}";
+                MapEditor.GetBackgroundScene.Result r = DalOfAddress.backgroundjpg.Get(crossID);
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+            else
+            {
+                return "";
+            }
         }
 
         public string UseBackgroundSceneF(MapEditor.UseBackgroundScene sbs)
         {
-            DalOfAddress.backgroundjpg.SetUse(sbs);
+            Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> road;
+            Program.dt.GetData(out road);
+
+            var road1 = road[sbs.firstRoadcode][sbs.firstRoadorder];
+            var road2 = road[sbs.secondRoadcode][sbs.secondRoadorder];
+
+            double x, y;
+            var r1 = get_line_intersection(
+                road1.startLongitude, road1.startLatitude,
+                road1.endLongitude, road1.endLatitude,
+                road2.startLongitude, road2.startLatitude,
+                road2.endLongitude, road2.endLatitude, out x, out y);
+            if (r1)
+            {
+                string crossID = $"{x.ToString("F5")},{y.ToString("F5")}";
+                DalOfAddress.backgroundjpg.SetUse(sbs, crossID);
+            }
+            else
+            {
+                return "";
+            }
+
+
             return "";
         }
     }

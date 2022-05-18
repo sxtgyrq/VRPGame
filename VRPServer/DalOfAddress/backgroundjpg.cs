@@ -8,7 +8,7 @@ namespace DalOfAddress
 {
     public class backgroundjpg
     {
-        public static void Insert(MapEditor.SetBackgroundScene sbs)
+        public static void Insert(MapEditor.SetBackgroundScene_DAL sbs)
         {
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
@@ -115,7 +115,7 @@ createTime
             return r;
         }
 
-        public static void SetUse(MapEditor.UseBackgroundScene sbs)
+        public static void SetUse(MapEditor.UseBackgroundScene sbs, string crossID)
         {
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
@@ -132,7 +132,7 @@ createTime
                     using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
                     {
                         command.Parameters.AddWithValue("@crossState", crossState);
-                        command.Parameters.AddWithValue("@crossID", sbs.crossID);
+                        command.Parameters.AddWithValue("@crossID", crossID);
                         command.ExecuteNonQuery();
                     }
                     tran.Commit();

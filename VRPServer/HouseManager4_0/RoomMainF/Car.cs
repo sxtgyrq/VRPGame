@@ -22,6 +22,49 @@ namespace HouseManager4_0.RoomMainF
             notifyMsg.Add(json);
         }
 
+        public void SetAnimateStepChanged(RoleInGame player, Car car, ref List<string> notifyMsg)
+        {
+            lock (this.PlayerLock)
+            {
+                var key = player.Key;
+                var players = getGetAllRoles();
+                for (var i = 0; i < players.Count; i++)
+                {
+                    if (players[i].Key == key)
+                    {
+
+                    }
+                    else
+                    {
+                        {
+                            /*
+                             * 告诉自己，场景中有哪些别人的车！
+                             * 告诉别人，场景中有哪些车是我的的！
+                             */
+                            {
+                                var self = this._Players[key];
+                                var other = players[i];
+                                if (self.playerType == RoleInGame.PlayerType.player)
+                                    addPlayerCarRecord((Player)self, other, ref notifyMsg);
+
+                            }
+                            {
+                                var self = players[i];
+                                var other = this._Players[key];
+                                if (self.playerType == RoleInGame.PlayerType.player)
+                                    addPlayerCarRecord((Player)self, other, ref notifyMsg);
+                            }
+
+                        }
+                    }
+                }
+                {
+                    var self = this._Players[key];
+                    if (self.playerType == RoleInGame.PlayerType.player)
+                        addSelfCarSingleRecord((Player)self, car, ref notifyMsg);
+                }
+            }
+        }
         public void SetAnimateChanged(RoleInGame player, Car car, ref List<string> notifyMsg)
         {
             lock (this.PlayerLock)
@@ -66,10 +109,11 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-        private void addPlayerCarRecord(Player self, RoleInGame other, ref List<string> msgsWithUrl)
+        private void addPlayerCarRecord_bak(Player self, RoleInGame other, ref List<string> msgsWithUrl)
         {
             //这是发送给self的消息
-            //throw new NotImplementedException();
+            //throw new NotImplementedException(); 
+            /*
             if (self.othersContainsKey(other.Key))
             {
                 //for (var indexOfCar = 0; indexOfCar < 5; indexOfCar++)
@@ -80,20 +124,33 @@ namespace HouseManager4_0.RoomMainF
                     }
                     else
                     {
-                        if (other.getCar().animateData == null)
+                        if (other.getCar().animateObj == null)
                         {
 
                         }
                         else
                         {
-                            var deltaT = (DateTime.Now - other.getCar().animateData.recordTime).TotalMilliseconds;
-                            var result = new
+                            if (other.getCar().animateData.Count > 0)
                             {
-                                deltaT = deltaT > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(deltaT),
-                                animateData = other.getCar().animateData.animateData,
-                                start = other.getCar().animateData.start,
-                                isParking = other.getCar().animateData.isParking
-                            };
+                                var deltaT = (DateTime.Now - other.getCar().animateData[0].recordTime).TotalMilliseconds;
+                                var currentHash = other.getCar().animateData[0].hasCode;
+                                var result = new AnimationData
+                                {
+                                    deltaT = deltaT > int.MaxValue ? int.MaxValue : Convert.ToInt32(deltaT),
+                                    animateData = other.getCar().animateData.animateData.ToArray(),
+                                    startX = other.getCar().animateData.start.x,
+                                    startY = other.getCar().animateData.start.y,
+                                    isParking = other.getCar().animateData.isParking,
+                                    currentHash = currentHash,
+                                    previousHash = other.getCar().PreviousHash()
+                                };
+                            }
+
+
+
+
+
+                            other.getCar().SetHashCode(currentHash);
                             var obj = new BradCastAnimateOfOthersCar2
                             {
                                 c = "BradCastAnimateOfOthersCar2",
@@ -111,35 +168,239 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
             }
+*/
+        }
+        private void addPlayerCarRecord(Player self, RoleInGame other, ref List<string> msgsWithUrl)
+        {
+            //这是发送给self的消息
+            //throw new NotImplementedException(); 
+
+            if (self.othersContainsKey(other.Key))
+            {
+                if (self.GetOthers(other.Key).getCarState().md5 != other.getCar().changeState.md5)
+                {
+                    var deltaT = (DateTime.Now - other.getCar().animateObj.recordTime).TotalMilliseconds;
+                    //  var currentMd5 = other.getCar().animateObj.Md5;
+
+                    var animateData = new List<AnimationEncryptedItem>();
+                    for (int i = 0; i < other.getCar().animateObj.animateDataItems.Length; i++)
+                    {
+                        AnimationEncryptedItem item = new AnimationEncryptedItem
+                        {
+                            dataEncrypted = other.getCar().animateObj.animateDataItems[i].dataEncrypted,
+                            startT = other.getCar().animateObj.animateDataItems[i].startT,
+                            privateKey = i < other.getCar().animateObj.LengthOfPrivateKeys ? other.getCar().animateObj.animateDataItems[i].privateKey : -1,
+                            Md5Code = other.getCar().animateObj.animateDataItems[i].Md5Code,
+                            isParking = other.getCar().animateObj.animateDataItems[i].isParking
+                        };
+                        animateData.Add(item);
+                    }
+                    var result = new AnimationData
+                    {
+                        deltaT = deltaT > int.MaxValue ? int.MaxValue : Convert.ToInt32(deltaT),
+                        animateData = animateData.ToArray(),
+                        currentMd5 = other.getCar().animateObj.Md5,
+                        previousMd5 = other.getCar().animateObj.PreviousMd5,
+                        privateKeys = other.getCar().animateObj.privateKeys
+                    };
+                    var obj = new BradCastAnimateOfOthersCar3
+                    {
+                        c = "BradCastAnimateOfOthersCar3",
+                        Animate = result,
+                        WebSocketID = self.WebSocketID,
+                        carID = getCarName() + "_" + other.Key,
+                        parentID = other.Key,
+                        passPrivateKeysOnly = false
+                    };
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                    msgsWithUrl.Add(self.FromUrl);
+                    msgsWithUrl.Add(json);
+                    self.GetOthers(other.Key).setCarState(other.getCar().changeState.md5, other.getCar().changeState.privatekeysLength);
+                }
+                else
+                {
+                    if (other.getCar().animateObj == null)
+                    {
+
+                    }
+                    else
+                    {
+                        if (self.GetOthers(other.Key).getCarState().privatekeysLength != other.getCar().changeState.privatekeysLength)
+                        {
+                            var animateData = new List<AnimationEncryptedItem>();
+                            for (int i = 0; i < other.getCar().animateObj.animateDataItems.Length; i++)
+                            {
+                                AnimationEncryptedItem item = new AnimationEncryptedItem
+                                {
+                                    dataEncrypted = null,
+                                    startT = 0,
+                                    privateKey = i < other.getCar().animateObj.LengthOfPrivateKeys ? other.getCar().animateObj.animateDataItems[i].privateKey : -1,
+                                    Md5Code = other.getCar().animateObj.animateDataItems[i].Md5Code,
+                                    isParking = other.getCar().animateObj.animateDataItems[i].isParking
+                                };
+                                animateData.Add(item);
+                            }
+                            var result = new AnimationData
+                            {
+                                deltaT = 0,
+                                animateData = animateData.ToArray(),
+                                currentMd5 = other.getCar().animateObj.Md5,
+                                previousMd5 = "",
+                                privateKeys = null
+                            };
+                            var obj = new BradCastAnimateOfOthersCar3
+                            {
+                                c = "BradCastAnimateOfOthersCar3",
+                                Animate = result,
+                                WebSocketID = self.WebSocketID,
+                                carID = getCarName() + "_" + other.Key,
+                                parentID = other.Key,
+                                passPrivateKeysOnly = true
+                            };
+                            var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                            msgsWithUrl.Add(self.FromUrl);
+                            msgsWithUrl.Add(json);
+                            self.GetOthers(other.Key).setCarState(other.getCar().changeState.md5, other.getCar().changeState.privatekeysLength);
+                        }
+                    }
+                    //   self.GetOthers(other.Key).setCarState(other.getCar().changeState);
+                }
+            }
+
         }
 
+        private int GetHashCode(List<int> animateData)
+        {
+            return animateData.ToArray().GetHashCode();
+            // throw new NotImplementedException();
+        }
+
+        private void addSelfCarSingleRecord_bak(Player self, Car car, ref List<string> msgsWithUrl)
+        {
+            //if (car.animateData == null)
+            //{ }
+            //else
+            //{
+            //    var deltaT = (DateTime.Now - car.animateData.recordTime).TotalMilliseconds;
+            //    var currentHash = GetHashCode(car.animateData.animateData);
+            //    var result = new AnimationData
+            //    {
+            //        deltaT = deltaT > int.MaxValue ? int.MaxValue : Convert.ToInt32(deltaT),
+            //        animateData = car.animateData.animateData.ToArray(),
+            //        startX = car.animateData.start.x,
+            //        startY = car.animateData.start.y,
+            //        isParking = car.animateData.isParking,
+            //        currentHash = currentHash,
+            //        previousHash = car.PreviousHash()
+            //    };
+            //    car.SetHashCode(currentHash);
+            //    var obj = new BradCastAnimateOfSelfCar
+            //    {
+            //        c = "BradCastAnimateOfSelfCar",
+            //        Animate = result,
+            //        WebSocketID = self.WebSocketID,
+            //        carID = getCarName() + "_" + self.Key,
+            //        parentID = self.Key,
+            //        CostMile = car.ability.costMiles,
+
+            //    };
+            //    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            //    msgsWithUrl.Add(self.FromUrl);
+            //    msgsWithUrl.Add(json);
+            //}
+        }
         private void addSelfCarSingleRecord(Player self, Car car, ref List<string> msgsWithUrl)
         {
-            if (car.animateData == null)
+            if (car.animateObj == null)
             { }
             else
             {
-                var deltaT = (DateTime.Now - car.animateData.recordTime).TotalMilliseconds;
-                var result = new
+                if (car.WebSelf.md5 != car.animateObj.Md5)
                 {
-                    deltaT = deltaT > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(deltaT),
-                    animateData = car.animateData.animateData,
-                    start = car.animateData.start,
-                    isParking = car.animateData.isParking
-                };
-                var obj = new BradCastAnimateOfSelfCar
-                {
-                    c = "BradCastAnimateOfSelfCar",
-                    Animate = result,
-                    WebSocketID = self.WebSocketID,
-                    carID = getCarName() + "_" + self.Key,
-                    parentID = self.Key,
-                    CostMile = car.ability.costMiles,
+                    var deltaT = (DateTime.Now - car.animateObj.recordTime).TotalMilliseconds;
 
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                msgsWithUrl.Add(self.FromUrl);
-                msgsWithUrl.Add(json);
+                    var currentMd5 = self.getCar().animateObj.Md5;
+
+                    var animateData = new List<AnimationEncryptedItem>();
+                    for (int i = 0; i < self.getCar().animateObj.animateDataItems.Length; i++)
+                    {
+                        AnimationEncryptedItem item = new AnimationEncryptedItem
+                        {
+                            dataEncrypted = self.getCar().animateObj.animateDataItems[i].dataEncrypted,
+                            startT = self.getCar().animateObj.animateDataItems[i].startT,
+                            privateKey = i < self.getCar().animateObj.LengthOfPrivateKeys ? self.getCar().animateObj.animateDataItems[i].privateKey : -1,
+                            Md5Code = self.getCar().animateObj.animateDataItems[i].Md5Code,
+                            isParking = self.getCar().animateObj.animateDataItems[i].isParking
+                        };
+                        animateData.Add(item);
+                    }
+                    var result = new AnimationData
+                    {
+                        deltaT = deltaT > int.MaxValue ? int.MaxValue : Convert.ToInt32(deltaT),
+                        animateData = animateData.ToArray(),
+                        currentMd5 = self.getCar().animateObj.Md5,
+                        previousMd5 = self.getCar().animateObj.PreviousMd5,
+                        privateKeys = self.getCar().animateObj.privateKeys
+                    };
+                    var obj = new BradCastAnimateOfOthersCar3
+                    {
+                        c = "BradCastAnimateOfOthersCar3",
+                        Animate = result,
+                        WebSocketID = self.WebSocketID,
+                        carID = getCarName() + "_" + self.Key,
+                        parentID = self.Key,
+                        passPrivateKeysOnly = false
+                    };
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                    msgsWithUrl.Add(self.FromUrl);
+                    msgsWithUrl.Add(json);
+                    self.getCar().WebSelf = new Car.ChangeStateC()
+                    {
+                        md5 = car.animateObj.Md5,
+                        privatekeysLength = self.getCar().animateObj.LengthOfPrivateKeys
+                    };
+                }
+                else if (car.WebSelf.privatekeysLength != car.animateObj.LengthOfPrivateKeys)
+                {
+                    var animateData = new List<AnimationEncryptedItem>();
+                    for (int i = 0; i < self.getCar().animateObj.animateDataItems.Length; i++)
+                    {
+                        AnimationEncryptedItem item = new AnimationEncryptedItem
+                        {
+                            dataEncrypted = null,
+                            startT = 0,
+                            privateKey = i < self.getCar().animateObj.LengthOfPrivateKeys ? self.getCar().animateObj.animateDataItems[i].privateKey : -1,
+                            Md5Code = self.getCar().animateObj.animateDataItems[i].Md5Code,
+                            isParking = self.getCar().animateObj.animateDataItems[i].isParking
+                        };
+                        animateData.Add(item);
+                    }
+                    var result = new AnimationData
+                    {
+                        deltaT = 0,
+                        animateData = animateData.ToArray(),
+                        currentMd5 = self.getCar().animateObj.Md5,
+                        previousMd5 = "",
+                        privateKeys = null
+                    };
+                    var obj = new BradCastAnimateOfOthersCar3
+                    {
+                        c = "BradCastAnimateOfOthersCar3",
+                        Animate = result,
+                        WebSocketID = self.WebSocketID,
+                        carID = getCarName() + "_" + self.Key,
+                        parentID = self.Key,
+                        passPrivateKeysOnly = true
+                    };
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                    msgsWithUrl.Add(self.FromUrl);
+                    msgsWithUrl.Add(json);
+                    self.getCar().WebSelf = new Car.ChangeStateC()
+                    {
+                        md5 = car.animateObj.Md5,
+                        privatekeysLength = self.getCar().animateObj.LengthOfPrivateKeys
+                    };
+                }
             }
         }
         private string getCarName()
@@ -195,33 +456,38 @@ namespace HouseManager4_0.RoomMainF
         private void addSelfCarRecord(Player self, ref List<string> msgsWithUrl)
         {
             //  for (var indexOfCar = 0; indexOfCar < 5; indexOfCar++)
-            if (self.getCar().animateData == null)
+            if (self.getCar().animateObj == null)
             {
 
             }
             else
             {
-                var deltaT = (DateTime.Now - self.getCar().animateData.recordTime).TotalMilliseconds;
-                var result = new
-                {
-                    deltaT = deltaT>Int32.MaxValue?Int32.MaxValue:Convert.ToInt32(deltaT),
-                    animateData = self.getCar().animateData.animateData,
-                    start = self.getCar().animateData.start,
-                    isParking = self.getCar().animateData.isParking,
-                };
-                var obj = new BradCastAnimateOfSelfCar
-                {
-                    c = "BradCastAnimateOfSelfCar",
-                    Animate = result,
-                    WebSocketID = self.WebSocketID,
-                    carID = getCarName() + "_" + self.Key,
-                    parentID = self.Key,
-                    CostMile = self.getCar().ability.costMiles,
-
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                msgsWithUrl.Add(self.FromUrl);
-                msgsWithUrl.Add(json);
+#warning 这里没完成！
+                // var deltaT = 0;
+                //var currentHash = GetHashCode(self.getCar().animateData.animateData);
+                //var result = new AnimationData
+                //{
+                //    deltaT = 0,
+                //    animateData = self.getCar().animateData.animateData.ToArray(),
+                //    startX = self.getCar().animateData.start.x,
+                //    startY = self.getCar().animateData.start.y,
+                //    isParking = self.getCar().animateData.isParking,
+                //    currentHash = currentHash,
+                //    previousHash = self.getCar().PreviousHash()
+                //};
+                //self.getCar().SetHashCode(currentHash);
+                //var obj = new BradCastAnimateOfSelfCar
+                //{
+                //    c = "BradCastAnimateOfSelfCar",
+                //    Animate = result,
+                //    WebSocketID = self.WebSocketID,
+                //    carID = getCarName() + "_" + self.Key,
+                //    parentID = self.Key,
+                //    CostMile = self.getCar().ability.costMiles,
+                //};
+                //var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                //msgsWithUrl.Add(self.FromUrl);
+                //msgsWithUrl.Add(json);
             }
         }
 

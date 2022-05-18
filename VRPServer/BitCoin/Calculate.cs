@@ -284,7 +284,7 @@ namespace BitCoin
             // throw new Exception("");
             if (((point_P[0] - point_Q[0]) % Secp256k1.p).IsZero)
             {
-                if ((point_P[1] - point_Q[1] % Secp256k1.p).IsZero)
+                if (((point_P[1] - point_Q[1]) % Secp256k1.p).IsZero)
                 {
                     return getDoubleP(point_P, out isZero);
                 }

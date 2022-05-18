@@ -851,21 +851,24 @@ var objMain =
                         //    "py.jpg", "ny.jpg",
                         //    "pz.png", "nz.png"
                         //]);
-                        objMain.scene.background = cubeTexture;
+                        backgroundData['main'] = cubeTexture;
+                        objMain.scene.background = backgroundData['main'];
                     }; break;
                 default:
                     {
                         var cubeTextureLoader = new THREE.CubeTextureLoader();
-                        cubeTextureLoader.setPath('Pic/' + this.path + '/');
+                        cubeTextureLoader.setPath('Pic/' + background.path + '/');
                         var cubeTexture = cubeTextureLoader.load([
                             "px.jpg", "nx.jpg",
                             "py.jpg", "ny.jpg",
                             "pz.jpg", "nz.jpg"
                         ]);
-                        objMain.scene.background = cubeTexture;
+                        backgroundData['main'] = cubeTexture;
+                        objMain.scene.background = backgroundData['main'] ;
                     }; break;
             }
-        }
+        }, 
+        backgroundData: {}
     },
     rightAndDuty:
     {
@@ -1047,7 +1050,7 @@ var objMain =
                 {
                     setScenseFromData(received_obj.r);
                 }; break;
-
+          
         }
     },
 

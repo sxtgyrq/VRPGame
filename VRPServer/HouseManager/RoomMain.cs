@@ -860,32 +860,32 @@ namespace HouseManager
 
         private void addSelfCarRecord(Player self, ref List<string> msgsWithUrl)
         {
-            for (var indexOfCar = 0; indexOfCar < 5; indexOfCar++)
-                if (self.getCar(indexOfCar).animateData == null)
-                {
+            //for (var indexOfCar = 0; indexOfCar < 5; indexOfCar++)
+            //    if (self.getCar(indexOfCar).animateData == null)
+            //    {
 
-                }
-                else
-                {
-                    var result = new
-                    {
-                        deltaT = Convert.ToInt32((DateTime.Now - self.getCar(indexOfCar).animateData.recordTime).TotalMilliseconds),
-                        animateData = self.getCar(indexOfCar).animateData.animateData
-                    };
-                    var obj = new BradCastAnimateOfSelfCar
-                    {
-                        c = "BradCastAnimateOfSelfCar",
-                        Animate = result,
-                        WebSocketID = self.WebSocketID,
-                        carID = getCarName(indexOfCar) + "_" + self.Key,
-                        parentID = self.Key,
-                        CostMile = self.getCar(indexOfCar).ability.costMiles,
+            //    }
+            //    else
+            //    {
+            //        var result = new  anim
+            //        {
+            //            deltaT = Convert.ToInt32((DateTime.Now - self.getCar(indexOfCar).animateData.recordTime).TotalMilliseconds),
+            //            animateData = self.getCar(indexOfCar).animateData.animateData
+            //        };
+            //        var obj = new BradCastAnimateOfSelfCar
+            //        {
+            //            c = "BradCastAnimateOfSelfCar",
+            //            Animate = result,
+            //            WebSocketID = self.WebSocketID,
+            //            carID = getCarName(indexOfCar) + "_" + self.Key,
+            //            parentID = self.Key,
+            //            CostMile = self.getCar(indexOfCar).ability.costMiles,
 
-                    };
-                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                    msgsWithUrl.Add(self.FromUrl);
-                    msgsWithUrl.Add(json);
-                }
+            //        };
+            //        var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            //        msgsWithUrl.Add(self.FromUrl);
+            //        msgsWithUrl.Add(json);
+            //    }
         }
 
 

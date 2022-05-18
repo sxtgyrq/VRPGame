@@ -127,10 +127,9 @@ namespace CommonClass
             public int newStartIndex { get; set; }
         }
 
-        public class SetBackgroundScene : Command
+        public abstract class SetBackgroundScene : Command
         {
             public string author { get; set; }
-            public string crossID { get; set; }
             public string px { get; set; }
             public string nx { get; set; }
             public string py { get; set; }
@@ -138,10 +137,24 @@ namespace CommonClass
             public string pz { get; set; }
             public string nz { get; set; }
         }
+        public class SetBackgroundScene_BLL : SetBackgroundScene
+        { 
+            public string firstRoadcode { get; set; }
+            public int firstRoadorder { get; set; }
+            public string secondRoadcode { get; set; }
+            public int secondRoadorder { get; set; } 
+        }
+        public class SetBackgroundScene_DAL : SetBackgroundScene
+        {
+            public string crossID { get; set; } 
+        }
         public class GetBackgroundScene : Command
         {
-            public string crossID { get; set; }
-            public class Result  
+            public string firstRoadcode { get; set; }
+            public int firstRoadorder { get; set; }
+            public string secondRoadcode { get; set; }
+            public int secondRoadorder { get; set; }
+            public class Result
             {
                 public bool hasValue { get; set; }
                 public int crossState { get; set; }
@@ -156,7 +169,10 @@ namespace CommonClass
 
         public class UseBackgroundScene : Command
         {
-            public string crossID { get; set; }
+            public string firstRoadcode { get; set; }
+            public int firstRoadorder { get; set; }
+            public string secondRoadcode { get; set; }
+            public int secondRoadorder { get; set; }
             public bool used { get; set; }
             //public class Result : Command
             //{

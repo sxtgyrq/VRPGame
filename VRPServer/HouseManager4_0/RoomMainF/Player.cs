@@ -387,6 +387,7 @@ namespace HouseManager4_0.RoomMainF
                             ((Player)this._Players[checkItem.Key]).modelHasShowed.Clear();
                             ((Player)this._Players[checkItem.Key]).aModelHasShowed.Clear();
                             ((Player)this._Players[checkItem.Key]).backgroundData.Clear();
+                            ((Player)this._Players[checkItem.Key]).getCar().WebSelf.Clear();
                         }
                         else
                         {

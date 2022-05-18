@@ -264,7 +264,7 @@ namespace HouseManager4_0
                         int newStartT;
                         step++;
                         if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                         else
                             newStartT = 0;
 
@@ -288,7 +288,7 @@ namespace HouseManager4_0
                         List<string> notifyMsg = new List<string>();
                         int newStartT;
                         if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, goPath, ref notifyMsg, out newStartT);
+                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                         // else if(step==goPath.path.Count-1)
                         //EditCarStateAfterSelect(step,player,ref car,)
                         else

@@ -302,7 +302,7 @@ namespace HouseManager4_0
                     case "SetBackgroundScene":
                         {
                             //SetBackgroundScene
-                            CommonClass.MapEditor.SetBackgroundScene sbs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.SetBackgroundScene>(notifyJson);
+                            CommonClass.MapEditor.SetBackgroundScene_BLL sbs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.SetBackgroundScene_BLL>(notifyJson);
                             outPut = objI.SetBackgroundSceneF(sbs);
                         }; break;
                     case "GetBackgroundScene":

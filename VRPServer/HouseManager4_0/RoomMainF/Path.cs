@@ -46,6 +46,8 @@ namespace HouseManager4_0.RoomMainF
                     public double longitude { get; set; }
                     public double latitude { get; set; }
                     public string crossKey { get; set; }
+
+                    public string postionCrossKey { get { return $"{longitude.ToString("F5")},{latitude.ToString("F5")}"; } }
                 }
                 /// <summary>
                 /// 供选择的矢量，这里的start是矢量的起点，并不是选择的起点。end为矢量的终点。
@@ -70,10 +72,20 @@ namespace HouseManager4_0.RoomMainF
 
         public Node GetAFromB_v2(int from, int to, RoleInGame player, ref List<string> notifyMsgs)
         {
+            //from = 209;
+            //to = 444;
             // throw new Exception("");
             int cursor = 0;//光标所在位置
 
             var path = this.GetAFromB_Path(from, to, player, ref notifyMsgs);
+
+
+            //for (int i = 0; i < path.Count; i++)
+            //{
+            //    Console.WriteLine($"{path[i].BDlongitude},{path[i].BDlatitude}");
+            //}
+            //Console.WriteLine($"坐标展示结束");
+            //Console.ReadLine();
             if (path.Count > 1)
             {
                 var lastPoint = path[0];//第一个点作为起点
@@ -252,15 +264,18 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         pathItem.Add(path[start]);
                                     }
-                                    cursor = indexOfPath + 1;//将光标指向下一个位置。在一个线段内的第二个cross，不会执行上面的循环
+                                    if (cursor < indexOfPath)
+                                    {
+                                        cursor = indexOfPath + 1;//将光标指向下一个位置。在一个线段内的第二个cross，不会执行上面的循环
+                                    }
                                     var newLast = new MapGo.nyrqPosition
-                                        (
-                                        calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadCode1 : calCross[indexOfCalCross].cross.RoadCode2,
-                                        calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadOrder1 : calCross[indexOfCalCross].cross.RoadOrder2,
-                                        calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.Percent1 : calCross[indexOfCalCross].cross.Percent2,
-                                        calCross[indexOfCalCross].cross.BDLongitude,
-                                        calCross[indexOfCalCross].cross.BDLatitude,
-                                        lastPoint.maxSpeed);
+                                    (
+                                    calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadCode1 : calCross[indexOfCalCross].cross.RoadCode2,
+                                    calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadOrder1 : calCross[indexOfCalCross].cross.RoadOrder2,
+                                    calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.Percent1 : calCross[indexOfCalCross].cross.Percent2,
+                                    calCross[indexOfCalCross].cross.BDLongitude,
+                                    calCross[indexOfCalCross].cross.BDLatitude,
+                                    lastPoint.maxSpeed);
                                     pathItem.Add(newLast);
                                     lastPoint = newLast.copy();
                                     Node.pathItem.Postion selectionCenter = new Node.pathItem.Postion()
@@ -332,6 +347,9 @@ namespace HouseManager4_0.RoomMainF
                                         position = position,
                                         selectionCenter = selectionCenter
                                     });
+
+                                    OutPutLast(node.path.Count - 1, node.path);
+                                    //  outPutNode
                                 }
                             }
                             else
@@ -351,7 +369,7 @@ namespace HouseManager4_0.RoomMainF
                                 {
                                     longitude = path[indexOfPath].BDlongitude,
                                     latitude = path[indexOfPath].BDlatitude,
-                                    crossKey = null
+                                    crossKey = getID(current, next)
                                 };
                                 selections.Add(new Node.direction()
                                 {
@@ -391,6 +409,7 @@ namespace HouseManager4_0.RoomMainF
                                     position = position,
                                     selectionCenter = selectionCenter
                                 });
+                                OutPutLast(node.path.Count - 1, node.path);
                                 lastPoint = path[indexOfPath + 1].copy();
                             }
                         }
@@ -418,6 +437,14 @@ namespace HouseManager4_0.RoomMainF
                         }
                     });
                 }
+
+                //for (int i = 0; i < node.path.Count; i++)
+                //{
+                //    for (int j = 0; j < node.path[i].path.Count; j++)
+                //    {
+                //        Console.WriteLine($"{node.path[i].path[j].BDlongitude},{node.path[i].path[j].BDlatitude}");
+                //    }
+                //}
                 return node;
             }
             else
@@ -433,6 +460,23 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
+        private void OutPutLast(int index, List<Node.pathItem> path)
+        {
+            //var value = path[index];
+            //for (int i = 0; i < value.path.Count; i++)
+            //{
+            //    Console.WriteLine($"{ value.path[i].BDlongitude},{ value.path[i].BDlatitude}");
+            //}
+            //Console.ReadLine();
+            //for (int i = 0; i < node.path.Count; i++)
+            //{
+            //    for (int j = 0; j < node.path[i].path.Count; j++)
+            //    {
+            //        Console.WriteLine($"{node.path[i].path[j].BDlongitude},{node.path[i].path[j].BDlatitude}");
+            //    }
+            //}
+        }
+
         private string getID(SaveRoad.DictCross cross)
         {
             string crossKey;
@@ -446,7 +490,19 @@ namespace HouseManager4_0.RoomMainF
             }
             return crossKey;
         }
-
+        private string getID(SaveRoad.RoadInfo current, SaveRoad.RoadInfo next)
+        {
+            string crossKey;
+            if (current.RoadCode.CompareTo(next.RoadCode) > 0)
+            {
+                crossKey = $"{current.RoadCode}{current.RoadOrder}{next.RoadCode}{next.RoadOrder}";
+            }
+            else
+            {
+                crossKey = $"{next.RoadCode}{next.RoadOrder}{current.RoadCode}{current.RoadOrder}";
+            }
+            return crossKey;
+        }
         private bool FoundCross(Node.direction wrong, MapGo.nyrqPosition startPosition)
         {
             var roadCode = startPosition.roadCode;
@@ -712,7 +768,7 @@ namespace HouseManager4_0.RoomMainF
                                 for (int indexOfCalCross = 0; indexOfCalCross < calCross.Count; indexOfCalCross++)
                                 {
                                     var pathItem = new List<MapGo.nyrqPosition>();
-                                    pathItem.Add(lastPoint.copy());//增加最后一点。
+                                    //pathItem.Add(lastPoint.copy());//增加最后一点。
                                     for (int start = cursor; start < indexOfPath; start++)
                                     {
                                         pathItem.Add(path[start]);
@@ -808,7 +864,7 @@ namespace HouseManager4_0.RoomMainF
                             else
                             {
                                 var pathItem = new List<MapGo.nyrqPosition>();
-                                pathItem.Add(lastPoint);
+                                //pathItem.Add(lastPoint);
                                 for (int start = cursor; start < indexOfPath; start++)
                                 {
                                     pathItem.Add(path[start]);
@@ -822,7 +878,7 @@ namespace HouseManager4_0.RoomMainF
                                 {
                                     longitude = path[indexOfPath].BDlongitude,
                                     latitude = path[indexOfPath].BDlatitude,
-                                    crossKey = null
+                                    crossKey = getID(current, next)
                                 };
                                 selections.Add(new Node.direction()
                                 {

@@ -48,6 +48,9 @@ namespace HouseManager4_0
         {
             return this._Car;
         }
+        /// <summary>
+        /// 有0，1，2，3，4  五个选项，代表不同的位置
+        /// </summary>
         public int positionInStation = 0;
 
         protected Car _Car;
@@ -73,7 +76,7 @@ namespace HouseManager4_0
             // this._Car.setPurpose(this, ref notifyMsg, Car.Purpose.@null);
 
             this._Car.SetAnimateChanged = roomMain.SetAnimateChanged;
-            this._Car.setAnimateData(this, ref notifyMsg, null);
+            this._Car.setAnimateData(this, ref notifyMsg, null, DateTime.Now);
 
             this._Car.ability.MileChanged = roomMain.AbilityChanged2_0;
             this._Car.ability.BusinessChanged = roomMain.AbilityChanged2_0;
@@ -394,23 +397,14 @@ namespace HouseManager4_0
         {
             get
             {
-                var percent = this.Money / 50000;
-                if (percent <= 0)
+                if (this.Money - 50000 < 0)
                 {
                     return 0;
                 }
-                else if (percent <= 100)
-                {
-                    return this.Money * percent / 100;
-                }
                 else
                 {
-                    return this.Money;
+                    return this.Money - 50000;
                 }
-                //if (this.brokenParameterT1 < brokenParameterT2)
-                //    return Math.Max(0, this.Money - intializedMoney - this.sumDebets * 2);
-                //else
-                //    return Math.Max(0, this.Money - intializedMoney - this.sumDebets * brokenParameterT1 / brokenParameterT2 * 2);
             }
         }
 
@@ -704,6 +698,74 @@ namespace HouseManager4_0
         {
             this.afterBroke(this, ref notifyMsg);
         }
+
+        internal void SendBG(Player player, ref List<string> notifyMsg, Dictionary<string, string> Data, string crossKey)
+        {
+            SetCrossBG obj;
+            if (backgroundData.ContainsKey(crossKey))
+            {
+                obj = new SetCrossBG
+                {
+                    c = "SetCrossBG",
+                    WebSocketID = player.WebSocketID,
+                    CrossID = crossKey,
+                    nx = null,
+                    ny = null,
+                    nz = null,
+                    px = null,
+                    py = null,
+                    pz = null,
+                    IsDetalt = false,
+                    AddNew = false
+                };
+            }
+            else
+            {
+                obj = new SetCrossBG
+                {
+                    c = "SetCrossBG",
+                    WebSocketID = player.WebSocketID,
+                    CrossID = crossKey,
+                    nx = Data["nx"],
+                    ny = Data["ny"],
+                    nz = Data["nz"],
+                    px = Data["px"],
+                    py = Data["py"],
+                    pz = Data["pz"],
+                    IsDetalt = false,
+                    AddNew = true
+                };
+                backgroundData.Add(crossKey, true);
+            }
+            var url = player.FromUrl;
+            var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            notifyMsg.Add(url);
+            notifyMsg.Add(sendMsg);
+        }
+
+        internal void SendBG(Player player, ref List<string> notifyMsg)
+        {
+            SetCrossBG obj;
+            obj = new SetCrossBG
+            {
+                c = "SetCrossBG",
+                WebSocketID = player.WebSocketID,
+                CrossID = "",
+                nx = null,
+                ny = null,
+                nz = null,
+                px = null,
+                py = null,
+                pz = null,
+                IsDetalt = true,
+                AddNew = false
+            };
+            var url = player.FromUrl;
+            var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            notifyMsg.Add(url);
+            notifyMsg.Add(sendMsg);
+        }
+
         public System.Numerics.Complex direciton = 0;
 
         public Dictionary<string, bool> modelHasShowed { get; set; }
@@ -864,10 +926,14 @@ namespace HouseManager4_0
         {
             this.selfKey = selfKeyInput;
             this.otherKey = otherKeyInput;
-            this.carChangeState = -1;
+            this.carChangeState = new Car.ChangeStateC()
+            {
+                md5 = "",
+                privatekeysLength = -1
+            };
             // this._brokenParameterT1Record = -1;
         }
-        public int carChangeState { get; private set; }
+        public Car.ChangeStateC carChangeState { get; private set; }
         // long _brokenParameterT1Record { get; set; }
         //public long brokenParameterT1Record
         //{
@@ -894,14 +960,18 @@ namespace HouseManager4_0
         /// </summary>
       //  public BrokenParameterT1RecordChanged brokenParameterT1RecordChangedF;
 
-        internal int getCarState()
+        internal Car.ChangeStateC getCarState()
         {
             return this.carChangeState;
         }
 
-        internal void setCarState(int changeState)
+        internal void setCarState(string md5, int privateKeysLength)
         {
-            this.carChangeState = changeState;
+            this.carChangeState = new Car.ChangeStateC()
+            {
+                md5 = md5,
+                privatekeysLength = privateKeysLength
+            };
         }
 
 

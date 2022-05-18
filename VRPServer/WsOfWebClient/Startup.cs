@@ -103,13 +103,23 @@ namespace WsOfWebClient
                     {
                         try
                         {
+
+                            //ws.
                             var sendData = Encoding.UTF8.GetBytes(notifyJson);
 
-                            await ws.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                            switch (c.c)
+                            {
+                                case "": { }; break;
+                                default:
+                                    {
+                                        await ws.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                                    }; break;
+                            }
+
                         }
                         catch
                         {
-
+                            Console.WriteLine("websocket 异常");
                         }
                     }
                 }
@@ -535,11 +545,11 @@ namespace WsOfWebClient
                                     ModelTransSign mts = Newtonsoft.Json.JsonConvert.DeserializeObject<ModelTransSign>(returnResult.result);
                                     await Room.ModelTransSignF(s, webSocket, mts);
                                 }; break;
-                            case "CheckCarState": 
+                            case "CheckCarState":
                                 {
                                     CommonClass.CheckCarState ccs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CheckCarState>(returnResult.result);
-                                      await Room.checkCarState(s, ccs);
-                                };break;
+                                    await Room.checkCarState(s, ccs);
+                                }; break;
                         }
                     }
                     catch (Exception e)

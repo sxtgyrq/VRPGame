@@ -50,12 +50,11 @@ namespace HouseManager4_0.RoomMainF
         private void addPlayerRecord(RoleInGame self, RoleInGame other, ref List<string> msgsWithUrl)
         {
             if (self.Key == other.Key)
-            {
+            { 
                 return;
             }
-            if (self.othersContainsKey(other.Key))
-            {
-
+            else if (self.othersContainsKey(other.Key))
+            { 
             }
             else
             {
@@ -84,7 +83,7 @@ namespace HouseManager4_0.RoomMainF
                         isNPC = other.playerType == RoleInGame.PlayerType.NPC,
                         isPlayer = other.playerType == RoleInGame.PlayerType.player,
                         Level = other.Level
-                          
+
                         // var xx=  getPosition.Key
                     };
                     msgsWithUrl.Add(((Player)self).FromUrl);

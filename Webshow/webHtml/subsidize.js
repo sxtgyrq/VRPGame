@@ -155,6 +155,13 @@
         overflow: hidden;
         max-height: calc(90%);
 ">
+<div>
+            <label>
+                p2wpkh-p2sh:
+            </label>
+
+            <input type="checkbox" id="p2wpkhp2sh" />
+        </div>
         <div style="
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
@@ -215,7 +222,7 @@
             //document.getElementById('subsidizePanelPromptPrivateKeyValue').style.background = 'rgba(127, 255, 127, 0.6)';
             var signMsg = JSON.parse(sessionStorage['session']).Key;
 
-            that.signInfoMatiion = yrqSign(privateKey, signMsg)
+            that.signInfoMatiion = yrqSign(privateKey, signMsg, document.getElementById('p2wpkhp2sh').checked);
             that.add2();
             that.add();
         }
@@ -243,7 +250,7 @@
 }
     ;
 var debtInfoSys =
-{ 
+{
     operateID: 'debtPanel',
     html: `<div id="subsidizePanel"  style="position:absolute;z-index:8;top:calc(10% - 1px);width:24em; left:calc(50% - 12em);height:auto;border:solid 1px red;text-align:center;background:rgba(104, 48, 8, 0.85);color:#83ffff;overflow-y: scroll;max-height: calc(90%);  ">
         <table style="width:100%;">

@@ -47,7 +47,7 @@ namespace TcpFunction
                     // int bytesRead = await ns.ReadAsync(bytes, 0, length2);
                     byte[] bytes = Common.ByteReader(length2, ns);
                     result = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                   // Console.WriteLine(result);
+                    // Console.WriteLine(result);
                     ns.Close(6000);
                 }
                 tc.Close();
@@ -141,21 +141,22 @@ namespace TcpFunction
                     Console.WriteLine($"{controllerUrl},没有连接！");
                     return;
                 }
-                NetworkStream ns = client.GetStream();
-                var sendData = Encoding.UTF8.GetBytes(json);
-                await Common.SendLength(sendData.Length, ns);
-                var length = Common.ReceiveLength(ns);
-                if (length == sendData.Length) { }
-                else
+                using (NetworkStream ns = client.GetStream())
                 {
-                    var msg = $"length:({length})!= sendData.Length({sendData.Length})";
-                    Console.WriteLine(msg);
-                    //throw new Exception($"length:({length})!= sendData.Length({sendData.Length})");
-                    throw new Exception(msg);
+                    var sendData = Encoding.UTF8.GetBytes(json);
+                    await Common.SendLength(sendData.Length, ns);
+                    var length = Common.ReceiveLength(ns);
+                    if (length == sendData.Length) { }
+                    else
+                    {
+                        var msg = $"length:({length})!= sendData.Length({sendData.Length})";
+                        Console.WriteLine(msg);
+                        //throw new Exception($"length:({length})!= sendData.Length({sendData.Length})");
+                        throw new Exception(msg);
+                    }
+                    await ns.WriteAsync(sendData, 0, sendData.Length);
+                    ns.Close(6000);
                 }
-                await ns.WriteAsync(sendData, 0, sendData.Length);
-
-                ns.Close(6000);
                 client.Close();
             }
             catch (ArgumentNullException e)
@@ -210,19 +211,16 @@ namespace TcpFunction
         delegate void SetMsgAndIsRight(string notifyJson, DealWith dealWith);
         private static async void GetMsg(TcpClient client, SetMsgAndIsRight smr, DealWith dealWith)
         {
-            NetworkStream stream = client.GetStream();
-            var length = Common.ReceiveLength(stream);
-
-            await Common.SendLength(length, stream);
-
-            byte[] bytes = new byte[length];
-
-            int bytesRead = stream.Read(bytes, 0, length);
-
-            var notifyJson = Encoding.UTF8.GetString(bytes, 0, bytesRead);
-
-            smr(notifyJson, dealWith);
-            stream.Close(6000);
+            using (NetworkStream stream = client.GetStream())
+            {
+                var length = Common.ReceiveLength(stream);
+                await Common.SendLength(length, stream);
+                byte[] bytes = new byte[length];
+                bytes = Common.ByteReader(length, stream);
+                var notifyJson = Encoding.UTF8.GetString(bytes, 0, length);
+                smr(notifyJson, dealWith);
+                stream.Close(6000);
+            } 
         }
     }
     class Common

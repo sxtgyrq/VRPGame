@@ -50,29 +50,29 @@ namespace HouseManager
 
         private void addSelfCarSingleRecord(Player self, Car car, ref List<string> msgsWithUrl)
         {
-            if (car.animateData == null)
-            { }
-            else
-            {
-                var result = new
-                {
-                    deltaT = Convert.ToInt32((DateTime.Now - car.animateData.recordTime).TotalMilliseconds),
-                    animateData = car.animateData.animateData
-                };
-                var obj = new BradCastAnimateOfSelfCar
-                {
-                    c = "BradCastAnimateOfSelfCar",
-                    Animate = result,
-                    WebSocketID = self.WebSocketID,
-                    carID = getCarName(car.carIndex) + "_" + self.Key,
-                    parentID = self.Key,
-                    CostMile = car.ability.costMiles,
+            //if (car.animateData == null)
+            //{ }
+            //else
+            //{
+            //    var result = new
+            //    {
+            //        deltaT = Convert.ToInt32((DateTime.Now - car.animateData.recordTime).TotalMilliseconds),
+            //        animateData = car.animateData.animateData
+            //    };
+            //    var obj = new BradCastAnimateOfSelfCar
+            //    {
+            //        c = "BradCastAnimateOfSelfCar",
+            //        Animate = result,
+            //        WebSocketID = self.WebSocketID,
+            //        carID = getCarName(car.carIndex) + "_" + self.Key,
+            //        parentID = self.Key,
+            //        CostMile = car.ability.costMiles,
 
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                msgsWithUrl.Add(self.FromUrl);
-                msgsWithUrl.Add(json);
-            }
+            //    };
+            //    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            //    msgsWithUrl.Add(self.FromUrl);
+            //    msgsWithUrl.Add(json);
+            //}
         }
 
         private void addPlayerCarRecord(Player self, Player other, ref List<string> msgsWithUrl)
