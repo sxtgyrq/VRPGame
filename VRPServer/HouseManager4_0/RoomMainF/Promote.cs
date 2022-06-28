@@ -40,7 +40,7 @@ namespace HouseManager4_0.RoomMainF
         //    }
         //    else if (car.ability.SumMoneyCanForPromote != 0)
         //    {
-        //        Console.WriteLine("小车从基站出发，身上的钱，没有清零！");
+        //        //Consol.WriteLine("小车从基站出发，身上的钱，没有清零！");
         //        //初始化失败，小车 comeback后，没有完成交接！！！
         //        throw new Exception("car.ability.costBusiness != 0m");
         //    }
@@ -88,7 +88,7 @@ namespace HouseManager4_0.RoomMainF
         //    }
         //    else
         //    {
-        //        Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
+        //        //Consol.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
         //        throw new Exception("错误的汽车类型！！！");
         //    }
         //    Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);

@@ -17,7 +17,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }
@@ -232,7 +232,7 @@ namespace HouseManager
             //    {
             //        var url = notifyMsg[i];
             //        var sendMsg = notifyMsg[i + 1];
-            //        Console.WriteLine($"url:{url}");
+            //        //Consol.WriteLine($"url:{url}");
 
             //        await Startup.sendMsg(url, sendMsg);
             //    }
@@ -287,7 +287,7 @@ namespace HouseManager
             //            if (car.ability.leftMile >= goMile + returnMile)
             //            {
             //                car.targetFpIndex = to;
-            //                Console.WriteLine($"{car.name}的目标设置成了{Program.dt.GetFpByIndex(to).FastenPositionName}");
+            //                //Consol.WriteLine($"{car.name}的目标设置成了{Program.dt.GetFpByIndex(to).FastenPositionName}");
 
             //                car.setPurpose(player, ref notifyMsg, Purpose.tax);
             //                //car.purpose = Purpose.tax;

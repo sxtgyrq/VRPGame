@@ -16,13 +16,13 @@ namespace HouseManager
 
         //internal static void SubsidizeChanged(Player player, Car car, ref List<string> notifyMsgs, long subsidize)
         //{
-        //    Console.WriteLine($"SubsidizeChanged 方法没有编写");
+        //    //Consol.WriteLine($"SubsidizeChanged 方法没有编写");
         //    //throw new NotImplementedException();
         //}
 
         internal static void DiamondInCarChanged(Player player, Car car, ref List<string> notifyMsgs, string value)
         {
-            Console.WriteLine($"DiamondInCarChanged 方法没有编写");
+            //Consol.WriteLine($"DiamondInCarChanged 方法没有编写");
         }
 
         

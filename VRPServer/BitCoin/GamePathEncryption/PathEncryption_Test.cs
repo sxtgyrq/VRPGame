@@ -29,18 +29,18 @@ namespace BitCoin.GamePathEncryption
             //    {
             //        if (IsPrime(i))
             //        {
-            //            Console.WriteLine($"-----------------------------------");
-            //            Console.WriteLine($"-------------开始计算{i}-----------");
+            //            //Consol.WriteLine($"-----------------------------------");
+            //            //Consol.WriteLine($"-------------开始计算{i}-----------");
             //            Parameter.SetP(i);
             //            Parameter.getXY();
             //            var q = Parameter.getQ();
-            //            Console.WriteLine($"p={Parameter.p},x={Parameter.x},y={Parameter.y},q={q}");
+            //            //Consol.WriteLine($"p={Parameter.p},x={Parameter.x},y={Parameter.y},q={q}");
             //            if (q >= i)
             //            {
             //                if (IsPrime(q))
             //                {
-            //                    Console.WriteLine($"素数结果-- p={Parameter.p},x={Parameter.x},y={Parameter.y},q={q}");
-            //                    Console.WriteLine("按任意键继续！");
+            //                    //Consol.WriteLine($"素数结果-- p={Parameter.p},x={Parameter.x},y={Parameter.y},q={q}");
+            //                    //Consol.WriteLine("按任意键继续！");
 
             //                    var msg = $"素数结果-- p={Parameter.p},x={Parameter.x},y={Parameter.y},q={q}";
             //                    File.WriteAllText("calResult.txt", msg);
@@ -49,22 +49,22 @@ namespace BitCoin.GamePathEncryption
             //                }
             //                else
             //                {
-            //                    Console.WriteLine($"{q}不是素数");
+            //                    //Consol.WriteLine($"{q}不是素数");
             //                }
             //            }
             //            else
             //            {
-            //                Console.WriteLine($"{q}<85000000,结果不符！");
+            //                //Consol.WriteLine($"{q}<85000000,结果不符！");
             //            }
             //        }
             //        else
             //        {
-            //            Console.WriteLine($"{i}不是素数");
+            //            //Consol.WriteLine($"{i}不是素数");
             //        }
             //    }
             //    else
             //    {
-            //        Console.WriteLine($"{i}%4≠3");
+            //        //Consol.WriteLine($"{i}%4≠3");
             //    }
 
 
@@ -281,7 +281,7 @@ namespace BitCoin.GamePathEncryption
 
                         if ((y * y) % p == (((x * x) % p) * x + a * x + b) % p)
                         {
-                            Console.WriteLine($"找到x={x},y={y}");
+                            //Consol.WriteLine($"找到x={x},y={y}");
                             // Console.ReadLine();
 
                             var basePoint = new Int64[] { x, y };
@@ -294,7 +294,7 @@ namespace BitCoin.GamePathEncryption
                             //  int indexValue = 0;
                             {
                                 var right = CheckXYIsRight(x, y);
-                                Console.WriteLine($"基点[{right}]在曲线上");
+                                //Consol.WriteLine($"基点[{right}]在曲线上");
                             }
                             var index = 1;
                             for (int i = 0; i < Int32.MaxValue; i++)
@@ -307,7 +307,7 @@ namespace BitCoin.GamePathEncryption
                                     //var mul = Parameter.getMulValue(index, basePoint);
                                     //if (mul[0] != result[0] || mul[1] != result[1])
                                     //{
-                                    //    Console.WriteLine($"{i}-累加与乘法结果不等！");
+                                    //    //Consol.WriteLine($"{i}-累加与乘法结果不等！");
                                     //    Console.ReadLine();
                                     //}
                                 }
@@ -325,15 +325,15 @@ namespace BitCoin.GamePathEncryption
                                     //}
                                 }
                             }
-                            Console.WriteLine($"所求结果{index}");
+                            //Consol.WriteLine($"所求结果{index}");
                             return index + 1;
                             // for (int i = -2; i <= 2; i++)
                             //{
                             //    Console.ReadLine();
                             //    var another = Parameter.getMulValue(count, basePoint);
                             //    var onCurve = CheckXYIsRight(another[0], another[1]);
-                            //    Console.WriteLine($"相乘结果{another[0]},{another[1]},{onCurve}");
-                            //    Console.WriteLine($"累加结果{result[0]},{result[1]}");
+                            //    //Consol.WriteLine($"相乘结果{another[0]},{another[1]},{onCurve}");
+                            //    //Consol.WriteLine($"累加结果{result[0]},{result[1]}");
                             //}
                             //  Console.ReadLine();
                             //for (int i = 0; i < q - 1; i++)
@@ -361,7 +361,7 @@ namespace BitCoin.GamePathEncryption
                         }
                         else
                         {
-                            Console.WriteLine($"找到不相等");
+                            //Consol.WriteLine($"找到不相等");
                             Console.ReadLine();
                             throw new Exception("找到不相等");
                         }
@@ -380,7 +380,7 @@ namespace BitCoin.GamePathEncryption
                     {
                         Parameter_0.x = x;
                         Parameter_0.y = y;
-                        Console.WriteLine($"碰撞结果x:{x},y:{y}");
+                        //Consol.WriteLine($"碰撞结果x:{x},y:{y}");
                         break;
                     }
                 }
@@ -627,7 +627,7 @@ namespace BitCoin.GamePathEncryption
 
                         if ((y * y) % p == (((x * x) % p) * x + a * x + b) % p)
                         {
-                            Console.WriteLine($"找到x={x},y={y}");
+                            //Consol.WriteLine($"找到x={x},y={y}");
                             // Console.ReadLine();
 
                             var basePoint = new Int64[] { x, y };
@@ -640,7 +640,7 @@ namespace BitCoin.GamePathEncryption
                             //  int indexValue = 0;
                             {
                                 var right = CheckXYIsRight(x, y);
-                                Console.WriteLine($"基点[{right}]在曲线上");
+                                //Consol.WriteLine($"基点[{right}]在曲线上");
                             }
                             var index = 1;
                             for (int i = 0; i < Int32.MaxValue; i++)
@@ -653,7 +653,7 @@ namespace BitCoin.GamePathEncryption
                                     var mul = Parameter2.getMulValue(index, basePoint);
                                     if (mul[0] != result[0] || mul[1] != result[1])
                                     {
-                                        Console.WriteLine($"{i}-累加与乘法结果不等！");
+                                        //Console.WriteLine($"{i}-累加与乘法结果不等！");
                                         Console.ReadLine();
                                     }
                                 }
@@ -664,22 +664,22 @@ namespace BitCoin.GamePathEncryption
                                 else
                                 {
                                     var right = CheckXYIsRight(result[0], result[1]);
-                                    Console.WriteLine($"result[{ i + 2}]={{{result[0]},{result[1]}}}---在曲线上{right}");
+                                    //Console.WriteLine($"result[{ i + 2}]={{{result[0]},{result[1]}}}---在曲线上{right}");
                                     if (!right)
                                     {
                                         Console.ReadLine();
                                     }
                                 }
                             }
-                            Console.WriteLine($"所求结果{index}");
+                            //Console.WriteLine($"所求结果{index}");
                             return index + 1;
                             // for (int i = -2; i <= 2; i++)
                             //{
                             //    Console.ReadLine();
                             //    var another = Parameter.getMulValue(count, basePoint);
                             //    var onCurve = CheckXYIsRight(another[0], another[1]);
-                            //    Console.WriteLine($"相乘结果{another[0]},{another[1]},{onCurve}");
-                            //    Console.WriteLine($"累加结果{result[0]},{result[1]}");
+                            //    //Console.WriteLine($"相乘结果{another[0]},{another[1]},{onCurve}");
+                            //    //Console.WriteLine($"累加结果{result[0]},{result[1]}");
                             //}
                             //  Console.ReadLine();
                             //for (int i = 0; i < q - 1; i++)
@@ -707,7 +707,7 @@ namespace BitCoin.GamePathEncryption
                         }
                         else
                         {
-                            Console.WriteLine($"找到不相等");
+                            //Consol.WriteLine($"找到不相等");
                             Console.ReadLine();
                             throw new Exception("找到不相等");
                         }
@@ -723,11 +723,11 @@ namespace BitCoin.GamePathEncryption
                     var y = Parameter2.GetYByX(x);
                     if (Parameter2.CheckXYIsRight(x, y))
                     {
-                        Console.WriteLine($"{i}-{x}-{y}-正确,在曲线上");
+                        //Consol.WriteLine($"{i}-{x}-{y}-正确,在曲线上");
                     }
                     else
                     {
-                        Console.WriteLine($"{i}-{x}-{y}错误");
+                        //Consol.WriteLine($"{i}-{x}-{y}错误");
                         Console.ReadLine();
                     }
                 }

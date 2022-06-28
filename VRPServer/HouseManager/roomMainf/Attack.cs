@@ -89,12 +89,12 @@ namespace HouseManager
 //                                                    }
 //                                                    else if (state == CarStateForBeAttacked.HasBeenBust)
 //                                                    {
-//                                                        Console.WriteLine($"攻击对象已经破产！");
+//                                                        //Consol.WriteLine($"攻击对象已经破产！");
 //                                                        giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
 //                                                    }
 //                                                    else if (state == CarStateForBeAttacked.NotExisted)
 //                                                    {
-//                                                        Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                        //Consol.WriteLine($"攻击对象已经退出了游戏！");
 //                                                        giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
 //                                                    }
 //                                                    else
@@ -105,7 +105,7 @@ namespace HouseManager
 //                                                else
 //                                                {
 //#warning 前端要提示
-//                                                    Console.WriteLine($"金钱不足以展开攻击！");
+//                                                    //Consol.WriteLine($"金钱不足以展开攻击！");
 //                                                    giveMoneyFromCarToPlayer(player, car, ref notifyMsg);
 //                                                    //carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
 //                                                }
@@ -143,12 +143,12 @@ namespace HouseManager
 //                                                else if (state == CarStateForBeAttacked.HasBeenBust)
 //                                                {
 //                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-//                                                    Console.WriteLine($"攻击对象已经破产！");
+//                                                    //Consol.WriteLine($"攻击对象已经破产！");
 //                                                }
 //                                                else if (state == CarStateForBeAttacked.NotExisted)
 //                                                {
 //                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-//                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                    //Consol.WriteLine($"攻击对象已经退出了游戏！");
 //                                                }
 //                                                else
 //                                                {
@@ -183,12 +183,12 @@ namespace HouseManager
 //                                                }
 //                                                else if (state == CarStateForBeAttacked.HasBeenBust)
 //                                                {
-//                                                    Console.WriteLine($"攻击对象已经破产！");
+//                                                    //Consol.WriteLine($"攻击对象已经破产！");
 //                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
 //                                                }
 //                                                else if (state == CarStateForBeAttacked.NotExisted)
 //                                                {
-//                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                    //Consol.WriteLine($"攻击对象已经退出了游戏！");
 //                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
 //                                                }
 //                                                else
@@ -222,13 +222,13 @@ namespace HouseManager
 //                                                }
 //                                                else if (state == CarStateForBeAttacked.HasBeenBust)
 //                                                {
-//                                                    Console.WriteLine($"攻击对象已经破产！");
+//                                                    //Consol.WriteLine($"攻击对象已经破产！");
 //                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
 //                                                }
 //                                                else if (state == CarStateForBeAttacked.NotExisted)
 //                                                {
 //                                                    carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
-//                                                    Console.WriteLine($"攻击对象已经退出了游戏！");
+//                                                    //Consol.WriteLine($"攻击对象已经退出了游戏！");
 //                                                }
 //                                                else
 //                                                {
@@ -247,7 +247,7 @@ namespace HouseManager
 //                {
 //                    var url = notifyMsg[i];
 //                    var sendMsg = notifyMsg[i + 1];
-//                    Console.WriteLine($"url:{url}");
+//                    //Consol.WriteLine($"url:{url}");
 //                    if (!string.IsNullOrEmpty(url))
 //                    {
 //                        await Startup.sendMsg(url, sendMsg);
@@ -327,7 +327,7 @@ namespace HouseManager
             //throw new Exception("");
             if (player.MoneyToAttack < needMoney)
             {
-                Console.WriteLine($"");
+                //Consol.WriteLine($"");
                 return false;
             }
             else if (car.ability.SumMoneyCanForAttack != 0)
@@ -616,7 +616,7 @@ namespace HouseManager
             //// if (car.state == CarState.waitAtBaseStation)
             //{
             //    //Console.Write($"现在剩余容量为{car.ability.leftVolume}，总容量为{car.ability.Volume}");
-            //    Console.WriteLine($"由于里程安排问题，必须返回！");
+            //    //Consol.WriteLine($"由于里程安排问题，必须返回！");
             //    var from = getFromWhenAttack(this._Players[sc.Key], car);
             //    int startT = 1;
             //    //var carKey = $"{}_{}";
@@ -657,14 +657,14 @@ namespace HouseManager
                 }
                 else
                 {
-                    Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
+                    //Consol.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
                     throw new Exception("car.purpose 未注册");
                 }
             }
 
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDebt");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDebt");
             Thread.Sleep(startT + 1);
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDebt正文");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDebt正文");
             List<string> notifyMsg = new List<string>();
             bool needUpdatePlayers = false;
             lock (this.PlayerLock)
@@ -702,7 +702,7 @@ namespace HouseManager
                          */
 
                         var attackMoney = car.ability.costBusiness + car.ability.costVolume;
-                        Console.WriteLine($"player:{player.Key},car{dOwner.car},attackMoney:{attackMoney}");
+                        //Consol.WriteLine($"player:{player.Key},car{dOwner.car},attackMoney:{attackMoney}");
                         if (this._Players.ContainsKey(dOwner.victim))
                         {
                             var victim = this._Players[dOwner.victim];
@@ -749,7 +749,7 @@ namespace HouseManager
                                         k++;
                                         if (k > 1000)
                                         {
-                                            Console.WriteLine("出现了金钱没有清0的状况！");
+                                            //Consol.WriteLine("出现了金钱没有清0的状况！");
                                             Console.ReadLine();
                                         }
                                     }
@@ -830,11 +830,11 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
             if (needUpdatePlayers)
             {
 #warning 随着前台显示内容的丰富，这里要更新前台的player信息。

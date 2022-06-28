@@ -129,28 +129,28 @@ namespace HouseManager
             //                                                                    {
             //                                                                        WebNotify(player, $"资金不够,{car.name}被安排返航！！！");
             //                                                                        printState(player, car, "在路上走的车，想找宝石，钱不够啊，必须立即返回！");
-            //                                                                        Console.WriteLine($"宝石的价格{this.promotePrice[sp.pType]}，钱不够啊,{car.ability.costBusiness},{car.ability.costVolume}！");
+            //                                                                        //Consol.WriteLine($"宝石的价格{this.promotePrice[sp.pType]}，钱不够啊,{car.ability.costBusiness},{car.ability.costVolume}！");
             //#warning 在路上，由于资金不够，这里没有能测到。
             //                                                                        setReturnWhenPromoteFailed(sp, car);
             //                                                                    }
             //                                                                }
             //                                                                else
             //                                                                {
-            //                                                                    Console.WriteLine("在路上走的车，有了宝石，居然没返回！");
+            //                                                                    //Consol.WriteLine("在路上走的车，有了宝石，居然没返回！");
             //                                                                    //throw new Exception();
             //                                                                }
             //                                                            }; break;
             //                                                        default:
             //                                                            {
             //                                                                var msg = $"{car.state.ToString()}状态下不能提升能力！";
-            //                                                                Console.WriteLine(msg);
+            //                                                                //Consol.WriteLine(msg);
             //                                                            }; break;
 
             //                                                    }
             //                                                }; break;
             //                                            default:
             //                                                {
-            //                                                    Console.WriteLine($"{car.purpose}状态下不能获取提升能力宝石了！");
+            //                                                    //Consol.WriteLine($"{car.purpose}状态下不能获取提升能力宝石了！");
             //                                                    return $"{car.purpose}-state can not do action ！";
             //                                                }; break;
             //                                        }
@@ -167,7 +167,7 @@ namespace HouseManager
             //                {
             //                    var url = notifyMsg[i];
             //                    var sendMsg = notifyMsg[i + 1];
-            //                    Console.WriteLine($"url:{url}");
+            //                    //Consol.WriteLine($"url:{url}");
 
             //                    await Startup.sendMsg(url, sendMsg);
             //                }
@@ -193,7 +193,7 @@ namespace HouseManager
 
         private void printState(Player player, Car car, string msg)
         {
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}{player.PlayerName}-{car.name}--{msg}");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}{player.PlayerName}-{car.name}--{msg}");
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace HouseManager
             }
             else if (car.ability.SumMoneyCanForPromote != 0)
             {
-                Console.WriteLine("小车从基站出发，身上的钱，没有清零！");
+                //Consol.WriteLine("小车从基站出发，身上的钱，没有清零！");
                 //初始化失败，小车 comeback后，没有完成交接！！！
                 throw new Exception("car.ability.costBusiness != 0m");
             }
@@ -327,9 +327,9 @@ namespace HouseManager
         /// <param name="dor"></param>
         private async void setDiamondOwner(int startT, commandWithTime.diamondOwner dor)
         {
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDiamondOwner");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDiamondOwner");
             Thread.Sleep(startT + 1);
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDiamondOwner正文");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setDiamondOwner正文");
             List<string> notifyMsg = new List<string>();
             bool needUpdatePromoteState = false;
             lock (this.PlayerLock)
@@ -372,7 +372,7 @@ namespace HouseManager
                                  */
                                 throw new Exception("钱不够，还让执行setDiamondOwner");
                             }
-                            Console.WriteLine($"需要用钱支付");
+                            //Consol.WriteLine($"需要用钱支付");
                             printState(player, car, $"支付前：costBusiness:{car.ability.costBusiness},costVolume:{car.ability.costVolume},needMoney:{needMoney}");
 
                             //var costBusiness1 = car.ability.costBusiness;
@@ -403,7 +403,7 @@ namespace HouseManager
                         }
                         else
                         {
-                            Console.WriteLine("由于迟到没有执行购买过程！");
+                            //Consol.WriteLine("由于迟到没有执行购买过程！");
 
                             car.ability.setCostMiles(car.ability.costMiles + dor.costMile, player, car, ref notifyMsg);
                             //   car.ability.costMiles += dor.costMile;
@@ -411,7 +411,7 @@ namespace HouseManager
 
                             //   AbilityChanged(player, car, ref notifyMsg, "mile");
 
-                            Console.WriteLine($"{player.PlayerName}的{dor.car}执行完购买宝石过程，由于没有抢到，停在路上,待命中...！");
+                            //Consol.WriteLine($"{player.PlayerName}的{dor.car}执行完购买宝石过程，由于没有抢到，停在路上,待命中...！");
                             carParkOnRoad(dor.target, ref car, player, ref notifyMsg);
 
                             if (this.debug)
@@ -446,11 +446,11 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
             if (needUpdatePromoteState)
             {
                 await CheckAllPlayersPromoteState(dor.changeType);
@@ -556,7 +556,7 @@ namespace HouseManager
             //}
             //else
             //{
-            //    Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
+            //    //Consol.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(car)}");
             //    throw new Exception("错误的汽车类型！！！");
             //}
             //Program.dt.GetAFromBPoint(goPath, fp1, speed, ref result, ref startT);

@@ -38,12 +38,12 @@ namespace HouseManager
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"没有宝石");
+                                            //Consol.WriteLine($"没有宝石");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                             case "business":
@@ -60,12 +60,12 @@ namespace HouseManager
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"没有宝石");
+                                            //Consol.WriteLine($"没有宝石");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                             case "volume":
@@ -82,13 +82,13 @@ namespace HouseManager
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"没有宝石");
+                                            //Consol.WriteLine($"没有宝石");
 #warning 这里要提示前台
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                             case "speed":
@@ -105,12 +105,12 @@ namespace HouseManager
                                         }
                                         else
                                         {
-                                            Console.WriteLine($"没有宝石");
+                                            //Consol.WriteLine($"没有宝石");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                         }
@@ -121,7 +121,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }
@@ -154,7 +154,7 @@ namespace HouseManager
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                             case "business":
@@ -172,7 +172,7 @@ namespace HouseManager
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                             case "volume":
@@ -190,7 +190,7 @@ namespace HouseManager
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                             case "speed":
@@ -208,7 +208,7 @@ namespace HouseManager
                                     }
                                     else
                                     {
-                                        Console.WriteLine("市場沒開放");
+                                        //Consol.WriteLine("市場沒開放");
                                     }
                                 }; break;
                         }
@@ -219,7 +219,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }

@@ -311,12 +311,14 @@ namespace HouseManager4_0
             }
         }
 
+
+
         public Dictionary<string, Dictionary<string, string>> AllCrossesBGData { get; private set; }
         public Dictionary<string, int> CrossesNotHaveBGData { get; private set; }
         internal void LoadCrossBackground()
         {
             this.AllCrossesBGData = DalOfAddress.backgroundjpg.GetAll();
-            this.CrossesNotHaveBGData = new Dictionary<string, int>(); 
+            this.CrossesNotHaveBGData = new Dictionary<string, int>();
         }
 
         /// <summary>
@@ -343,7 +345,7 @@ namespace HouseManager4_0
         public void LoadRoad()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             var roadPath = $"{rootPath}\\DBPublish\\allroaddata.txt";
 
             // "fpDictionary": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\DBPublish\\",
@@ -359,7 +361,7 @@ namespace HouseManager4_0
 
             this._allFp = GetAllFp(fpDictionary);
 
-            Console.WriteLine($"{this._road.Count}_{this._allFp.Count}");
+            //Consol.WriteLine($"{this._road.Count}_{this._allFp.Count}");
 
             this.pathCal = new PathCal(this, fpDictionary);
             this.pathCal.cal();
@@ -411,7 +413,7 @@ namespace HouseManager4_0
                 Console.WriteLine($"{item.FastenPositionName}-{item.region}");
                 //if (string.IsNullOrEmpty(item.region))
                 //{
-                //    Console.WriteLine($"{index}-{Newtonsoft.Json.JsonConvert.SerializeObject(item)}");
+                //    //Consol.WriteLine($"{index}-{Newtonsoft.Json.JsonConvert.SerializeObject(item)}");
                 //    //  Console.ReadLine();
                 //}
                 result.Add(item);
@@ -462,22 +464,22 @@ namespace HouseManager4_0
 
         public static void SetRootPath()
         {
-            var rootPathDefault = "F:\\MyProject\\VRPWithZhangkun\\MainApp\\DBPublish\\";
-            Console.WriteLine("你好，请输入线路数据的路径，其默认值如下：");
-            Console.WriteLine("即bigData0.rqdt 与contentofdata 所在的目录");
-            Console.WriteLine(rootPathDefault);
+            //var rootPathDefault = "F:\\MyProject\\VRPWithZhangkun\\MainApp\\DBPublish\\";
+            ////Consol.WriteLine("你好，请输入线路数据的路径，其默认值如下：");
+            ////Consol.WriteLine("即bigData0.rqdt 与contentofdata 所在的目录");
+            ////Consol.WriteLine(rootPathDefault);
 
-            var input = Console.ReadLine().Trim();
-            if (string.IsNullOrEmpty(input))
-            {
-                Data.PathDataAll = rootPathDefault;
-            }
-            else
-            {
-                Data.PathDataAll = input;
-            }
+            //var input = Console.ReadLine().Trim();
+            //if (string.IsNullOrEmpty(input))
+            //{
+            //    Data.PathDataAll = rootPathDefault;
+            //}
+            //else
+            //{
+            //    Data.PathDataAll = input;
+            //}
         }
-        static string PathDataAll = "";
+       // static string PathDataAll = "";
         public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
         {
             return this.pathCal.GetAFromB(start, end);
@@ -503,12 +505,12 @@ namespace HouseManager4_0
             //            data[5] * 1 +
             //            data[6] * 256 +
             //            data[7] * 256 * 256;
-            //        Console.WriteLine($"{dataIndex},{startPositionInDB},{length}");
+            //        //Consol.WriteLine($"{dataIndex},{startPositionInDB},{length}");
 
             //        var JsonByteFromDB = Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
             //        var json = Encoding.ASCII.GetString(JsonByteFromDB);
 
-            //        Console.WriteLine(json);
+            //        //Consol.WriteLine(json);
             //        var objGet = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model.MapGo.nyrqPosition_Simple>>(json);
             //        var result = new List<OssModel.MapGo.nyrqPosition>();
             //        for (var i = 0; i < objGet.Count; i++)
@@ -589,35 +591,35 @@ namespace HouseManager4_0
             return roads;
         }
 
-        private static byte[] GetDataOfPath(int dataIndex, int startPositionInDB, int length)
-        {
-            using (var fileStream = new FileStream($"{PathDataAll}bigData{dataIndex}.rqdt", FileMode.OpenOrCreate))
-            {
-                var data = new byte[length];
-                fileStream.Seek(startPositionInDB, SeekOrigin.Begin);
-                fileStream.Read(data, 0, length);
-                return data;
-            }
-        }
+        //private static byte[] GetDataOfPath(int dataIndex, int startPositionInDB, int length)
+        //{
+        //    //using (var fileStream = new FileStream($"{PathDataAll}bigData{dataIndex}.rqdt", FileMode.OpenOrCreate))
+        //    //{
+        //    //    var data = new byte[length];
+        //    //    fileStream.Seek(startPositionInDB, SeekOrigin.Begin);
+        //    //    fileStream.Read(data, 0, length);
+        //    //    return data;
+        //    //}
+        //}
 
-        private static bool Read(ref int startPosition, out byte[] data)
-        {
-            using (var fileStream = new FileStream($"{PathDataAll}contentofdata", FileMode.OpenOrCreate))
-            {
-                data = new byte[8];
-                if (startPosition < fileStream.Length)
-                {
-                    fileStream.Seek(startPosition, SeekOrigin.Begin);
-                    fileStream.Read(data, 0, 8);
-                    startPosition += 8;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+        //private static bool Read(ref int startPosition, out byte[] data)
+        //{
+        //    //using (var fileStream = new FileStream($"{PathDataAll}contentofdata", FileMode.OpenOrCreate))
+        //    //{
+        //    //    data = new byte[8];
+        //    //    if (startPosition < fileStream.Length)
+        //    //    {
+        //    //        fileStream.Seek(startPosition, SeekOrigin.Begin);
+        //    //        fileStream.Read(data, 0, 8);
+        //    //        startPosition += 8;
+        //    //        return true;
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        return false;
+        //    //    }
+        //    //}
+        //}
         public class PathStartPoint2
         {
             /// <summary>
@@ -774,6 +776,7 @@ namespace HouseManager4_0
                 }
             }
         }
+
 
 
         internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved)
@@ -1208,6 +1211,41 @@ namespace HouseManager4_0
         {
             public double lon { get; set; }
             public double lat { get; set; }
+        }
+
+        internal Dictionary<string, long> GetDataOfOriginalStock(string bussinessAddr)
+        {
+            lock (modelStockLock)
+            {
+                if (modelsBussinessAddr.ContainsKey(bussinessAddr))
+                {
+                    return modelsStocks[modelsBussinessAddr[bussinessAddr]].stocksOriginal;
+                }
+                else
+                {
+                    return new Dictionary<string, long>();
+                }
+            }
+            // throw new NotImplementedException();
+        }
+        Dictionary<string, string> modelsBussinessAddr = new Dictionary<string, string>();
+        Dictionary<string, CommonClass.ModelStock> modelsStocks = new Dictionary<string, CommonClass.ModelStock>();
+        object modelStockLock = new object();
+        internal void LoadStock(CommonClass.ModelStock sa)
+        {
+            lock (modelStockLock)
+            {
+                if (modelsStocks.ContainsKey(sa.modelID))
+                {
+                    modelsStocks[sa.modelID] = sa;
+                }
+                else
+                {
+                    modelsStocks.Add(sa.modelID, sa);
+                    modelsBussinessAddr.Add(sa.bussinessAddress, sa.modelID);
+                }
+            }
+            //Consol.WriteLine($"接受到stock信息");
         }
         public List<detailmodel> models { get; set; }
         // List<aModel> material { get; set; }

@@ -105,7 +105,7 @@ namespace HouseManager4_0
                 }
                 else if (player.TheLargestHolderKey == player.Key)
                 {
-                    player.SetTheLargestHolder(boss);
+                    player.SetTheLargestHolder(boss, ref notifyMsg);
                     {
                         var dm1 = new DialogMsg()
                         {
@@ -143,7 +143,7 @@ namespace HouseManager4_0
                         };
                         that.RequstMsg(dm1);
                     }
-                    player.SetTheLargestHolder(boss);
+                    player.SetTheLargestHolder(boss, ref notifyMsg);
                     {
                         var dm1 = new DialogMsg()
                         {
@@ -179,12 +179,12 @@ namespace HouseManager4_0
                 for (int i = 0; i < keys.Count; i++)
                 {
                     var worker = (Player)that._Players[keys[i]];
-                    that._Players[keys[i]].InitializeTheLargestHolder();
+                    that._Players[keys[i]].InitializeTheLargestHolder(ref notifyMsg);
                     var dm1 = new DialogMsg()
                     {
                         c = dm.c,
                         Key = dm.Key,
-                        Msg = $"[系统]【{player.PlayerName}】拜了【{boss.PlayerName}】为老大，你回复自由身！",
+                        Msg = $"[系统]【{player.PlayerName}】拜了【{boss.PlayerName}】为老大，你恢复自由身！",
                         To = worker.Key,
                         WebSocketID = worker.WebSocketID
                     };

@@ -18,7 +18,7 @@ B.地图编辑器WebSocket服务");
 
             if (select == "B")
             {
-                Room.SetWhenStart();
+                //  Room.SetWhenStart();
                 var ip = "127.0.0.1";
                 int websocketPort = 21001;
                 Console.WriteLine($"输入ip，如{ip}  (默认)");
@@ -39,7 +39,7 @@ B.地图编辑器WebSocket服务");
                         websocketPort = num;
                     }
                 }
-                Console.WriteLine($"地址为：http://{ip}:{websocketPort}");
+                //Consol.WriteLine($"地址为：http://{ip}:{websocketPort}");
                 CreateWebHostBuilder2(new string[] { $"http://{ip}:{websocketPort}" }).Build().Run();
 
                 // return;
@@ -47,8 +47,8 @@ B.地图编辑器WebSocket服务");
             else
             {
                 Team.Config();
-                Room.SetWhenStart();
-                Console.WriteLine("你好！此服务为网页端的webSocket服务！20210430");
+                //  Room.SetWhenStart();
+                Console.WriteLine("你好！此服务为网页端的webSocket服务！20220702");
                 var ip = "127.0.0.1";
                 int websocketPort = 11001;
 
@@ -77,7 +77,7 @@ B.地图编辑器WebSocket服务");
                 ConnectInfo.tcpServerPort = tcpServerPort;
                 CreateWebHostBuilder(new string[] { $"http://{ip}:{ConnectInfo.webSocketPort}" }).Build().Run();
 
-                Console.WriteLine("Hello World!");
+                //Consol.WriteLine("Hello World!");
             }
         }
 

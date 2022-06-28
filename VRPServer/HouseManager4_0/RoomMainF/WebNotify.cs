@@ -9,7 +9,7 @@ namespace HouseManager4_0.RoomMainF
     {
         public void WebNotify(RoleInGame role, string msg)
         {
-            Console.WriteLine($"{msg}");
+            //Consol.WriteLine($"{msg}");
             if (role.playerType == RoleInGame.PlayerType.player)
             {
                 var player = ((Player)role);

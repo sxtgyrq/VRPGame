@@ -112,6 +112,25 @@ namespace HouseManager4_0
                     reason = "";
                     return false;
                 }
+                else if (that._Players[sa.targetOwner].TheLargestHolderKey != sa.targetOwner)
+                {
+                    if (that._Players[sa.targetOwner].playerType == RoleInGame.PlayerType.NPC)
+                    {
+                        reason = "";
+                        return true;
+                    }
+                    else
+                    {
+                        var bossKey = that._Players[sa.targetOwner].TheLargestHolderKey;
+                        if (that._Players.ContainsKey(bossKey))
+                        {
+                            var boss = that._Players[bossKey];
+                            WebNotify(that._Players[sa.Key], $"不能攻击拜了老大的玩家，其老大为{boss.PlayerName}，你可以直接攻击其老大！");
+                            reason = "";
+                            return false;
+                        }
+                    }
+                }
                 else
                 {
                     reason = "";
@@ -250,15 +269,9 @@ namespace HouseManager4_0
                     if (step == 0)
                     {
                         this.ThreadSleep(startT);
-
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-
-                        }
+                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust) { }
                         else
-                        {
                             StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
-                        }
 
                         List<string> notifyMsg = new List<string>();
                         int newStartT;

@@ -11,13 +11,13 @@ namespace ConsoleTestAPP.TestTag
         {
             // Thread.CurrentThread.Name = "TestWaitThenReturn";
             //throw new NotImplementedException();
-            Console.WriteLine($"测试名称：{command}");
-            Console.WriteLine("测试目的：确保领取任务提升点--失败-成功-返回中状态正确");
-            Console.WriteLine("          确保整个过程金钱流正确");
-            Console.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
-            Console.WriteLine("          此次测试，random(seed),其中seed==0，此条件需要在HouseManager中设置");
-            Console.WriteLine("          再此过程中会模拟两个用户");
-            Console.WriteLine("按任意键开始检测！");
+            //Consol.WriteLine($"测试名称：{command}");
+            //Consol.WriteLine("测试目的：确保领取任务提升点--失败-成功-返回中状态正确");
+            //Consol.WriteLine("          确保整个过程金钱流正确");
+            //Consol.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
+            //Consol.WriteLine("          此次测试，random(seed),其中seed==0，此条件需要在HouseManager中设置");
+            //Consol.WriteLine("          再此过程中会模拟两个用户");
+            //Consol.WriteLine("按任意键开始检测！");
             Console.ReadKey();
 
             var url = "127.0.0.1:11100";
@@ -58,7 +58,7 @@ namespace ConsoleTestAPP.TestTag
             Common.CheckResult(t1, "buying", command);
 
             t1 = await Common.CheckPlayerCostBusiness(checkUrl, "8e8092f61e69c07a8699001cc85c270a", "carA");
-            Console.WriteLine($"buying-{t1}");
+            //Consol.WriteLine($"buying-{t1}");
             Common.CheckResult(t1, "1000", command);
 
             Common.awaitF(192151, startTime);
@@ -66,7 +66,7 @@ namespace ConsoleTestAPP.TestTag
             Common.CheckResult(t1, "returning", command);
 
             t1 = await Common.CheckPlayerCostBusiness(checkUrl, "8e8092f61e69c07a8699001cc85c270a", "carA");
-            Console.WriteLine($"returning-{t1}");
+            //Consol.WriteLine($"returning-{t1}");
             Common.CheckResult(t1, "0", command);
 
             Common.awaitF(297500, startTime);
@@ -75,12 +75,12 @@ namespace ConsoleTestAPP.TestTag
 
             //  Common.awaitF(297500, startTime);
             t1 = await Common.CheckPlayerMoney(checkUrl, "33957cbff3b0ae1e24a6576f218044d8");
-            Console.WriteLine("校验第一个人的钱");
+            //Consol.WriteLine("校验第一个人的钱");
             Common.CheckResult(t1, "49000", command);
             //  Console.WriteLine($"t1:{t1}");
 
             t1 = await Common.CheckPlayerMoney(checkUrl, "8e8092f61e69c07a8699001cc85c270a");
-            Console.WriteLine("校验第二个人的钱");
+            //Consol.WriteLine("校验第二个人的钱");
             Common.CheckResult(t1, "49000", command);
             // Console.WriteLine($"t1:{t1}");
 
@@ -112,12 +112,12 @@ namespace ConsoleTestAPP.TestTag
                     if (b == "returning")
                     {
                         var t = (DateTime.Now - startTime).TotalMilliseconds;
-                        Console.WriteLine($@"
-key-{key}
-car-{car}
-CostBusiness-{b}   
-time-{t}
-");
+//                        //Consol.WriteLine($@"
+//key-{key}
+//car-{car}
+//CostBusiness-{b}   
+//time-{t}
+//");
                         break;
                     }
                 }

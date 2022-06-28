@@ -79,10 +79,10 @@ namespace ConsoleAppOtherFunc
             app.Run(async context =>
             {
                 var code = context.Request.Query["code"];
-                Console.WriteLine($"code:{code}");
+                //Consol.WriteLine($"code:{code}");
 
                 var state = context.Request.Query["state"];
-                Console.WriteLine($"state:{state}");
+                //Consol.WriteLine($"state:{state}");
 
                 string result = "";
                 string address = "";
@@ -92,13 +92,13 @@ namespace ConsoleAppOtherFunc
                     var url = new Uri($"https://api.weixin.qq.com/sns/oauth2/access_token?appid={GetAppID()}&secret={GetSecret()}&code={code}&grant_type=authorization_code");
                     var response = httpClient.GetAsync(url).Result;
                     var data = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine($"{url.AbsolutePath}");
-                    Console.WriteLine($"{data}");
+                    //Consol.WriteLine($"{url.AbsolutePath}");
+                    //Consol.WriteLine($"{data}");
                     //"openid":"
                     if (data.Contains("\"openid\":\""))
                     {
                         var tr = Newtonsoft.Json.JsonConvert.DeserializeObject<TokenResult>(data);
-                        Console.WriteLine($"openid:{tr.openid}");
+                        //Consol.WriteLine($"openid:{tr.openid}");
                         result = BitCoin.PrivateKeyF.getPrivateByString(DateTime.Now.ToString("yyyy-MM-dd") + tr.openid + GetPrivateCode(), out address);
                         DalOfAddress.MoneyAdd.AddMoney(address, 300000, tr.openid, DateTime.Now);
                     }

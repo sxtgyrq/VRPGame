@@ -15,8 +15,8 @@ namespace CubeImageTool
             while (true)
             {
                 var t = Task.Run<string>(() => Contact()).Result;
-                Console.WriteLine(t);
-                Console.WriteLine("C继续");
+                //Consol.WriteLine(t);
+                //Consol.WriteLine("C继续");
                 if (Console.ReadLine().ToLower().Trim() == "c")
                 { }
                 else 
@@ -30,14 +30,14 @@ namespace CubeImageTool
         {
             string qt, sid, pos, z, udt, from, auth, seckey;
 
-            Console.WriteLine("输入url");
+            //Consol.WriteLine("输入url");
             var url = Console.ReadLine();
 
             char[] ss = new char[] { '?', '&', '=' };
             var splitedString = url.Split(ss, StringSplitOptions.RemoveEmptyEntries);
 
 
-            Console.WriteLine("qt=? 默认pdata");
+            //Consol.WriteLine("qt=? 默认pdata");
             qt = "pdata";
 
             sid = "";
@@ -48,7 +48,7 @@ namespace CubeImageTool
                     sid = splitedString[i + 1];
                 }
             }
-            Console.WriteLine($"sid={sid}");
+            //Consol.WriteLine($"sid={sid}");
             //sid = Console.ReadLine();
 
             udt = DateTime.Now.ToString("yyyyMMdd");
@@ -62,7 +62,7 @@ namespace CubeImageTool
                     auth = splitedString[i + 1];
                 }
             }
-            Console.WriteLine($"auth={auth}");
+            //Consol.WriteLine($"auth={auth}");
 
 
             seckey = "";
@@ -73,7 +73,7 @@ namespace CubeImageTool
                     seckey = splitedString[i + 1];
                 }
             }
-            Console.WriteLine($"seckey={seckey}");
+            //Consol.WriteLine($"seckey={seckey}");
             Console.ReadLine();
 
             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(16 * 512, 8 * 512);
@@ -85,7 +85,7 @@ namespace CubeImageTool
                     pos = $"{j}_{i}";
                     z = "5";
                     var urlStr = $"https://mapsv0.bdimg.com/?qt={qt}&sid={sid}&pos={pos}&z={z}&udt={udt}&from={from}&auth={auth}&seckey={seckey}";
-                    Console.WriteLine(urlStr);
+                    //Consol.WriteLine(urlStr);
                     var s = await getStream(urlStr);
                     System.Drawing.Image img = System.Drawing.Image.FromStream(s);
                     //bm.

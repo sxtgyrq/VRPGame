@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8xlewnmHUFeuzAJmz1oPdE2tHxZ6Vz0DVmpbf9gdC3nGeJ6tK/PvBLEKBtpCT9SooyTEyU4pEbFda9gSxz0LBA==",
+  "dgSpecHash": "rWBwJiiCq2LFOAINuSFOviFVeT2zG7VQr14KnbKFCW0K9i/hmGyQeVJPxK8C3xTZOqqpaYFeiQsh/tuYdXMjsw==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\CityRunFunction\\CityRunFunction.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.22\\microsoft.netcore.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.22\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.22\\microsoft.aspnetcore.app.runtime.win-x64.3.1.22.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

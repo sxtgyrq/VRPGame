@@ -10,12 +10,12 @@ namespace ConsoleTestAPP.TestTag
     {
         public static async void Test(string command)
         {
-            Console.WriteLine("测试名称：" + command);
-            Console.WriteLine("测试目的：在寻找能力提升宝石过程中，其里程不够时，自动返回");
-            Console.WriteLine("          确保整个过程金钱流正确");
-            Console.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
-            Console.WriteLine("测试前提：此过程模拟两个用户");
-            Console.WriteLine("按任意键开始检测！");
+            //Consol.WriteLine("测试名称：" + command);
+            //Consol.WriteLine("测试目的：在寻找能力提升宝石过程中，其里程不够时，自动返回");
+            //Consol.WriteLine("          确保整个过程金钱流正确");
+            //Consol.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
+            //Consol.WriteLine("测试前提：此过程模拟两个用户");
+            //Consol.WriteLine("按任意键开始检测！");
             Console.ReadKey();
 
             var url = "127.0.0.1:11100";
@@ -115,17 +115,17 @@ namespace ConsoleTestAPP.TestTag
             t1 = await Common.CheckPlayersCarState(checkUrl, "378f53292e97bf6383f01bbbceb7b50a", "carA");
             Common.CheckResult(t1, "waitAtBaseStation", command);
 
-            Console.WriteLine($"{command}测试通过！");
+            //Consol.WriteLine($"{command}测试通过！");
         }
 
         internal static async void Test2(string command)
         {
-            Console.WriteLine("测试名称：" + command);
-            Console.WriteLine("测试目的：在寻找能力提升宝石过程中，等待-收集金钱-其里程不够时，自动返回");
-            Console.WriteLine("          确保整个过程金钱流正确");
-            Console.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
-            Console.WriteLine("测试前提：此过程模拟一个用户");
-            Console.WriteLine("按任意键开始检测！");
+            //Consol.WriteLine("测试名称：" + command);
+            //Consol.WriteLine("测试目的：在寻找能力提升宝石过程中，等待-收集金钱-其里程不够时，自动返回");
+            //Consol.WriteLine("          确保整个过程金钱流正确");
+            //Consol.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
+            //Consol.WriteLine("测试前提：此过程模拟一个用户");
+            //Consol.WriteLine("按任意键开始检测！");
             Console.ReadKey();
 
             var url = "127.0.0.1:11100";
@@ -210,7 +210,7 @@ namespace ConsoleTestAPP.TestTag
             cb = await Common.CheckPlayerCostBusiness(checkUrl, "7588fe8ba09a16188052b39f200cfd77", "carA");
             Common.CheckResult(cb, "0", command);
 
-            Console.WriteLine($"{command}验证成功");
+            //Consol.WriteLine($"{command}验证成功");
         }
 
         private static async void CheckF(DateTime startTime)

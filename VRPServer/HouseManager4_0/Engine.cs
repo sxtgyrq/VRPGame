@@ -121,6 +121,8 @@ namespace HouseManager4_0
             /*
              * D.更新小车动画参数
              */
+
+            var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref that.rm, goPath.path.Count);
             List<AnimateDataItem> animations = new List<AnimateDataItem>();
             {
                 var speed = car.ability.Speed;
@@ -147,7 +149,7 @@ namespace HouseManager4_0
                 //  var position = new Model.MapGo.nyrqPosition(fp1.RoadCode, fp1.RoadOrder, fp1.RoadPercent, fp1.positionLongitudeOnRoad, fp1.positionLatitudeOnRoad, Program.dt.GetItemRoadInfo(fp1.RoadCode, fp1.RoadOrder).MaxSpeed);
                 Program.dt.GetAFromBPoint(goPath.path[0].path, goPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0);
                 //  result.RemoveAll(item => item.t == 0);
-                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, goPath.path.Count > 0 ? privateKeys[0] : 255);
                 animations.Add(animation);
             }
             for (int i = 1; i < goPath.path.Count; i++)
@@ -168,7 +170,7 @@ namespace HouseManager4_0
                         that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                     }
                     Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                    var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast);
+                    var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[indexValue]);
                     animations.Add(animation);
                 }
             }
@@ -266,13 +268,14 @@ namespace HouseManager4_0
             var fp = Program.dt.GetFpByIndex(target);
             double endX, endY;
             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
+            //var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref that.rm, 1);
 
 
             var animate = new AnimateDataItem(
                 new Data.PathStartPoint2() { x = Convert.ToInt32(endX * 256), y = Convert.ToInt32(endY * 256) },
                 new List<int>() { 0, 0, 20000 },
                 true,
-                20000
+                20000, 255
                 );
             animations.Add(animate);
             car.setAnimateData(player, ref notifyMsgs, animations, DateTime.Now);
@@ -332,7 +335,7 @@ namespace HouseManager4_0
         /// <param name="selections"></param>
         /// <param name="selectionCenter"></param>
         /// <param name="player"></param>
-        protected void StartSelectThread(  List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player)
+        protected void StartSelectThread(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player)
         {
             selections.RemoveAll(item => that.isZero(item));
             int k = 0;
@@ -342,7 +345,7 @@ namespace HouseManager4_0
             {
 
                 if (isRight(selections, player.direciton))
-                {  
+                {
                     break;
                 }
                 else
@@ -422,7 +425,7 @@ namespace HouseManager4_0
         /// <param name="speed"></param>
         /// <param name="player"></param>
         /// <param name="animations"></param>
-        protected void EndWithRightPosition(Node node, int speed, RoleInGame player, RoleInGame targetPlayer, ref List<AnimateDataItem> animations)
+        protected void EndWithRightPosition(Node node, int speed, RoleInGame player, RoleInGame targetPlayer, ref List<AnimateDataItem> animations, List<long> privateKeys)
         {
             if (node.path.Count > 0)
             {
@@ -450,7 +453,7 @@ namespace HouseManager4_0
                     }
                     that.getEndPositon(Program.dt.GetFpByIndex(targetPlayer.StartFPIndex), positionInStation, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
                 }
-                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[indexValue]);
                 animations.Add(animation);
             }
         }

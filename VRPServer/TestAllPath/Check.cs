@@ -38,11 +38,11 @@ namespace TestAllPath
                                     data[5] * 1 +
                                     data[6] * 256 +
                                     data[7] * 256 * 256;
-                                Console.WriteLine($"{dataIndex},{startPositionInDB},{length}");
+                                //Consol.WriteLine($"{dataIndex},{startPositionInDB},{length}");
 
                                 var JsonByteFromDB = Program.Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
                                 var json = Encoding.ASCII.GetString(JsonByteFromDB);
-                                Console.WriteLine($"fromDB:{json}");
+                                //Consol.WriteLine($"fromDB:{json}");
                                 json1 = json;
                             }
                             else
@@ -56,10 +56,10 @@ namespace TestAllPath
                                 var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID, out success);
                                 var goPathSimple = Program.ConvertToSimple(goPath);
                                 json2 = Newtonsoft.Json.JsonConvert.SerializeObject(goPathSimple).Trim();
-                                Console.WriteLine($"计算的json:{json2}");
+                                //Consol.WriteLine($"计算的json:{json2}");
                             }
                             var result = (json2 == json1);
-                            Console.WriteLine($"{i}-{j}:{result}");
+                            //Consol.WriteLine($"{i}-{j}:{result}");
                             if (!result)
                                 Console.ReadLine();
                         }

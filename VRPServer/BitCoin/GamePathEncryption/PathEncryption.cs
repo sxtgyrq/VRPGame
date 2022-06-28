@@ -113,8 +113,8 @@ namespace BitCoin.GamePathEncryption
                             }
                         }
 
-                        baseP = getDoubleP(baseP, out isZero); 
-                        //   Console.WriteLine($"{i}-baseP-{baseP[0]},{baseP[1]}");
+                        baseP = getDoubleP(baseP, out isZero);
+                        //   //Consol.WriteLine($"{i}-baseP-{baseP[0]},{baseP[1]}");
                     }
                     return result;
                 }
@@ -273,16 +273,55 @@ namespace BitCoin.GamePathEncryption
                 }
                 return newData;
             }
-            public static List<long> Encrypt(ref Random rm, List<long> data, out int privateKey)
+
+            static readonly int[] primeNumbers = { 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+            public static long getPreviousPrivateKey(long a)
+            {
+                var q = Parameter.Q;
+                // const int[] primeNumbers = { 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+                var primeCount = primeNumbers.Length;
+
+                var pIndex = a % primeCount;
+
+                long a0 = 1;
+                List<long> aArray = new List<long>();
+                List<long> pArray = new List<long>();
+                for (var i = 0; i < 50; i++)
+                {
+                    aArray.Add(a0);
+                    a0 = (a0 * a) % q;
+                    var pv = primeNumbers[(pIndex + i) % primeCount];
+                    pArray.Add(pv);
+                }
+                long sum = 0;
+                for (var i = 0; i < 50; i++)
+                {
+                    sum += (pArray[i] * aArray[i]);
+                    sum = sum % q;
+                }
+                return sum % q;
+            }
+            public static List<long> GetPrivateKeys(ref Random rm, int length)
+            {
+                var privateKey = Convert.ToInt64(rm.Next(Convert.ToInt32(Parameter.QHalf), Convert.ToInt32(Parameter.Q)));
+                var result = new List<long>();
+                while (result.Count < length)
+                {
+                    result.Insert(0, privateKey);
+                    privateKey = getPreviousPrivateKey(privateKey);
+                }
+                return result;
+            }
+            public static List<long> Encrypt(ref Random rm, List<long> data, long privateKey)
             {
 
-                privateKey = rm.Next(Convert.ToInt32(Parameter.QHalf), Convert.ToInt32(Parameter.Q));
+                //privateKey = rm.Next(Convert.ToInt32(Parameter.QHalf), Convert.ToInt32(Parameter.Q));
                 var newData = new List<long>();
 
-                Console.WriteLine("解密之前");
+             //   //Consol.WriteLine("解密之前");
                 for (int i = 0; i < data.Count; i++)
                 {
-                    Console.WriteLine(data[i]);
+                    //Consol.WriteLine(data[i]);
                     data[i] += Parameter.PHalf;
                     if (data[i] < 0 || data[i] >= Parameter.P)
                     {
@@ -323,15 +362,15 @@ namespace BitCoin.GamePathEncryption
                 {
                     str += $"{array[i]},";
                 }
-                Console.WriteLine($"{Environment.NewLine}{str}");
+              //  Console.WriteLine($"{Environment.NewLine}{str}");
                 str = "";
                 for (int i = 0; i < data.Count; i++)
                 {
                     str += $"{data[i]},";
                 }
-                Console.WriteLine($"{Environment.NewLine}{str}");
-                Console.WriteLine($"{Environment.NewLine}私钥:{privateKey}");
-                Console.WriteLine("加密结束");
+                //Console.WriteLine($"{Environment.NewLine}{str}");
+                //Console.WriteLine($"{Environment.NewLine}私钥:{privateKey}");
+                //Console.WriteLine("加密结束");
 
                 /*
                   //for (var i = 0; i < array.Length; i += 5)
@@ -346,11 +385,11 @@ namespace BitCoin.GamePathEncryption
 
                 //    if ((result[0] + delta - Parameter.PHalf + Parameter.P) % Parameter.P == data[i / 5] - Parameter.PHalf)
                 //    {
-                //        Console.WriteLine($"加密解密前后相等,{(result[0] + delta - Parameter.PHalf + Parameter.P) % Parameter.P }！={data[i / 5] - Parameter.PHalf}");
+                //        //Consol.WriteLine($"加密解密前后相等,{(result[0] + delta - Parameter.PHalf + Parameter.P) % Parameter.P }！={data[i / 5] - Parameter.PHalf}");
                 //    }
                 //    else
                 //    {
-                //        Console.WriteLine($"加密解密前后不等,{(result[0] + delta - Parameter.PHalf + Parameter.P) % Parameter.P }！={data[i / 5] - Parameter.PHalf}");
+                //        //Consol.WriteLine($"加密解密前后不等,{(result[0] + delta - Parameter.PHalf + Parameter.P) % Parameter.P }！={data[i / 5] - Parameter.PHalf}");
                 //        //  throw new Exception("加密解密前后不等");
                 //    }
                 //    //  console.log(i, (result[0] + delta - pHalf + p) % p);
@@ -358,7 +397,7 @@ namespace BitCoin.GamePathEncryption
                 //}
                  */
 
-                Console.WriteLine("校验OK");
+             //   //Consol.WriteLine("校验OK");
                 return newData;
             }
             //public static Int64 getQ()
@@ -369,7 +408,7 @@ namespace BitCoin.GamePathEncryption
 
             //            if ((y * y) % p == (((x * x) % p) * x + a * x + b) % p)
             //            {
-            //                Console.WriteLine($"找到x={x},y={y}");
+            //                //Consol.WriteLine($"找到x={x},y={y}");
             //                // Console.ReadLine();
 
             //                var basePoint = new Int64[] { x, y };
@@ -382,7 +421,7 @@ namespace BitCoin.GamePathEncryption
             //                //  int indexValue = 0;
             //                {
             //                    var right = CheckXYIsRight(x, y);
-            //                    Console.WriteLine($"基点[{right}]在曲线上");
+            //                    //Consol.WriteLine($"基点[{right}]在曲线上");
             //                }
             //                var index = 1;
             //                for (int i = 0; i < Int32.MaxValue; i++)
@@ -395,7 +434,7 @@ namespace BitCoin.GamePathEncryption
             //                        var mul = Parameter.getMulValue(index, basePoint);
             //                        if (mul[0] != result[0] || mul[1] != result[1])
             //                        {
-            //                            Console.WriteLine($"{i}-累加与乘法结果不等！");
+            //                            //Consol.WriteLine($"{i}-累加与乘法结果不等！");
             //                            Console.ReadLine();
             //                        }
             //                    }
@@ -406,22 +445,22 @@ namespace BitCoin.GamePathEncryption
             //                    else
             //                    {
             //                        var right = CheckXYIsRight(result[0], result[1]);
-            //                        Console.WriteLine($"result[{ i + 2}]={{{result[0]},{result[1]}}}---在曲线上{right}");
+            //                        //Consol.WriteLine($"result[{ i + 2}]={{{result[0]},{result[1]}}}---在曲线上{right}");
             //                        if (!right)
             //                        {
             //                            Console.ReadLine();
             //                        }
             //                    }
             //                }
-            //                Console.WriteLine($"所求结果{index}");
+            //                //Consol.WriteLine($"所求结果{index}");
             //                return index + 1;
             //                // for (int i = -2; i <= 2; i++)
             //                //{
             //                //    Console.ReadLine();
             //                //    var another = Parameter.getMulValue(count, basePoint);
             //                //    var onCurve = CheckXYIsRight(another[0], another[1]);
-            //                //    Console.WriteLine($"相乘结果{another[0]},{another[1]},{onCurve}");
-            //                //    Console.WriteLine($"累加结果{result[0]},{result[1]}");
+            //                //    //Consol.WriteLine($"相乘结果{another[0]},{another[1]},{onCurve}");
+            //                //    //Consol.WriteLine($"累加结果{result[0]},{result[1]}");
             //                //}
             //                //  Console.ReadLine();
             //                //for (int i = 0; i < q - 1; i++)
@@ -449,7 +488,7 @@ namespace BitCoin.GamePathEncryption
             //            }
             //            else
             //            {
-            //                Console.WriteLine($"找到不相等");
+            //                //Consol.WriteLine($"找到不相等");
             //                Console.ReadLine();
             //                throw new Exception("找到不相等");
             //            }

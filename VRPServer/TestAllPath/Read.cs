@@ -8,7 +8,7 @@ namespace TestAllPath
         {
             int start;
             int end;
-            Console.WriteLine("input start end");
+            //Consol.WriteLine("input start end");
             start=int.Parse(Console.ReadLine());
             end=int.Parse(Console.ReadLine());
 

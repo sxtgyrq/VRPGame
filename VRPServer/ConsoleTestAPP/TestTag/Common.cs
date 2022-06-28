@@ -52,7 +52,7 @@ namespace ConsoleTestAPP.TestTag
             while (awaitT > 0)
             {
                 var msg = $"请等待{awaitT}毫秒";
-                Console.WriteLine(msg);
+                //Consol.WriteLine(msg);
                 length = msg.Length;
                 Thread.Sleep(Math.Min(100, awaitT));
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
@@ -85,7 +85,7 @@ namespace ConsoleTestAPP.TestTag
             if (t1 == v) { }
             else
             {
-                Console.WriteLine($"{testName}测试失败");
+                //Consol.WriteLine($"{testName}测试失败");
                 while (true)
                     Thread.Sleep(24 * 3600 * 1000);
             }

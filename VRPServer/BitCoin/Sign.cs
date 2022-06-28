@@ -67,9 +67,9 @@ namespace BitCoin
 
         public static string SignMessage()
         {
-            Console.WriteLine("请输入要签名的信息(utf-8)");
+            //Consol.WriteLine("请输入要签名的信息(utf-8)");
             var msg = Console.ReadLine();
-            Console.WriteLine("请输入要私钥");
+            //Consol.WriteLine("请输入要私钥");
             //   output($"拖入您的Base58编码的37位或38位的私钥的路径，用此私钥进行验证.即校验.txt");
 
             var privateKey = Console.ReadLine();
@@ -77,7 +77,7 @@ namespace BitCoin
             if (PrivateKeyF.Check(privateKey, out privateBigInteger)) { }
             else
             {
-                Console.WriteLine($"请输入正确的私钥！！！");
+                //Consol.WriteLine($"请输入正确的私钥！！！");
                 return "";
             }
             bool compressed;
@@ -121,7 +121,7 @@ namespace BitCoin
                     nV += 4;
                 sequence[0] = Convert.ToByte(nV);
                 var sig = Convert.ToBase64String(sequence);
-                Console.WriteLine(sig);
+                //Consol.WriteLine(sig);
                 var calAddredd = verify_message(sig, msg, compressed ? 1 : 0);
                 // return sig;
                 if (calAddredd == address)
@@ -205,7 +205,7 @@ namespace BitCoin
                 else
                 {
                     var unCompressedAdress = PublicKeyF.GetAddressOfUncompressed(Q);
-                    Console.WriteLine($"uncompressed adress:{unCompressedAdress}");
+                    //Consol.WriteLine($"uncompressed adress:{unCompressedAdress}");
                     return unCompressedAdress == address;
                 }
             }
@@ -214,7 +214,7 @@ namespace BitCoin
         static byte[] msg_digest(string message)
         {
             SHA256 sha256 = new SHA256Managed();
-            Console.WriteLine("Bitcoin Signed Message:\n");
+            //Consol.WriteLine("Bitcoin Signed Message:\n");
             var preInfoMsg = "Bitcoin Signed Message:\n";
 
             var b = msg_bytes(preInfoMsg).Concat(msg_bytes(message)).ToArray();

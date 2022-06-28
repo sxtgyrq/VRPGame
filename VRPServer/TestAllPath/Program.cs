@@ -14,11 +14,11 @@ namespace TestAllPath
         public static Data dt;
         static void Main(string[] args)
         {
-            Console.WriteLine("此程序目的是校验所有的路径均能走！！！");
-            Console.WriteLine("此程序目的是将运算结果压缩存储-最大存储单元2G！！！");
+            //Consol.WriteLine("此程序目的是校验所有的路径均能走！！！");
+            //Consol.WriteLine("此程序目的是将运算结果压缩存储-最大存储单元2G！！！");
 
-            Console.WriteLine("write or check  or mulThread?");
-            Console.WriteLine("combine可以结合程序?");
+            //Consol.WriteLine("write or check  or mulThread?");
+            //Consol.WriteLine("combine可以结合程序?");
             var select = Console.ReadLine();
             if (select.ToLower().Trim() == "write")
             {
@@ -49,7 +49,7 @@ namespace TestAllPath
             {
                 Read.readF();
             }
-            Console.WriteLine("Hello World!");
+            //Consol.WriteLine("Hello World!");
 
             Console.ReadLine();
         }
@@ -63,21 +63,21 @@ namespace TestAllPath
             {
                 Thread.Sleep(1);
                 var itemData = DateTime.Now.ToString();
-                Console.WriteLine($"{i}-{itemData}");
+                //Consol.WriteLine($"{i}-{itemData}");
                 testStr += CommonClass.Random.GetMD5HashFromStr(DateTime.Now.ToString());
 
 
 
             }
             var jsonData = Encoding.ASCII.GetBytes(testStr);
-            Console.WriteLine($"压缩前md5{CommonClass.Random.GetMD5HashFromBytes(jsonData)}");
+            //Consol.WriteLine($"压缩前md5{CommonClass.Random.GetMD5HashFromBytes(jsonData)}");
             var data = Compress(jsonData);
             var length = data.Length;
 
             var ucCompressData = Decompress(data, length);
-            Console.WriteLine($"解压后md5{CommonClass.Random.GetMD5HashFromBytes(ucCompressData)}");
+            //Consol.WriteLine($"解压后md5{CommonClass.Random.GetMD5HashFromBytes(ucCompressData)}");
             var resultStr = Encoding.ASCII.GetString(ucCompressData);
-            Console.WriteLine(resultStr);
+            //Consol.WriteLine(resultStr);
             Console.ReadLine();
 
         }
@@ -110,18 +110,18 @@ namespace TestAllPath
                         var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID, out success);
                         if (success)
                         {
-                            Console.WriteLine($"{i}-{j}计算成功！");
+                            //Consol.WriteLine($"{i}-{j}计算成功！");
                         }
                         else
                         {
-                            Console.WriteLine($"{i}-{j}计算错误！");
+                            //Consol.WriteLine($"{i}-{j}计算错误！");
                             Console.ReadLine();
                         }
                     }
                 }
             }
 
-            Console.WriteLine($"计算完毕！");
+            //Consol.WriteLine($"计算完毕！");
         }
 
         private static void namal_write()
@@ -130,7 +130,7 @@ namespace TestAllPath
             Program.dt.LoadRoad();
             long startIndex = 0;
             //  List<int> startIndexList = new List<int>();
-            Console.WriteLine($"输入起始数字:");
+            //Consol.WriteLine($"输入起始数字:");
             var start = int.Parse(Console.ReadLine());
             {
                 var count = Program.dt.Get61Fp();
@@ -172,12 +172,12 @@ namespace TestAllPath
 
                             if (success)
                             {
-                                Console.WriteLine($"{i}-{j}计算成功！sumLength={startIndex}");
+                                //Consol.WriteLine($"{i}-{j}计算成功！sumLength={startIndex}");
                                 Thread.Sleep(1);
                             }
                             else
                             {
-                                Console.WriteLine($"{i}-{j}计算错误！");
+                                //Consol.WriteLine($"{i}-{j}计算错误！");
                                 Console.ReadLine();
                             }
                         }
@@ -198,10 +198,10 @@ namespace TestAllPath
                             startIndex += length;
                         }
 
-                        Console.WriteLine("记录写入日志");
+                        //Consol.WriteLine("记录写入日志");
                         File.AppendAllText("CalLog.txt", $"{i}-{j}-{Environment.NewLine}");
                         File.AppendAllText("indexRecord.txt", $"{dataIndex},{position},{length},");
-                        Console.WriteLine($"记录：{dataIndex},{position},{length},");
+                        //Consol.WriteLine($"记录：{dataIndex},{position},{length},");
                     }
 
 
@@ -215,7 +215,7 @@ namespace TestAllPath
             // var indexPageJson = Newtonsoft.Json.JsonConvert.SerializeObject(new { startIndexList = startIndexList });
             // File.WriteAllText("calResult.json", indexPageJson);
 
-            Console.WriteLine($"计算完毕！");
+            //Consol.WriteLine($"计算完毕！");
         }
 
         public static List<Model.MapGo.nyrqPosition_Simple> ConvertToSimple(List<Model.MapGo.nyrqPosition> goPath)

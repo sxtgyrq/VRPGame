@@ -37,8 +37,8 @@ namespace HouseManager
         //    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
         //    msgsWithUrl.Add(player.FromUrl);
         //    msgsWithUrl.Add(json);
-        //    Console.WriteLine($"显示---{player.FromUrl}");
-        //    Console.WriteLine($"显示---{json}");
+        //    //Consol.WriteLine($"显示---{player.FromUrl}");
+        //    //Consol.WriteLine($"显示---{json}");
         //}
         private static void SetMoneyCanSave(Player player, ref List<string> notifyMsg)
         {
@@ -159,7 +159,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 if (!string.IsNullOrEmpty(url))
                 {
                     await Startup.sendMsg(url, sendMsg);
@@ -200,13 +200,13 @@ namespace HouseManager
             }
             else
             {
-                Console.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
+                //Consol.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
             }
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 await Startup.sendMsg(url, sendMsg);
             }
         }

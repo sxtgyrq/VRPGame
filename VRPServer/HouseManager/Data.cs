@@ -25,7 +25,7 @@ namespace HouseManager
         public void LoadRoad()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             var roadPath = $"{rootPath}\\DBPublish\\allroaddata.txt";
 
             // "fpDictionary": "F:\\MyProject\\VRPWithZhangkun\\MainApp\\DBPublish\\",
@@ -41,7 +41,7 @@ namespace HouseManager
 
             this._allFp = GetAllFp(fpDictionary);
 
-            Console.WriteLine($"{this._road.Count}_{this._allFp.Count}");
+            //Consol.WriteLine($"{this._road.Count}_{this._allFp.Count}");
         }
 
 
@@ -199,9 +199,9 @@ namespace HouseManager
         public static void SetRootPath()
         {
             var rootPathDefault = "F:\\MyProject\\VRPWithZhangkun\\MainApp\\DBPublish\\";
-            Console.WriteLine("你好，请输入线路数据的路径，其默认值如下：");
-            Console.WriteLine("即bigData0.rqdt 与contentofdata 所在的目录");
-            Console.WriteLine(rootPathDefault);
+            //Consol.WriteLine("你好，请输入线路数据的路径，其默认值如下：");
+            //Consol.WriteLine("即bigData0.rqdt 与contentofdata 所在的目录");
+            //Consol.WriteLine(rootPathDefault);
 
             var input = Console.ReadLine().Trim();
             if (string.IsNullOrEmpty(input))
@@ -237,7 +237,7 @@ namespace HouseManager
                         data[5] * 1 +
                         data[6] * 256 +
                         data[7] * 256 * 256;
-                    Console.WriteLine($"{dataIndex},{startPositionInDB},{length}");
+                    //Consol.WriteLine($"{dataIndex},{startPositionInDB},{length}");
 
                     var JsonByteFromDB = Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
                     var json = Encoding.ASCII.GetString(JsonByteFromDB);

@@ -107,7 +107,7 @@ namespace HouseManager4_0.RoomMainF
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 if (!string.IsNullOrEmpty(url))
                 {
                     Startup.sendMsg(url, sendMsg);
@@ -149,13 +149,13 @@ namespace HouseManager4_0.RoomMainF
             }
             else
             {
-                Console.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
+                //Consol.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
             }
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 Startup.sendMsg(url, sendMsg);
             }
         }

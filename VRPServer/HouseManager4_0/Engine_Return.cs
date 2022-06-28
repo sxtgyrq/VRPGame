@@ -55,7 +55,7 @@ namespace HouseManager4_0
 
         private void ReturnToSelf(RoleInGame player, Car car, returnning cmp, ref List<string> notifyMsg)
         {
-
+            var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref Program.rm.rm, cmp.returningOjb.returnToSelfAddrPath.path.Count);
             List<AnimateDataItem> animations = new List<AnimateDataItem>();
             int startT_FirstPath = 0;
             {
@@ -99,7 +99,7 @@ namespace HouseManager4_0
                 }
                 car.setState(player, ref notifyMsg, CarState.returning);
 
-                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255);
                 animations.Add(animation);
             }
             for (int i = 1; i < cmp.returningOjb.returnToSelfAddrPath.path.Count - 1; i++)
@@ -115,10 +115,10 @@ namespace HouseManager4_0
                     that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                 }
                 Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i]);
                 animations.Add(animation);
             }
-            EndWithRightPosition(cmp.returningOjb.returnToSelfAddrPath, car.ability.Speed, player, player, ref animations);
+            EndWithRightPosition(cmp.returningOjb.returnToSelfAddrPath, car.ability.Speed, player, player, ref animations, privateKeys);
             car.setAnimateData(player, ref notifyMsg, animations, DateTime.Now);
             car.setState(player, ref notifyMsg, CarState.returning);
             this.StartArriavalThread(startT_FirstPath, 0, player, car, cmp.returningOjb.returnToSelfAddrPath,
@@ -142,6 +142,8 @@ namespace HouseManager4_0
                     {
                         List<AnimateDataItem> animations = new List<AnimateDataItem>();
                         int startT_FirstPath;
+
+                        var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref Program.rm.rm, cmp.returningOjb.returnToSelfAddrPath.path.Count);
                         var self = player;
                         {
                             var speed = car.ability.Speed;
@@ -162,7 +164,7 @@ namespace HouseManager4_0
 
                             car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
                             car.targetFpIndex = self.StartFPIndex;
-                            var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath);
+                            var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255);
                             animations.Add(animation);
                         }
                         var goPath = cmp.returningOjb.returnToSelfAddrPath;
@@ -178,10 +180,10 @@ namespace HouseManager4_0
                                 that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                             }
                             Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                            var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast);
+                            var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i]);
                             animations.Add(animation);
                         }
-                        EndWithRightPosition(goPath, car.ability.Speed, player, player, ref animations);
+                        EndWithRightPosition(goPath, car.ability.Speed, player, player, ref animations, privateKeys);
 
                         car.setAnimateData(player, ref notifyMsg, animations, DateTime.Now);
                         car.setState(player, ref notifyMsg, CarState.returning);
@@ -201,6 +203,8 @@ namespace HouseManager4_0
                         List<AnimateDataItem> animations = new List<AnimateDataItem>();
                         var speed = car.ability.Speed;
                         var boss = cmp.returningOjb.Boss;
+                        var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref Program.rm.rm, cmp.returningOjb.returnToBossAddrPath.path.Count);
+
                         int startT_FirstPath;
                         {
                             startT_FirstPath = 0;
@@ -226,7 +230,7 @@ namespace HouseManager4_0
                                 Data.PathStartPoint2 startPosition;
                                 that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToBossAddrPath.path[0]);
 
-                                animations.Add(new AnimateDataItem(startPosition, result, false, startT_FirstPath));
+                                animations.Add(new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToBossAddrPath.path.Count > 0 ? privateKeys[0] : 255));
                             }
                             else
                             {
@@ -249,10 +253,10 @@ namespace HouseManager4_0
                                     that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                                 }
                                 Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast);
+                                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i]);
                                 animations.Add(animation);
                             }
-                            EndWithRightPosition(goPath, car.ability.Speed, player, boss, ref animations);
+                            EndWithRightPosition(goPath, car.ability.Speed, player, boss, ref animations, privateKeys);
                             car.setAnimateData(player, ref notifyMsg, animations, DateTime.Now);
                         }
                         car.setState(player, ref notifyMsg, CarState.returning);
@@ -287,7 +291,7 @@ namespace HouseManager4_0
         //    {
         //        ThreadSleep(250);
         //        k++;
-        //        Console.WriteLine($"提示，让玩家进行选择！！！");
+        //        //Consol.WriteLine($"提示，让玩家进行选择！！！");
         //        if (k >= 2)
         //        {
         //            break;

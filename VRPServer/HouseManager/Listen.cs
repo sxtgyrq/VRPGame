@@ -27,7 +27,7 @@ namespace HouseManager
 
         private static string DealWithMonitorValue(string notifyJson)
         {
-            Console.WriteLine($"Monitor notify receive:{notifyJson}");
+            //Consol.WriteLine($"Monitor notify receive:{notifyJson}");
 
             string outPut = "haveNothingToReturn";
             {
@@ -36,7 +36,7 @@ namespace HouseManager
                 // Console.WriteLine($"json:{notifyJson}");
 
 
-                Console.WriteLine($"monitor receive:{notifyJson}");
+                //Consol.WriteLine($"monitor receive:{notifyJson}");
                 CommonClass.Monitor m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Monitor>(notifyJson);
 
                 switch (m.c)
@@ -95,12 +95,12 @@ namespace HouseManager
 
         private static async Task<string> DealWith(string notifyJson)
         {
-            Console.WriteLine($"notify receive:{notifyJson}");
+            //Consol.WriteLine($"notify receive:{notifyJson}");
             // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
             string outPut = "haveNothingToReturn";
             {
                 {
-                    Console.WriteLine($"json:{notifyJson}");
+                    //Consol.WriteLine($"json:{notifyJson}");
 
                     var t = Convert.ToInt32((DateTime.Now - Program.startTime).TotalMilliseconds);
                     //File.AppendAllText("debugLog.txt", Newtonsoft.Json.JsonConvert.SerializeObject
@@ -111,7 +111,7 @@ namespace HouseManager
                     File.AppendAllText("debugLog.txt", $"SendInfomation({notifyJson})" + Environment.NewLine);
                     File.AppendAllText("debugLog.txt", "" + Environment.NewLine);
 
-                    Console.WriteLine($"notify receive:{notifyJson}");
+                    //Consol.WriteLine($"notify receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)

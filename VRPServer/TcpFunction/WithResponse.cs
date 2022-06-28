@@ -23,6 +23,7 @@ namespace TcpFunction
             {
                 TcpClient tc = new TcpClient();
                 tc.Connect(ipa, int.Parse(roomUrl.Split(':')[1]));
+
                 if (tc.Connected)
                 {
                     NetworkStream ns = tc.GetStream();
@@ -34,7 +35,7 @@ namespace TcpFunction
                     else
                     {
                         var msg = $"sendData.Length ({sendData.Length})!= length({length})";
-                        Console.WriteLine(msg);
+                        //Consol.WriteLine(msg);
                         throw new Exception(msg);
                     }
                     //  Common.CheckBeforeSend(ns);
@@ -53,9 +54,9 @@ namespace TcpFunction
                 tc.Close();
             }
             var endTime = DateTime.Now;
-            Console.WriteLine($"------------------------------------");
-            Console.WriteLine($"{sendMsg}响应时间：{(endTime - startTime).TotalSeconds}秒");
-            Console.WriteLine($"------------------------------------");
+            //Consol.WriteLine($"------------------------------------");
+            //Consol.WriteLine($"{sendMsg}响应时间：{(endTime - startTime).TotalSeconds}秒");
+            //Consol.WriteLine($"------------------------------------");
             return result;
         }
 
@@ -71,12 +72,12 @@ namespace TcpFunction
             server.Start();
             while (true)
             {
-                Console.Write("Waiting for a connection... ");
+                // Console.Write("Waiting for a connection... ");
 
                 string notifyJson;
                 TcpClient client = server.AcceptTcpClient();
                 {
-                    Console.WriteLine("Connected!");
+                    // Console.WriteLine("Connected!");
                     //   bool isRight;
                     NetworkStream ns = client.GetStream();
 
@@ -97,7 +98,7 @@ namespace TcpFunction
             if (length2 != sendData.Length)
             {
                 var msg = $"length2({length2})!= sendData.Length({sendData.Length})";
-                Console.WriteLine(msg);
+                //Consol.WriteLine(msg);
                 throw new Exception(msg);
             }
             await ns.WriteAsync(sendData, 0, sendData.Length);
@@ -121,108 +122,111 @@ namespace TcpFunction
             return notifyJson;
         }
     }
+    /*
+     * 这里淘汰WithoutResponse，统一使用 WithResponse
+     */
+    //public class WithoutResponse
+    //{
+    //    public static async void SendInmationToUrl(string controllerUrl, string json)
+    //    {
 
-    public class WithoutResponse
-    {
-        public static async void SendInmationToUrl(string controllerUrl, string json)
-        {
+    //        //   Let’s use that to filter the records returned using the netstat command - netstat - ano | findstr 185.190.83.2
+    //        //Consol.WriteLine($"controllerUrl:{controllerUrl}");
+    //        //Consol.WriteLine($"json:{json}");
+    //        //  try
+    //        {
+    //            string server = controllerUrl.Split(':')[0];
+    //            Int32 port = int.Parse(controllerUrl.Split(':')[1]);
+    //            TcpClient client = new TcpClient(server, port);
+    //            //client.
+    //            if (client.Connected) { }
+    //            else
+    //            {
+    //                //Consol.WriteLine($"{controllerUrl},没有连接！");
+    //                return;
+    //            }
+    //            using (NetworkStream ns = client.GetStream())
+    //            {
+    //                var sendData = Encoding.UTF8.GetBytes(json);
+    //                await Common.SendLength(sendData.Length, ns);
+    //                var length = Common.ReceiveLength(ns);
+    //                if (length == sendData.Length) { }
+    //                else
+    //                {
+    //                    var msg = $"length:({length})!= sendData.Length({sendData.Length})";
+    //                    //Consol.WriteLine(msg);
+    //                    //throw new Exception($"length:({length})!= sendData.Length({sendData.Length})");
+    //                    throw new Exception(msg);
+    //                }
+    //                await ns.WriteAsync(sendData, 0, sendData.Length);
+    //                ns.Close(6000);
+    //            }
+    //            client.Close();
+    //        }
+    //        //catch (ArgumentNullException e)
+    //        //{
+    //        //    //Consol.WriteLine("ArgumentNullException: {0}", e);
+    //        //}
+    //        //catch (SocketException e)
+    //        //{
+    //        //    //Consol.WriteLine("SocketException: {0}", e);
+    //        //}
+    //    }
 
-            //   Let’s use that to filter the records returned using the netstat command - netstat - ano | findstr 185.190.83.2
-            Console.WriteLine($"controllerUrl:{controllerUrl}");
-            Console.WriteLine($"json:{json}");
-            try
-            {
-                string server = controllerUrl.Split(':')[0];
-                Int32 port = int.Parse(controllerUrl.Split(':')[1]);
-                TcpClient client = new TcpClient(server, port);
-                if (client.Connected) { }
-                else
-                {
-                    Console.WriteLine($"{controllerUrl},没有连接！");
-                    return;
-                }
-                using (NetworkStream ns = client.GetStream())
-                {
-                    var sendData = Encoding.UTF8.GetBytes(json);
-                    await Common.SendLength(sendData.Length, ns);
-                    var length = Common.ReceiveLength(ns);
-                    if (length == sendData.Length) { }
-                    else
-                    {
-                        var msg = $"length:({length})!= sendData.Length({sendData.Length})";
-                        Console.WriteLine(msg);
-                        //throw new Exception($"length:({length})!= sendData.Length({sendData.Length})");
-                        throw new Exception(msg);
-                    }
-                    await ns.WriteAsync(sendData, 0, sendData.Length);
-                    ns.Close(6000);
-                }
-                client.Close();
-            }
-            catch (ArgumentNullException e)
-            {
-                Console.WriteLine("ArgumentNullException: {0}", e);
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine("SocketException: {0}", e);
-            }
-        }
-
-        public delegate Task DealWith(string notifyJson);
-        public static void startTcp(string ip, int port, DealWith dealWith)
-        {
-            // throw new NotImplementedException();
-            // Int32 port = port;
-            IPAddress localAddr = IPAddress.Parse(ip);
-            var server = new TcpListener(localAddr, port);
-            server.Start();
-            //AutoResetEvent allDone = new AutoResetEvent(false);
-            while (true)
-            {
-                Console.Write("Waiting for a connection... ");
+    //    public delegate Task DealWith(string notifyJson);
+    //    public static void startTcp(string ip, int port, DealWith dealWith)
+    //    {
+    //        // throw new NotImplementedException();
+    //        // Int32 port = port;
+    //        IPAddress localAddr = IPAddress.Parse(ip);
+    //        var server = new TcpListener(localAddr, port);
+    //        server.Start();
+    //        //AutoResetEvent allDone = new AutoResetEvent(false);
+    //        while (true)
+    //        {
+    //            Console.Write("Waiting for a connection... ");
 
 
-                //string notifyJson;
-                //  bool isRight;
-                try
-                {
-                    TcpClient client = server.AcceptTcpClient();
-                    {
-                        Console.WriteLine("Connected!");
-                        SetMsgAndIsRight smr = new SetMsgAndIsRight(SetMsgAndIsRightF);
-                        GetMsg(client, smr, dealWith);
+    //            //string notifyJson;
+    //            //  bool isRight;
+    //            try
+    //            {
+    //                TcpClient client = server.AcceptTcpClient();
+    //                {
+    //                    //Consol.WriteLine("Connected!");
+    //                    SetMsgAndIsRight smr = new SetMsgAndIsRight(SetMsgAndIsRightF);
+    //                    GetMsg(client, smr, dealWith);
 
-                    }
-                    client.Close();
-                }
-                catch (SocketException e)
-                {
-                    Console.WriteLine("SocketException: {0}", e);
-                }
-            }
-        }
-        static void SetMsgAndIsRightF(string notifyJson, DealWith dealWith)
-        {
-            Console.WriteLine($"notify receive:{notifyJson}");
-            dealWith(notifyJson);
-        }
+    //                }
+    //                client.Close();
+    //            }
+    //            catch (SocketException e)
+    //            {
+    //                //Consol.WriteLine("SocketException: {0}", e);
+    //            }
+    //        }
+    //    }
+    //    static void SetMsgAndIsRightF(string notifyJson, DealWith dealWith)
+    //    {
+    //        //Consol.WriteLine($"notify receive:{notifyJson}");
+    //        dealWith(notifyJson);
+    //    }
 
-        delegate void SetMsgAndIsRight(string notifyJson, DealWith dealWith);
-        private static async void GetMsg(TcpClient client, SetMsgAndIsRight smr, DealWith dealWith)
-        {
-            using (NetworkStream stream = client.GetStream())
-            {
-                var length = Common.ReceiveLength(stream);
-                await Common.SendLength(length, stream);
-                byte[] bytes = new byte[length];
-                bytes = Common.ByteReader(length, stream);
-                var notifyJson = Encoding.UTF8.GetString(bytes, 0, length);
-                smr(notifyJson, dealWith);
-                stream.Close(6000);
-            } 
-        }
-    }
+    //    delegate void SetMsgAndIsRight(string notifyJson, DealWith dealWith);
+    //    private static async void GetMsg(TcpClient client, SetMsgAndIsRight smr, DealWith dealWith)
+    //    {
+    //        using (NetworkStream stream = client.GetStream())
+    //        {
+    //            var length = Common.ReceiveLength(stream);
+    //            await Common.SendLength(length, stream);
+    //            byte[] bytes = new byte[length];
+    //            bytes = Common.ByteReader(length, stream);
+    //            var notifyJson = Encoding.UTF8.GetString(bytes, 0, length);
+    //            smr(notifyJson, dealWith);
+    //            stream.Close(6000);
+    //        }
+    //    }
+    //}
     class Common
     {
         internal static byte[] ByteReader(int length, Stream stream)

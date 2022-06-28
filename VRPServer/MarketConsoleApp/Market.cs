@@ -16,7 +16,7 @@ namespace MarketConsoleApp
         string[] servers;
         internal void loadSevers()
         {
-            this.servers = File.ReadAllLines("servers.txt");
+            this.servers = File.ReadAllLines("config/servers.txt");
             for (var i = 0; i < this.servers.Length; i++)
             {
                 Console.WriteLine($"服务器{i}-{this.servers[i]}");
@@ -41,6 +41,156 @@ namespace MarketConsoleApp
             Thread th = new Thread(() => this.sendInteview(true));
             th.Start();
         }
+
+        Dictionary<string, Dictionary<string, long>> ModelInputSatoshi = new Dictionary<string, Dictionary<string, long>>();
+        object ModelInputLock = new object();
+        internal void getAllBitcoinThread()
+        {
+            //var t = Task.Run(() => getAllBitInfomation());
+
+            Thread th = new Thread(async () => await this.getAllBitInfomation());
+            th.Start();
+            //  throw new NotImplementedException();
+        }
+
+        private async Task getAllBitInfomation()
+        {
+            while (true)
+            {
+
+                var allItem = DalOfAddress.detailmodel.GetAll();
+
+                for (int i = 0; i < allItem.Count; i++)
+                {
+                    try
+                    {
+                        Dictionary<string, long> tradeDetail;
+
+                        Dictionary<string, long> stocksOriginal = new Dictionary<string, long>();
+                        string bussinessAddress;
+                        {
+                            var item = allItem[i];
+                            var detail = DalOfAddress.detailmodel.GetByID(item.modelID);
+                            bussinessAddress = detail.bussinessAddress;
+                            //detail.bussinessAddress;
+                            BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(detail.bussinessAddress);
+                            //  Task.Run < Dictionary<string, long>(() => t.GetTradeInfomationFromChain());
+                            var result = Task.Run<Dictionary<string, long>>(() => t.GetTradeInfomationFromChain());
+                            lock (ModelInputLock)
+                            {
+                                if (ModelInputSatoshi.ContainsKey(item.modelID))
+                                {
+                                    ModelInputSatoshi[item.modelID] = result.Result;
+                                }
+                                else
+                                {
+                                    ModelInputSatoshi.Add(item.modelID, result.Result);
+                                }
+                                tradeDetail = ModelInputSatoshi[item.modelID];
+                            }
+                        }
+                        // var tradeDetail = result.Result;
+                        long sumValue = 0;
+                        {
+                            //long sumValue = 0;
+                            {
+                                var tradeDetailList = new List<string>();
+                                sumValue = 0;
+                                foreach (var item in tradeDetail)
+                                {
+                                    tradeDetailList.Add(item.Key);
+                                    tradeDetailList.Add($"{item.Value / 100000000}.{(item.Value % 100000000).ToString("D8")}");
+                                    sumValue += item.Value;
+                                    stocksOriginal.Add(item.Key, item.Value);
+                                }
+                            }
+                        }
+                        if (sumValue == 0)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            var r = DalOfAddress.TradeRecord.GetAll(bussinessAddress);
+                            List<string> list = r;
+                            for (int j = 0; j < list.Count; j += 2)
+                            {
+                                var mtsMsg = list[j];
+                                var parameter = mtsMsg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (parameter.Length == 5)
+                                {
+                                    var sign = list[j + 1];
+                                    //    if (BitCoin.Sign.checkSign(sign, mtsMsg, parameter[1]))
+                                    {
+                                        var tradeIndex = int.Parse(parameter[0]);
+                                        var addrFrom = parameter[1];
+                                        var addrBussiness = parameter[2];
+                                        var addrTo = parameter[3];
+
+                                        var passCoinStr = parameter[4];
+                                        if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
+                                        {
+                                            var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+
+                                            if (tradeDetail.ContainsKey(addrFrom))
+                                            {
+                                                if (tradeDetail[addrFrom] >= passCoin)
+                                                {
+                                                    tradeDetail[addrFrom] -= passCoin;
+                                                    if (tradeDetail.ContainsKey(addrTo))
+                                                    {
+                                                        tradeDetail[addrTo] += passCoin;
+                                                    }
+                                                    else
+                                                    {
+                                                        tradeDetail.Add(addrTo, passCoin);
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+
+                                    }
+                                }
+                            }
+                            var stocks = new Dictionary<string, long>();
+                            foreach (var stockItem in tradeDetail)
+                            {
+                                if (stockItem.Value <= 0)
+                                {
+
+                                }
+                                else
+                                {
+                                    stocks.Add(stockItem.Key, stockItem.Value);
+                                }
+                            }
+                            for (var j = 0; j < this.servers.Length; j++)
+                            {
+                                var server = this.servers[j];
+                                await sendMsg(server,
+                                    Newtonsoft.Json.JsonConvert.SerializeObject(
+                                        new CommonClass.ModelStock()
+                                        {
+                                            c = "ModelStock",
+                                            modelID = allItem[i].modelID,
+                                            stocks = stocks,
+                                            stocksOriginal = stocksOriginal,
+                                            bussinessAddress = bussinessAddress,
+                                        }));
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        //Consol.WriteLine($"获取信息失败");
+                    }
+                }
+                Thread.Sleep(1000 * 60 * 20);
+            }
+        }
+
         internal void sendInteview(bool waitT)
         {
             while (true)
@@ -54,20 +204,20 @@ namespace MarketConsoleApp
         int Port = 12630;
         internal void waitToBeTelled()
         {
-            Console.WriteLine($"请输入IP地址！默认{this.IP}");
+            //Consol.WriteLine($"请输入IP地址！默认{this.IP}");
             var input = Console.ReadLine().Trim();
             if (!string.IsNullOrEmpty(input))
             {
                 this.IP = input;
             }
-            Console.WriteLine($"请输入端口。默认{this.Port}");
+            //Consol.WriteLine($"请输入端口。默认{this.Port}");
             input = Console.ReadLine().Trim();
             if (!string.IsNullOrEmpty(input))
             {
                 this.Port = int.Parse(input);
             }
-            var dealWith = new TcpFunction.WithoutResponse.DealWith(this.DealWith);
-            TcpFunction.WithoutResponse.startTcp(this.IP, this.Port, dealWith);
+            var dealWith = new TcpFunction.WithResponse.DealWith(this.DealWith);
+            TcpFunction.WithResponse.ListenIpAndPort(this.IP, this.Port, dealWith);
 
             // Listen.IpAndPort(ip, tcpPort)
             // throw new NotImplementedException();
@@ -75,7 +225,7 @@ namespace MarketConsoleApp
 
         private async Task<string> DealWith(string notifyJson)
         {
-            Console.WriteLine($"DealWith-Msg-{notifyJson}");
+            //Consol.WriteLine($"DealWith-Msg-{notifyJson}");
             CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
             switch (c.c)
             {
@@ -266,13 +416,13 @@ namespace MarketConsoleApp
         internal void loadCount()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             this.mileCount = getCount("mile", this.mileCount);
             this.businessCount = getCount("business", this.businessCount);
             this.volumeCount = getCount("volume", this.volumeCount);
             this.speedCount = getCount("speed", this.speedCount);
             Console.WriteLine($"mile:{this.mileCount};business:{this.businessCount};volume:{this.volumeCount};speed:{this.speedCount}");
-            Console.WriteLine($"以上为库存数量！");
+            Console.WriteLine($"以上为库存数量，按任意键继续！");
             Console.ReadLine();
         }
 
@@ -336,28 +486,25 @@ namespace MarketConsoleApp
             try
             {
                 await Task.Run(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
-                Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}往{controllerUrl}发送消息--成功！");
+                //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}往{controllerUrl}发送消息--成功！");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}往{controllerUrl}发送消息--{json}失败！");
+                //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}往{controllerUrl}发送消息--{json}失败！");
             }
         }
         private long getPrice(int mileCount)
-        {
-            //if (mileCount < 0)
-            //{
-            //    return 100000;//10W分,1000元
-            //}
-            //else 
+        { 
             if (mileCount < 1000)
             {
+
                 //max:100000分,min:10000分。
                 return ((100000 - 90 * mileCount) / 50) * 50;
             }
             else if (mileCount < 8000)
             {
                 //max:10000分,min:1250分。
+                //return 
                 return ((11250 - 5 * mileCount / 4) / 50) * 50;
             }
             else

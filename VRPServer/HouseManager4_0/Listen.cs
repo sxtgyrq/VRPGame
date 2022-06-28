@@ -22,7 +22,7 @@ namespace HouseManager4_0
             }
             catch
             {
-                Console.WriteLine($"notify receive:{notifyJson}");
+                //Consol.WriteLine($"notify receive:{notifyJson}");
                 File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
                 return "haveNothingToReturn";
             }
@@ -137,6 +137,11 @@ namespace HouseManager4_0
                             CommonClass.MarketPrice sa = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MarketPrice>(notifyJson);
 
                             objI.MarketUpdate(sa);
+                        }; break;
+                    case "ModelStock":
+                        {
+                            CommonClass.ModelStock sa = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelStock>(notifyJson);
+                            objI.UpdateModelStock(sa);
                         }; break;
                     case "SetBuyDiamond":
                         {
@@ -284,6 +289,11 @@ namespace HouseManager4_0
                             CommonClass.ModelTranstraction.GetTransctionModelDetail gtmd = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetTransctionModelDetail>(notifyJson);
                             outPut = objI.GetTransctionModelDetail(gtmd);
                         }; break;
+                    case "GetTransctionFromChain":
+                        {
+                            CommonClass.ModelTranstraction.GetTransctionFromChain gtfc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetTransctionFromChain>(notifyJson);
+                            outPut = objI.GetTransctionFromChainF(gtfc);
+                        }; break;
                     case "GetRoadNearby":
                         {
                             CommonClass.ModelTranstraction.GetRoadNearby grn = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetRoadNearby>(notifyJson);
@@ -339,7 +349,7 @@ namespace HouseManager4_0
 
         private static string DealWithMonitorValue(string notifyJson)
         {
-            Console.WriteLine($"Monitor notify receive:{notifyJson}");
+            //Consol.WriteLine($"Monitor notify receive:{notifyJson}");
 
             string outPut = "haveNothingToReturn";
             //{
@@ -348,7 +358,7 @@ namespace HouseManager4_0
             //    // Console.WriteLine($"json:{notifyJson}");
 
 
-            //    Console.WriteLine($"monitor receive:{notifyJson}");
+            //    //Consol.WriteLine($"monitor receive:{notifyJson}");
             //    CommonClass.Monitor m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Monitor>(notifyJson);
 
             //    switch (m.c)

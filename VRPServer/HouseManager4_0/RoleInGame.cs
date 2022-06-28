@@ -9,6 +9,8 @@ namespace HouseManager4_0
 {
     public abstract class RoleInGame : interfaceOfHM.GetFPIndex
     {
+
+
         public delegate void ShowLevelOfPlayer(Player player, int level, ref List<string> notifyMsg);
         public ShowLevelOfPlayer ShowLevelOfPlayerF = null;
         public void ShowLevelOfPlayerDetail(ref List<string> notifyMsg)
@@ -60,11 +62,12 @@ namespace HouseManager4_0
         const long intializedMoney = 50000;
         internal void initializeCar(interfaceOfHM.CarAndRoomInterface roomMain)
         {
-            this._Car = new Car()
-            {
-                ability = new AbilityAndState(),
-                targetFpIndex = -1,
-            };
+            this._Car = new Car(this);
+            //{
+            //    ability = new AbilityAndState(),
+            //    targetFpIndex = -1,
+
+            //};
             var notifyMsg = new List<string>();
             this._Car.SendStateAndPurpose = Program.rm.SendStateOfCar;
             this._Car.setState(this, ref notifyMsg, Car.CarState.waitAtBaseStation);
@@ -100,6 +103,11 @@ namespace HouseManager4_0
             this.others = new Dictionary<string, OtherPlayers>();
         }
 
+        /// <summary>
+        /// 获取别的玩家
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public OtherPlayers GetOthers(string key)
         {
             return this.others[key];
@@ -184,6 +192,18 @@ namespace HouseManager4_0
 
 
 
+        //ref notifyMsgs
+        internal void InitializeTheLargestHolder(ref List<string> notifyMsg)
+        {
+            this.TheLargestHolderKey = this.Key;
+            if (this.playerType == PlayerType.player)
+            {
+                this.getCar().ability.MileChanged((Player)this, this.getCar(), ref notifyMsg, "mile");
+                this.getCar().ability.BusinessChanged((Player)this, this.getCar(), ref notifyMsg, "business");
+                this.getCar().ability.VolumeChanged((Player)this, this.getCar(), ref notifyMsg, "volume");
+                this.getCar().ability.SpeedChanged((Player)this, this.getCar(), ref notifyMsg, "speed");
+            }
+        }
         internal void InitializeTheLargestHolder()
         {
             this.TheLargestHolderKey = this.Key;
@@ -192,9 +212,17 @@ namespace HouseManager4_0
         /// 设置老大。
         /// </summary>
         /// <param name="boss"></param>
-        internal void SetTheLargestHolder(RoleInGame boss)
+        internal void SetTheLargestHolder(RoleInGame boss, ref List<string> notifyMsg)
         {
             this.TheLargestHolderKey = boss.Key;
+            if (this.playerType == PlayerType.player)
+            {
+                this.getCar().ability.MileChanged((Player)this, this.getCar(), ref notifyMsg, "mile");
+                this.getCar().ability.BusinessChanged((Player)this, this.getCar(), ref notifyMsg, "business");
+                this.getCar().ability.VolumeChanged((Player)this, this.getCar(), ref notifyMsg, "volume");
+                this.getCar().ability.SpeedChanged((Player)this, this.getCar(), ref notifyMsg, "speed");
+            }
+
         }
 
         public bool HasTheBoss(Dictionary<string, RoleInGame> _Players, out RoleInGame boss)
@@ -895,19 +923,19 @@ namespace HouseManager4_0
                     {
                         case 0:
                             {
-                                car.ability.AbilityAdd("mile", this, car, ref notifyMsg);
+                                car.ability.AbilityAdd("mile", 1, this, car, ref notifyMsg);
                             }; break;
                         case 1:
                             {
-                                car.ability.AbilityAdd("business", this, car, ref notifyMsg);
+                                car.ability.AbilityAdd("business", 1, this, car, ref notifyMsg);
                             }; break;
                         case 2:
                             {
-                                car.ability.AbilityAdd("volume", this, car, ref notifyMsg);
+                                car.ability.AbilityAdd("volume", 1, this, car, ref notifyMsg);
                             }; break;
                         case 3:
                             {
-                                car.ability.AbilityAdd("speed", this, car, ref notifyMsg);
+                                car.ability.AbilityAdd("speed", 1, this, car, ref notifyMsg);
                             }; break;
                     }
                 }

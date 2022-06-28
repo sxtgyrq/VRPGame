@@ -289,7 +289,7 @@ namespace HouseManager4_0.RoomMainF
         //        //{
         //        //    for (int i = 0; i < 3; i++) 
         //        //    {
-        //        //        Console.WriteLine($"现在回收是要返回的！");
+        //        //        //Consol.WriteLine($"现在回收是要返回的！");
         //        //    }
         //        //}
         //    }

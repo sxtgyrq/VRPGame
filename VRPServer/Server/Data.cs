@@ -38,7 +38,7 @@ namespace Server
             //}
             var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile($"{configStr}.json");
             var config = builder.Build();
-            Console.WriteLine($"{config["roadPath"]}");
+            //Consol.WriteLine($"{config["roadPath"]}");
 
             var roadPath = config["roadPath"];
 
@@ -58,7 +58,7 @@ namespace Server
 
             this._allFp = GetAllFp(fpDictionary);
 
-            Console.WriteLine($"{this._road.Count}_{this._allFp.Count}");
+            //Consol.WriteLine($"{this._road.Count}_{this._allFp.Count}");
         }
 
         static List<OssModel.FastonPosition> GetAllFp(string fpDictionary)

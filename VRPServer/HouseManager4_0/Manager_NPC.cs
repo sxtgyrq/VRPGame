@@ -541,143 +541,48 @@ namespace HouseManager4_0
                 if (npc2.attackTag != null)
                 {
                     if (that._Players.ContainsKey(npc2.attackTag.Target))
-                    { }
-                    else
                     {
-
-                    }
-                    var operatePlayer = that._Players[npc2.attackTag.Target];
-                    if (operatePlayer.Bust)
-                    {
-                        this.CollectNearSelf(npc2);
-                    }
-                    else
-                    {
-                        if (this.moneyIsEnoughToAttack(npc2))
+                        var operatePlayer = that._Players[npc2.attackTag.Target];
+                        if (operatePlayer.Bust)
                         {
-                            switch (npc2.attackTag.aType)
+                            this.CollectNearSelf(npc2);
+                        }
+                        else
+                        {
+                            if (this.moneyIsEnoughToAttack(npc2))
                             {
-                                case NPC.AttackTag.AttackType.attack:
-                                    {
-                                        Model.FastonPosition fp;
-                                        if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
-                                        {
-                                            var sa = new CommonClass.SetAttack()
-                                            {
-                                                c = "SetAttack",
-                                                Key = npc2.Key,
-                                                target = operatePlayer.StartFPIndex,
-                                                targetOwner = operatePlayer.Key,
-                                            };
-                                            this.startNewCommandThread(200, sa, this);
-                                        }
-                                        else
-                                        {
-                                            CollectFp(npc2, fp, ref notifyMsgs);
-                                        }
-                                    }; break;
-                                case NPC.AttackTag.AttackType.fire:
-                                case NPC.AttackTag.AttackType.electric:
-                                    {
-                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
-                                        {
-                                            var fp = npc2.attackTag.fpPass;
-                                            CollectFp(npc2, fp, ref notifyMsgs);
-                                        }
-                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
-                                        {
-                                            //   npc2.attackTag.Target
-                                            var roleKey = npc2.attackTag.Target;
-                                            if (that._Players.ContainsKey(roleKey))
-                                            {
-                                                var role = that._Players[roleKey];
-                                                CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
-                                                {
-                                                    c = "MagicSkill",
-                                                    Key = npc2.Key,
-                                                    selectIndex = 2,
-                                                    target = role.StartFPIndex,
-                                                    targetOwner = roleKey
-                                                };
-                                                this.startNewCommandThread(200, ms, this);
-                                            }
-                                            else
-                                            {
-                                                /*
-                                                 * return
-                                                 */
-                                                CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
-                                                {
-                                                    c = "OrderToReturn",
-                                                    Key = npc2.Key
-                                                };
-                                                this.startNewCommandThread(200, otr, this);
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            throw new Exception("非法调用");
-                                        }
-                                    }; break;
-                                case NPC.AttackTag.AttackType.water:
-                                    {
-                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
-                                        {
-                                            var fp = npc2.attackTag.fpPass;
-                                            CollectFp(npc2, fp, ref notifyMsgs);
-                                        }
-                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
-                                        {
-                                            //   npc2.attackTag.Target
-                                            var roleKey = npc2.attackTag.Target;
-                                            if (that._Players.ContainsKey(roleKey))
-                                            {
-                                                var role = that._Players[roleKey];
-                                                CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
-                                                {
-                                                    c = "MagicSkill",
-                                                    Key = npc2.Key,
-                                                    selectIndex = 1,
-                                                    target = role.StartFPIndex,
-                                                    targetOwner = roleKey
-                                                };
-                                                this.startNewCommandThread(200, ms, this);
-                                            }
-                                            else
-                                            {
-                                                /*
-                                                 * return
-                                                 */
-                                                CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
-                                                {
-                                                    c = "OrderToReturn",
-                                                    Key = npc2.Key
-                                                };
-                                                this.startNewCommandThread(200, otr, this);
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            throw new Exception("非法调用");
-                                        }
-                                    }; break;
-                                case NPC.AttackTag.AttackType.lose:
-                                case NPC.AttackTag.AttackType.confuse:
-                                case NPC.AttackTag.AttackType.speed:
-                                case NPC.AttackTag.AttackType.defendImprove:
-                                    {
-                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
-                                        {
-                                            var fp = npc2.attackTag.fpPass;
-                                            CollectFp(npc2, fp, ref notifyMsgs);
-                                        }
-                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                switch (npc2.attackTag.aType)
+                                {
+                                    case NPC.AttackTag.AttackType.attack:
                                         {
                                             Model.FastonPosition fp;
                                             if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
                                             {
+                                                var sa = new CommonClass.SetAttack()
+                                                {
+                                                    c = "SetAttack",
+                                                    Key = npc2.Key,
+                                                    target = operatePlayer.StartFPIndex,
+                                                    targetOwner = operatePlayer.Key,
+                                                };
+                                                this.startNewCommandThread(200, sa, this);
+                                            }
+                                            else
+                                            {
+                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                            }
+                                        }; break;
+                                    case NPC.AttackTag.AttackType.fire:
+                                    case NPC.AttackTag.AttackType.electric:
+                                        {
+                                            if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                            {
+                                                var fp = npc2.attackTag.fpPass;
+                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                            }
+                                            else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                            {
+                                                //   npc2.attackTag.Target
                                                 var roleKey = npc2.attackTag.Target;
                                                 if (that._Players.ContainsKey(roleKey))
                                                 {
@@ -694,6 +599,9 @@ namespace HouseManager4_0
                                                 }
                                                 else
                                                 {
+                                                    /*
+                                                     * return
+                                                     */
                                                     CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
                                                     {
                                                         c = "OrderToReturn",
@@ -701,30 +609,23 @@ namespace HouseManager4_0
                                                     };
                                                     this.startNewCommandThread(200, otr, this);
                                                 }
+
                                             }
                                             else
                                             {
+                                                throw new Exception("非法调用");
+                                            }
+                                        }; break;
+                                    case NPC.AttackTag.AttackType.water:
+                                        {
+                                            if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                            {
+                                                var fp = npc2.attackTag.fpPass;
                                                 CollectFp(npc2, fp, ref notifyMsgs);
                                             }
-                                        }
-                                        else
-                                        {
-                                            throw new Exception("非法调用");
-                                        }
-                                    }; break;
-                                case NPC.AttackTag.AttackType.ambush:
-                                case NPC.AttackTag.AttackType.attackImprove:
-                                    {
-                                        if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
-                                        {
-                                            var fp = npc2.attackTag.fpPass;
-                                            CollectFp(npc2, fp, ref notifyMsgs);
-                                        }
-                                        else if (npc2.getCar().state == Car.CarState.waitOnRoad)
-                                        {
-                                            Model.FastonPosition fp;
-                                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                            else if (npc2.getCar().state == Car.CarState.waitOnRoad)
                                             {
+                                                //   npc2.attackTag.Target
                                                 var roleKey = npc2.attackTag.Target;
                                                 if (that._Players.ContainsKey(roleKey))
                                                 {
@@ -741,6 +642,9 @@ namespace HouseManager4_0
                                                 }
                                                 else
                                                 {
+                                                    /*
+                                                     * return
+                                                     */
                                                     CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
                                                     {
                                                         c = "OrderToReturn",
@@ -748,30 +652,128 @@ namespace HouseManager4_0
                                                     };
                                                     this.startNewCommandThread(200, otr, this);
                                                 }
+
                                             }
                                             else
                                             {
+                                                throw new Exception("非法调用");
+                                            }
+                                        }; break;
+                                    case NPC.AttackTag.AttackType.lose:
+                                    case NPC.AttackTag.AttackType.confuse:
+                                    case NPC.AttackTag.AttackType.speed:
+                                    case NPC.AttackTag.AttackType.defendImprove:
+                                        {
+                                            if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                            {
+                                                var fp = npc2.attackTag.fpPass;
                                                 CollectFp(npc2, fp, ref notifyMsgs);
                                             }
-                                        }
-                                        else
+                                            else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                            {
+                                                Model.FastonPosition fp;
+                                                if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                                {
+                                                    var roleKey = npc2.attackTag.Target;
+                                                    if (that._Players.ContainsKey(roleKey))
+                                                    {
+                                                        var role = that._Players[roleKey];
+                                                        CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
+                                                        {
+                                                            c = "MagicSkill",
+                                                            Key = npc2.Key,
+                                                            selectIndex = 2,
+                                                            target = role.StartFPIndex,
+                                                            targetOwner = roleKey
+                                                        };
+                                                        this.startNewCommandThread(200, ms, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+                                                        {
+                                                            c = "OrderToReturn",
+                                                            Key = npc2.Key
+                                                        };
+                                                        this.startNewCommandThread(200, otr, this);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    CollectFp(npc2, fp, ref notifyMsgs);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                throw new Exception("非法调用");
+                                            }
+                                        }; break;
+                                    case NPC.AttackTag.AttackType.ambush:
+                                    case NPC.AttackTag.AttackType.attackImprove:
                                         {
-                                            throw new Exception("非法调用");
-                                        }
-                                    }; break;
-                                default:
-                                    {
-                                        throw new Exception("运行错误！");
-                                    };
+                                            if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
+                                            {
+                                                var fp = npc2.attackTag.fpPass;
+                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                            }
+                                            else if (npc2.getCar().state == Car.CarState.waitOnRoad)
+                                            {
+                                                Model.FastonPosition fp;
+                                                if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                                {
+                                                    var roleKey = npc2.attackTag.Target;
+                                                    if (that._Players.ContainsKey(roleKey))
+                                                    {
+                                                        var role = that._Players[roleKey];
+                                                        CommonClass.MagicSkill ms = new CommonClass.MagicSkill()
+                                                        {
+                                                            c = "MagicSkill",
+                                                            Key = npc2.Key,
+                                                            selectIndex = 1,
+                                                            target = role.StartFPIndex,
+                                                            targetOwner = roleKey
+                                                        };
+                                                        this.startNewCommandThread(200, ms, this);
+                                                    }
+                                                    else
+                                                    {
+                                                        CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
+                                                        {
+                                                            c = "OrderToReturn",
+                                                            Key = npc2.Key
+                                                        };
+                                                        this.startNewCommandThread(200, otr, this);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    CollectFp(npc2, fp, ref notifyMsgs);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                throw new Exception("非法调用");
+                                            }
+                                        }; break;
+                                    default:
+                                        {
+                                            throw new Exception("运行错误！");
+                                        };
 
 
+                                }
+                            }
+                            else
+                            {
+                                this.CollectNearSelf(npc2);
                             }
                         }
-                        else
-                        {
-                            this.CollectNearSelf(npc2);
-                        }
                     }
+                    else
+                    {
+
+                    }
+
                 }
                 else
                 {
@@ -919,7 +921,7 @@ namespace HouseManager4_0
                                 this.GetNPCPosition(addNpcKey);
                                 var addNpc = (NPC)that._Players[addNpcKey];
                                 ///
-                                addNpc.SetTheLargestHolder(npc);
+                                addNpc.SetTheLargestHolder(npc, ref notifyMsg);
                                 addNpc.CopyChanlleger(npc.challenger);
                                 switch (that.rm.Next(0, 2))
                                 {
@@ -963,7 +965,7 @@ namespace HouseManager4_0
                                     var addNpcKey = this.AddNpcPlayer(npc.Level);
                                     this.GetNPCPosition(addNpcKey);
                                     var addNpc = (NPC)that._Players[addNpcKey];
-                                    addNpc.SetTheLargestHolder(npc);
+                                    addNpc.SetTheLargestHolder(npc, ref notifyMsg);
                                     addNpc.CopyChanlleger(npc.challenger);
                                     do
                                     {
@@ -1014,7 +1016,7 @@ namespace HouseManager4_0
                                     var addNpcKey = this.AddNpcPlayer(npc.Level);
                                     this.GetNPCPosition(addNpcKey);
                                     var addNpc = (NPC)that._Players[addNpcKey];
-                                    addNpc.SetTheLargestHolder(npc);
+                                    addNpc.SetTheLargestHolder(npc, ref notifyMsg);
                                     addNpc.CopyChanlleger(npc.challenger);
                                     do
                                     {

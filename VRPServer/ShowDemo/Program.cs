@@ -13,15 +13,15 @@ namespace ShowDemo
 
             int aa = 256;
             int b = aa >> 1;
-            Console.WriteLine($"{aa},{b}");
+            //Consol.WriteLine($"{aa},{b}");
             var s = new byte[] { Convert.ToByte(b-10) };
             var msg = Encoding.UTF8.GetString(s);
-            Console.WriteLine($"{msg},{b}");
+            //Consol.WriteLine($"{msg},{b}");
             Console.ReadLine();
             //byte[] SS = new byte[] { 00, 1,15,16,233 };
             //for (int i = 0; i < SS.Length; i++)
             //{
-            //    Console.WriteLine(SS[i].ToString("x2"));
+            //    //Consol.WriteLine(SS[i].ToString("x2"));
             //}
             //while (true)
             //{
@@ -29,7 +29,7 @@ namespace ShowDemo
             //    A = Console.ReadLine();
             //    Regex r = new Regex("^car[A-E]{1}_[a-f0-9]{32}$");
             //    ;
-            //    Console.WriteLine(r.IsMatch(A));
+            //    //Consol.WriteLine(r.IsMatch(A));
             //}
         }
 

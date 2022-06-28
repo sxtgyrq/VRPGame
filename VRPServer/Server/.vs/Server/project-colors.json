@@ -110,7 +110,22 @@
       "ProjectGuid": "dc25001c-597b-435e-8bab-cc5e0d9ec6ff",
       "DisplayName": "Test_HttpClientTest",
       "ColorIndex": 4
+    },
+    "be73411a-f8bb-49bb-8bb1-3db3b740f385": {
+      "ProjectGuid": "be73411a-f8bb-49bb-8bb1-3db3b740f385",
+      "DisplayName": "Geometry",
+      "ColorIndex": 5
+    },
+    "212b522c-b6ec-41c3-8b9b-bd617e5b83c2": {
+      "ProjectGuid": "212b522c-b6ec-41c3-8b9b-bd617e5b83c2",
+      "DisplayName": "AppCheckConnection",
+      "ColorIndex": 6
+    },
+    "b585e17e-aafb-496e-874a-21e9427aed48": {
+      "ProjectGuid": "b585e17e-aafb-496e-874a-21e9427aed48",
+      "DisplayName": "CityRunFunction",
+      "ColorIndex": 7
     }
   },
-  "NextColorIndex": 5
+  "NextColorIndex": 8
 }

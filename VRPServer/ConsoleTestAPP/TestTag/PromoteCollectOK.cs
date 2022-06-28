@@ -10,12 +10,12 @@ namespace ConsoleTestAPP.TestTag
     {
         public static async void Test(string command)
         {
-            Console.WriteLine("测试名称：" + command);
-            Console.WriteLine("测试目的：在寻找能力提升宝石过程中，保证其状态成功转为收集");
-            Console.WriteLine("          确保整个过程状态、金钱流正确");
-            Console.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
-            Console.WriteLine("测试前提：此过程模拟一个用户");
-            Console.WriteLine("按任意键开始检测！");
+            //Consol.WriteLine("测试名称：" + command);
+            //Consol.WriteLine("测试目的：在寻找能力提升宝石过程中，保证其状态成功转为收集");
+            //Consol.WriteLine("          确保整个过程状态、金钱流正确");
+            //Consol.WriteLine("测试前提：此次测试，需要确保先有1个用户网页登录");
+            //Consol.WriteLine("测试前提：此过程模拟一个用户");
+            //Consol.WriteLine("按任意键开始检测！");
             Console.ReadKey();
 
             var url = "127.0.0.1:11100";
@@ -63,7 +63,7 @@ namespace ConsoleTestAPP.TestTag
             Common.CheckResult(t1, "waitForCollectOrAttack", command);
             // Common.awaitF(66545, startTime);
 
-            Console.WriteLine($"{command}检测成功！");
+            //Consol.WriteLine($"{command}检测成功！");
 
         }
 

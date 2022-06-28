@@ -26,8 +26,21 @@ namespace HouseManager4_0.interfaceOfEngine
     {
         RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out RoomMainF.RoomMain.MileResultReason mrr);
         void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg);
+     /// <summary>
+     /// 返回为真/假，但不一定要执行返回
+     /// </summary>
+     /// <param name="c"></param>
+     /// <param name="reason"></param>
+     /// <returns></returns>
         bool conditionsOk(Command c, out string reason);
 
+        /// <summary>
+        /// 返回为真/假，要执行failedThenDo
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="car"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
         bool carAbilitConditionsOk(RoleInGame player, Car car, Command c);
         //  Command get
     }

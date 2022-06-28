@@ -156,7 +156,7 @@ namespace MateWsAndHouse
                 {
                     var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"createTeam receive:{notifyJson}");
+                    //Consol.WriteLine($"createTeam receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -226,7 +226,7 @@ namespace MateWsAndHouse
 
                     // var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"createTeam receive:{notifyJson}");
+                    //Consol.WriteLine($"createTeam receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -351,7 +351,7 @@ namespace MateWsAndHouse
                     // await context.Response.WriteAsync("ok");
                     var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"teambegain receive:{notifyJson}");
+                    //Consol.WriteLine($"teambegain receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -412,7 +412,7 @@ namespace MateWsAndHouse
 
                     // var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"createTeam receive:{notifyJson}");
+                    //Consol.WriteLine($"createTeam receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -486,7 +486,7 @@ namespace MateWsAndHouse
                     //  await context.Response.WriteAsync("ok");
                     var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"findTeam receive:{notifyJson}");
+                    //Consol.WriteLine($"findTeam receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -658,7 +658,7 @@ namespace MateWsAndHouse
 
                     // var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"createTeam receive:{notifyJson}");
+                    //Consol.WriteLine($"createTeam receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -836,7 +836,7 @@ namespace MateWsAndHouse
                 catch (Exception e)
                 {
                     _sockets.Remove(fromUrl);
-                    Console.WriteLine($"{fromUrl}连接失败！");
+                    //Consol.WriteLine($"{fromUrl}连接失败！");
                     continue;
                 }
                 return;

@@ -12,8 +12,8 @@ namespace Server
         public static Data dt;
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello VRP");
-            Console.WriteLine("输入任意键继续！");
+            //Consol.WriteLine("Hello VRP");
+            //Consol.WriteLine("输入任意键继续！");
             var select = Console.ReadLine();
 
             //Thread th1 = new Thread(() => namal(select));

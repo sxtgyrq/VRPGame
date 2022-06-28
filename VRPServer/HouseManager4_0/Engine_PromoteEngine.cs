@@ -502,14 +502,14 @@ namespace HouseManager4_0
         //                                                                    {
         //                                                                        WebNotify(player, $"资金不够,您的车被安排返航！！！");
         //                                                                        printState(player, car, "在路上走的车，想找宝石，钱不够啊，必须立即返回！");
-        //                                                                        Console.WriteLine($"宝石的价格{this.promotePrice[sp.pType]}，钱不够啊,{car.ability.costBusiness},{car.ability.costVolume}！");
+        //                                                                        //Consol.WriteLine($"宝石的价格{this.promotePrice[sp.pType]}，钱不够啊,{car.ability.costBusiness},{car.ability.costVolume}！");
         //#warning 在路上，由于资金不够，这里没有能测到。
         //                                                                        setReturnWhenPromoteFailed(sp, car);
         //                                                                    }
         //                                                                }
         //                                                                else
         //                                                                {
-        //                                                                    Console.WriteLine("在路上走的车，有了宝石，居然没返回！");
+        //                                                                    //Consol.WriteLine("在路上走的车，有了宝石，居然没返回！");
         //                                                                    //throw new Exception();
         //                                                                }
         //                                                            }; break;
@@ -518,7 +518,7 @@ namespace HouseManager4_0
         //                                                        default:
         //                                                            {
         //                                                                var msg = $"{car.state.ToString()}状态下不能提升能力！";
-        //                                                                Console.WriteLine(msg);
+        //                                                                //Consol.WriteLine(msg);
         //                                                            }; break;
 
         //                                                    }

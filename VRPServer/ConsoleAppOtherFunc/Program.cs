@@ -10,7 +10,7 @@ namespace ConsoleAppOtherFunc
     {
         static void Main(string[] args)
         {
-            Console.WriteLine($"请选择功能！{Environment.NewLine}" +
+            //Consol.WriteLine($"请选择功能！{Environment.NewLine}" +
                 $"A.启动微信校验！{Environment.NewLine}" +
                 $"B.微信自动对话！{Environment.NewLine}" +
                 $"");
@@ -19,9 +19,9 @@ namespace ConsoleAppOtherFunc
             {
                 case "A":
                     {
-                        Console.WriteLine("将要部署微信网页授权功能!");
+                        //Consol.WriteLine("将要部署微信网页授权功能!");
                         var ip = "127.0.0.1";
-                        Console.WriteLine($"输入ip,如“{ip}”");
+                        //Consol.WriteLine($"输入ip,如“{ip}”");
                         var inputIp = Console.ReadLine();
                         if (string.IsNullOrEmpty(inputIp)) { }
                         else
@@ -29,7 +29,7 @@ namespace ConsoleAppOtherFunc
                             ip = inputIp;
                         }
                         int port = 13301;
-                        Console.WriteLine($"输入端口≠15000,如“{port}”");
+                        //Consol.WriteLine($"输入端口≠15000,如“{port}”");
                         var inputWebsocketPort = Console.ReadLine();
                         if (string.IsNullOrEmpty(inputWebsocketPort)) { }
                         else
@@ -44,9 +44,9 @@ namespace ConsoleAppOtherFunc
                     }; break;
                 case "B":
                     {
-                        Console.WriteLine("将要部署微信自动回复功能!");
+                        //Consol.WriteLine("将要部署微信自动回复功能!");
                         var ip = "127.0.0.1";
-                        Console.WriteLine($"输入ip,如“{ip}”");
+                        //Consol.WriteLine($"输入ip,如“{ip}”");
                         var inputIp = Console.ReadLine();
                         if (string.IsNullOrEmpty(inputIp)) { }
                         else
@@ -54,7 +54,7 @@ namespace ConsoleAppOtherFunc
                             ip = inputIp;
                         }
                         int port = 14301;
-                        Console.WriteLine($"输入端口≠15000,如“{port}”");
+                        //Consol.WriteLine($"输入端口≠15000,如“{port}”");
                         var inputWebsocketPort = Console.ReadLine();
                         if (string.IsNullOrEmpty(inputWebsocketPort)) { }
                         else

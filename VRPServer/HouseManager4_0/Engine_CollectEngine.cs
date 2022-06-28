@@ -386,7 +386,7 @@ namespace HouseManager4_0
                 //  this.collectPosition = this.GetRandomPosition(true);
                 needUpdateCollectState = true;
 
-                Console.WriteLine("----Do the collect process----！");
+                //Consol.WriteLine("----Do the collect process----！");
 
                 if (role.playerType == RoleInGame.PlayerType.player)
                     that.GetMusic((Player)role, ref notifyMsg);
@@ -400,7 +400,7 @@ namespace HouseManager4_0
             }
             else
             {
-                Console.WriteLine("----Not do the collect process----！");
+                //Consol.WriteLine("----Not do the collect process----！");
             }
             //收集完，留在原地。
             //var car = this._Players[cmp.key].getCar(cmp.car);

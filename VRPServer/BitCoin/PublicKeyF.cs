@@ -33,7 +33,7 @@ namespace BitCoin
             if (show)
             { }
             //Console.WriteLine($"压缩公钥为{ Hex.BytesToHex(resultAdd)}");
-            //   Console.WriteLine($"压缩公钥为{ Calculate.Encode(resultAdd)}");
+            //   //Consol.WriteLine($"压缩公钥为{ Calculate.Encode(resultAdd)}");
 
             var step3 = ripemd160.ComputeHash(sha256.ComputeHash(resultAdd));
 
@@ -75,7 +75,7 @@ namespace BitCoin
 
             var resultAdd = Calculate.BiteSplitJoint(new byte[] { 0x04 }, publicKeyArray1);
             resultAdd = Calculate.BiteSplitJoint(resultAdd, publicKeyArray2);
-            Console.WriteLine($"非压缩公钥为{ Hex.BytesToHex(resultAdd)}");
+            //Consol.WriteLine($"非压缩公钥为{ Hex.BytesToHex(resultAdd)}");
 
 
             var step3 = ripemd160.ComputeHash(sha256.ComputeHash(resultAdd));
@@ -115,9 +115,9 @@ namespace BitCoin
             else
                 resultAdd = Calculate.BiteSplitJoint(new byte[] { 0x03 }, publicKeyArray1);
 
-            if (show)
-                Console.WriteLine($"压缩公钥为{ Hex.BytesToHex(resultAdd)}");
-            //   Console.WriteLine($"压缩公钥为{ Calculate.Encode(resultAdd)}");
+            if (show) { }
+            //Consol.WriteLine($"压缩公钥为{ Hex.BytesToHex(resultAdd)}");
+            //   //Consol.WriteLine($"压缩公钥为{ Calculate.Encode(resultAdd)}");
 
             var step3 = ripemd160.ComputeHash(sha256.ComputeHash(resultAdd));
 

@@ -7,11 +7,11 @@ namespace HouseManagerController
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("你好，测试员");
-            Console.WriteLine("劳烦您输入Monitor地址");
+            //Consol.WriteLine("你好，测试员");
+            //Consol.WriteLine("劳烦您输入Monitor地址");
             string url = Console.ReadLine();
 
-            Console.WriteLine("输入命令");
+            //Consol.WriteLine("输入命令");
             var command = Console.ReadLine();
 
             while (true)
@@ -21,7 +21,7 @@ namespace HouseManagerController
                     break;
                 }
                 var result = sendInmationToUrlAndGetRes(url, command);
-                Console.WriteLine(result);
+                //Consol.WriteLine(result);
                 command = Console.ReadLine();
 
             }

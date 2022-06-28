@@ -12,7 +12,7 @@ namespace Test_HttpClientTest
         static void Main(string[] args)
         {
             startTaskForAwait();
-            Console.WriteLine("你好！此服务为网页端的webSocket服务！");
+            //Consol.WriteLine("你好！此服务为网页端的webSocket服务！");
             var ip = "http://127.0.0.1:11100";
             //Console.WriteLine($"输入ip和端口如“{ip}”");
             //var inputIp = Console.ReadLine();
@@ -55,7 +55,7 @@ WebHost.CreateDefaultBuilder(args).Configure(item => item.UseForwardedHeaders(ne
             }
             for (var i = 0; i < 20; i++)
             {
-                Console.WriteLine($"倒计时{20 - i}秒");
+                //Consol.WriteLine($"倒计时{20 - i}秒");
                 Thread.Sleep(1000);
             }
             for (var i = 0; i < 1000000; i++)
@@ -64,11 +64,11 @@ WebHost.CreateDefaultBuilder(args).Configure(item => item.UseForwardedHeaders(ne
 
                 if (i > 0 && i % 100000 == 0)
                 {
-                    Console.WriteLine($"{i}次测试成功！点击继续");
+                    //Consol.WriteLine($"{i}次测试成功！点击继续");
                     Console.ReadLine();
                 }
             }
-            Console.WriteLine("100W次发送测试成功！");
+            //Consol.WriteLine("100W次发送测试成功！");
             // throw new NotImplementedException();
         }
     }

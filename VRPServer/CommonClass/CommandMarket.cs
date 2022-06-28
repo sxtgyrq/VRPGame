@@ -15,6 +15,15 @@ namespace CommonClass
         //public string key { get; set; }
         //public string PlayerName { get; set; }
     }
+
+    public class ModelStock : Command
+    {
+        public string modelID { get; set; }
+        public string bussinessAddress { get; set; }
+        public Dictionary<string, long> stocks { get; set; }
+        public Dictionary<string, long> stocksOriginal { get; set; }
+    }
+
     public class BuyDiamondInMarket : Command
     {
         public string buyType { get; set; }
@@ -25,6 +34,7 @@ namespace CommonClass
     {
         public string Key { get; set; }
         public string pType { get; set; }
+        public int count { get; set; }
     }
     public class SetSellDiamond : SetBuyDiamond { }
     public class SetSelectDriver : Command
@@ -32,7 +42,7 @@ namespace CommonClass
         public string Key { get; set; }
         public int Index { get; set; }
     }
- 
+
     public class MarketIn : Command
     {
         public int count { get; set; }
@@ -43,7 +53,7 @@ namespace CommonClass
         public int count { get; set; }
         public string pType { get; set; }
     }
-    public class Transaction : Command 
+    public class Transaction : Command
     {
         public string adress { get; set; }
     }

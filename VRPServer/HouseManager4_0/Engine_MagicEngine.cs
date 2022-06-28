@@ -248,6 +248,10 @@ namespace HouseManager4_0
                     reason = "";
                     return false;
                 }
+                //else if (that._Players[ms.Key].getCar().ability.driver.race == Race.immortal) 
+                //{
+                    
+                //}
                 else
                 {
                     reason = "";
@@ -1197,7 +1201,7 @@ namespace HouseManager4_0
                 {
                     var url = notifyMsg[i];
                     var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
+                    //Consol.WriteLine($"url:{url}");
                     Startup.sendMsg(url, sendMsg);
                 }
             }
@@ -1295,7 +1299,7 @@ namespace HouseManager4_0
                 {
                     var url = notifyMsg[i];
                     var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
+                    //Consol.WriteLine($"url:{url}");
                     Startup.sendMsg(url, sendMsg);
                 }
             }
@@ -1393,7 +1397,7 @@ namespace HouseManager4_0
                 {
                     var url = notifyMsg[i];
                     var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
+                    //Consol.WriteLine($"url:{url}");
                     Startup.sendMsg(url, sendMsg);
                 }
             }

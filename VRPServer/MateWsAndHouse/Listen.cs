@@ -14,7 +14,7 @@ namespace MateWsAndHouse
         }
         private static async Task<string> DealWith(string notifyJson)
         {
-            Console.WriteLine($"notify receive:{notifyJson}");
+            //Consol.WriteLine($"notify receive:{notifyJson}");
             //File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
             //File.AppendText("",)
             // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
@@ -219,7 +219,7 @@ namespace MateWsAndHouse
 
         private static async Task sendMsg(string fromUrl, string json)
         {
-            await Task.Run(() => TcpFunction.WithoutResponse.SendInmationToUrl(fromUrl, json));
+            var r = await Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(fromUrl, json));
         }
     }
 }

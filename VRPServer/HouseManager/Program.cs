@@ -16,8 +16,8 @@ namespace HouseManager
         static void Main(string[] args)
         {
             var version = "1.0.2";
-            Console.WriteLine($"解决了收税后不能攻击的问题！");
-            Console.WriteLine($"版本号：{version}");
+            //Consol.WriteLine($"解决了收税后不能攻击的问题！");
+            //Consol.WriteLine($"版本号：{version}");
 
             Program.startTime = DateTime.Now;
             namal();
@@ -29,7 +29,7 @@ namespace HouseManager
                 var ip = "127.0.0.1";
                 int tcpPort = 11100;
 
-                Console.WriteLine($"输入ip,如“{ip}”");
+                //Consol.WriteLine($"输入ip,如“{ip}”");
                 var inputIp = Console.ReadLine();
                 if (string.IsNullOrEmpty(inputIp)) { }
                 else
@@ -37,7 +37,7 @@ namespace HouseManager
                     ip = inputIp;
                 }
 
-                Console.WriteLine($"输入端口≠15000,如“{tcpPort}”");
+                //Consol.WriteLine($"输入端口≠15000,如“{tcpPort}”");
                 var inputWebsocketPort = Console.ReadLine();
                 if (string.IsNullOrEmpty(inputWebsocketPort)) { }
                 else

@@ -24,50 +24,35 @@ namespace WsOfWebClient
         //    "10.80.52.218:11100",//10.80.52.218
         //    "10.80.52.218:11200",//10.80.52.218
         //};
+
+        static List<string> debugItem = new List<string>();
         public static List<string> roomUrls
         {
             get
             {
-                if (DebugInLocalHost)
+                if (debugItem.Count == 0)
                 {
-                    return new List<string>()
+                    var rootPath = System.IO.Directory.GetCurrentDirectory(); 
                     {
-                        "127.0.0.1:11100"
-                    };
+                        var text = File.ReadAllLines($"{rootPath}\\config\\rooms.txt");
+                        for (int i = 0; i < text.Length; i++)
+                        {
+                            if (string.IsNullOrEmpty(text[i])) { }
+                            else
+                            {
+                                debugItem.Add(text[i]);
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    return new List<string>()
-                    {
-                        "10.80.52.218:11100",//10.80.52.218
-                        "10.80.52.218:11200",//10.80.52.218
-                    };
-                }
+                return debugItem; 
             }
-        }
-        private static bool DebugInLocalHost = true;
+        } 
         private static System.Random rm = new System.Random(DateTime.Now.GetHashCode());
-        public static void SetWhenStart()
-        {
-            Console.WriteLine("是否以debug形式运行(y/n)");
-            var input = Console.ReadLine().ToUpper().Trim();
-            if (input == "Y" || input == "YES")
-            {
-                DebugInLocalHost = true;
-            }
-            else if (input == "N" || input == "NO")
-            {
-                DebugInLocalHost = false;
-            }
-        }
+       
         internal static async Task<PlayerAdd_V2> getRoomNum(int websocketID, string playerName, string[] carsNames)
         {
-            int roomIndex = 0;
-            if (DebugInLocalHost)
-            {
-                roomIndex = 0;
-            }
-            else
+            int roomIndex = 0; 
             {
                 var index1 = rm.Next(roomUrls.Count);
                 var index2 = rm.Next(roomUrls.Count);
@@ -183,7 +168,7 @@ namespace WsOfWebClient
                 //if (string.IsNullOrEmpty(ConnectInfo.mapRoadAndCrossJson))
                 //{
                 //    ConnectInfo.mapRoadAndCrossJson = await getRoadInfomation(s);
-                //    Console.WriteLine($"获取ConnectInfo.mapRoadAndCrossJson json的长度为{ConnectInfo.mapRoadAndCrossJson.Length}");
+                //    //Consol.WriteLine($"获取ConnectInfo.mapRoadAndCrossJson json的长度为{ConnectInfo.mapRoadAndCrossJson.Length}");
                 //}
                 if (false)
                 {
@@ -889,7 +874,7 @@ namespace WsOfWebClient
             }
             else
             {
-                Console.WriteLine($"{resultAsync.result}校验{checkValue}失败！");
+                //Consol.WriteLine($"{resultAsync.result}校验{checkValue}失败！");
                 await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
                 return false;
             }
@@ -1117,7 +1102,7 @@ namespace WsOfWebClient
             {
                 var targetOwner = m_Target.Groups["target"].Value;
 
-                //   Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                //   //Consol.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
                 // if (m.Groups["key"].Value == s.Key)
                 {
                     var ms = new MagicSkill()
@@ -1162,7 +1147,7 @@ namespace WsOfWebClient
             {
                 var targetOwner = m_Target.Groups["target"].Value;
 
-                //   Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                //   //Consol.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
                 // if (m.Groups["key"].Value == s.Key)
                 {
                     var ms = new MagicSkill()
@@ -1208,7 +1193,8 @@ namespace WsOfWebClient
                             {
                                 c = "SetBuyDiamond",
                                 Key = s.Key,
-                                pType = bd.pType
+                                pType = bd.pType,
+                                count = Math.Min(bd.count, 50)
                             };
                             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(sbd);
                             await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
@@ -1233,7 +1219,8 @@ namespace WsOfWebClient
                             {
                                 c = "SetSellDiamond",
                                 Key = s.Key,
-                                pType = bd.pType
+                                pType = bd.pType,
+                                count = Math.Min(bd.count, 50)
                             };
                             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ssd);
                             await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
@@ -1269,7 +1256,7 @@ namespace WsOfWebClient
             //    {
             //        var targetOwner = m_Target.Groups["target"].Value;
 
-            //        Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+            //        //Consol.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
             //        if (m.Groups["key"].Value == s.Key)
             //        {
             //            var getPosition = new SetBust()
@@ -1299,7 +1286,7 @@ namespace WsOfWebClient
                 {
                     //   var targetOwner = m_Target.Groups["target"].Value;
 
-                    //     Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                    //     //Consol.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
                     //   if (m.Groups["key"].Value == s.Key)
                     {
                         var getPosition = new OrderToReturn()
@@ -1402,7 +1389,8 @@ namespace WsOfWebClient
                             c = "SetAbility",
                             Key = s.Key,
                             //   car = "car" + m.Groups["car"].Value,
-                            pType = a.pType
+                            pType = a.pType,
+                            count = a.count
                         };
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
                         await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
@@ -1487,7 +1475,7 @@ namespace WsOfWebClient
             {
                 var targetOwner = m_Target.Groups["target"].Value;
 
-                //   Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                //   //Consol.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
                 // if (m.Groups["key"].Value == s.Key)
                 {
                     var getPosition = new SetAttack()
@@ -1600,7 +1588,7 @@ namespace WsOfWebClient
                 CommonClass.TeamNumWithSecret passObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamNumWithSecret>(result);
                 var roomNum = CommonClass.AES.AesDecrypt(passObj.Secret, key);
                 var ss = roomNum.Split(':');
-                Console.WriteLine($"sec:{ss}");
+                //Consol.WriteLine($"sec:{ss}");
                 if (ss[0] == "team")
                 {
                     roomIndex = int.Parse(ss[1]);
@@ -1733,18 +1721,18 @@ namespace WsOfWebClient
         internal static void Config()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             //Console.WriteLine($"IPPath:{rootPath}");
             if (File.Exists($"{rootPath}\\config\\teamIP.txt"))
             {
                 var text = File.ReadAllText($"{rootPath}\\config\\teamIP.txt");
                 teamUrl = text;
-                Console.WriteLine($"读取了组队ip地址--{teamUrl},按回车继续");
+                Console.WriteLine($"读取了组队ip地址--{teamUrl},按任意键继续");
                 Console.ReadLine();
             }
             else
             {
-                Console.WriteLine($"没有组队服务IP");
+                Console.WriteLine($"没有组队服务IP，按任意键继续");
                 Console.ReadLine();
                 //Console.WriteLine($"请market输入IP即端口，如127.0.0.1:11200");
                 //teamUrl = Console.ReadLine();

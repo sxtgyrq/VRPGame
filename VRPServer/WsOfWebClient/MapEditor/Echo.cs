@@ -16,7 +16,7 @@ namespace WsOfWebClient.MapEditor
             {
                 var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
                 wResult = returnResult.wr;
-                Console.WriteLine($"receive from web:{returnResult.result}");
+                //Consol.WriteLine($"receive from web:{returnResult.result}");
 
                 var address = await GetBTCAddress(webSocket);
                 if (BitCoin.CheckAddress.CheckAddressIsUseful(address)) { }
@@ -41,7 +41,7 @@ namespace WsOfWebClient.MapEditor
                 }
                 returnResult = await ReceiveStringAsync(webSocket, webWsSize);
                 wResult = returnResult.wr;
-                Console.WriteLine($"receive from web:{returnResult.result}");
+                //Consol.WriteLine($"receive from web:{returnResult.result}");
 
                 bool signIsRight = false;
 
@@ -100,7 +100,7 @@ namespace WsOfWebClient.MapEditor
                                 returnResult = await ReceiveStringAsync(webSocket, webWsSize);
 
                                 wResult = returnResult.wr;
-                                Console.WriteLine($"receive from web:{returnResult.result}");
+                                //Consol.WriteLine($"receive from web:{returnResult.result}");
                                 //CommonClass.Command
                                 var c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                                 if (c.c == "change")
@@ -257,7 +257,7 @@ namespace WsOfWebClient.MapEditor
                                                     {
                                                         CreateNewObj cno = Newtonsoft.Json.JsonConvert.DeserializeObject<CreateNewObj>(returnResult.result);
                                                         var msg = await mm.CreateNew(cno, address, modelTypes, rm);
-                                                        Console.WriteLine(msg);
+                                                        //Consol.WriteLine(msg);
                                                         await mm.GetCatege(rm);
                                                     }; break;
                                                 case "GetModelDetail":
@@ -299,7 +299,7 @@ namespace WsOfWebClient.MapEditor
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine($"{ Newtonsoft.Json.JsonConvert.SerializeObject(e)}");
+                                //Consol.WriteLine($"{ Newtonsoft.Json.JsonConvert.SerializeObject(e)}");
                                 //await Room.setOffLine(s);
                                 //removeWs(s.WebsocketID);
                                 // Console.WriteLine($"step2：webSockets数量：{   BufferImage.webSockets.Count}");

@@ -24,7 +24,7 @@ namespace TestAllPath
                 indexPart2 = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(indexJson);
             }
 
-            Console.WriteLine($"{indexPart1.Count},{indexPart2.Count}");
+            //Consol.WriteLine($"{indexPart1.Count},{indexPart2.Count}");
             Console.ReadLine();
             Program.dt = new Data();
             Program.dt.LoadRoad();
@@ -72,14 +72,14 @@ namespace TestAllPath
                             }
                             if (md5_2 != md5_1)
                             {
-                                Console.WriteLine($"{j}md5不相等");
+                                //Consol.WriteLine($"{j}md5不相等");
                                 Console.ReadLine();
                             }
                             else
                             {
                                 if (j % 100 == 0)
                                 {
-                                    Console.WriteLine($"{j}_md5没问题_{md5_2}_{md5_1}");
+                                    //Consol.WriteLine($"{j}_md5没问题_{md5_2}_{md5_1}");
                                     Console.ReadLine();
                                 }
                             }
@@ -135,7 +135,7 @@ namespace TestAllPath
                               
                                 dataIndex = Convert.ToInt32((startIndex + length) / ((long)2147483648));
                                 //   position;
-                                Console.WriteLine($"{length},{bytes.Length},{startIndex},{dataIndex}");
+                                //Consol.WriteLine($"{length},{bytes.Length},{startIndex},{dataIndex}");
                                 using (var fileStream = new FileStream($"bigData{dataIndex}.rqdt", FileMode.OpenOrCreate))
                                 {
                                     position = Convert.ToInt32(fileStream.Length);
@@ -150,12 +150,12 @@ namespace TestAllPath
 
                                 //if (success)
                                 //{
-                                //    Console.WriteLine($"{i}-{j}计算成功！sumLength={startIndex}");
+                                //    //Consol.WriteLine($"{i}-{j}计算成功！sumLength={startIndex}");
                                 //    Thread.Sleep(1);
                                 //}
                                 //else
                                 //{
-                                //    Console.WriteLine($"{i}-{j}计算错误！");
+                                //    //Consol.WriteLine($"{i}-{j}计算错误！");
                                 //    Console.ReadLine();
                                 //}
                             }
@@ -176,10 +176,10 @@ namespace TestAllPath
                                 startIndex += length;
                             }
 
-                            Console.WriteLine("记录写入日志");
+                            //Consol.WriteLine("记录写入日志");
                             File.AppendAllText("CalLog.txt", $"{i}-{j}-{Environment.NewLine}");
                             File.AppendAllText("indexRecord.txt", $"{dataIndex},{position},{length},");
-                            Console.WriteLine($"记录：{dataIndex},{position},{length},");
+                            //Consol.WriteLine($"记录：{dataIndex},{position},{length},");
                         }
 
                     }
@@ -195,7 +195,7 @@ namespace TestAllPath
             // var indexPageJson = Newtonsoft.Json.JsonConvert.SerializeObject(new { startIndexList = startIndexList });
             // File.WriteAllText("calResult.json", indexPageJson);
 
-            Console.WriteLine($"计算完毕！");
+            //Consol.WriteLine($"计算完毕！");
         }
     }
 }

@@ -39,7 +39,7 @@ namespace WsOfWebClient.MapEditor
                         c = "GetCatege",
                     });
                 var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-                Console.WriteLine(json);
+                //Consol.WriteLine(json);
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
                 // return obj;
                 //  throw new NotImplementedException();
@@ -65,7 +65,7 @@ namespace WsOfWebClient.MapEditor
                         c = "GetModelType",
                     });
                 var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-                Console.WriteLine(json);
+                //Consol.WriteLine(json);
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
                 return obj;
             }
@@ -206,7 +206,7 @@ namespace WsOfWebClient.MapEditor
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ubs);
                 var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
-                Console.WriteLine($"respon:{respon}");
+                //Consol.WriteLine($"respon:{respon}");
                 GetBackgroundScene.Result r = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBackgroundScene.Result>(respon);
                 var sm = new
                 {
@@ -279,7 +279,7 @@ namespace WsOfWebClient.MapEditor
                     string base64String = Convert.ToBase64String(imageBytes);
                     result = $"data:image/jpeg;base64,{base64String}";
                 }
-                Console.WriteLine(result);
+                //Consol.WriteLine(result);
                 return result;
             }
             internal async Task SetBackground(bool isUsed, Position baseCross, string address, Random rm, WebSocket webSocket)
@@ -654,7 +654,7 @@ namespace WsOfWebClient.MapEditor
                     direction = direction
                 });
                 var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-                Console.WriteLine(json);
+                //Consol.WriteLine(json);
                 if (!string.IsNullOrEmpty(json))
                 {
                     var result = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetUnLockedModelResult>(json);

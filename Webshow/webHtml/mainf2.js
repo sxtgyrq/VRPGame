@@ -31,10 +31,9 @@ TaskClass.prototype.__defineSetter__("carSelect", function (val) {
 var objMain =
 {
     debug: (function () {
-        if (window.location.hostname == 'www.nyrq123.com') {
-            return false;
-        }
-        else { return true; }
+        if (window.location.hostname == 'www.nyrq123.com') return 2;
+        else if (window.location.hostname == '192.168.0.108') return 1;
+        else return 0;
     })(),
     indexKey: '',
     displayName: '',
@@ -1249,11 +1248,19 @@ var objMain =
                 {
                     var passObj = JSON.parse(evt.data);
                     console.log('BradCastAnimateOfOthersCar3', passObj);
+                    passObj.passPrivateKeysOnly = false;
                     carAnimationData(passObj);
                     //var start = { 'x': passObj.Animate.startX, 'y': passObj.Animate.startY };
                     //start.x /= 256;
                     //start.y /= 256;
 
+                }; break;
+            case 'BradCastAnimateOfOthersCar4':
+                {
+                    var passObj = JSON.parse(evt.data);
+                    console.log('BradCastAnimateOfOthersCar3', passObj);
+                    passObj.passPrivateKeysOnly = true;
+                    carAnimationData(passObj);
                 }; break;
             case 'BradCastPromoteInfoDetail':
                 {
@@ -1778,15 +1785,31 @@ var objMain =
         race: ''
     },
     camaraAnimateData: null,
-    transtractionData: null
+    transtractionData: null,
+    trade:
+    {
+        'countPerOperate': 1
+    }
 };
 var startA = function () {
     var connected = false;
     var wsConnect = '';
-    if (objMain.debug)
-        wsConnect = 'ws://127.0.0.1:11001/websocket';
-    else
-        wsConnect = 'wss://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + '/';
+    switch (objMain.debug) {
+        case 0:
+            {
+                wsConnect = 'ws://127.0.0.1:11001/websocket';
+            }; break;
+        case 1:
+            {
+                wsConnect = 'ws://192.168.0.108:11001/websocket';
+            }; break;
+        default:
+            {
+                wsConnect = 'wss://www.nyrq123.com/websocket' + window.location.pathname.split('/')[1] + '/';
+            }; break;
+    }
+
+
     var ws = new WebSocket(wsConnect);
     ws.onopen = function () {
         {
@@ -2601,7 +2624,7 @@ function animate() {
                     }
                     else {
                         distance = oldLength + percent * (3 - oldLength);
-                    } 
+                    }
                     var unitY = distance * Math.cos(angle);
                     var unitZX = distance * Math.sin(angle);
 
@@ -3603,7 +3626,7 @@ var SysOperatePanel =
             img.style.width = 'auto';
             img.style.marginLeft = "0.5em";
             img.onclick = function () {
-               // alert('债务框！');
+                // alert('债务框！');
                 //      dialogSys.show();
                 //alert('弹出对话框');
                 //subsidizeSys.add();
@@ -4095,21 +4118,43 @@ var operatePanel =
                             }; break;
                         case 'ability':
                             {
-                                addItemToTaskOperatingPanle('使用', 'useDiamondBtn', function () {
+                                addItemToTaskOperatingPanle(objMain.trade.countPerOperate == 1 ? '使用' : ('用' + objMain.trade.countPerOperate + '枚'), 'useDiamondBtn', function () {
                                     if (objMain.carState["car"] == 'waitAtBaseStation') {
                                         if (objMain.PromoteDiamondCount[objMain.selectObj.obj.userData.index] > 0) {
-                                            objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': objMain.selectObj.obj.userData.index }));
+                                            objMain.ws.send(JSON.stringify({ 'c': 'Ability', 'pType': objMain.selectObj.obj.userData.index, 'count': objMain.trade.countPerOperate }));
                                         }
                                     }
                                 });
-                                addItemToTaskOperatingPanle('出售', 'sellDiamondBtn', function () {
+                                addItemToTaskOperatingPanle(objMain.trade.countPerOperate == 1 ? '出售' : ('卖' + objMain.trade.countPerOperate + '枚'), 'sellDiamondBtn', function () {
                                     if (objMain.carState["car"] == 'waitAtBaseStation') {
-                                        objMain.ws.send(JSON.stringify({ 'c': 'SellDiamond', 'pType': objMain.selectObj.obj.userData.index }));
+                                        objMain.ws.send(JSON.stringify({ 'c': 'SellDiamond', 'pType': objMain.selectObj.obj.userData.index, 'count': objMain.trade.countPerOperate }));
                                     }
                                 });
-                                addItemToTaskOperatingPanle('购买', 'buyDiamondBtn', function () {
+                                addItemToTaskOperatingPanle(objMain.trade.countPerOperate == 1 ? '购买' : ('买' + objMain.trade.countPerOperate + '枚'), 'buyDiamondBtn', function () {
                                     if (objMain.carState["car"] == 'waitAtBaseStation') {
-                                        objMain.ws.send(JSON.stringify({ 'c': 'BuyDiamond', 'pType': objMain.selectObj.obj.userData.index }));
+                                        objMain.ws.send(JSON.stringify({ 'c': 'BuyDiamond', 'pType': objMain.selectObj.obj.userData.index, 'count': objMain.trade.countPerOperate }));
+                                    }
+                                });
+                                addItemToTaskOperatingPanle(objMain.trade.countPerOperate == 1 ? '数量' : ('量:' + objMain.trade.countPerOperate), 'tradeDiamondCountBtn', function () {
+                                    if (objMain.carState["car"] == 'waitAtBaseStation') {
+                                        var refreshBtn = function (id, msg) {
+                                            var btn = document.getElementById(id);
+                                            btn.children[0].innerText = msg;
+                                        }
+                                        switch (objMain.trade.countPerOperate) {
+                                            case 1: objMain.trade.countPerOperate = 2; break;
+                                            case 2: objMain.trade.countPerOperate = 5; break;
+                                            case 5: objMain.trade.countPerOperate = 10; break;
+                                            case 10: objMain.trade.countPerOperate = 20; break;
+                                            case 20: objMain.trade.countPerOperate = 50; break;
+                                            case 50: objMain.trade.countPerOperate = 1; break;
+                                        }
+                                        refreshBtn('useDiamondBtn', objMain.trade.countPerOperate == 1 ? '使用' : ('用' + objMain.trade.countPerOperate + '枚'));
+                                        refreshBtn('sellDiamondBtn', objMain.trade.countPerOperate == 1 ? '出售' : ('卖' + objMain.trade.countPerOperate + '枚'));
+                                        refreshBtn('buyDiamondBtn', objMain.trade.countPerOperate == 1 ? '购买' : ('买' + objMain.trade.countPerOperate + '枚'));
+                                        refreshBtn('tradeDiamondCountBtn', objMain.trade.countPerOperate == 1 ? '数量' : ('量:' + objMain.trade.countPerOperate));
+
+                                        //objMain.ws.send(JSON.stringify({ 'c': 'BuyDiamond', 'pType': objMain.selectObj.obj.userData.index }));
                                     }
                                 });
                             }; break;

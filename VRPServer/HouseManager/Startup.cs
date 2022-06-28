@@ -83,7 +83,7 @@ namespace HouseManager
                     File.AppendAllText("debugLog.txt", $"await Common.SendInfomation(url, \"{notifyJson.Replace("\"", "\\\"")}\");" + Environment.NewLine);
                     File.AppendAllText("debugLog.txt", "" + Environment.NewLine);
 
-                    Console.WriteLine($"notify receive:{notifyJson}");
+                    //Consol.WriteLine($"notify receive:{notifyJson}");
                     CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
                     switch (c.c)
@@ -244,7 +244,7 @@ namespace HouseManager
 
                     // var t = Convert.ToInt64((DateTime.Now - Program.startTime).TotalMilliseconds);
 
-                    Console.WriteLine($"monitor receive:{notifyJson}");
+                    //Consol.WriteLine($"monitor receive:{notifyJson}");
                     CommonClass.Monitor m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Monitor>(notifyJson);
 
                     switch (m.c)
@@ -303,10 +303,10 @@ namespace HouseManager
             //    {
             //        var notifyJson = returnResult.result;
 
-            //        Console.WriteLine($"json:{notifyJson}");
+            //        //Consol.WriteLine($"json:{notifyJson}");
 
 
-            //        Console.WriteLine($"monitor receive:{notifyJson}");
+            //        //Consol.WriteLine($"monitor receive:{notifyJson}");
             //        CommonClass.Monitor m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Monitor>(notifyJson);
 
             //        switch (m.c)

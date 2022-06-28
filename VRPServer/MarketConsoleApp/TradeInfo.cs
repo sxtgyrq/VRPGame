@@ -37,7 +37,7 @@ namespace MarketConsoleApp
             {
                 data = Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url));
             }
-            Console.WriteLine(data);
+            //Consol.WriteLine(data);
             return data;
         }
 
@@ -52,7 +52,7 @@ namespace MarketConsoleApp
                 {
                     current_block_count = Convert.ToInt32(Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url)));
                 }
-                Console.WriteLine($"current_block_count:{current_block_count}");
+                //Consol.WriteLine($"current_block_count:{current_block_count}");
             }
             StringBuilder detailOfTrade = new StringBuilder();
             Dictionary<string, bool> record = new Dictionary<string, bool>();
@@ -76,13 +76,14 @@ namespace MarketConsoleApp
                                 var dataGet = await web1.DownloadDataTaskAsync(url);
                                 data = Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url));
                             }
-                            Console.WriteLine(data);
+                            //Consol.WriteLine(data);
                             break;
                         }
                         catch (Exception e)
                         {
-                            if (i < 9)
-                                Console.WriteLine($"重新尝试第{i + 2}次");
+                            if (i < 9) 
+                            { }
+                            //Consol.WriteLine($"重新尝试第{i + 2}次");
                             else
                             {
                                 throw e;
@@ -180,7 +181,7 @@ namespace MarketConsoleApp
 
                     }
                     offset += 40;
-                    Console.WriteLine($"offset:{offset}");
+                    //Consol.WriteLine($"offset:{offset}");
                     if (offset == 225)
                     {
                         Console.ReadLine();
@@ -188,7 +189,7 @@ namespace MarketConsoleApp
                 }
                 //catch (Exception ex)
                 //{
-                //    Console.WriteLine(ex.Message);
+                //    //Consol.WriteLine(ex.Message);
                 //    throw ex;
                 //}
 
@@ -197,12 +198,12 @@ namespace MarketConsoleApp
             long sumV = 0;
             foreach (var item in valuesInput)
             {
-                Console.WriteLine($"{item.Key}:{item.Value}");
+                //Consol.WriteLine($"{item.Key}:{item.Value}");
                 sumV += item.Value;
                 sb.Append($"{item.Key},{item.Value}{Environment.NewLine}");
             }
 
-            Console.WriteLine($"sum:{sumV / 100000000}.{sumV % 100000000}");
+            //Consol.WriteLine($"sum:{sumV / 100000000}.{sumV % 100000000}");
             File.WriteAllText($"result_{this.adress}.csv", sb.ToString());
             //{
 
@@ -214,7 +215,7 @@ namespace MarketConsoleApp
             //        data = Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url));
             //    }
             //    //var data = File.ReadAllText(@"E:\Project\VRPGame\VRPServer\MarketConsoleApp\bin\Release\netcoreapp3.1\publish\jj.txt");
-            //    Console.WriteLine(data);
+            //    //Consol.WriteLine(data);
             //    //  return data;
             //    //    var obj = Newtonsoft.Json.JsonConvert.DeserializeObject(data);
             //    //if (obj.ContainProperty("error"))
@@ -231,7 +232,7 @@ namespace MarketConsoleApp
             //    }
             //    catch (Exception ex)
             //    {
-            //        Console.WriteLine($" ex:{ex.ToString()}");
+            //        //Consol.WriteLine($" ex:{ex.ToString()}");
             //    }
             //}
         }

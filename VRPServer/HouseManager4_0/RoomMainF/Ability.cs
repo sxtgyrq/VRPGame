@@ -64,6 +64,11 @@ namespace HouseManager4_0.RoomMainF
             {
                 return $"wrong pType:{sa.pType}"; ;
             }
+            else if (sa.count != 1 && sa.count != 2 && sa.count != 5 && sa.count != 10 && sa.count != 20 && sa.count != 50)
+            {
+                return $"wrong count:{sa.count}"; ;
+            }
+
             else
             {
 
@@ -80,6 +85,10 @@ namespace HouseManager4_0.RoomMainF
                             return $"{player.Key} go bust!";
 #warning 这里要提示前台，已经进行破产清算了。
                         }
+                        else if (player.playerType != RoleInGame.PlayerType.player)
+                        {
+                            return "wrong player!";
+                        }
                         else
                         {
                             switch (sa.pType)
@@ -89,12 +98,40 @@ namespace HouseManager4_0.RoomMainF
                                 case "volume":
                                 case "speed":
                                     {
-                                        if (player.PromoteDiamondCount[sa.pType] > 0)
+                                        if (player.PromoteDiamondCount[sa.pType] >= sa.count)
                                         {
-                                            car.ability.AbilityAdd(sa.pType, player, car, ref notifyMsg);
-                                            player.PromoteDiamondCount[sa.pType]--;
-                                            if (player.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(sa.pType, player.PromoteDiamondCount[sa.pType], (Player)player, ref notifyMsg);
+                                            const double brokeProbability = 0.9683237857;
+                                            bool broken = false;
+                                            for (int i = 0; i < sa.count; i++)
+                                            {
+                                                var d = this.rm.NextDouble();
+                                                if (d > brokeProbability)
+                                                {
+                                                    broken = true;
+                                                }
+                                                if (broken)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            if (broken)
+                                            {
+                                                car.ability.AbilityClear(sa.pType, player, car, ref notifyMsg);
+                                                player.PromoteDiamondCount[sa.pType] -= sa.count;
+                                                if (player.playerType == RoleInGame.PlayerType.player)
+                                                {
+                                                    SendPromoteCountOfPlayer(sa.pType, player.PromoteDiamondCount[sa.pType], (Player)player, ref notifyMsg);
+                                                    this.WebNotify(player, "能力升级失败！");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                car.ability.AbilityAdd(sa.pType, sa.count, player, car, ref notifyMsg);
+
+                                                player.PromoteDiamondCount[sa.pType] -= sa.count;
+                                                if (player.playerType == RoleInGame.PlayerType.player)
+                                                    SendPromoteCountOfPlayer(sa.pType, player.PromoteDiamondCount[sa.pType], (Player)player, ref notifyMsg);
+                                            }
                                         }
                                     }; break;
                             }
@@ -110,7 +147,7 @@ namespace HouseManager4_0.RoomMainF
                 {
                     var url = notifyMsg[i];
                     var sendMsg = notifyMsg[i + 1];
-                    Console.WriteLine($"url:{url}");
+                    //Consol.WriteLine($"url:{url}");
 
                     Startup.sendMsg(url, sendMsg);
                 }

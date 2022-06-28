@@ -111,7 +111,7 @@ namespace ConsoleAppOtherFunc
                     using (StreamReader reader = new StreamReader(s))
                     {
                         string text = reader.ReadToEnd();
-                        Console.WriteLine(text);
+                        //Consol.WriteLine(text);
 
                         XmlDocument xml = new XmlDocument();
                         xml.LoadXml(text);
@@ -129,7 +129,7 @@ namespace ConsoleAppOtherFunc
                                 {
                                     WxXmlModel.Content = rootElement.SelectSingleNode("Content").InnerText;
 
-                                    Console.WriteLine(WxXmlModel.Content);
+                                    //Consol.WriteLine(WxXmlModel.Content);
 
                                     if (BitCoin.CheckAddress.CheckAddressIsUseful(WxXmlModel.Content))
                                     {
@@ -141,7 +141,7 @@ namespace ConsoleAppOtherFunc
                                           WxXmlModel.ToUserName,
                                           DateTime.Now.Ticks,
                                           $"查询到{WxXmlModel.Content}有{priceStr}金币！");
-                                        Console.WriteLine(msg);
+                                        //Consol.WriteLine(msg);
                                         await context.Response.WriteAsync(msg, Encoding.UTF8);
                                     }
                                     else
@@ -153,7 +153,7 @@ namespace ConsoleAppOtherFunc
                                             WxXmlModel.ToUserName,
                                             DateTime.Now.Ticks,
                                             $"你好，现在是{DateTime.Now.ToString("yyyy年MM月dd日 HH时mm分ss秒")}，我是要瑞卿。我现在接收到了你的消息，还不知道要回复你什么！");
-                                        Console.WriteLine(msg);
+                                        //Consol.WriteLine(msg);
                                         await context.Response.WriteAsync(msg, Encoding.UTF8);
                                     }
                                 }
@@ -244,7 +244,7 @@ namespace ConsoleAppOtherFunc
                 sub.Append(t.ToString("X2"));
             }
             //tmpStr = Membership.CreateUser(tmpStr, "SHA1");
-            Console.WriteLine($"计算所得:{sub.ToString().ToLower()}");
+            //Consol.WriteLine($"计算所得:{sub.ToString().ToLower()}");
             tmpStr = sub.ToString().ToLower();
             if (tmpStr == signature)
             {

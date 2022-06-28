@@ -25,9 +25,11 @@ namespace MarketConsoleApp
                 // m.loadCountInMarket();
                 m.tellMarketIsOn();
                 m.sendInteview();
+                m.getAllBitcoinThread();
                 m.GetDetailOfPayer();
                 m.waitToBeTelled();
                 //m.
+
             }
             while (true)
             {

@@ -157,7 +157,7 @@ namespace WsOfWebClient.MapEditor
             await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
             // throw new NotImplementedException();
             var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
-            Console.WriteLine($"receive from web:{returnResult.result}");
+            //Consol.WriteLine($"receive from web:{returnResult.result}");
 
             return returnResult.result;
         }

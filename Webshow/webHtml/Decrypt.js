@@ -194,3 +194,36 @@ var outPutPath = function (aIndex) {
     console.log('outPut', outPut);
     return outPut;
 }
+
+var calHash = function (a) {
+    const q = 90021457;
+    var primeNumbers = [5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+    var primeCount = primeNumbers.length;
+
+    var pIndex = a % primeCount;
+
+    var a0 = 1;
+    var aArray = [];
+    var pArray = [];
+    for (var i = 0; i < 50; i++) {
+        aArray.push(a0);
+        a0 = (a0 * a) % q;
+        var pv = primeNumbers[(pIndex + i) % primeCount];
+        pArray.push(pv);
+    }
+    var sum = 0;
+    for (var i = 0; i < 50; i++) {
+        sum += (pArray[i] * aArray[i]);
+        sum = sum % q;
+    }
+    return sum % q;
+}
+
+//var outPut = function (a) {
+//    //var a = 30739615;
+//    for (var i = 0; i < 100; i++) {
+//        r = testHash(a);
+//        console.log(a, r);
+//        a = r;
+//    }
+//}

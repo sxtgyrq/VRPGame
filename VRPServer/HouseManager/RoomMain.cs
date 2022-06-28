@@ -379,7 +379,7 @@ namespace HouseManager
                 //{
                 //    for (int i = 0; i < 3; i++) 
                 //    {
-                //        Console.WriteLine($"现在回收是要返回的！");
+                //        //Consol.WriteLine($"现在回收是要返回的！");
                 //    }
                 //}
             }
@@ -807,7 +807,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }

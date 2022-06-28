@@ -1497,6 +1497,16 @@
           "bin/placeholder/BitCoin.dll": {}
         }
       },
+      "CityRunFunction/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/CityRunFunction.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CityRunFunction.dll": {}
+        }
+      },
       "CommonClass/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
@@ -5272,6 +5282,11 @@
       "path": "../BitCoin/BitCoin.csproj",
       "msbuildProject": "../BitCoin/BitCoin.csproj"
     },
+    "CityRunFunction/1.0.0": {
+      "type": "project",
+      "path": "../CityRunFunction/CityRunFunction.csproj",
+      "msbuildProject": "../CityRunFunction/CityRunFunction.csproj"
+    },
     "CommonClass/1.0.0": {
       "type": "project",
       "path": "../CommonClass/CommonClass.csproj",
@@ -5291,6 +5306,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "BitCoin >= 1.0.0",
+      "CityRunFunction >= 1.0.0",
       "CommonClass >= 1.0.0",
       "TcpFunction >= 1.0.0"
     ]
@@ -5324,6 +5340,9 @@
           "projectReferences": {
             "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj": {
               "projectPath": "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj"
+            },
+            "E:\\Project\\VRPGame\\VRPServer\\CityRunFunction\\CityRunFunction.csproj": {
+              "projectPath": "E:\\Project\\VRPGame\\VRPServer\\CityRunFunction\\CityRunFunction.csproj"
             },
             "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj": {
               "projectPath": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj"

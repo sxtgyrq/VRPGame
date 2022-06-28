@@ -213,6 +213,7 @@ namespace HouseManager4_0.RoomMainF
                     ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
                     ((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
                     ((Player)this._Players[addItem.Key]).backgroundData = new Dictionary<string, bool>();
+
                 }
             }
 
@@ -288,20 +289,20 @@ namespace HouseManager4_0.RoomMainF
             return Math.Acos(complex.Real);
         }
 
-        private void AfterPlayerBroken(Player npc, ref List<string> notifyMsgs)
+        private void AfterPlayerBroken(Player player, ref List<string> notifyMsgs)
         {
             {
                 var keys = new List<string>();
                 foreach (var item in this._Players)
                 {
-                    if (item.Value.TheLargestHolderKey == npc.Key && item.Value.playerType == RoleInGame.PlayerType.player)
+                    if (item.Value.TheLargestHolderKey == player.Key && item.Value.playerType == RoleInGame.PlayerType.player)
                     {
                         keys.Add(item.Key);
                     }
                 }
                 for (var i = 0; i < keys.Count; i++)
                 {
-                    this._Players[keys[i]].InitializeTheLargestHolder();
+                    this._Players[keys[i]].InitializeTheLargestHolder(ref notifyMsgs); 
                 }
             }
             {

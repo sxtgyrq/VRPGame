@@ -65,17 +65,17 @@ namespace WsOfWebClient
 
             // app.Map("/notify", notify);
 
-            Console.WriteLine($"启动TCP连接！{ ConnectInfo.tcpServerPort}");
+            //Consol.WriteLine($"启动TCP连接！{ ConnectInfo.tcpServerPort}");
             Thread th = new Thread(() => startTcp());
             th.Start();
         }
         private void startTcp()
         {
-            var dealWithF = new TcpFunction.WithoutResponse.DealWith(StartTcpDealWithF);
-            TcpFunction.WithoutResponse.startTcp(ConnectInfo.HostIP, ConnectInfo.tcpServerPort, dealWithF);
+            var dealWithF = new TcpFunction.WithResponse.DealWith(StartTcpDealWithF);
+            TcpFunction.WithResponse.ListenIpAndPort(ConnectInfo.HostIP, ConnectInfo.tcpServerPort, dealWithF);
         }
         //private async void startTcp()
-        async Task StartTcpDealWithF(string notifyJson)
+        async Task<string> StartTcpDealWithF(string notifyJson)
         {
             try
             {
@@ -119,7 +119,7 @@ namespace WsOfWebClient
                         }
                         catch
                         {
-                            Console.WriteLine("websocket 异常");
+                            //Consol.WriteLine("websocket 异常");
                         }
                     }
                 }
@@ -129,7 +129,7 @@ namespace WsOfWebClient
 
                 throw e;
             }
-
+            return "";
         }
         private static void WebSocketF(IApplicationBuilder app)
         {
@@ -173,7 +173,7 @@ namespace WsOfWebClient
                         var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
 
                         wResult = returnResult.wr;
-                        Console.WriteLine($"receive from web:{returnResult.result}");
+                        //Console.WriteLine($"receive from web:{returnResult.result}");
                         CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                         switch (c.c)
                         {
@@ -554,7 +554,7 @@ namespace WsOfWebClient
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"{ Newtonsoft.Json.JsonConvert.SerializeObject(e)}");
+                        //Console.WriteLine($"{ Newtonsoft.Json.JsonConvert.SerializeObject(e)}");
                         await Room.setOffLine(s);
                         removeWs(s.WebsocketID);
                         // Console.WriteLine($"step2：webSockets数量：{   BufferImage.webSockets.Count}");
@@ -740,7 +740,7 @@ namespace WsOfWebClient
 
                     //var notifyJson = getBodyStr(context);
 
-                    Console.WriteLine($"notify receive:{notifyJson}");
+                    //Console.WriteLine($"notify receive:{notifyJson}");
                     CommonClass.CommandNotify c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CommandNotify>(notifyJson);
 
                     // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
@@ -801,7 +801,7 @@ namespace WsOfWebClient
                         // Console.WriteLine($"receive:{returnResult.result}");
 
                         var notifyJson = returnResult.result;
-                        Console.WriteLine($"notify receive:{notifyJson}");
+                      //  Console.WriteLine($"notify receive:{notifyJson}");
                         CommonClass.CommandNotify c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CommandNotify>(notifyJson);
 
                         // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);

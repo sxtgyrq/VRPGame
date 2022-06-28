@@ -73,15 +73,28 @@ namespace WsOfWebClient
             }
             else
             {
-                Console.WriteLine($"{joinType.selectObjName}不符合要求！");
+                //Consol.WriteLine($"{joinType.selectObjName}不符合要求！");
                 return s;
             }
 
         }
         async static Task getTradeDetail(WebSocket webSocket, string addr)
         {
-            BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
-            var tradeDetail = await t.GetTradeInfomationFromChain();
+            // BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
+            //var tradeDetail = await t.GetTradeInfomationFromChain();
+            Dictionary<string, long> tradeDetail;
+            {
+                var grn = new GetTransctionFromChain()
+                {
+                    c = "GetTransctionFromChain",
+                    bussinessAddr = addr,
+                };
+                var index = rm.Next(0, roomUrls.Count);
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+                var data = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                tradeDetail = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(data);
+            }
+
             long sumValue = 0;
             {
                 var tradeDetailList = new List<string>();
@@ -108,6 +121,10 @@ namespace WsOfWebClient
                     var sendData = Encoding.UTF8.GetBytes(msg);
                     await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
+            }
+            if (sumValue == 0)
+            {
+                return;
             }
             List<string> list;
             {
@@ -149,7 +166,7 @@ namespace WsOfWebClient
             {
                 for (int i = 0; i < list.Count; i += 2)
                 {
-                    Console.WriteLine(list[i]);
+                    //Consol.WriteLine(list[i]);
                     var mtsMsg = list[i];
                     var parameter = mtsMsg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
                     if (parameter.Length == 5)
@@ -471,7 +488,7 @@ namespace WsOfWebClient
             {
                 for (int i = 0; i < list.Count; i += 2)
                 {
-                    Console.WriteLine(list[i]);
+                    //Consol.WriteLine(list[i]);
                     var mtsMsg = list[i];
                     var parameter = mtsMsg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
                     if (parameter.Length == 5)
@@ -517,6 +534,6 @@ namespace WsOfWebClient
             return tradeDetail;
         }
 
-       
+
     }
 }

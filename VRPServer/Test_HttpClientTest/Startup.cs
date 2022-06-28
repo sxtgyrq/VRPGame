@@ -48,7 +48,7 @@ namespace Test_HttpClientTest
 
                     //  int A = int.Parse(text);
 
-                    Console.WriteLine($"notify receive:{text.Length}");
+                    //Consol.WriteLine($"notify receive:{text.Length}");
                     Thread.Sleep(1);
                     await context.Response.WriteAsync("");
                     // await sendMsg("http://127.0.0.1:11100/notify", A.ToString());
@@ -89,7 +89,7 @@ namespace Test_HttpClientTest
                 }
                 else
                 {
-                    Console.WriteLine($"{fromUrl}推送失败！");
+                    //Consol.WriteLine($"{fromUrl}推送失败！");
                 }
                 client.Dispose();
             }

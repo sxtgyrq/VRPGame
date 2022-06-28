@@ -28,7 +28,7 @@ namespace HouseManager
             this.speed_Price = null;
             this._priceChanged = priceChanged;
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             //Console.WriteLine($"IPPath:{rootPath}");
             if (File.Exists($"{rootPath}\\config\\MarketIP.txt"))
             {
@@ -39,9 +39,9 @@ namespace HouseManager
             }
             else
             {
-                Console.WriteLine($"请market输入IP");
+                //Consol.WriteLine($"请market输入IP");
                 this.IP = Console.ReadLine();
-                Console.WriteLine("请market输入端口");
+                //Consol.WriteLine("请market输入端口");
                 this.port = int.Parse(Console.ReadLine());
                 var text = $"{this.IP}:{this.port}";
                 File.WriteAllText($"{rootPath}\\config\\MarketIP.txt", text);

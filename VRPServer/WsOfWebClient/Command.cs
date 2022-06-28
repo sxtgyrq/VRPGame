@@ -93,7 +93,7 @@ namespace WsOfWebClient
     public class BuyDiamond : CommonClass.Command
     {
         public string pType { get; set; }
-
+        public int count { get; set; }
     }
     public class Tax : CommonClass.Command
     {
@@ -105,6 +105,7 @@ namespace WsOfWebClient
         //  public int Target { get; set; }
         public string pType { get; set; }
         //public string car { get; set; }
+        public int count { get; set; }
     }
 
     public class SetCarReturn : CommonClass.Command

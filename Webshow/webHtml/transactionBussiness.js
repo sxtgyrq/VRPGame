@@ -18,6 +18,8 @@ var transactionBussiness = function () {
         var divAddr = document.createElement('div');
         divAddr.style.width = 'width:calc(100% - 2px)';
         divAddr.style.wordWrap = 'anywhere';
+        divAddr.style.wordBreak = 'break-all';
+        //word-break: break-all;
         divAddr.innerText = address;
         container_Editor.appendChild(divAddr);
 
@@ -49,7 +51,7 @@ var transactionBussiness = function () {
     this.drawAgreementEditor = function () {
         // return;
         var html = `
-<div style="width:calc(100% - 5px);word-wrap:anywhere;border:solid 2px green;">
+<div style="width:calc(100% - 5px);word-wrap:anywhere;word-break:break-all;border:solid 2px green;">
                 <div id="agreementErrMsg" style="color:red;margin-top:20px;"></div>
                 <label>自</label>
                 <div>
@@ -97,7 +99,7 @@ var transactionBussiness = function () {
     };
     this.addStockItem = function (addr, value, percent) {
         var html2 = `<tr>
-                    <td style="word-wrap:anywhere;border:solid 1px #0a481c;">${addr}</td>
+                    <td style="word-wrap:anywhere;word-break:break-all;border:solid 1px #0a481c;">${addr}</td>
                     <td style="border:solid 1px #0a481c;vertical-align:middle;">${value}</td>
                     <td style="border:solid 1px #0a481c;vertical-align:middle;">${percent}</td>
                 </tr>`;
@@ -115,7 +117,7 @@ var transactionBussiness = function () {
     };
     this.addTradeItem = function (tradeDetail, agreement, sign) {
         {
-            var html1 = `<tr><td colspan="2" style="word-wrap:anywhere;border:solid black 1px;">${tradeDetail}</td></tr>`;
+            var html1 = `<tr><td colspan="2" style="word-wrap:anywhere;word-break:break-all;border:solid black 1px;">${tradeDetail}</td></tr>`;
             var tr = document.createElement('tr');
             tr.innerHTML = html1;
             var parent = document.getElementById('tradeTable');
@@ -124,7 +126,7 @@ var transactionBussiness = function () {
         {
             var html1 = `<tr>
                     <td style="vertical-align:middle;">协议</td>
-                    <td style="word-wrap:anywhere;border:solid black 1px;">${agreement}</td>
+                    <td style="word-wrap:anywhere;word-break:break-all;border:solid black 1px;">${agreement}</td>
                 </tr>`;
             var tr = document.createElement('tr');
             tr.innerHTML = html1;
@@ -132,7 +134,7 @@ var transactionBussiness = function () {
             parent.appendChild(tr);
         }
         {
-            var html1 = `<tr><td style="vertical-align:middle;">签名</td><td style="word-wrap:anywhere;border:solid black 1px;">${sign}</td></tr>`;
+            var html1 = `<tr><td style="vertical-align:middle;">签名</td><td style="word-wrap:anywhere;word-break:break-all;border:solid black 1px;">${sign}</td></tr>`;
             var tr = document.createElement('tr');
             tr.innerHTML = html1;
             var parent = document.getElementById('tradeTable');
@@ -153,7 +155,7 @@ var transactionBussiness = function () {
         container_Editor.appendChild(div);
     };
     this.addOriginItem = function (addr, value) {
-        var html = `<tr><td style="word-wrap:anywhere;vertical-align:middle;border:solid 1px black;">${addr}</td><td style="vertical-align:middle;border:solid 1px black;">${value}</td></tr>`;
+        var html = `<tr><td style="word-wrap:anywhere;word-break: break-all;vertical-align:middle;border:solid 1px black;">${addr}</td><td style="vertical-align:middle;border:solid 1px black;">${value}</td></tr>`;
         var tr = document.createElement('tr');
         tr.innerHTML = html;
         var parent = document.getElementById('originalTable');
@@ -197,7 +199,7 @@ var transactionBussiness = function () {
     };
     this.showAuthor = function (text) {
         var html = `<label>建筑物创建者</label>
-            <div id="authorOfModel" style="width:calc(100% - 2px);word-wrap:anywhere;">${text}</div>`;
+            <div id="authorOfModel" style="width:calc(100% - 2px);word-wrap:anywhere;word-break:break-all;">${text}</div>`;
         var container_Editor = document.getElementById('transtractionEditor');
         container_Editor.innerHTML += html;
 

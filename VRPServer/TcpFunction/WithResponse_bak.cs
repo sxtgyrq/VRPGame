@@ -24,9 +24,9 @@ namespace TcpFunction2
         {
             if (count >= 10)
             {
-                Console.WriteLine($"roomUrl:{roomUrl}");
-                Console.WriteLine($"sendMsg:{sendMsg}");
-                Console.WriteLine($"以上消息没有发送出去");
+                //Consol.WriteLine($"roomUrl:{roomUrl}");
+                //Consol.WriteLine($"sendMsg:{sendMsg}");
+                //Consol.WriteLine($"以上消息没有发送出去");
                 Console.ReadLine();
             }
 
@@ -60,7 +60,7 @@ namespace TcpFunction2
                     else
                     {
                         var msg = $"sendData.Length ({sendData.Length})!= length({length})";
-                        Console.WriteLine(msg);
+                        //Consol.WriteLine(msg);
 
                         ns.Close();
                         tc.Close();
@@ -177,7 +177,7 @@ namespace TcpFunction2
             //                    else
             //                    {
             //                        var msg = $"sendData.Length ({sendData.Length})!= length({length})";
-            //                        Console.WriteLine(msg);
+            //                        //Consol.WriteLine(msg);
             //                        throw new Exception(msg);
             //                    }
             //                    Common.CheckBeforeSend(ns);
@@ -248,13 +248,13 @@ namespace TcpFunction2
             //            else
             //            {
             //                result = $"{roomUrl}连接失败！";
-            //                Console.WriteLine("result");
+            //                //Consol.WriteLine("result");
             //            }
             //        }
             //        else
             //        {
             //            result = $"{roomUrl}格式错误失败！";
-            //            Console.WriteLine("result");
+            //            //Consol.WriteLine("result");
             //            throw new Exception($"{result}");
             //        }
 
@@ -269,14 +269,14 @@ namespace TcpFunction2
             //    }
             //    else
             //    {
-            //        Console.WriteLine("md5校验失败");
+            //        //Consol.WriteLine("md5校验失败");
             //        Console.ReadLine();
             //    }
             //}
             var endTime = DateTime.Now;
-            Console.WriteLine($"------------------------------------");
-            Console.WriteLine($"{sendMsg}响应时间：{(endTime - startTime).TotalSeconds}秒");
-            Console.WriteLine($"------------------------------------");
+            //Consol.WriteLine($"------------------------------------");
+            //Consol.WriteLine($"{sendMsg}响应时间：{(endTime - startTime).TotalSeconds}秒");
+            //Consol.WriteLine($"------------------------------------");
             return result;
         }
 
@@ -295,7 +295,7 @@ namespace TcpFunction2
                 string notifyJson;
                 TcpClient client = server.AcceptTcpClient();
                 {
-                    Console.WriteLine("Connected!");
+                    //Consol.WriteLine("Connected!");
                     //   bool isRight;
                     NetworkStream ns = client.GetStream();
                     // using (NetworkStream stream = client.GetStream())
@@ -346,7 +346,7 @@ namespace TcpFunction2
             if (length2 != sendData.Length)
             {
                 var msg = $"length2({length2})!= sendData.Length({sendData.Length})";
-                Console.WriteLine(msg);
+                //Consol.WriteLine(msg);
                 if (reason == Common.CheckBeforeReadReason.Ok) { }
                 else
                 {
@@ -445,14 +445,14 @@ namespace TcpFunction2
             if (count > 10)
             {
 #warning 这里做记录
-                Console.WriteLine($"controllerUrl:{controllerUrl}");
-                Console.WriteLine($"json:{json}");
-                Console.WriteLine($"以上消息发送了10次，没发送出去！");
+                //Consol.WriteLine($"controllerUrl:{controllerUrl}");
+                //Consol.WriteLine($"json:{json}");
+                //Consol.WriteLine($"以上消息发送了10次，没发送出去！");
                 return;
             }
             //   Let’s use that to filter the records returned using the netstat command - netstat - ano | findstr 185.190.83.2
-            Console.WriteLine($"controllerUrl:{controllerUrl}");
-            Console.WriteLine($"json:{json}");
+            //Consol.WriteLine($"controllerUrl:{controllerUrl}");
+            //Consol.WriteLine($"json:{json}");
             try
             {
                 string server = controllerUrl.Split(':')[0];
@@ -479,7 +479,7 @@ namespace TcpFunction2
                 if (length == sendData.Length) { }
                 else
                 {
-                    Console.WriteLine($"length:({length})!= sendData.Length({sendData.Length})");
+                    //Consol.WriteLine($"length:({length})!= sendData.Length({sendData.Length})");
                     //throw new Exception($"length:({length})!= sendData.Length({sendData.Length})");
                     ns.Close(2000);
                     client.Close();
@@ -514,7 +514,7 @@ namespace TcpFunction2
                         break;
                     }
                 }
-                Console.WriteLine($"结果{isRight}");
+                //Consol.WriteLine($"结果{isRight}");
                 if (isRight)
                 {
                     Common.SendRight(ns);
@@ -535,11 +535,11 @@ namespace TcpFunction2
             }
             catch (ArgumentNullException e)
             {
-                Console.WriteLine("ArgumentNullException: {0}", e);
+                //Consol.WriteLine("ArgumentNullException: {0}", e);
             }
             catch (SocketException e)
             {
-                Console.WriteLine("SocketException: {0}", e);
+                //Consol.WriteLine("SocketException: {0}", e);
             }
             //for (var i = 0; i < 10000; i++)
             //{
@@ -579,7 +579,7 @@ namespace TcpFunction2
             //                                break;
             //                            }
             //                        }
-            //                        Console.WriteLine($"结果{isRight}");
+            //                        //Consol.WriteLine($"结果{isRight}");
             //                        if (isRight)
             //                        {
             //                            await Common.SendRight(ns);
@@ -600,12 +600,12 @@ namespace TcpFunction2
             //            }
             //            else
             //            {
-            //                Console.WriteLine($"{controllerUrl}-连接失败！！！");
+            //                //Consol.WriteLine($"{controllerUrl}-连接失败！！！");
             //            }
             //        }
             //        else
             //        {
-            //            Console.WriteLine($"{controllerUrl} 有问题！");
+            //            //Consol.WriteLine($"{controllerUrl} 有问题！");
             //        }
             //    }
             //    if (isRight)
@@ -614,7 +614,7 @@ namespace TcpFunction2
             //    }
             //    else
             //    {
-            //        Console.WriteLine($"传输数据校验失败,输入任意键继续。");
+            //        //Consol.WriteLine($"传输数据校验失败,输入任意键继续。");
             //        Console.ReadKey();
             //    }
             //}
@@ -646,7 +646,7 @@ namespace TcpFunction2
                     TcpClient client = server.AcceptTcpClient();
                     {
                         bool doNext;
-                        Console.WriteLine("Connected!");
+                        //Consol.WriteLine("Connected!");
                         SetMsgAndIsRight smr = new SetMsgAndIsRight(SetMsgAndIsRightF);
                         GetMsg(client, smr, dealWith, out doNext);
                         if (doNext)
@@ -659,13 +659,13 @@ namespace TcpFunction2
                 }
                 catch (SocketException e)
                 {
-                    Console.WriteLine("SocketException: {0}", e);
+                    //Consol.WriteLine("SocketException: {0}", e);
                 }
             }
         } 
         static void SetMsgAndIsRightF(string notifyJson, bool isRight, DealWith dealWith)
         {
-            Console.WriteLine($"notify receive:{notifyJson}");
+            //Consol.WriteLine($"notify receive:{notifyJson}");
             if (isRight)
             {
 

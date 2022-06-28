@@ -26,7 +26,7 @@ namespace AllPathGenerator
             TestAllPath.Program.dt.LoadRoad();
             long startIndex = 0;
 
-            Console.WriteLine($"输入线程数！");
+            //Consol.WriteLine($"输入线程数！");
             var input = Convert.ToInt32(Console.ReadLine());
 
 
@@ -116,7 +116,7 @@ namespace AllPathGenerator
                                 break;
                             }
                         }
-                        Console.WriteLine("开始运行主线程");
+                        //Consol.WriteLine("开始运行主线程");
                         for (var k = j; k < j + input; k++)
                         {
                             int length;
@@ -143,13 +143,13 @@ namespace AllPathGenerator
                             //startIndexList.Add(length);
                             startIndex += length;
 
-                            Console.WriteLine("记录写入日志");
+                            //Consol.WriteLine("记录写入日志");
                             File.AppendAllText("CalLog.txt", $"{i}-{j}-{k}-{Environment.NewLine}");
                             if (k < count)
                                 File.AppendAllText("indexRecord.txt", $"{dataIndex},{position},{length},");
                             else
-                                Console.WriteLine($"不记录：{i}-{j}-{k}");
-                            Console.WriteLine($"记录：{dataIndex},{position},{length},");
+                                //Consol.WriteLine($"不记录：{i}-{j}-{k}");
+                            //Consol.WriteLine($"记录：{dataIndex},{position},{length},");
                         }
 
 
@@ -171,7 +171,7 @@ namespace AllPathGenerator
                     }
                 }
             }
-            Console.WriteLine($"主线程运行结束！");
+            //Consol.WriteLine($"主线程运行结束！");
             Console.ReadLine();
         }
 
@@ -183,7 +183,7 @@ namespace AllPathGenerator
                 finished[threadIndex] = true;
                 byteResult[threadIndex] = bytes;
             }
-            Console.WriteLine($"线程{threadIndex}-运行完毕！");
+            //Consol.WriteLine($"线程{threadIndex}-运行完毕！");
         }
 
         private static void singleThread(int threadIndex, int i, int j, calCulateFinish cf)

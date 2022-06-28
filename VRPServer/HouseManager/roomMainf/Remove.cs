@@ -59,7 +59,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 await Startup.sendMsg(url, sendMsg);
             }
         }
@@ -140,7 +140,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                //   Console.WriteLine($"url:{url}");
+                //   //Consol.WriteLine($"url:{url}");
                 await Startup.sendMsg(url, sendMsg);
             }
         }

@@ -11,14 +11,14 @@ namespace HouseManager
         internal void load()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             var regionPath = $"{rootPath}\\config\\region.json";
             var data = File.ReadAllText(regionPath);
-            Console.WriteLine(data);
+            //Consol.WriteLine(data);
             var regions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(data);
             for (var i = 0; i < regions.Count; i++) 
             {
-                Console.WriteLine(regions[i]);
+                //Consol.WriteLine(regions[i]);
                 var filePath= $"{rootPath}\\config\\boundary\\{regions[i]}.txt";
 
             }

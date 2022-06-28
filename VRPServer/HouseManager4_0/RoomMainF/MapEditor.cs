@@ -644,6 +644,8 @@ namespace HouseManager4_0.RoomMainF
 
             return "";
         }
+
+
     }
 
     public partial class RoomMain : interfaceOfHM.ModelTranstractionI
@@ -675,7 +677,7 @@ namespace HouseManager4_0.RoomMainF
             }
             else
             {
-                Console.WriteLine($"{gmbid.modelID}不符合规则");
+                //Consol.WriteLine($"{gmbid.modelID}不符合规则");
                 return "";
             }
         }
@@ -685,6 +687,15 @@ namespace HouseManager4_0.RoomMainF
             HouseManager4_0.OperateObj_Model op = new OperateObj_Model(this);
             op.GetRoadNearby(grn);
             return "";
+        }
+
+        public string GetTransctionFromChainF(ModelTranstraction.GetTransctionFromChain gtfc)
+        {
+            if (this.Market.mile_Price == null)
+                return Newtonsoft.Json.JsonConvert.SerializeObject(new Dictionary<string, long>());
+            else
+                return Market.Send(gtfc);
+            //    throw new NotImplementedException();
         }
 
         public string GetTransctionModelDetail(ModelTranstraction.GetTransctionModelDetail gtmd)
@@ -703,6 +714,12 @@ namespace HouseManager4_0.RoomMainF
         {
             var Index = DalOfAddress.TradeRecord.GetCount(tc.addrBussiness, tc.addrFrom);
             return Index.ToString();
+        }
+
+        public void UpdateModelStock(ModelStock sa)
+        {
+            Program.dt.LoadStock(sa);
+            // throw new NotImplementedException();
         }
     }
 }

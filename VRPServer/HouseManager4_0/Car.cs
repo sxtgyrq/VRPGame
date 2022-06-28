@@ -9,6 +9,13 @@ namespace HouseManager4_0
 
     public class Car
     {
+        RoleInGame role;
+        public Car(RoleInGame roleInGame)
+        {
+            this.ability = new AbilityAndState(roleInGame);
+            this.targetFpIndex = -1;
+            this.role = roleInGame;
+        }
         public enum CarState
         {
             /// <summary>
@@ -315,7 +322,7 @@ namespace HouseManager4_0
         {
             //90151163 is prime! 2^18.25622*256 =313,090.45478*256=   80,151,156.423
             //so get max number 90151163。
-            public AnimateDataItem(Data.PathStartPoint2 _start, List<int> _animateData, bool _isParking, int _startT)
+            public AnimateDataItem(Data.PathStartPoint2 _start, List<int> _animateData, bool _isParking, int _startT, long privateKeyInput)
             {
                 this.start = _start;
                 var animateData = _animateData;
@@ -331,9 +338,9 @@ namespace HouseManager4_0
                     data.Add(animateData[i]);
                 }
                 // for (int i = 0; i < data.Count; i++) { }
-                int privateKey;
-                this.dataEncrypted = BitCoin.GamePathEncryption.PathEncryption.MainC.Encrypt(ref Program.rm.rm, data, out privateKey);
-                this.privateKey = privateKey;
+                // int privateKey;
+                this.dataEncrypted = BitCoin.GamePathEncryption.PathEncryption.MainC.Encrypt(ref Program.rm.rm, data, privateKeyInput);
+                this.privateKey = Convert.ToInt32(privateKeyInput);
 
                 var int64Array = data.ToArray();
                 byte[] arrayBytes = new byte[int64Array.Length * sizeof(long)];

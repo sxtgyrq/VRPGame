@@ -27,7 +27,7 @@ namespace BitCoin
             //    {
             //        data = Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url));
             //    }
-            //    Console.WriteLine(data);
+            //    //Consol.WriteLine(data);
             //    return data;
             //}
 
@@ -42,7 +42,7 @@ namespace BitCoin
                     {
                         current_block_count = Convert.ToInt32(Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url)));
                     }
-                    Console.WriteLine($"current_block_count:{current_block_count}");
+                    //Consol.WriteLine($"current_block_count:{current_block_count}");
                 }
                 StringBuilder detailOfTrade = new StringBuilder();
                 Dictionary<string, bool> record = new Dictionary<string, bool>();
@@ -66,13 +66,13 @@ namespace BitCoin
                                     var dataGet = await web1.DownloadDataTaskAsync(url);
                                     data = Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url));
                                 }
-                                Console.WriteLine(data);
+                                //Consol.WriteLine(data);
                                 break;
                             }
                             catch (Exception e)
                             {
-                                if (i < 9)
-                                    Console.WriteLine($"重新尝试第{i + 2}次");
+                                if (i < 9) { }
+                                //Consol.WriteLine($"重新尝试第{i + 2}次");
                                 else
                                 {
                                     throw e;
@@ -170,7 +170,7 @@ namespace BitCoin
 
                         }
                         offset += 40;
-                        Console.WriteLine($"offset:{offset}");
+                        //Consol.WriteLine($"offset:{offset}");
                         if (offset == 225)
                         {
                             Console.ReadLine();
@@ -178,7 +178,7 @@ namespace BitCoin
                     }
                     //catch (Exception ex)
                     //{
-                    //    Console.WriteLine(ex.Message);
+                    //    //Consol.WriteLine(ex.Message);
                     //    throw ex;
                     //}
 

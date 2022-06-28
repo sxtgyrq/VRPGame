@@ -45,7 +45,7 @@ namespace HouseManager4_0
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 Startup.sendMsg(url, sendMsg);
             }
             //  throw new NotImplementedException();

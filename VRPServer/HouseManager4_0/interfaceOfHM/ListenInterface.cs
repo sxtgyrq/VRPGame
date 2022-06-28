@@ -131,12 +131,14 @@ namespace HouseManager4_0.interfaceOfHM
         string LockModelObj(CommonClass.MapEditor.UseModelObj cn);
         string ClearModelObj();
         string GetUnLockedModel(CommonClass.MapEditor.GetUnLockedModel gulm);
+        void UpdateModelStock(ModelStock sa);
     }
 
     interface ModelTranstractionI
     {
         // string GetFirstModelAddr(ModelTranstraction.GetFirstModelAddr gfm);
         string GetTransctionModelDetail(ModelTranstraction.GetTransctionModelDetail gtmd);
+        string GetTransctionFromChainF(ModelTranstraction.GetTransctionFromChain gtfc);
         string GetRoadNearby(ModelTranstraction.GetRoadNearby grn);
         string TradeCoinF(ModelTranstraction.TradeCoin tc);
         string GetAllModelPosition();

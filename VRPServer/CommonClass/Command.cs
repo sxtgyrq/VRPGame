@@ -241,7 +241,15 @@ namespace CommonClass
         public string previousMd5 { get; set; }
         public int[] privateKeys { get; set; }
     }
+    public class AnimationKeyData
+    {
+        public int deltaT { get; set; }
+        public int privateKeyIndex { get; set; }
+        public int privateKeyValue { get; set; }
+        public string currentMd5 { get; set; }
+        public string previousMd5 { get; set; }
 
+    }
     //public class BradCastAnimateOfOthersCar2 : CommandNotify
     //{
     //    public string carID;
@@ -257,11 +265,20 @@ namespace CommonClass
 
         public AnimationData Animate { get; set; }
         public string parentID { get; set; }
-        public bool passPrivateKeysOnly { get; set; }
+        //public bool passPrivateKeysOnly { get; set; }
 
 
     }
+    public class BradCastAnimateOfOthersCar4 : CommandNotify
+    {
+        public string carID;
 
+        public AnimationKeyData Animate { get; set; }
+        public string parentID { get; set; }
+        //public bool passPrivateKeysOnly { get; set; }
+
+
+    }
     public class BradCastMoneyForSave : CommandNotify
     {
         public long Money { get; set; }
@@ -484,6 +501,8 @@ namespace CommonClass
         public string Key { get; set; }
         //public string car { get; set; }
         public string pType { get; set; }
+
+        public int count { get; set; }
     }
 
 

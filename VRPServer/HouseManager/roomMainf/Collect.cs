@@ -131,7 +131,7 @@ namespace HouseManager
             //                                            }
             //                                            else
             //                                            {
-            //                                                Console.WriteLine("CarState.waitOnRoad car.purpose= Purpose.tax");
+            //                                                //Consol.WriteLine("CarState.waitOnRoad car.purpose= Purpose.tax");
             //                                                //throw new Exception();
             //                                            }
             //                                        }; break;
@@ -148,7 +148,7 @@ namespace HouseManager
             //    {
             //        var url = notifyMsg[i];
             //        var sendMsg = notifyMsg[i + 1];
-            //        Console.WriteLine($"url:{url}");
+            //        //Consol.WriteLine($"url:{url}");
 
             //        await Startup.sendMsg(url, sendMsg);
             //    }
@@ -159,7 +159,7 @@ namespace HouseManager
         private void WebNotify(Player player, string v)
         {
 #warning 这里要写
-            Console.WriteLine($"{player.PlayerName}-{v}");
+            //Consol.WriteLine($"{player.PlayerName}-{v}");
         }
 
         enum MileResultReason
@@ -306,9 +306,9 @@ namespace HouseManager
             /*
              * 到达地点某地点时，说明汽车在这个地点待命。
              */
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setArrive");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setArrive");
             Thread.Sleep(startT + 1);
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setArrive正文");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setArrive正文");
             List<string> notifyMsg = new List<string>();
             bool needUpdateCollectState = false;
             lock (this.PlayerLock)
@@ -335,11 +335,11 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
             if (needUpdateCollectState)
             {
                 await CheckAllPlayersCollectState();
@@ -416,11 +416,11 @@ namespace HouseManager
                 this.collectPosition = this.GetRandomPosition(true);
                 needUpdateCollectState = true;
 
-                Console.WriteLine("----Do the collect process----！");
+                //Consol.WriteLine("----Do the collect process----！");
             }
             else
             {
-                Console.WriteLine("----Not do the collect process----！");
+                //Consol.WriteLine("----Not do the collect process----！");
             }
             //收集完，留在原地。
             //var car = this._Players[cmp.key].getCar(cmp.car);

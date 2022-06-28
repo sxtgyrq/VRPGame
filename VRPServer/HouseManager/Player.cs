@@ -82,7 +82,7 @@ namespace HouseManager
             if (carsNames.Length != 5)
             {
                 var msg = "应该有5个汽车";
-                Console.WriteLine(msg);
+                //Consol.WriteLine(msg);
                 throw new Exception(msg);
             }
             this._Cars = new List<Car>(5);
@@ -264,7 +264,7 @@ namespace HouseManager
                 if (TheLargestHolderKeyChanged != null)
                     TheLargestHolderKeyChanged(this.TheLargestHolderKey, valueToCal, this.Key, ref notifyMsg);
                 this.TheLargestHolderKey = valueToCal;
-                Console.WriteLine($"最大股权人发生了变化{this.TheLargestHolderKey}->{valueToCal}");
+                //Consol.WriteLine($"最大股权人发生了变化{this.TheLargestHolderKey}->{valueToCal}");
             }
             // throw new NotImplementedException();
         }

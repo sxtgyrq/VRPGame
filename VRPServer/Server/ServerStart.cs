@@ -25,10 +25,10 @@ namespace Server
             {
                 while (true)
                 {
-                    Console.WriteLine($"{Thread.CurrentThread.Name}-{DateTime.Now.ToString("yyyy-MM-dd")}:Waiting for a connection...");
+                    //Consol.WriteLine($"{Thread.CurrentThread.Name}-{DateTime.Now.ToString("yyyy-MM-dd")}:Waiting for a connection...");
                     using (TcpClient client = server.AcceptTcpClient())
                     {
-                        Console.WriteLine($"{Thread.CurrentThread.Name}-{DateTime.Now.ToString("yyyy-MM-dd")}:Connected!");
+                        //Consol.WriteLine($"{Thread.CurrentThread.Name}-{DateTime.Now.ToString("yyyy-MM-dd")}:Connected!");
 
                         using (var stream = client.GetStream())
                         {
@@ -61,7 +61,7 @@ namespace Server
             }
             catch (SocketException e)
             {
-                Console.WriteLine("SocketException: {0}", e);
+                //Consol.WriteLine("SocketException: {0}", e);
                 server.Stop();
             }
         }
@@ -114,7 +114,7 @@ namespace Server
             }
             catch
             {
-                Console.WriteLine($"{ss}_执行没结果");
+                //Consol.WriteLine($"{ss}_执行没结果");
                 return "";
             }
             //  throw new NotImplementedException();

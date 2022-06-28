@@ -33,7 +33,7 @@ namespace WsOfWebClient.MapEditor
                                 amID = amID
                             });
                         var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-                        Console.WriteLine(json);
+                        //Consol.WriteLine(json);
                         var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<abtractmodelsPassData>(json);
 
                         using (var compressedFileStream = new MemoryStream())

@@ -46,109 +46,150 @@ namespace HouseManager4_0.RoomMainF
             // throw new NotImplementedException();
         }
 
-        public void Buy(SetBuyDiamond bd)
+        interface Transaction
         {
-            List<string> notifyMsg = new List<string>();
-            lock (this.PlayerLock)
-                if (this._Players.ContainsKey(bd.Key))
+            long? Price(RoomMain roomMain);
+        }
+        class MileTrade : Transaction
+        {
+            public MileTrade(RoomMain roomMain)
+            {
+                this.parent = roomMain;
+            }
+            RoomMain parent;
+            public long? Price(RoomMain roomMain)
+            {
+                return this.parent.Market.mile_Price;
+            }
+        }
+        class BusinessTrade : Transaction
+        {
+            public BusinessTrade(RoomMain roomMain)
+            {
+                this.parent = roomMain;
+            }
+            RoomMain parent;
+            public long? Price(RoomMain roomMain)
+            {
+                return this.parent.Market.business_Price;
+            }
+        }
+        class SpeedTrade : Transaction
+        {
+            public SpeedTrade(RoomMain roomMain)
+            {
+                this.parent = roomMain;
+            }
+            RoomMain parent;
+            public long? Price(RoomMain roomMain)
+            {
+                return this.parent.Market.speed_Price;
+            }
+        }
+        class VolumeTrade : Transaction
+        {
+            public VolumeTrade(RoomMain roomMain)
+            {
+                this.parent = roomMain;
+            }
+            RoomMain parent;
+            public long? Price(RoomMain roomMain)
+            {
+                return this.parent.Market.volume_Price;
+            }
+        }
+        void DoBuyTrade(Transaction t, SetBuyDiamond bd, RoleInGame role, ref List<string> notifyMsg)
+        {
+            if (t.Price(this) != null)
+            {
+                var calValue = t.Price(this).Value;
+                var oldCount = bd.count + 0;
+
+                var roleMoney = role.Money + 0;
+                while (bd.count > 0)
                 {
-                    var role = this._Players[bd.Key];
-                    if (role.Bust) { }
-                    //else if(player.)
+                    if (roleMoney >= calValue)
+                    {
+                        // role.MoneySet(role.Money - calValue, ref notifyMsg);
+                        role.PromoteDiamondCount[bd.pType]++;
+                        bd.count--;
+                        roleMoney -= calValue;
+                    }
                     else
                     {
-                        switch (bd.pType)
-                        {
-                            case "mile":
-                                {
-                                    if (this.Market.mile_Price != null)
-                                    {
-                                        var calValue = this.Market.mile_Price.Value;
-                                        if (role.Money >= calValue)
-                                        {
-                                            role.MoneySet(role.Money - calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[bd.pType]++;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(bd.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Send(bd.pType, 1);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
-                                }; break;
-                            case "business":
-                                {
-                                    if (this.Market.business_Price != null)
-                                    {
-                                        var calValue = this.Market.business_Price.Value;
-                                        if (role.Money >= calValue)
-                                        {
-                                            role.MoneySet(role.Money - calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[bd.pType]++;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(bd.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Send(bd.pType, 1);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
-                                }; break;
-                            case "volume":
-                                {
-                                    if (this.Market.volume_Price != null)
-                                    {
-                                        var calValue = this.Market.volume_Price.Value;
-                                        if (role.Money >= calValue)
-                                        {
-                                            role.MoneySet(role.Money - calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[bd.pType]++;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(bd.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Send(bd.pType, 1);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
-                                }; break;
-                            case "speed":
-                                {
-                                    if (this.Market.speed_Price != null)
-                                    {
-                                        var calValue = this.Market.speed_Price.Value;
-                                        if (role.Money >= calValue)
-                                        {
-                                            role.MoneySet(role.Money - calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[bd.pType]++;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(bd.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Send(bd.pType, 1);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
-                                }; break;
-                        }
+                        break;
                     }
+
                 }
-
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
+                if (bd.count != oldCount)
+                {
+                    role.MoneySet(roleMoney, ref notifyMsg);
+                    if (role.playerType == RoleInGame.PlayerType.player)
+                        SendPromoteCountOfPlayer(bd.pType, (Player)role, ref notifyMsg);
+                    this.Market.Send(bd.pType, oldCount - bd.count);
+                }
             }
-
+            else
+            {
+                //Consol.WriteLine("市場沒開放");
+            }
         }
 
-      
+
+
+        public void Buy(SetBuyDiamond bd)
+        {
+            //   bd.count = Math.Max(bd.count, 50);
+            if (bd.count > 50 || bd.count < 0)
+            {
+                return;
+            }
+            else
+            {
+                List<string> notifyMsg = new List<string>();
+                lock (this.PlayerLock)
+                    if (this._Players.ContainsKey(bd.Key))
+                    {
+                        var role = this._Players[bd.Key];
+                        if (role.Bust) { }
+                        else
+                        {
+                            switch (bd.pType)
+                            {
+                                case "mile":
+                                    {
+                                        MileTrade mt = new MileTrade(this);
+                                        DoBuyTrade(mt, bd, role, ref notifyMsg);
+                                    }; break;
+                                case "business":
+                                    {
+                                        BusinessTrade bt = new BusinessTrade(this);
+                                        DoBuyTrade(bt, bd, role, ref notifyMsg);
+                                    }; break;
+                                case "volume":
+                                    {
+                                        VolumeTrade vt = new VolumeTrade(this);
+                                        DoBuyTrade(vt, bd, role, ref notifyMsg);
+                                    }; break;
+                                case "speed":
+                                    {
+                                        SpeedTrade st = new SpeedTrade(this);
+                                        DoBuyTrade(st, bd, role, ref notifyMsg);
+                                    }; break;
+                            }
+                        }
+                    }
+
+                for (var i = 0; i < notifyMsg.Count; i += 2)
+                {
+                    var url = notifyMsg[i];
+                    var sendMsg = notifyMsg[i + 1];
+                    Startup.sendMsg(url, sendMsg);
+                }
+            }
+        }
+
+
 
         internal void ClearPlayers()
         {
@@ -201,10 +242,35 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-      
 
+        void DoSellTrade(Transaction t, SetSellDiamond ss, RoleInGame role, ref List<string> notifyMsg)
+        {
+            if (t.Price(this) != null)
+            {
+                var calValue = t.Price(this).Value * 97 / 100;
+                var sellCount = Math.Min(role.PromoteDiamondCount[ss.pType], ss.count);
+                role.PromoteDiamondCount[ss.pType] -= sellCount;
+
+                role.MoneySet(role.Money + calValue * sellCount, ref notifyMsg);
+
+                if (sellCount > 0)
+                {
+                    if (role.playerType == RoleInGame.PlayerType.player)
+                        SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
+                    this.Market.Receive(ss.pType, sellCount);
+                }
+            }
+            else
+            {
+                //Consol.WriteLine("市場沒開放");
+            }
+        }
         public void Sell(SetSellDiamond ss)
         {
+            if (ss.count > 50 || ss.count < 0)
+            {
+                return;
+            }
             List<string> notifyMsg = new List<string>();
             lock (this.PlayerLock)
                 if (this._Players.ContainsKey(ss.Key))
@@ -218,96 +284,23 @@ namespace HouseManager4_0.RoomMainF
                         {
                             case "mile":
                                 {
-                                    if (this.Market.mile_Price != null)
-                                    {
-                                        var calValue = this.Market.mile_Price.Value;
-                                        if (role.PromoteDiamondCount[ss.pType] > 0)
-                                        {
-                                            role.MoneySet(role.Money + calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[ss.pType]--;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Receive(ss.pType, 1);
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"没有宝石");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
+                                    MileTrade mt = new MileTrade(this);
+                                    DoSellTrade(mt, ss, role, ref notifyMsg);
                                 }; break;
                             case "business":
                                 {
-                                    if (this.Market.business_Price != null)
-                                    {
-                                        var calValue = this.Market.business_Price.Value;
-                                        if (role.PromoteDiamondCount[ss.pType] > 0)
-                                        {
-                                            role.MoneySet(role.Money + calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[ss.pType]--;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Receive(ss.pType, 1);
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"没有宝石");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
+                                    BusinessTrade bt = new BusinessTrade(this);
+                                    DoSellTrade(bt, ss, role, ref notifyMsg);
                                 }; break;
                             case "volume":
                                 {
-                                    if (this.Market.volume_Price != null)
-                                    {
-                                        var calValue = this.Market.volume_Price.Value;
-                                        if (role.PromoteDiamondCount[ss.pType] > 0)
-                                        {
-                                            role.MoneySet(role.Money + calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[ss.pType]--;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Receive(ss.pType, 1);
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"没有宝石");
-#warning 这里要提示前台
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
+                                    VolumeTrade vt = new VolumeTrade(this);
+                                    DoSellTrade(vt, ss, role, ref notifyMsg);
                                 }; break;
                             case "speed":
                                 {
-                                    if (this.Market.speed_Price != null)
-                                    {
-                                        var calValue = this.Market.speed_Price.Value;
-                                        if (role.PromoteDiamondCount[ss.pType] > 0)
-                                        {
-                                            role.MoneySet(role.Money + calValue, ref notifyMsg);
-                                            role.PromoteDiamondCount[ss.pType]--;
-                                            if (role.playerType == RoleInGame.PlayerType.player)
-                                                SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
-                                            this.Market.Receive(ss.pType, 1);
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"没有宝石");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("市場沒開放");
-                                    }
+                                    SpeedTrade st = new SpeedTrade(this);
+                                    DoSellTrade(st, ss, role, ref notifyMsg);
                                 }; break;
                         }
                     }
@@ -317,11 +310,11 @@ namespace HouseManager4_0.RoomMainF
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
                 Startup.sendMsg(url, sendMsg);
             }
         }
 
-        
+
     }
 }

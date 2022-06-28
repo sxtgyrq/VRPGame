@@ -9,6 +9,7 @@
       "ConsoleTestAPP/1.0.0": {
         "dependencies": {
           "BitCoin": "1.0.0",
+          "CityRunFunction": "1.0.0",
           "CommonClass": "1.0.0",
           "TcpFunction": "1.0.0"
         },
@@ -883,6 +884,11 @@
           "BitCoin.dll": {}
         }
       },
+      "CityRunFunction/1.0.0": {
+        "runtime": {
+          "CityRunFunction.dll": {}
+        }
+      },
       "CommonClass/1.0.0": {
         "dependencies": {
           "Model": "1.0.0"
@@ -1537,6 +1543,11 @@
       "hashPath": "system.xml.xdocument.4.3.0.nupkg.sha512"
     },
     "BitCoin/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CityRunFunction/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace HouseManager4_0
 {
@@ -8,7 +9,7 @@ namespace HouseManager4_0
     {
         public static void sendMsg(string controllerUrl, string json)
         {
-            TcpFunction.WithoutResponse.SendInmationToUrl(controllerUrl, json);
+            var r = Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
         }
     }
 }

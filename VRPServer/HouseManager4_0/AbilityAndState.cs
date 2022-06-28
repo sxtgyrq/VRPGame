@@ -7,6 +7,7 @@ namespace HouseManager4_0
 {
     public class AbilityAndState
     {
+        RoleInGame role;
         Dictionary<string, List<DateTime>> Data { get; set; }
         public int getDataCount(string key)
         {
@@ -19,11 +20,14 @@ namespace HouseManager4_0
                 return 0;
             }
         }
-        public void AbilityAdd(string pType, RoleInGame role, Car car, ref List<string> notifyMsg)
+        public void AbilityAdd(string pType, int count, RoleInGame role, Car car, ref List<string> notifyMsg)
         {
             if (this.Data.ContainsKey(pType))
             {
-                this.Data[pType].Add(DateTime.Now);
+                for (int i = 0; i < count; i++)
+                {
+                    this.Data[pType].Add(DateTime.Now);
+                }
                 switch (pType)
                 {
 
@@ -33,6 +37,8 @@ namespace HouseManager4_0
                             {
                                 var player = (Player)role;
                                 this.MileChanged(player, car, ref notifyMsg, pType);
+                                ChangeTheUnder(role.Key, this.MileChanged, ref notifyMsg, pType);
+
                             }
 
                         }; break;
@@ -42,6 +48,7 @@ namespace HouseManager4_0
                             {
                                 var player = (Player)role;
                                 this.BusinessChanged(player, car, ref notifyMsg, pType);
+                                ChangeTheUnder(role.Key, this.BusinessChanged, ref notifyMsg, pType);
                             }
                         }; break;
                     case "volume":
@@ -50,6 +57,7 @@ namespace HouseManager4_0
                             {
                                 var player = (Player)role;
                                 this.VolumeChanged(player, car, ref notifyMsg, pType);
+                                ChangeTheUnder(role.Key, this.VolumeChanged, ref notifyMsg, pType);
                             }
 
                         }; break;
@@ -59,10 +67,85 @@ namespace HouseManager4_0
                             {
                                 var player = (Player)role;
                                 this.SpeedChanged(player, car, ref notifyMsg, pType);
+                                ChangeTheUnder(role.Key, this.SpeedChanged, ref notifyMsg, pType);
                             }
 
                         }; break;
                 }
+            }
+        }
+        /// <summary>
+        /// except self
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="mileChangedF"></param>
+        /// <param name="notifyMsg"></param>
+        /// <param name="pType"></param>
+        static void ChangeTheUnder(string key, AbilityChangedF mileChangedF, ref List<string> notifyMsg, string pType)
+        {
+            foreach (var item in Program.rm._Players)
+            {
+                if (item.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    if (item.Value.TheLargestHolderKey == key && item.Value.Key != key)
+                    {
+                        mileChangedF((Player)item.Value, item.Value.getCar(), ref notifyMsg, pType);
+                    }
+                }
+            }
+        }
+
+        internal void AbilityClear(string pType, RoleInGame role, Car car, ref List<string> notifyMsg)
+        {
+            if (this.Data.ContainsKey(pType))
+            {
+                if (this.Data[pType].Count != 0)
+                {
+                    this.Data[pType].Clear();
+                    switch (pType)
+                    {
+                        case "mile":
+                            {
+                                if (role.playerType == RoleInGame.PlayerType.player)
+                                {
+                                    var player = (Player)role;
+                                    this.MileChanged(player, car, ref notifyMsg, pType);
+                                    ChangeTheUnder(role.Key, this.MileChanged, ref notifyMsg, pType);
+                                }
+
+                            }; break;
+                        case "business":
+                            {
+                                if (role.playerType == RoleInGame.PlayerType.player)
+                                {
+                                    var player = (Player)role;
+                                    this.BusinessChanged(player, car, ref notifyMsg, pType);
+                                    ChangeTheUnder(role.Key, this.BusinessChanged, ref notifyMsg, pType);
+                                }
+                            }; break;
+                        case "volume":
+                            {
+                                if (role.playerType == RoleInGame.PlayerType.player)
+                                {
+                                    var player = (Player)role;
+                                    this.VolumeChanged(player, car, ref notifyMsg, pType);
+                                    ChangeTheUnder(role.Key, this.VolumeChanged, ref notifyMsg, pType);
+                                }
+
+                            }; break;
+                        case "speed":
+                            {
+                                if (role.playerType == RoleInGame.PlayerType.player)
+                                {
+                                    var player = (Player)role;
+                                    this.SpeedChanged(player, car, ref notifyMsg, pType);
+                                    ChangeTheUnder(role.Key, this.SpeedChanged, ref notifyMsg, pType);
+                                }
+
+                            }; break;
+                    }
+                }
+
             }
         }
 
@@ -137,8 +220,9 @@ namespace HouseManager4_0
             //    this._costVolume = value;
             //}
         }
-        public AbilityAndState()
+        public AbilityAndState(RoleInGame roleInGame)
         {
+            this.role = roleInGame;
             this.CreateTime = DateTime.Now;
             this.Data = new Dictionary<string, List<DateTime>>()
             {
@@ -164,6 +248,9 @@ namespace HouseManager4_0
             //this.diamondInCar = "";
             //this.subsidize = 0;
         }
+
+
+
         /// <summary>
         /// 刷新时，会更新宝石状况（diamondInCar=""）。
         /// </summary>
@@ -294,7 +381,21 @@ namespace HouseManager4_0
         {
             get
             {
-                return this.Data["mile"].Count * 7 + 350;
+                var selfValue = this.Data["mile"].Count * 7 + 350;
+                if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                {
+                    if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                    {
+                        if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                        {
+                            if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                            {
+                                return Math.Max(selfValue, Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["mile"].Count * 7 + 350);
+                            }
+                        }
+                    }
+                }
+                return selfValue;
             }
         }
         public long leftMile
@@ -332,9 +433,43 @@ namespace HouseManager4_0
             get
             {
                 if (this.driver == null)
-                    return (this.Data["business"].Count * 500 + 10000);
+                {
+                    var selfValue = (this.Data["business"].Count * 500 + 10000);
+                    if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                    {
+                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        {
+                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            {
+                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                {
+                                    var bossValue = Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["business"].Count * 500 + 10000;
+                                    return Math.Max(selfValue, bossValue);
+                                }
+                            }
+                        }
+                    }
+                    return selfValue;
+                }
                 else
-                    return driver.improveBusiness(this.Data["business"].Count * 500 + 10000);
+                {
+                    var selfValue = driver.improveBusiness((this.Data["business"].Count * 500 + 10000));
+                    if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                    {
+                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        {
+                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            {
+                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                {
+                                    var bossValue = driver.improveBusiness(Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["business"].Count * 500 + 10000);
+                                    return Math.Max(selfValue, bossValue);
+                                }
+                            }
+                        }
+                    }
+                    return selfValue;
+                }
             }
         }
         /// <summary>
@@ -345,9 +480,43 @@ namespace HouseManager4_0
             get
             {
                 if (this.driver == null)
-                    return (this.Data["volume"].Count * 500 + 10000);
+                {
+                    var selfValue = this.Data["volume"].Count * 500 + 10000;
+                    if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                    {
+                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        {
+                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            {
+                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                {
+                                    var bossValue = Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["volume"].Count * 500 + 10000;
+                                    return Math.Max(selfValue, bossValue);
+                                }
+                            }
+                        }
+                    }
+                    return selfValue;
+                }
                 else
-                    return driver.improveVolume(this.Data["volume"].Count * 500 + 10000);
+                {
+                    var selfValue = driver.improveVolume((this.Data["volume"].Count * 500 + 10000));
+                    if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                    {
+                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        {
+                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            {
+                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                {
+                                    var bossValue = driver.improveVolume(Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["volume"].Count * 500 + 10000);
+                                    return Math.Max(selfValue, bossValue);
+                                }
+                            }
+                        }
+                    }
+                    return selfValue;
+                }
             }
         }
         /// <summary>
@@ -358,9 +527,44 @@ namespace HouseManager4_0
             get
             {
                 if (this.driver == null)
-                    return this.Data["speed"].Count * 2 + 50;
+                {
+                    var selfValue = this.Data["speed"].Count * 2 + 50;
+                    if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                    {
+                        //  if(role.TheLargestHolderKey)
+                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        {
+                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            {
+                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                {
+                                    var bossValue = Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["speed"].Count * 2 + 50;
+                                    return Math.Max(selfValue, bossValue);
+                                }
+                            }
+                        }
+                    }
+                    return selfValue;
+                }
                 else
-                    return driver.improveSpeed(this.Data["speed"].Count * 2 + 50);
+                {
+                    var selfValue = driver.improveSpeed(this.Data["speed"].Count * 2 + 50);
+                    if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
+                    {
+                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        {
+                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            {
+                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                {
+                                    var bossValue = driver.improveSpeed(Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["speed"].Count * 2 + 50);
+                                    return Math.Max(selfValue, bossValue);
+                                }
+                            }
+                        }
+                    }
+                    return selfValue;
+                }
             }
         }
 

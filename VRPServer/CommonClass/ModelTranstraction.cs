@@ -46,6 +46,11 @@ namespace CommonClass
             public string bussinessAddr { get; set; }
         }
 
+        public class GetTransctionFromChain : Command
+        {
+            public string bussinessAddr { get; set; }
+        }
+
         public class TradeIndex : Command
         {
             public string addrBussiness { get; set; }

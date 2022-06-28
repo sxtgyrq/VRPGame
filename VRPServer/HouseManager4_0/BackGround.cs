@@ -19,7 +19,7 @@ namespace HouseManager4_0
         public void loadConfig()
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            Console.WriteLine($"path:{rootPath}");
+            //Consol.WriteLine($"path:{rootPath}");
             {
                 var pointCoinfigPath = $"{rootPath}\\config\\pointIds.txt";
                 if (File.Exists(pointCoinfigPath))
@@ -73,7 +73,7 @@ namespace HouseManager4_0
             //var regions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(data);
             //for (var i = 0; i < regions.Count; i++)
             //{
-            //    Console.WriteLine(regions[i]);
+            //    //Consol.WriteLine(regions[i]);
             //    this.BoundaryDetail.Add(regions[i], new List<List<Position>>());
             //    var filePath = $"{rootPath}\\config\\region_{regions[i]}.json";
             //    var json = File.ReadAllText(filePath);
@@ -95,7 +95,7 @@ namespace HouseManager4_0
             //                y = y
             //            };
             //            boundryItem.Add(p);
-            //            Console.WriteLine($"x:{x},y:{y}");
+            //            //Consol.WriteLine($"x:{x},y:{y}");
             //        }
             //        this.BoundaryDetail[regions[i]].Add(boundryItem);
             //    }

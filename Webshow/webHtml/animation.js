@@ -263,18 +263,21 @@ var carAnimationData = function (passObj) {
         }
         return objOperate;
     }
-
-
-
+     
     if (passObj.passPrivateKeysOnly) {
         var carId = passObj.carID;
         if (objMain.carsAnimateData[carId] == undefined) { }
         else {
             var afterPrivateKeysAdded = function (objOperate, patch) {
                 var privateKeys = [];
-                for (var i = 0; i < patch.animateData.length; i++) {
-                    privateKeys.push(patch.animateData[i].privateKey);
+                for (var i = 0; i < objOperate.animateData.length; i++) {
+                    privateKeys.push(-1);
                 }
+                var privateKeyIndex = patch.privateKeyIndex;
+                privateKeys[privateKeyIndex] = patch.privateKeyValue;
+                for (var i = privateKeyIndex; i > 0; i--) {
+                    privateKeys[i - 1] = calHash(privateKeys[i]);
+                } 
                 return afterPrivateKeysPatch(objOperate, privateKeys);
             }
             if (objMain.carsAnimateData[carId].previous != null) {
@@ -340,7 +343,7 @@ var carAnimationData = function (passObj) {
                     objMain.carsAnimateData[carId].current = passObj.Animate;
                     var current = objMain.carsAnimateData[carId].current;
                     objMain.carsAnimateData[carId].current = culDetail(current, recordTime);
-                } 
+                }
             }
             else {
                 delete objMain.carsAnimateData[carId];

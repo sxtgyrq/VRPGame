@@ -47,7 +47,7 @@ namespace TestAllPath
                 //length = length_;
                 //maxLength = Math.Max(maxLength, list[i + 2]);
             }
-            Console.WriteLine($"{maxLength}");
+            //Consol.WriteLine($"{maxLength}");
 
             //throw new NotImplementedException();
         }

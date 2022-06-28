@@ -17,9 +17,9 @@ namespace HouseManager
         /// <param name="cmp"></param>
         private async void setReturn(int startT, commandWithTime.returnning cmp)
         {
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setReturn");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setReturn");
             Thread.Sleep(startT + 1);
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setReturn正文");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setReturn正文");
             List<string> notifyMsg = new List<string>();
             bool needUpdatePromoteState = false;
             lock (this.PlayerLock)
@@ -79,9 +79,9 @@ namespace HouseManager
 
                     for (var i = 0; i < 100; i++)
                     {
-                        Console.WriteLine("↓↓↓↓↓出现异常↓↓↓↓↓");
+                        //Consol.WriteLine("↓↓↓↓↓出现异常↓↓↓↓↓");
                     }
-                    Console.WriteLine(json);
+                    //Consol.WriteLine(json);
                     DebugRecord.FileRecord($@"-----setReturn 以下情况未注册-----
 {json}
 -----setReturn 以下情况未注册-----");
@@ -91,11 +91,11 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
+            //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
             if (needUpdatePromoteState)
             {
                 await CheckAllPlayersPromoteState(cmp.changeType);
@@ -154,7 +154,7 @@ namespace HouseManager
             //    {
             //        var url = notifyMsg[i];
             //        var sendMsg = notifyMsg[i + 1];
-            //        Console.WriteLine($"url:{url}");
+            //        //Consol.WriteLine($"url:{url}");
 
             //        await Startup.sendMsg(url, sendMsg);
             //    }
@@ -263,7 +263,7 @@ namespace HouseManager
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                Console.WriteLine($"url:{url}");
+                //Consol.WriteLine($"url:{url}");
 
                 await Startup.sendMsg(url, sendMsg);
             }

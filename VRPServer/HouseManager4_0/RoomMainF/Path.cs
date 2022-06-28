@@ -82,7 +82,7 @@ namespace HouseManager4_0.RoomMainF
 
             //for (int i = 0; i < path.Count; i++)
             //{
-            //    Console.WriteLine($"{path[i].BDlongitude},{path[i].BDlatitude}");
+            //    //Consol.WriteLine($"{path[i].BDlongitude},{path[i].BDlatitude}");
             //}
             //Console.WriteLine($"坐标展示结束");
             //Console.ReadLine();
@@ -442,7 +442,7 @@ namespace HouseManager4_0.RoomMainF
                 //{
                 //    for (int j = 0; j < node.path[i].path.Count; j++)
                 //    {
-                //        Console.WriteLine($"{node.path[i].path[j].BDlongitude},{node.path[i].path[j].BDlatitude}");
+                //        //Consol.WriteLine($"{node.path[i].path[j].BDlongitude},{node.path[i].path[j].BDlatitude}");
                 //    }
                 //}
                 return node;
@@ -465,14 +465,14 @@ namespace HouseManager4_0.RoomMainF
             //var value = path[index];
             //for (int i = 0; i < value.path.Count; i++)
             //{
-            //    Console.WriteLine($"{ value.path[i].BDlongitude},{ value.path[i].BDlatitude}");
+            //    //Consol.WriteLine($"{ value.path[i].BDlongitude},{ value.path[i].BDlatitude}");
             //}
             //Console.ReadLine();
             //for (int i = 0; i < node.path.Count; i++)
             //{
             //    for (int j = 0; j < node.path[i].path.Count; j++)
             //    {
-            //        Console.WriteLine($"{node.path[i].path[j].BDlongitude},{node.path[i].path[j].BDlatitude}");
+            //        //Consol.WriteLine($"{node.path[i].path[j].BDlongitude},{node.path[i].path[j].BDlatitude}");
             //    }
             //}
         }
