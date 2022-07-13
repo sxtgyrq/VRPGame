@@ -125,7 +125,12 @@
       "ProjectGuid": "b585e17e-aafb-496e-874a-21e9427aed48",
       "DisplayName": "CityRunFunction",
       "ColorIndex": 7
+    },
+    "ce0849e2-90f1-4cab-8e29-96ceab288a23": {
+      "ProjectGuid": "ce0849e2-90f1-4cab-8e29-96ceab288a23",
+      "DisplayName": "LogClass",
+      "ColorIndex": 8
     }
   },
-  "NextColorIndex": 8
+  "NextColorIndex": 9
 }

@@ -682,7 +682,7 @@ var objMain =
             objMain.mainF.drawDiamondCollected();
             objMain.mainF.lookAtPosition(objMain.basePoint);
             objMain.mainF.initilizeCars(objMain.basePoint, 'green', objMain.indexKey, true, objMain.positionInStation);
-            drawCarBtns();
+         
 
 
             objMain.GetPositionNotify.data = null;
@@ -693,6 +693,7 @@ var objMain =
     },
     Tax: {},
     taxGroup: null,
+    buildingSelectionGroup: null,
     msg:
     {
 
@@ -905,7 +906,6 @@ var objMain =
                 }; break;
             case 'TeamJoinBroadInfo':
                 {
-                    //  broadTeamJoin(received_obj);
                     if (objMain.receivedState == 'WaitingToGetTeam' || objMain.receivedState == 'WaitingToStart') {
                         broadTeamJoin(received_obj);
                     }
@@ -1247,18 +1247,14 @@ var objMain =
             case 'BradCastAnimateOfOthersCar3':
                 {
                     var passObj = JSON.parse(evt.data);
-                    console.log('BradCastAnimateOfOthersCar3', passObj);
+                    // console.log('BradCastAnimateOfOthersCar3', passObj);
                     passObj.passPrivateKeysOnly = false;
                     carAnimationData(passObj);
-                    //var start = { 'x': passObj.Animate.startX, 'y': passObj.Animate.startY };
-                    //start.x /= 256;
-                    //start.y /= 256;
-
                 }; break;
             case 'BradCastAnimateOfOthersCar4':
                 {
                     var passObj = JSON.parse(evt.data);
-                    console.log('BradCastAnimateOfOthersCar3', passObj);
+                    // console.log('BradCastAnimateOfOthersCar3', passObj);
                     passObj.passPrivateKeysOnly = true;
                     carAnimationData(passObj);
                 }; break;
@@ -1688,9 +1684,15 @@ var objMain =
                 {
                     var modelDataShow = received_obj;
                     BuildingModelObj.f(modelDataShow);
-                    if (modelDataShow.existed) {
+                    //if (modelDataShow.existed) {
 
-                    }
+                    //}
+
+                }; break;
+            case 'ModelDataShow_Whether_Existed':
+                {
+                    var modelDataShow = received_obj;
+                    BuildingModelObj.respon(modelDataShow)
 
                 }; break;
             case 'ReceiveResult':
@@ -1706,11 +1708,7 @@ var objMain =
                     setTransactionHtml.drawTradeTable();
                     setTransactionHtml.originalTable();
                     transactionBussiness().showAuthor(received_obj.author);
-
                     operatePanel.refresh();
-
-                    objMain.ws.send('TradeDetail');
-
                 }; break;
             case 'TradeDetail':
                 {
@@ -1762,11 +1760,22 @@ var objMain =
                 {
                     objMain.background.changeWhenIsCross(received_obj);
                 }; break;
+            case 'BustStateNotify':
+                {
+                    if (objMain.indexKey == received_obj.KeyBust) {
+                        SetBustPage();
+                    }
+                }; break;
+            case 'GoodsSelectionNotify':
+                {
+                    drawGoodsSelection.f(received_obj);
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
                 }; break;
         }
+
     },
     diamondPrice:
     {
@@ -1789,7 +1798,9 @@ var objMain =
     trade:
     {
         'countPerOperate': 1
-    }
+    },
+    animateObj: null,
+    pingTime: 0
 };
 var startA = function () {
     var connected = false;
@@ -1797,7 +1808,22 @@ var startA = function () {
     switch (objMain.debug) {
         case 0:
             {
-                wsConnect = 'ws://127.0.0.1:11001/websocket';
+                var r = prompt('输入选项', 'A');
+                switch (r) {
+                    case 'A':
+                        {
+                            wsConnect = 'ws://127.0.0.1:11001/websocket';
+                        }; break;
+                    case 'B':
+                        {
+                            wsConnect = 'ws://127.0.0.1:11002/websocket';
+                        }; break;
+                    default:
+                        {
+                            wsConnect = 'ws://127.0.0.1:11001/websocket';
+                        }
+                }
+
             }; break;
         case 1:
             {
@@ -1858,10 +1884,12 @@ var startA = function () {
     });
 }
 startA();
-
+window.requestAnimationFrame =
+    window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame;
 function animate() {
     {
-        requestAnimationFrame(animate);
+        objMain.animateObj = requestAnimationFrame(animate);
         if (objMain.state != objMain.receivedState) {
             objMain.state = objMain.receivedState;
         }
@@ -2661,6 +2689,11 @@ function animate() {
                 objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
             }
         }
+
+        if (Date.now() - objMain.pingTime > 100) {
+            objMain.pingTime = Date.now();
+            // objMain.ws.send('{"c":"c"}');
+        }
     }
 }
 animate();
@@ -3048,6 +3081,9 @@ var set3DHtml = function () {
 
     objMain.buildingGroup = new THREE.Group();
     objMain.scene.add(objMain.buildingGroup);
+
+    objMain.buildingSelectionGroup = new THREE.Group();
+    objMain.scene.add(objMain.buildingSelectionGroup);
 
     objMain.clock = new THREE.Clock();
 
@@ -3543,9 +3579,7 @@ var drawPoint = function (color, fp, indexKey) {
         objMain.camera.lookAt(objMain.basePoint.MacatuoX, 0, -objMain.basePoint.MacatuoY);
     }
 }
-
-var drawCarBtns = function () {
-}
+ 
 
 var SysOperatePanel =
 {
@@ -4988,7 +5022,55 @@ var BuildingModelObj =
                 }
             }
         }
+    },
+    respon: function (received_obj) {
+        var amodel = received_obj.amodel;
+        if (objMain.buildingModel[amodel] == undefined) {
+            objMain.ws.send(JSON.stringify({ 'c': 'ModelNotExited' }));
+        }
+        else {
+            objMain.ws.send(JSON.stringify({ 'c': 'ModelExited' }));
+        }
     }
+};
+
+var SetBustPage = function () {
+    window.cancelAnimationFrame(objMain.animateObj)
+    document.body.innerHTML = '';
+    var img = document.createElement('img');
+    img.src = 'Pic/gameOver.jpg';
+    //var div = document.createElement('div');
+    //div.appendChild(img);
+    img.style.position = 'absolute';
+    img.style.top = '50%';
+    img.style.left = '50%';
+    img.style.width = 'calc(80%)';
+    img.style.height = 'auto';
+    img.style.maxWidth = 'calc(80%)';
+    img.style.maxHeight = 'calc(80%)';
+    img.style.minWidth = 'calc(20%)';
+    img.style.minWidth = 'calc(20%)';
+    img.style.transform = 'translate(-50%, -50%)';
+    document.body.appendChild(img);
+};
+var drawGoodsSelection =
+{
+    f: function (received_obj) {
+        /*
+         * 依据objText，mtlText，base64画图
+         */
+        objMain.mainF.removeF.clearGroup(objMain.buildingSelectionGroup);
+        for (var i = 0; i < received_obj.selections.length; i++) {
+            var points = [];
+            points.push(new THREE.Vector3(received_obj.x, 0, received_obj.z));
+            points.push(new THREE.Vector3(received_obj.positions[i * 3], received_obj.positions[i * 3 + 1], received_obj.positions[i * 3 + 2]));
+
+            var geometry = new THREE.BufferGeometry().setFromPoints(points);
+            var line = new THREE.Line(geometry, drawGoodsSelection.material);
+            objMain.buildingSelectionGroup.add(line);
+        }
+    },
+    material: new THREE.LineBasicMaterial({ color: 0x33FF00 })
 };
 //////////
 /*

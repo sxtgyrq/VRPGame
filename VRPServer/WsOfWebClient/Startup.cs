@@ -57,7 +57,7 @@ namespace WsOfWebClient
             var webSocketOptions = new WebSocketOptions()
             {
                 KeepAliveInterval = TimeSpan.FromSeconds(3600 * 24),
-                ReceiveBufferSize = webWsSize
+                ReceiveBufferSize = webWsSize,
             };
             app.UseWebSockets(webSocketOptions);
 
@@ -85,9 +85,9 @@ namespace WsOfWebClient
                 {
                     if (ConnectInfo.connectedWs.ContainsKey(c.WebSocketID))
                     {
-                        if (!ConnectInfo.connectedWs[c.WebSocketID].CloseStatus.HasValue)
+                        if (!ConnectInfo.connectedWs[c.WebSocketID].ws.CloseStatus.HasValue)
                         {
-                            ws = ConnectInfo.connectedWs[c.WebSocketID];
+                            ws = ConnectInfo.connectedWs[c.WebSocketID].ws;
                         }
                         else
                         {
@@ -111,7 +111,7 @@ namespace WsOfWebClient
                             {
                                 case "": { }; break;
                                 default:
-                                    {
+                                    { 
                                         await ws.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                                     }; break;
                             }
@@ -172,8 +172,7 @@ namespace WsOfWebClient
 
                         var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
 
-                        wResult = returnResult.wr;
-                        //Console.WriteLine($"receive from web:{returnResult.result}");
+                        wResult = returnResult.wr; 
                         CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                         switch (c.c)
                         {
@@ -554,11 +553,9 @@ namespace WsOfWebClient
                     }
                     catch (Exception e)
                     {
-                        //Console.WriteLine($"{ Newtonsoft.Json.JsonConvert.SerializeObject(e)}");
+                       
                         await Room.setOffLine(s);
-                        removeWs(s.WebsocketID);
-                        // Console.WriteLine($"step2：webSockets数量：{   BufferImage.webSockets.Count}");
-                        // return;
+                        removeWs(s.WebsocketID); 
                         throw e;
                     }
                 }
@@ -595,7 +592,7 @@ namespace WsOfWebClient
                 {
                     if (ConnectInfo.connectedWs.ContainsKey(websocketID))
                     {
-                        ConnectInfo.connectedWs[websocketID].Dispose();
+                        ConnectInfo.connectedWs[websocketID].ws.Dispose();
                         ConnectInfo.connectedWs.Remove(websocketID);
                     }
                 }
@@ -610,7 +607,7 @@ namespace WsOfWebClient
         {
             lock (ConnectInfo.connectedWs_LockObj)
             {
-                ConnectInfo.connectedWs.Add(websocketID, webSocket);
+                ConnectInfo.connectedWs.Add(websocketID, new ConnectInfo.ConnectInfoDetail(webSocket));
             }
         }
 
@@ -622,7 +619,7 @@ namespace WsOfWebClient
 
                 foreach (var item in ConnectInfo.connectedWs)
                 {
-                    if (item.Value.CloseStatus.HasValue)
+                    if (item.Value.ws.CloseStatus.HasValue)
                     {
                         keys.Add(item.Key);
                     }
@@ -738,9 +735,7 @@ namespace WsOfWebClient
                     var notifyJson = getBodyStr(context);
                     //  await context.Response.WriteAsync("ok");
 
-                    //var notifyJson = getBodyStr(context);
-
-                    //Console.WriteLine($"notify receive:{notifyJson}");
+                    //var notifyJson = getBodyStr(context); 
                     CommonClass.CommandNotify c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CommandNotify>(notifyJson);
 
                     // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
@@ -750,9 +745,9 @@ namespace WsOfWebClient
                     {
                         if (ConnectInfo.connectedWs.ContainsKey(c.WebSocketID))
                         {
-                            if (ConnectInfo.connectedWs[c.WebSocketID].State == WebSocketState.Open)
+                            if (ConnectInfo.connectedWs[c.WebSocketID].ws.State == WebSocketState.Open)
                             {
-                                ws = ConnectInfo.connectedWs[c.WebSocketID];
+                                ws = ConnectInfo.connectedWs[c.WebSocketID].ws;
                             }
                             else
                             {
@@ -797,11 +792,8 @@ namespace WsOfWebClient
 
                         var returnResult = await ReceiveStringAsync(webSocketFromGameRoom, webWsSize);
 
-                        wResult = returnResult.wr;
-                        // Console.WriteLine($"receive:{returnResult.result}");
-
-                        var notifyJson = returnResult.result;
-                      //  Console.WriteLine($"notify receive:{notifyJson}");
+                        wResult = returnResult.wr;  
+                        var notifyJson = returnResult.result; 
                         CommonClass.CommandNotify c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CommandNotify>(notifyJson);
 
                         // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
@@ -811,9 +803,9 @@ namespace WsOfWebClient
                         {
                             if (ConnectInfo.connectedWs.ContainsKey(c.WebSocketID))
                             {
-                                if (ConnectInfo.connectedWs[c.WebSocketID].State == WebSocketState.Open)
+                                if (ConnectInfo.connectedWs[c.WebSocketID].ws.State == WebSocketState.Open)
                                 {
-                                    ws = ConnectInfo.connectedWs[c.WebSocketID];
+                                    ws = ConnectInfo.connectedWs[c.WebSocketID].ws;
                                 }
                                 else
                                 {
@@ -841,7 +833,7 @@ namespace WsOfWebClient
                     }
                     catch
                     {
-                        // Console.WriteLine($"step2：webSockets数量：{   BufferImage.webSockets.Count}");
+                       
                         return;
                     }
                 }

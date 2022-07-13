@@ -19,19 +19,19 @@ namespace HouseManager4_0.interfaceOfEngine
 
     interface sendMsg
     {
-        void sendMsg(string controllerUrl, string json);
+        string sendMsg(string controllerUrl, string json);
     }
 
     interface tryCatchAction
     {
         RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out RoomMainF.RoomMain.MileResultReason mrr);
         void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg);
-     /// <summary>
-     /// 返回为真/假，但不一定要执行返回
-     /// </summary>
-     /// <param name="c"></param>
-     /// <param name="reason"></param>
-     /// <returns></returns>
+        /// <summary>
+        /// 返回为真/假，但不一定要执行返回
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
         bool conditionsOk(Command c, out string reason);
 
         /// <summary>

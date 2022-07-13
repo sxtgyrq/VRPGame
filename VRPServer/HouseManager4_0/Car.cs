@@ -286,7 +286,7 @@ namespace HouseManager4_0
                 }
                 else
                 {
-                    this._lengthOfPrivateKeys = Math.Min(1, animateDataItems.Length);
+                    this._lengthOfPrivateKeys = Math.Min(0, animateDataItems.Length);
                 }
             }
 

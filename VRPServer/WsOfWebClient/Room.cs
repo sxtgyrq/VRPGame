@@ -32,7 +32,7 @@ namespace WsOfWebClient
             {
                 if (debugItem.Count == 0)
                 {
-                    var rootPath = System.IO.Directory.GetCurrentDirectory(); 
+                    var rootPath = System.IO.Directory.GetCurrentDirectory();
                     {
                         var text = File.ReadAllLines($"{rootPath}\\config\\rooms.txt");
                         for (int i = 0; i < text.Length; i++)
@@ -45,14 +45,14 @@ namespace WsOfWebClient
                         }
                     }
                 }
-                return debugItem; 
+                return debugItem;
             }
-        } 
+        }
         private static System.Random rm = new System.Random(DateTime.Now.GetHashCode());
-       
+
         internal static async Task<PlayerAdd_V2> getRoomNum(int websocketID, string playerName, string[] carsNames)
         {
-            int roomIndex = 0; 
+            int roomIndex = 0;
             {
                 var index1 = rm.Next(roomUrls.Count);
                 var index2 = rm.Next(roomUrls.Count);
@@ -161,66 +161,8 @@ namespace WsOfWebClient
         /// <returns></returns>
         public static async Task<State> setOnLine(State s, WebSocket webSocket)
         {
-            State result;
-            //var result = await setState(s, webSocket, LoginState.OnLine);
-            // string json;
-            {
-                //if (string.IsNullOrEmpty(ConnectInfo.mapRoadAndCrossJson))
-                //{
-                //    ConnectInfo.mapRoadAndCrossJson = await getRoadInfomation(s);
-                //    //Consol.WriteLine($"获取ConnectInfo.mapRoadAndCrossJson json的长度为{ConnectInfo.mapRoadAndCrossJson.Length}");
-                //}
-                if (false)
-                {
-                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "MapRoadAndCrossJson", action = "start" });
-                    var sendData = Encoding.ASCII.GetBytes(msg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                    {
-                        #region 校验响应
-                        var checkIsOk = await CheckRespon(webSocket, "MapRoadAndCrossJson,start");
-                        if (checkIsOk) { }
-                        else
-                        {
-                            return null;
-                        }
-                        #endregion
-                    }
-
-                    //for (var i = 0; i < ConnectInfo.mapRoadAndCrossJson.Length; i += 1000)
-                    //{
-                    //    var passStr = ConnectInfo.mapRoadAndCrossJson.Substring(i, (i + 1000) <= ConnectInfo.mapRoadAndCrossJson.Length ? 1000 : (ConnectInfo.mapRoadAndCrossJson.Length % 1000));
-                    //    msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "MapRoadAndCrossJson", action = "mid", passStr = passStr });
-                    //    sendData = Encoding.ASCII.GetBytes(msg);
-                    //    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
-                    //    {
-                    //        #region 校验响应
-                    //        var checkIsOk = await CheckRespon(webSocket, "MapRoadAndCrossJson,mid");
-                    //        if (checkIsOk) { }
-                    //        else
-                    //        {
-                    //            return null;
-                    //        }
-                    //        #endregion
-                    //    }
-                    //}
-
-                    msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "MapRoadAndCrossJson", action = "end" });
-                    sendData = Encoding.ASCII.GetBytes(msg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
-                    {
-                        #region 校验响应
-                        var checkIsOk = await CheckRespon(webSocket, "MapRoadAndCrossJson,end");
-                        if (checkIsOk) { }
-                        else
-                        {
-                            return null;
-                        }
-                        #endregion
-                    }
-                }
-
+            State result; 
+            { 
                 if (ConnectInfo.RobotBase64.Length == 0)
                 {
                     string obj, mtl, carA, carB, carC, carD, carE, carO, carO2;
@@ -268,8 +210,7 @@ namespace WsOfWebClient
                     ConnectInfo.RobotBase64 = new string[] { obj, mtl, carA, carB, carC, carD, carE, carO, carO2 };
                 }
                 else
-                {
-                    // json = ConnectInfo.mapRoadAndCrossJson;
+                { 
                 }
                 {
                     /*
@@ -875,7 +816,7 @@ namespace WsOfWebClient
             else
             {
                 //Consol.WriteLine($"{resultAsync.result}校验{checkValue}失败！");
-                await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
+                 await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
                 return false;
             }
         }

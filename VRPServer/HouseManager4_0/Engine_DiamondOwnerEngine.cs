@@ -167,7 +167,7 @@ namespace HouseManager4_0
                             //     */
                             //    throw new Exception("钱不够，还让执行setDiamondOwner");
                             //}
-                            //  Console.WriteLine($"需要用钱支付"); 
+                            //   $"需要用钱支付"); 
                             // car.ability.payForPromote(needMoney, player, car, ref notifyMsg);//用汽车上的钱支付
 
                             that.setPromtePosition(dor.diamondType);
@@ -216,7 +216,7 @@ namespace HouseManager4_0
                 var sendMsg = notifyMsg[i + 1];
                 Startup.sendMsg(url, sendMsg);
             }
-            //  Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
+             
             if (needUpdatePromoteState)
             {
                 that.CheckAllPlayersPromoteState(dor.diamondType);

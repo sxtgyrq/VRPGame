@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 
 namespace HouseManager4_0.RoomMainF
 {
@@ -127,10 +128,13 @@ namespace HouseManager4_0.RoomMainF
                     if (role.playerType == RoleInGame.PlayerType.player)
                         SendPromoteCountOfPlayer(bd.pType, (Player)role, ref notifyMsg);
                     this.Market.Send(bd.pType, oldCount - bd.count);
+                    Thread th = new Thread(() => this.Market.Send(bd.pType, oldCount - bd.count));
+                    th.Start();
                 }
             }
             else
             {
+                WebNotify(role, "市场没开放！");
                 //Consol.WriteLine("市場沒開放");
             }
         }
@@ -257,12 +261,13 @@ namespace HouseManager4_0.RoomMainF
                 {
                     if (role.playerType == RoleInGame.PlayerType.player)
                         SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
-                    this.Market.Receive(ss.pType, sellCount);
+                    Thread th = new Thread(() => this.Market.Receive(ss.pType, sellCount));
+                    th.Start();
                 }
             }
             else
             {
-                //Consol.WriteLine("市場沒開放");
+                WebNotify(role, "市场没开放！");
             }
         }
         public void Sell(SetSellDiamond ss)

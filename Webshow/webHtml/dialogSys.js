@@ -25,7 +25,7 @@
             friendsList.style.textAlign = 'center';
             friendsList.style.background = 'rgba(104, 48, 8, 0.85)';
             friendsList.style.color = '#83ffff';
-
+            friendsList.style.overflowY = 'scroll';
 
             for (var key in objMain.othersBasePoint) {
                 var divItem = document.createElement('div');

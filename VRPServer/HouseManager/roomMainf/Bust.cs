@@ -281,8 +281,7 @@ namespace HouseManager
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                // Console.WriteLine($"url:{url}");
+                var sendMsg = notifyMsg[i + 1]; 
 
                 await Startup.sendMsg(url, sendMsg);
             }
@@ -306,8 +305,7 @@ namespace HouseManager
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                // Console.WriteLine($"url:{url}");
+                var sendMsg = notifyMsg[i + 1]; 
 
                 await Startup.sendMsg(url, sendMsg);
             }

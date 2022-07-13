@@ -20,68 +20,75 @@ namespace WsOfWebClient
         }
         internal async static Task<State> receiveState2(State s, LookForBuildings joinType, WebSocket webSocket)
         {
-            var index = s.roomIndex;
+            // try
             {
-                var grn = new GetRoadNearby()
+                var index = s.roomIndex;
                 {
-                    c = "GetRoadNearby",
-                    x = joinType.x,
-                    z = joinType.z,
-                    key = s.Key
-                };
-                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-                await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
-            }
-            if (CommonClass.Format.IsModelID(joinType.selectObjName))
-            {
-                var gfma = new GetModelByID()
+                    var grn = new GetRoadNearby()
+                    {
+                        c = "GetRoadNearby",
+                        x = joinType.x,
+                        z = joinType.z,
+                        key = s.Key
+                    };
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                }
+                if (CommonClass.Format.IsModelID(joinType.selectObjName))
                 {
-                    c = "GetModelByID",
-                    modelID = joinType.selectObjName
-                };
-                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
-                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
-                if (string.IsNullOrEmpty(info))
-                {
-                    return s;
+                    var gfma = new GetModelByID()
+                    {
+                        c = "GetModelByID",
+                        modelID = joinType.selectObjName
+                    };
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
+                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    if (string.IsNullOrEmpty(info))
+                    {
+                        return s;
+                    }
+                    else
+                    {
+                        string addr;
+                        ReceiveResult r;
+                        {
+                            var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetModelByID.Result>(info);
+                            r = new ReceiveResult()
+                            {
+                                x = obj.x,
+                                bussinessAddress = obj.bussinessAddress,
+                                y = obj.y,
+                                amodel = obj.amodel,
+                                modelID = obj.modelID,
+                                rotatey = obj.rotatey,
+                                z = obj.z,
+                                c = "ReceiveResult",
+                                author = obj.author,
+                            };
+                            var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                            var sendData = Encoding.UTF8.GetBytes(returnMsg);
+                            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                            addr = obj.bussinessAddress;
+                        }
+                        var tdr = await getTradeDetail(s, webSocket, addr);
+                        return tdr;
+                    }
                 }
                 else
                 {
-                    string addr;
-                    ReceiveResult r;
-                    {
-                        var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetModelByID.Result>(info);
-                        r = new ReceiveResult()
-                        {
-                            x = obj.x,
-                            bussinessAddress = obj.bussinessAddress,
-                            y = obj.y,
-                            amodel = obj.amodel,
-                            modelID = obj.modelID,
-                            rotatey = obj.rotatey,
-                            z = obj.z,
-                            c = "ReceiveResult",
-                            author = obj.author,
-                        };
-                        var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(r);
-                        var sendData = Encoding.UTF8.GetBytes(returnMsg);
-                        await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                        addr = obj.bussinessAddress;
-                    }
-                    return await getTradeDetail(s, webSocket, addr);
+                    //Consol.WriteLine($"{joinType.selectObjName}不符合要求！");
+                    return s;
                 }
             }
-            else
-            {
-                //Consol.WriteLine($"{joinType.selectObjName}不符合要求！");
-                return s;
-            }
-
+            //catch
+            //{
+            //    return s;
+            //} 
         }
-        async static Task getTradeDetail(WebSocket webSocket, string addr)
+
+
+        internal static async Task<State> getTradeDetail(State s, WebSocket webSocket, string addr)
         {
-            // BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
-            //var tradeDetail = await t.GetTradeInfomationFromChain();
             Dictionary<string, long> tradeDetail;
             {
                 var grn = new GetTransctionFromChain()
@@ -90,7 +97,7 @@ namespace WsOfWebClient
                     bussinessAddr = addr,
                 };
                 var index = rm.Next(0, roomUrls.Count);
-                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn); 
                 var data = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 tradeDetail = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(data);
             }
@@ -124,7 +131,7 @@ namespace WsOfWebClient
             }
             if (sumValue == 0)
             {
-                return;
+                return s;
             }
             List<string> list;
             {
@@ -236,15 +243,6 @@ namespace WsOfWebClient
                     var sendData = Encoding.UTF8.GetBytes(passMsg);
                     await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
-            }
-        }
-
-        internal async static Task<State> getTradeDetail(State s, WebSocket webSocket, string addr)
-        {
-            var checkIsOk = await CheckRespon(webSocket, "TradeDetail");
-            if (checkIsOk)
-            {
-                await getTradeDetail(webSocket, addr);
             }
             return s;
         }
@@ -368,7 +366,7 @@ namespace WsOfWebClient
                                     {
                                         var ok = await clearInfomation(webSocket);
                                         if (ok)
-                                            await getTradeDetail(webSocket, addrBussiness);
+                                            s = await getTradeDetail(s, webSocket, addrBussiness);
                                     }
                                     else
                                     {

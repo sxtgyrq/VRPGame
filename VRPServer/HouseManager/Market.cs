@@ -28,8 +28,7 @@ namespace HouseManager
             this.speed_Price = null;
             this._priceChanged = priceChanged;
             var rootPath = System.IO.Directory.GetCurrentDirectory();
-            //Consol.WriteLine($"path:{rootPath}");
-            //Console.WriteLine($"IPPath:{rootPath}");
+           
             if (File.Exists($"{rootPath}\\config\\MarketIP.txt"))
             {
                 var text = File.ReadAllText($"{rootPath}\\config\\MarketIP.txt");

@@ -106,7 +106,11 @@ namespace AppCheckConnection
                                     fpCheck.Longitude,
                                     fpCheck.Latitde), 2);
                             }
-                            Console.WriteLine();
+                            while (Console.ReadLine().ToLower() != "c")
+                            {
+                                Console.WriteLine($"按c继续");
+                            }
+                            //Console.WriteLine();
                             success = false;
                         }
                         Console.Write(string.Format("{0}检验次数:{1} ", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), findIndexOffp), 1);
@@ -144,7 +148,10 @@ namespace AppCheckConnection
                     if (!found)
                     {
                         Console.WriteLine($"循环{i}--{AllRoadsCode[i]}校验失败！");
-                        Console.ReadLine();
+                        while (Console.ReadLine().ToLower() != "c")
+                        {
+                            Console.WriteLine($"按c继续");
+                        }
                         success = false;
                         //sm(msg, 2);
                         //faltureCount++;

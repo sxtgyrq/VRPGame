@@ -106,7 +106,7 @@ namespace HouseManager4_0.interfaceOfHM
         string updateMagic(MagicSkill ms);
         string updateView(View v);
         string CheckCarStateF(CheckCarState ccs);
-
+        void SystemBradcast(SystemBradcast sb);
     }
 
     interface MapEditor

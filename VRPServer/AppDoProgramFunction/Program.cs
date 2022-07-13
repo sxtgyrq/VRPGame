@@ -8,7 +8,7 @@ namespace AppDoProgramFunction
         {
             while (true)
             {
-                //Consol.WriteLine("A/加密，其他解密,exit，退出");
+                Console.WriteLine("A/加密，其他解密,exit，退出");
 
                 var input = Console.ReadLine().Trim();
                 if (input == "exit")
@@ -18,13 +18,12 @@ namespace AppDoProgramFunction
                 if (input == "A")
                 {
 
-                    //Consol.WriteLine("输入明文");
+                    Console.WriteLine("输入明文");
                     var content = Console.ReadLine();
-                    //Consol.WriteLine("输入密钥");
+                    Console.WriteLine("输入密钥");
                     var key = Console.ReadLine();
                     var result = CommonClass.AES.AesEncrypt(content, key);
-                    //Consol.WriteLine($"{result}");
-                    //Consol.WriteLine("Hello World!");
+                    Console.WriteLine($"{result}"); 
                     Console.ReadLine();
                 }
                 else

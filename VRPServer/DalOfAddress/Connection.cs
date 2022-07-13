@@ -16,8 +16,7 @@ namespace DalOfAddress
                 if (string.IsNullOrEmpty(ConnectionStrValue_))
                 {
                     var content = File.ReadAllText("config/connect.txt");
-                    ConnectionStrValue_ = CommonClass.AES.AesDecrypt(content, "Yrq123");
-                    // Console.WriteLine($"{ConnectionStrValue_}");
+                    ConnectionStrValue_ = CommonClass.AES.AesDecrypt(content, "Yrq123"); 
 
                     using (MySqlConnection con = new MySqlConnection(ConnectionStrValue_))
                     {
@@ -25,8 +24,7 @@ namespace DalOfAddress
                         Console.WriteLine($"Database:{con.Database}");
                         Console.WriteLine($"DataSource:{con.DataSource}");
                     }
-                }
-                // Console.WriteLine
+                } 
                 return ConnectionStrValue_;
             }
         }

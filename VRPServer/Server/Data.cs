@@ -218,10 +218,7 @@ namespace Server
             data.ReadRoadInfo(this._road, this._allFp);
             bool findObjSuccess;
             var dataResult = data.FindPlace(this._allFp.FindLast(item => item.FastenPositionID == fpID1), fpID2, out findObjSuccess);
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataResult);
-            // Console.WriteLine(json);
-            // var dt2 = DateTime.Now;
-            //Console.WriteLine($"计算时间{(dt2 - dt1).TotalSeconds}");
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataResult); 
             return json;
         }
 

@@ -11,15 +11,15 @@ namespace CubeImageTool
     {
         static void Main(string[] args)
         {
-            // Console.WriteLine("Hello W!");
+            Console.WriteLine("你好，欢迎使用720°下载器！");
             while (true)
             {
                 var t = Task.Run<string>(() => Contact()).Result;
-                //Consol.WriteLine(t);
-                //Consol.WriteLine("C继续");
+                Console.WriteLine(t);
+                Console.WriteLine("C继续");
                 if (Console.ReadLine().ToLower().Trim() == "c")
                 { }
-                else 
+                else
                 {
                     break;
                 }
@@ -30,7 +30,7 @@ namespace CubeImageTool
         {
             string qt, sid, pos, z, udt, from, auth, seckey;
 
-            //Consol.WriteLine("输入url");
+            Console.WriteLine("输入url");
             var url = Console.ReadLine();
 
             char[] ss = new char[] { '?', '&', '=' };

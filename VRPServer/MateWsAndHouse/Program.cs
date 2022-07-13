@@ -17,10 +17,10 @@ namespace MateWsAndHouse
         {
             allTeams = new Dictionary<int, Team>();
             rm = new Random(DateTime.Now.GetHashCode());
-            //Consol.WriteLine("你好！此服务为匹配用户和房间的服务！example:127.0.0.1:32200");
-            
+            Console.WriteLine("你好！此服务为匹配用户和房间的服务！example:127.0.0.1:32200");
+
             var ip = "127.0.0.1:32200";
-            //Consol.WriteLine("输入ip和端口");
+            Console.WriteLine("输入ip和端口");
             var input = Console.ReadLine();
             if (string.IsNullOrEmpty(input)) { }
             else

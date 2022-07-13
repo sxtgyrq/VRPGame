@@ -42,21 +42,14 @@ namespace TcpFunction
                     await ns.WriteAsync(sendData, 0, sendData.Length);
 
                     var length2 = Common.ReceiveLength(ns);
-                    await Common.SendLength(length2, ns);
-
-                    //  byte[] bytes = new byte[length2];
-                    // int bytesRead = await ns.ReadAsync(bytes, 0, length2);
+                    await Common.SendLength(length2, ns); 
                     byte[] bytes = Common.ByteReader(length2, ns);
-                    result = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                    // Console.WriteLine(result);
+                    result = Encoding.UTF8.GetString(bytes, 0, bytes.Length); 
                     ns.Close(6000);
                 }
                 tc.Close();
             }
-            var endTime = DateTime.Now;
-            //Consol.WriteLine($"------------------------------------");
-            //Consol.WriteLine($"{sendMsg}响应时间：{(endTime - startTime).TotalSeconds}秒");
-            //Consol.WriteLine($"------------------------------------");
+            var endTime = DateTime.Now; 
             return result;
         }
 
@@ -72,13 +65,11 @@ namespace TcpFunction
             server.Start();
             while (true)
             {
-                // Console.Write("Waiting for a connection... ");
+             //   Console.Write("Waiting for a connection... ");
 
                 string notifyJson;
                 TcpClient client = server.AcceptTcpClient();
-                {
-                    // Console.WriteLine("Connected!");
-                    //   bool isRight;
+                { 
                     NetworkStream ns = client.GetStream();
 
                     notifyJson = await GetMsg01(client, ns);

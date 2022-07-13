@@ -200,13 +200,18 @@ namespace HouseManager4_0
                     var returnMile = that.GetMile(returnPath);
                     if (car.ability.leftMile >= goMile + returnMile)
                     {
-                        int startT_FirstPath;
-                        // car.setAnimateData(player, ref notifyMsg, goPath);
-                        this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT_FirstPath);
+                        int startT;
+                        this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
                         var ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
                         //  Thread th=new Thread() { }
                         car.setState(player, ref notifyMsg, CarState.working);
-                        StartArriavalThread(startT_FirstPath, 0, player, car, sc, ro, goMile, goPath);
+                        StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);
+                        //if (player.playerType == RoleInGame.PlayerType.NPC)
+                        //    StartArriavalThread(startT, car, sc, ro, goMile);
+                        //else
+                        //    StartArriavalThread(startT, car, sc, ro, goMile);
+                        //   StartSelectThread(0, startT, car, sc, ro, goMile, goPath);
+                        //  getAllCarInfomations(sc.Key, ref notifyMsg);
                         Mrr = MileResultReason.Abundant;//返回原因
                         return ro;
                     }
@@ -283,6 +288,7 @@ namespace HouseManager4_0
                         int newStartT;
                         step++;
                         if (step < goPath.path.Count)
+                            //EditCarStateAfterSelect()
                             EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                         else
                             newStartT = 0;
@@ -334,7 +340,7 @@ namespace HouseManager4_0
             /*
              * 到达地点某地点时，说明汽车在这个地点待命。
              */
-            //Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}开始执行setArrive");
+
             List<string> notifyMsg = new List<string>();
             bool needUpdateCollectState = false;
             lock (that.PlayerLock)
@@ -354,7 +360,6 @@ namespace HouseManager4_0
                 var sendMsg = notifyMsg[i + 1];
                 Startup.sendMsg(url, sendMsg);
             }
-            //Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
             if (needUpdateCollectState)
             {
                 that.CheckAllPlayersCollectState();
@@ -386,21 +391,13 @@ namespace HouseManager4_0
                 //  this.collectPosition = this.GetRandomPosition(true);
                 needUpdateCollectState = true;
 
-                //Consol.WriteLine("----Do the collect process----！");
-
                 if (role.playerType == RoleInGame.PlayerType.player)
                     that.GetMusic((Player)role, ref notifyMsg);
                 if (role.playerType == RoleInGame.PlayerType.player)
                     that.GetBackground((Player)role, ref notifyMsg);
-
-                if (role.playerType == RoleInGame.PlayerType.player)
-                {
-                    //startPlaceReward((Player)role,);
-                }
             }
             else
             {
-                //Consol.WriteLine("----Not do the collect process----！");
             }
             //收集完，留在原地。
             //var car = this._Players[cmp.key].getCar(cmp.car);
@@ -419,13 +416,10 @@ namespace HouseManager4_0
             {
                 that.frequencyM.addFrequencyRecord();
             }
-            // NPCAutoControlCollect(role);
-
-        }
-
-        private void startPlaceReward()
-        {
-            // throw new NotImplementedException();
+            if (role.playerType == RoleInGame.PlayerType.player)
+            {
+                that.goodsM.ShowConnectionModels(role, pa.target, ref notifyMsg);
+            }
         }
 
         private void setCollectPosition(int target)
@@ -595,3 +589,4 @@ namespace HouseManager4_0
 
     }
 }
+

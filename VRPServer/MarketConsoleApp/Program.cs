@@ -22,6 +22,7 @@ namespace MarketConsoleApp
                 Program.m = new Market();
                 m.loadCount();
                 m.loadSevers();
+                m.startCountDown();
                 // m.loadCountInMarket();
                 m.tellMarketIsOn();
                 m.sendInteview();

@@ -59,23 +59,24 @@ namespace HouseManager4_0
 
     public abstract class SendMsg
     {
-        public void sendMsg(string controllerUrl, string json)
+        public string sendMsg(string controllerUrl, string json)
         {
-            Startup.sendMsg(controllerUrl, json);
+            return Startup.sendMsg(controllerUrl, json);
         }
-        public void sendMsg(List<string> notifyMsg)
+        public List<string> sendMsg(List<string> notifyMsg)
         {
+            List<string> result = new List<string>();
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                //Console.WriteLine($"url:{url}");
+                var sendMsg = notifyMsg[i + 1]; 
                 if (!string.IsNullOrEmpty(url))
                 {
-                    this.sendMsg(url, sendMsg);
+                    result.Add(this.sendMsg(url, sendMsg));
                     //  Startup.sendMsg(url, sendMsg);
                 }
             }
+            return result;
         }
     }
 }

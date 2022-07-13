@@ -9,6 +9,7 @@ namespace HouseManager4_0.RoomMainF
     {
         public void BustChangedF(RoleInGame role, bool bustValue, ref List<string> msgsWithUrl)
         {
+            // if (role.playerType == RoleInGame.PlayerType.player)
             foreach (var item in this._Players)
             {
                 if (item.Value.playerType == RoleInGame.PlayerType.player)
@@ -20,7 +21,9 @@ namespace HouseManager4_0.RoomMainF
                         c = "BustStateNotify",
                         Bust = bustValue,
                         WebSocketID = player.WebSocketID,
-                        Key = player.Key
+                        Key = player.Key,
+                        KeyBust = role.Key,
+                        Name = role.PlayerName
                     };
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(tn);
                     msgsWithUrl.Add(json);
@@ -29,6 +32,6 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
- 
+
     }
 }

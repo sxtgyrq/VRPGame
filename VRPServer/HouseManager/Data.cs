@@ -189,12 +189,7 @@ namespace HouseManager
             data.ReadRoadInfo(this._road, this._allFp);
             // bool findObjSuccess;
             var dataResult = data.FindPlace(fpStart, fpID2, out sucess);
-            return dataResult;
-            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataResult);
-            //// Console.WriteLine(json);
-            //// var dt2 = DateTime.Now;
-            ////Console.WriteLine($"计算时间{(dt2 - dt1).TotalSeconds}");
-            //return json;
+            return dataResult; 
         }
         public static void SetRootPath()
         {
@@ -248,8 +243,7 @@ namespace HouseManager
                     {
                         result.Add(objGet[i].copy());
                     }
-                    return result;
-                    // Console.WriteLine($"fromDB:{json}");
+                    return result; 
 
                 }
                 else
@@ -320,21 +314,13 @@ namespace HouseManager
             }
         }
 
-        public List<OssModel.MapGo.nyrqPosition> GetAFromB(OssModel.FastonPosition fpStart, string fpID2)
-        {
-            //  throw new Exception("");
-            // var dt1 = DateTime.Now;
-            FindF.DataToNavigateWithTimeFunction2 data = new FindF.DataToNavigateWithTimeFunction2();
-            data.ReadRoadInfo(this._road, this._allFp);
-            // bool findObjSuccess;
-            var dataResult = data.FindPlace(fpStart, fpID2);
-            return dataResult;
-            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataResult);
-            //// Console.WriteLine(json);
-            //// var dt2 = DateTime.Now;
-            ////Console.WriteLine($"计算时间{(dt2 - dt1).TotalSeconds}");
-            //return json;
-        }
+        //public List<OssModel.MapGo.nyrqPosition> GetAFromB(OssModel.FastonPosition fpStart, string fpID2)
+        //{ 
+        //    FindF.DataToNavigateWithTimeFunction2 data = new FindF.DataToNavigateWithTimeFunction2();
+        //    data.ReadRoadInfo(this._road, this._allFp); 
+        //    var dataResult = data.FindPlace(fpStart, fpID2);
+        //    return dataResult; 
+        //}
         public class PathResult
         {
             public double x0 { get; set; }

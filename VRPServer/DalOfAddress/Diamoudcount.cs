@@ -67,6 +67,7 @@ namespace DalOfAddress
                                 command.Parameters.AddWithValue("@diamondType", pType);
                                 command.ExecuteNonQuery();
                             }
+                            tran.Commit();
                         }
                     }
                     catch (Exception e)
@@ -74,7 +75,7 @@ namespace DalOfAddress
                         throw e;
                         throw new Exception("新增错误");
                     }
-                    tran.Commit();
+
                 }
             }
         }

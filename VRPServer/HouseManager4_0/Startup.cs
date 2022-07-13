@@ -7,9 +7,10 @@ namespace HouseManager4_0
 {
     class Startup
     {
-        public static void sendMsg(string controllerUrl, string json)
+        public static string sendMsg(string controllerUrl, string json)
         {
             var r = Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
+            return r.Result;
         }
     }
 }

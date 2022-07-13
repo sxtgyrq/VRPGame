@@ -207,10 +207,11 @@ var carAnimationData = function (passObj) {
             var recordTime = objOperate.animateData[0].recordTime;
             for (var j = 0; j < objOperate.animateData.length; j++) {
                 if (objOperate.animateData[j].privateKey < 0 && patch[j] >= 0) {
-                    if (j == 0) {
-                        throw '逻辑错误';
-                    }
-                    else {
+                    //if (j == 0) {
+                    //    throw '逻辑错误';
+                    //}
+                    //else
+                    {
                         objOperate.animateData[j].privateKey = patch[j];
                         var initialData = Decrypt_90021457(objOperate.animateData[j].privateKey, objOperate.animateData[j].dataEncrypted);
                         var start = { 'x': initialData[0], 'y': initialData[1] };
@@ -234,16 +235,24 @@ var carAnimationData = function (passObj) {
                             startT += initialData[i + 2];
                         };
                         //var start, end;
-                        var lastRecord = objMain.carsAnimateData[carId].current.animateData[j - 1].initialData;
+                        //var lastRecord;
+                        var endT;
+                        if (j == 0) {
+                            endT = Date.now() - objMain.carsAnimateData[carId].current.deltaT;
 
-                        if (lastRecord.end > Date.now()) {
+                        }
+                        else {
+                            var lastRecord = objMain.carsAnimateData[carId].current.animateData[j - 1].initialData;
+                            endT = lastRecord.end;
+                        }
+                        if (endT > Date.now()) {
                             objMain.carsAnimateData[carId].current.animateData[j].initialData =
                             {
                                 'recordTime': recordTime,
                                 'animateData': animateData,
                                 'speedImproved': false,
-                                'start': lastRecord.end,
-                                'end': lastRecord.end + startT
+                                'start': endT,
+                                'end': endT + startT
                             };
                         }
                         else {
@@ -263,7 +272,7 @@ var carAnimationData = function (passObj) {
         }
         return objOperate;
     }
-     
+
     if (passObj.passPrivateKeysOnly) {
         var carId = passObj.carID;
         if (objMain.carsAnimateData[carId] == undefined) { }
@@ -277,7 +286,7 @@ var carAnimationData = function (passObj) {
                 privateKeys[privateKeyIndex] = patch.privateKeyValue;
                 for (var i = privateKeyIndex; i > 0; i--) {
                     privateKeys[i - 1] = calHash(privateKeys[i]);
-                } 
+                }
                 return afterPrivateKeysPatch(objOperate, privateKeys);
             }
             if (objMain.carsAnimateData[carId].previous != null) {

@@ -298,12 +298,7 @@ namespace WsOfWebClient.MapEditor
 
                             }
                             catch (Exception e)
-                            {
-                                //Consol.WriteLine($"{ Newtonsoft.Json.JsonConvert.SerializeObject(e)}");
-                                //await Room.setOffLine(s);
-                                //removeWs(s.WebsocketID);
-                                // Console.WriteLine($"step2：webSockets数量：{   BufferImage.webSockets.Count}");
-                                // return;
+                            { 
                                 throw e;
                             }
                         }

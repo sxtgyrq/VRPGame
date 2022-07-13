@@ -74,6 +74,14 @@ namespace CommonClass
     {
         public long MoneyForSave { get; set; }
     }
+    public class GoodsSelectionNotify : CommandNotify
+    {
+        public double x { get; set; }
+
+        public double z { get; set; }
+        public string[] selections { get; set; }
+        public double[] positions { get; set; }
+    }
     public class MoneyNotify : CommandNotify
     {
         public long Money { get; set; }
@@ -185,6 +193,8 @@ namespace CommonClass
     {
         public bool Bust { get; set; }
         public string Key { get; set; }
+        public string KeyBust { get; set; }
+        public string Name { get; set; }
     }
 
     public class TheLargestHolderChangedNotify : CommandNotify

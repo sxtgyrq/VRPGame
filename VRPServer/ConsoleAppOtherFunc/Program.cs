@@ -10,7 +10,7 @@ namespace ConsoleAppOtherFunc
     {
         static void Main(string[] args)
         {
-            //Consol.WriteLine($"请选择功能！{Environment.NewLine}" +
+            Console.WriteLine($"请选择功能！{Environment.NewLine}" +
                 $"A.启动微信校验！{Environment.NewLine}" +
                 $"B.微信自动对话！{Environment.NewLine}" +
                 $"");

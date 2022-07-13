@@ -133,8 +133,7 @@ namespace HouseManager4_0
                 else
                 {
                     // var result = new List<OssModel.MapGo.nyrqPosition>();
-                    var endIndex = this.fpDirect[end];//目标地点
-                    //Console.WriteLine($"{endIndex}");
+                    var endIndex = this.fpDirect[end];//目标地点 
                     var startIndex = start;//起始地点
                     var listResult = new List<int>();
                     int direct = endIndex;
@@ -410,12 +409,7 @@ namespace HouseManager4_0
                 var item = Newtonsoft.Json.JsonConvert.DeserializeObject<OssModel.FastonPosition>(json);
                 item.region = Program.boundary.GetBoundry(item.Longitude, item.Latitde);
                 // if(string.ins)
-                Console.WriteLine($"{item.FastenPositionName}-{item.region}");
-                //if (string.IsNullOrEmpty(item.region))
-                //{
-                //    //Consol.WriteLine($"{index}-{Newtonsoft.Json.JsonConvert.SerializeObject(item)}");
-                //    //  Console.ReadLine();
-                //}
+                Console.WriteLine($"{item.FastenPositionName}-{item.region}"); 
                 result.Add(item);
                 index++;
             }
@@ -482,50 +476,7 @@ namespace HouseManager4_0
        // static string PathDataAll = "";
         public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
         {
-            return this.pathCal.GetAFromB(start, end);
-
-            //if (start == end)
-            //{
-            //    return new List<OssModel.MapGo.nyrqPosition>();
-            //}
-            //else
-            //{
-            //    byte[] data;
-            //    int count = this.GetFpCount();
-            //    int startPosition = (start * count + end) * 8;
-            //    if (Read(ref startPosition, out data))
-            //    {
-            //        var dataIndex = data[0] * 1;
-            //        var startPositionInDB =
-            //            data[1] * 1 +
-            //            data[2] * 256 +
-            //            data[3] * 256 * 256 +
-            //            data[4] * 256 * 256 * 256;
-            //        var length =
-            //            data[5] * 1 +
-            //            data[6] * 256 +
-            //            data[7] * 256 * 256;
-            //        //Consol.WriteLine($"{dataIndex},{startPositionInDB},{length}");
-
-            //        var JsonByteFromDB = Decompress(GetDataOfPath(dataIndex, startPositionInDB, length), length * 50);
-            //        var json = Encoding.ASCII.GetString(JsonByteFromDB);
-
-            //        //Consol.WriteLine(json);
-            //        var objGet = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Model.MapGo.nyrqPosition_Simple>>(json);
-            //        var result = new List<OssModel.MapGo.nyrqPosition>();
-            //        for (var i = 0; i < objGet.Count; i++)
-            //        {
-            //            result.Add(objGet[i].copy());
-            //        }
-            //        return result;
-            //        // Console.WriteLine($"fromDB:{json}");
-
-            //    }
-            //    else
-            //    {
-            //        throw new Exception("具体看代码！");
-            //    }
-            //}
+            return this.pathCal.GetAFromB(start, end); 
         }
 
         private static byte[] Decompress(byte[] data, int comPressLength)
@@ -563,7 +514,7 @@ namespace HouseManager4_0
         {
             var lon = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLon(x);
             var lat = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLatWithAccuracy(-z, 0.0000001);
-            // Console.WriteLine($"lon:{lon},lat:{lat}");
+            
             List<string> roads = new List<string>();
             Dictionary<string, double> lengthOfRoad = new Dictionary<string, double>();
             foreach (var road in this._road)

@@ -32,11 +32,7 @@ namespace HouseManager
             string outPut = "haveNothingToReturn";
             {
                 //  var notifyJson = returnResult.result;
-
-                // Console.WriteLine($"json:{notifyJson}");
-
-
-                //Consol.WriteLine($"monitor receive:{notifyJson}");
+                 
                 CommonClass.Monitor m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Monitor>(notifyJson);
 
                 switch (m.c)

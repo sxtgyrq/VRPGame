@@ -1,4 +1,5 @@
 ﻿using CommonClass;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -35,7 +36,8 @@ namespace HouseManager4_0.RoomMainF
             this.NPCM = new Manager_NPC(this);
             this.frequencyM = new Manager_Frequency(this);
             this.driverM = new Manager_Driver(this);
-
+            this.goodsM = new Manager_GoodsReward(this, this.DrawGoodsSelection);
+            this.modelM = new Manager_Model(this);
             lock (PlayerLock)
             {
                 this._Players = new Dictionary<string, RoleInGame>();
@@ -59,9 +61,26 @@ namespace HouseManager4_0.RoomMainF
             };
         }
 
+
+
         public string CheckCarStateF(CheckCarState ccs)
         {
-            return this.checkE.CheckCarStateF(ccs); 
+            return this.checkE.CheckCarStateF(ccs);
+        }
+
+        public void SystemBradcast(SystemBradcast sb)
+        {
+            foreach (var item in this._Players)
+            {
+                if (item.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    if (!item.Value.Bust)
+                    {
+                        WebNotify(item.Value, sb.msg);
+                    }
+                }
+            }
+            // throw new NotImplementedException();
         }
 
         public string updateView(View v)

@@ -158,7 +158,7 @@ namespace HouseManager4_0.RoomMainF
         }
 
         /// <summary>
-        /// 手机金钱的东西
+        /// 收集金钱的东西
         /// </summary>
         public Dictionary<int, int> _collectPosition;
         public bool FpIsUsing(int fpIndex)
@@ -197,13 +197,15 @@ namespace HouseManager4_0.RoomMainF
         public Engine_Attach attachE;
 
         public Engine_MagicEngine magicE;
-        
-        public Engine_Check checkE; 
+
+        public Engine_Check checkE;
         //以上为Engine
         //以下为Manager
 
         public Manager_NPC NPCM;
         public Manager_Frequency frequencyM;
         public Manager_Driver driverM;
+        public Manager_GoodsReward goodsM;
+        public Manager_Model modelM;
     }
 }

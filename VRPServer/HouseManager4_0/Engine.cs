@@ -80,18 +80,18 @@ namespace HouseManager4_0
                         }
                     }
                 }
-                this.sendMsg(notifyMsg);
+                var msgL = this.sendMsg(notifyMsg).Count;
+                msgL++;
                 //for (var i = 0; i < notifyMsg.Count; i += 2)
                 //{
                 //    var url = notifyMsg[i];
-                //    var sendMsg = notifyMsg[i + 1];
-                //    //Console.WriteLine($"url:{url}");
+                //    var sendMsg = notifyMsg[i + 1]; 
                 //    if (!string.IsNullOrEmpty(url))
                 //    {
                 //        Startup.sendMsg(url, sendMsg);
                 //    }
                 //}
-                return "";
+                return $"{msgL}".Length > 0 ? "" : "";
             }
             else
             {
@@ -401,7 +401,7 @@ namespace HouseManager4_0
                 }
                 //ThreadSleep(250);
                 k++;
-                //Console.WriteLine($"提示，让玩家进行选择！！！");
+                // $"提示，让玩家进行选择！！！");
                 if (k >= 250 * 3)
                 {
                     break;

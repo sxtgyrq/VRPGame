@@ -29,75 +29,75 @@ namespace HouseManager4_0
         }
         internal static void readConnectInfomation()
         {
-            //Consol.WriteLine("输入密文");
+            Console.WriteLine("输入密文");
             var content = Console.ReadLine();
-            //Consol.WriteLine("输入密钥");
+            Console.WriteLine("输入密钥");
             var secretValue = Console.ReadLine();
             var result = CommonClass.AES.AesDecrypt(content, secretValue);
-            //Consol.WriteLine($"{result}");
+            Console.WriteLine($"{result}");
             Console.ReadLine();
         }
 
-//        [Obsolete]
-//        internal static void addModel()
-//        {
-//            while (true)
-//            {
-//                //Consol.WriteLine("拖入obj文件");
-//                var path1 = Console.ReadLine();
-//                //Consol.WriteLine("拖入mtl文件");
-//                var path2 = Console.ReadLine();
-//                //Consol.WriteLine("拖入jpg文件");
-//                var path3 = Console.ReadLine();
+        //        [Obsolete]
+        //        internal static void addModel()
+        //        {
+        //            while (true)
+        //            {
+        //                //Consol.WriteLine("拖入obj文件");
+        //                var path1 = Console.ReadLine();
+        //                //Consol.WriteLine("拖入mtl文件");
+        //                var path2 = Console.ReadLine();
+        //                //Consol.WriteLine("拖入jpg文件");
+        //                var path3 = Console.ReadLine();
 
-//                var bytes = File.ReadAllBytes(path3);
-//                var Base64 = Convert.ToBase64String(bytes);
-//                // ConnectInfo.SpeedIconBase64 = Base64;
-//                var objText = File.ReadAllText(path1);
+        //                var bytes = File.ReadAllBytes(path3);
+        //                var Base64 = Convert.ToBase64String(bytes);
+        //                // ConnectInfo.SpeedIconBase64 = Base64;
+        //                var objText = File.ReadAllText(path1);
 
-//                var mtlText = File.ReadAllText(path2);
+        //                var mtlText = File.ReadAllText(path2);
 
-//                var fileName = Path.GetFileName(path1);
-//                List<string> modelTypes = new List<string>
-//                         {
-//                "direciton",
-//                "building"
-//                         };
-//                for (var i = 0; i < modelTypes.Count; i++)
-//                {
-//                    //Consol.WriteLine($"{i}-{modelTypes[i]}");
-//                }
-//                var modelType = "";
-//                do
-//                {
+        //                var fileName = Path.GetFileName(path1);
+        //                List<string> modelTypes = new List<string>
+        //                         {
+        //                "direciton",
+        //                "building"
+        //                         };
+        //                for (var i = 0; i < modelTypes.Count; i++)
+        //                {
+        //                    //Consol.WriteLine($"{i}-{modelTypes[i]}");
+        //                }
+        //                var modelType = "";
+        //                do
+        //                {
 
-//                    modelType = Console.ReadLine();
-//                }
-//                while (!modelTypes.Contains(modelType));
+        //                    modelType = Console.ReadLine();
+        //                }
+        //                while (!modelTypes.Contains(modelType));
 
 
-//                //Consol.WriteLine($@"
-//fileName:{fileName}
-//modelType:{modelType}
-//objText:{objText}
-//mtlText:{mtlText}
-//Base64:{Base64}
-//---按任意键继续！
-//");
+        //                //Consol.WriteLine($@"
+        //fileName:{fileName}
+        //modelType:{modelType}
+        //objText:{objText}
+        //mtlText:{mtlText}
+        //Base64:{Base64}
+        //---按任意键继续！
+        //");
 
-//                Console.ReadLine();
-//                DalOfAddress.AbtractModels.AddMoney(fileName.Split('.')[0], modelType, Base64, objText, mtlText, "");
-//                //Consol.WriteLine($"存储成功！E退出，任意键继续");
-//                if (Console.ReadLine().ToUpper() == "E")
-//                {
-//                    break;
-//                }
-//            }
-//            // DalOfAddress.
-//            //DalOfAddress.
-//            //ConnectInfo.SpeedMtl = await File.ReadAllTextAsync("model/speedicon/mfire.mtl");
-//            //ConnectInfo.SpeedObj = await File.ReadAllTextAsync("model/speedicon/mfire.obj");
-//            //  throw new NotImplementedException();
-//        }
+        //                Console.ReadLine();
+        //                DalOfAddress.AbtractModels.AddMoney(fileName.Split('.')[0], modelType, Base64, objText, mtlText, "");
+        //                //Consol.WriteLine($"存储成功！E退出，任意键继续");
+        //                if (Console.ReadLine().ToUpper() == "E")
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //            // DalOfAddress.
+        //            //DalOfAddress.
+        //            //ConnectInfo.SpeedMtl = await File.ReadAllTextAsync("model/speedicon/mfire.mtl");
+        //            //ConnectInfo.SpeedObj = await File.ReadAllTextAsync("model/speedicon/mfire.obj");
+        //            //  throw new NotImplementedException();
+        //        }
     }
 }

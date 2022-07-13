@@ -11,7 +11,20 @@ namespace WsOfWebClient
         public static string HostIP { get; set; }
         public static int webSocketID = 0;
         public static object connectedWs_LockObj = new object();
-        public static Dictionary<int, WebSocket> connectedWs = new Dictionary<int, WebSocket>();
+        public class ConnectInfoDetail
+        {
+            public ConnectInfoDetail(WebSocket webSocket)
+            {
+                this.ws = webSocket;
+                this.aModle = new Dictionary<string, bool>();
+                this.msgs = new List<string>();
+            }
+
+            public WebSocket ws { get; private set; }
+            public List<string> msgs = new List<string>();
+            public Dictionary<string, bool> aModle { get; private set; }
+        }
+        public static Dictionary<int, ConnectInfoDetail> connectedWs = new Dictionary<int, ConnectInfoDetail>();
 
         // public static HttpClient Client = new HttpClient();
 

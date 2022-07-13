@@ -33,6 +33,85 @@ namespace MarketConsoleApp
 
         private void RefreshPayerInfo()
         {
+            Thread th = new Thread(() => this.RefreshEndTime());
+            th.Start();
+        }
+
+        private void RefreshEndTime()
+        {
+            int sleepTime = 3600;
+            DateTime endTime;
+            if (File.Exists("config/endTime.txt"))
+            {
+                var text = File.ReadAllText("config/endTime.txt");
+                endTime = DateTime.Parse(text);
+            }
+            else
+            {
+                endTime = DateTime.Now;
+                while (true)
+                {
+                    endTime = endTime.AddDays(1);
+                    if (endTime.DayOfWeek == DayOfWeek.Thursday)
+                    {
+                        endTime = new DateTime(endTime.Year, endTime.Month, endTime.Day, 9, 0, 0);
+                        var text = endTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        File.WriteAllText("config/endTime.txt", text);
+                        break;
+                    }
+                }
+            }
+            while (true)
+            {
+                var now = DateTime.Now;
+                if (now >= endTime)
+                {
+                    sleepTime = 30000;//60s
+                    tellAllPlayer($"服务器随时可能关闭。请立即将收入保存。");
+                }
+                else if ((endTime - now).TotalSeconds < 1800)
+                {
+                    sleepTime = 60000;//60s
+                    tellAllPlayer($"服务器将于当日{endTime.ToString("HH点mm分")}进行维护。请将收入保存。");
+                }
+                else if ((endTime - now).TotalSeconds < 7200)
+                {
+                    sleepTime = 60000 * 10;//10min
+                    tellAllPlayer($"服务器将于当日{endTime.ToString("HH点mm分")}进行维护。请将收入保存。");
+                }
+                else
+                {
+                    sleepTime = 60000 * 15;//15min
+                    var text = File.ReadAllText("config/endTime.txt");
+                    endTime = DateTime.Parse(text);
+                }
+                Thread.Sleep(sleepTime);
+
+                //var 
+            }
+            //  throw new NotImplementedException();
+        }
+
+        private void tellAllPlayer(string msg)
+        {
+            //  throw new NotImplementedException();
+            // Console.WriteLine(msg);
+            for (var j = 0; j < this.servers.Length; j++)
+            {
+                var server = this.servers[j];
+                Task.Run(() =>
+                sendMsg(server,
+                    Newtonsoft.Json.JsonConvert.SerializeObject(
+                        new CommonClass.SystemBradcast()
+                        {
+                            c = "SystemBradcast",
+                            msg = msg
+                        })));
+            }
+        }
+
+        internal void startCountDown()
+        {
             // throw new NotImplementedException();
         }
 
@@ -204,13 +283,13 @@ namespace MarketConsoleApp
         int Port = 12630;
         internal void waitToBeTelled()
         {
-            //Consol.WriteLine($"请输入IP地址！默认{this.IP}");
+            Console.WriteLine($"请输入IP地址！默认{this.IP}");
             var input = Console.ReadLine().Trim();
             if (!string.IsNullOrEmpty(input))
             {
                 this.IP = input;
             }
-            //Consol.WriteLine($"请输入端口。默认{this.Port}");
+            Console.WriteLine($"请输入端口。默认{this.Port}");
             input = Console.ReadLine().Trim();
             if (!string.IsNullOrEmpty(input))
             {
@@ -225,7 +304,7 @@ namespace MarketConsoleApp
 
         private async Task<string> DealWith(string notifyJson)
         {
-            //Consol.WriteLine($"DealWith-Msg-{notifyJson}");
+            //  Console.WriteLine($"DealWith-Msg-{notifyJson}");
             CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
             switch (c.c)
             {
@@ -241,7 +320,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.mileCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mi.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        th.Start();
                                         saveCount(mi.pType, this.mileCount);
                                     }
                                 }; break;
@@ -252,7 +332,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.businessCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mi.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        th.Start();
                                         saveCount(mi.pType, this.businessCount);
                                     }
                                 }; break;
@@ -263,7 +344,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.volumeCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mi.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        th.Start();
                                         saveCount(mi.pType, this.volumeCount);
                                     }
                                 }; break;
@@ -274,7 +356,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.speedCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mi.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        th.Start();
                                         saveCount(mi.pType, this.speedCount);
                                     }
                                 }; break;
@@ -292,7 +375,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.mileCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mo.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        th.Start();
                                         saveCount(mo.pType, this.mileCount);
                                     }
                                 }; break;
@@ -303,7 +387,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.businessCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mo.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        th.Start();
                                         saveCount(mo.pType, this.businessCount);
                                     }
                                 }; break;
@@ -314,7 +399,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.volumeCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mo.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        th.Start();
                                         saveCount(mo.pType, this.volumeCount);
                                     }
                                 }; break;
@@ -325,7 +411,8 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.speedCount);
                                     if (price1 != price2)
                                     {
-                                        await tellMarketItem(mo.pType);
+                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        th.Start();
                                         saveCount(mo.pType, this.speedCount);
                                     }
                                 }; break;
@@ -494,7 +581,7 @@ namespace MarketConsoleApp
             }
         }
         private long getPrice(int mileCount)
-        { 
+        {
             if (mileCount < 1000)
             {
 

@@ -23,7 +23,10 @@ namespace CommonClass
         public Dictionary<string, long> stocks { get; set; }
         public Dictionary<string, long> stocksOriginal { get; set; }
     }
-
+    public class SystemBradcast : Command
+    {
+        public string msg { get; set; } 
+    }
     public class BuyDiamondInMarket : Command
     {
         public string buyType { get; set; }

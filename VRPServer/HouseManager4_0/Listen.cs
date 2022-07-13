@@ -143,6 +143,11 @@ namespace HouseManager4_0
                             CommonClass.ModelStock sa = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelStock>(notifyJson);
                             objI.UpdateModelStock(sa);
                         }; break;
+                    case "SystemBradcast":
+                        {
+                            CommonClass.SystemBradcast sb = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SystemBradcast>(notifyJson);
+                            objI.SystemBradcast(sb);
+                        }; break;
                     case "SetBuyDiamond":
                         {
                             CommonClass.SetBuyDiamond bd = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetBuyDiamond>(notifyJson);
@@ -209,8 +214,7 @@ namespace HouseManager4_0
                     case "GetCatege":
                         {
                             CommonClass.MapEditor.GetCatege gc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetCatege>(notifyJson);
-                            outPut = objI.GetCatege(gc);
-                            // Console.WriteLine(outPut);
+                            outPut = objI.GetCatege(gc); 
                         }; break;
                     case "GetModelType":
                         {
@@ -220,8 +224,7 @@ namespace HouseManager4_0
                     case "GetAbtractModels":
                         {
                             CommonClass.MapEditor.GetAbtractModels gam = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetAbtractModels>(notifyJson);
-                            outPut = objI.GetAbtractModels(gam);
-                            //Console.WriteLine(outPut);
+                            outPut = objI.GetAbtractModels(gam); 
                         }; break;
                     case "SaveObjInfo":
                         {
@@ -271,8 +274,7 @@ namespace HouseManager4_0
                         {
                             //GetUnLockedModel
                             CommonClass.MapEditor.GetUnLockedModel gulm = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetUnLockedModel>(notifyJson);
-                            outPut = objI.GetUnLockedModel(gulm);
-                            // Console.WriteLine(outPut);
+                            outPut = objI.GetUnLockedModel(gulm); 
                         }; break;
                     case "GetModelByID":
                         {

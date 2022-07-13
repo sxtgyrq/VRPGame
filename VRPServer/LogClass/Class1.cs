@@ -7,8 +7,8 @@ namespace LogClass
     {
         public static void Add(string v)
         {
-            var content = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]{v}{Environment.NewLine}";
-            File.AppendAllText("conmunicateRecord.txt", content);
+          //  var content = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]{v}{Environment.NewLine}";
+           // File.AppendAllText("log/conmunicateRecord.txt", content);
         }
     }
 }
