@@ -82,14 +82,12 @@ namespace MarketConsoleApp
                 else
                 {
                     sleepTime = 60000 * 15;//15min
-                    var text = File.ReadAllText("config/endTime.txt");
-                    endTime = DateTime.Parse(text);
-                }
-                Thread.Sleep(sleepTime);
 
-                //var 
-            }
-            //  throw new NotImplementedException();
+                } 
+                Thread.Sleep(sleepTime);
+                var text = File.ReadAllText("config/endTime.txt");
+                endTime = DateTime.Parse(text); 
+            } 
         }
 
         private void tellAllPlayer(string msg)

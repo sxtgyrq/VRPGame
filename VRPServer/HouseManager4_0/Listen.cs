@@ -125,13 +125,6 @@ namespace HouseManager4_0
                             objI.SaveMoney(saveMoney);
                             outPut = "ok";
                         }; break;
-                    //case "SetTax":
-                    //    {
-                    //        CommonClass.SetTax st = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetTax>(notifyJson);
-                    //        var result = Program.rm.updateTax(st);
-                    //        outPut = "ok";
-                    //        //await context.Response.WriteAsync("ok");
-                    //    }; break;
                     case "MarketPrice":
                         {
                             CommonClass.MarketPrice sa = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MarketPrice>(notifyJson);
@@ -214,7 +207,7 @@ namespace HouseManager4_0
                     case "GetCatege":
                         {
                             CommonClass.MapEditor.GetCatege gc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetCatege>(notifyJson);
-                            outPut = objI.GetCatege(gc); 
+                            outPut = objI.GetCatege(gc);
                         }; break;
                     case "GetModelType":
                         {
@@ -224,7 +217,7 @@ namespace HouseManager4_0
                     case "GetAbtractModels":
                         {
                             CommonClass.MapEditor.GetAbtractModels gam = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetAbtractModels>(notifyJson);
-                            outPut = objI.GetAbtractModels(gam); 
+                            outPut = objI.GetAbtractModels(gam);
                         }; break;
                     case "SaveObjInfo":
                         {
@@ -274,7 +267,7 @@ namespace HouseManager4_0
                         {
                             //GetUnLockedModel
                             CommonClass.MapEditor.GetUnLockedModel gulm = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetUnLockedModel>(notifyJson);
-                            outPut = objI.GetUnLockedModel(gulm); 
+                            outPut = objI.GetUnLockedModel(gulm);
                         }; break;
                     case "GetModelByID":
                         {
@@ -331,6 +324,16 @@ namespace HouseManager4_0
                         {
                             CommonClass.CheckCarState ccs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CheckCarState>(notifyJson);
                             outPut = objI.CheckCarStateF(ccs);
+                        }; break;
+                    case "GetRewardFromBuildingM":
+                        {
+                            CommonClass.GetRewardFromBuildingM m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.GetRewardFromBuildingM>(notifyJson);
+                            outPut = objI.GetRewardFromBuildingF(m);
+                        }; break;
+                    case "GetResistanceObj":
+                        {
+                            CommonClass.GetResistanceObj r = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.GetResistanceObj>(notifyJson);
+                            outPut = objI.GetResistance(r);
                         }; break;
                 }
             }

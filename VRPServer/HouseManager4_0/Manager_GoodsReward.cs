@@ -55,5 +55,39 @@ namespace HouseManager4_0
 
         public delegate void DrawLine(Player player, Model.FastonPosition fp, List<Data.detailmodel> modelsNeedToShow, ref List<string> notifyMsg);
         DrawLine drawLine;
+
+        internal List<Data.detailmodel> GetConnectionModels(int startFPIndex)
+        {
+            List<Data.detailmodel> modelsNeedToShow = new List<Data.detailmodel>();
+            var models = Program.dt.models;
+            //var fp = Program.dt.GetFpByIndex(target);
+            Dictionary<string, double> minLength = new Dictionary<string, double>();
+            foreach (var model in models)
+            {
+                minLength.Add(model.modelID, double.MaxValue);
+                foreach (var fpIndex in that._collectPosition)
+                {
+                    var fp = Program.dt.GetFpByIndex(fpIndex.Value);
+                    var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, model.lat, model.lon);
+                    if (length < minLength[model.modelID])
+                    {
+                        minLength[model.modelID] = length;
+                    }
+                }
+            }
+            {
+                var fp = Program.dt.GetFpByIndex(startFPIndex);
+                {
+                    foreach (var model in models)
+                    {
+                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, model.lat, model.lon);
+                        // model.
+                        if (length < minLength[model.modelID])
+                            modelsNeedToShow.Add(model);
+                    }
+                }
+            }
+            return modelsNeedToShow;
+        }
     }
 }

@@ -161,8 +161,8 @@ namespace WsOfWebClient
         /// <returns></returns>
         public static async Task<State> setOnLine(State s, WebSocket webSocket)
         {
-            State result; 
-            { 
+            State result;
+            {
                 if (ConnectInfo.RobotBase64.Length == 0)
                 {
                     string obj, mtl, carA, carB, carC, carD, carE, carO, carO2;
@@ -210,7 +210,7 @@ namespace WsOfWebClient
                     ConnectInfo.RobotBase64 = new string[] { obj, mtl, carA, carB, carC, carD, carE, carO, carO2 };
                 }
                 else
-                { 
+                {
                 }
                 {
                     /*
@@ -263,13 +263,23 @@ namespace WsOfWebClient
                 if (string.IsNullOrEmpty(ConnectInfo.DiamondObj))
                 {
 
-                    ConnectInfo.DiamondObj = await File.ReadAllTextAsync("diamond.obj");
+                    ConnectInfo.DiamondObj = await File.ReadAllTextAsync("model/diamond/untitled.obj");
+                    ConnectInfo.DiamondMtl = await File.ReadAllTextAsync("model/diamond/untitled.mtl");
+                    ConnectInfo.DiamondJpg = new string[]
+                    {
+                        Convert.ToBase64String(  File.ReadAllBytes("model/diamond/black.jpg")),
+                        Convert.ToBase64String(  File.ReadAllBytes("model/diamond/blue.jpg")),
+                        Convert.ToBase64String(  File.ReadAllBytes("model/diamond/green.jpg")),
+                        Convert.ToBase64String(  File.ReadAllBytes("model/diamond/red.jpg")),
+                    };
                 }
                 {
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new
                     {
                         c = "SetDiamond",
-                        DiamondObj = ConnectInfo.DiamondObj
+                        objText = ConnectInfo.DiamondObj,
+                        mtlText = ConnectInfo.DiamondMtl,
+                        imageBase64s = ConnectInfo.DiamondJpg
                     });
                     var sendData = Encoding.ASCII.GetBytes(msg);
                     await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
@@ -816,7 +826,7 @@ namespace WsOfWebClient
             else
             {
                 //Consol.WriteLine($"{resultAsync.result}校验{checkValue}失败！");
-                 await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
+                await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
                 return false;
             }
         }
@@ -1068,10 +1078,7 @@ namespace WsOfWebClient
                 c = "View",
                 Key = s.Key,
                 //car = "car" + m.Groups["car"].Value,
-                x1 = va.x1,
-                y1 = va.y1,
-                x2 = va.x2,
-                y2 = va.y2
+                rotationY = va.rotationY,
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
             await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
@@ -1171,7 +1178,33 @@ namespace WsOfWebClient
             }
             return "";
         }
-
+        internal async static Task<State> GetRewardFromBuildingF(State s, GetRewardFromBuildings grfb, WebSocket webSocket)
+        {
+            if (CommonClass.Format.IsModelID(grfb.selectObjName))
+            {
+                var index = s.roomIndex;
+                var gfma = new GetRewardFromBuildingM()
+                {
+                    c = "GetRewardFromBuildingM",
+                    Key = s.Key,
+                    selectObjName = grfb.selectObjName
+                };
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
+                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                if (string.IsNullOrEmpty(info))
+                {
+                    return s;
+                }
+                else
+                {
+                    return s;
+                }
+            }
+            else
+            {
+                return s;
+            }
+        }
         internal static async Task<string> setOffLine(State s)
         {
 #warning 这里要优化！！！
@@ -1432,7 +1465,6 @@ namespace WsOfWebClient
                 }
             }
             return "";
-            throw new NotImplementedException();
         }
 
         private async static Task<string> getRoadInfomation(State s)

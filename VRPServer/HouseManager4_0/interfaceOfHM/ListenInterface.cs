@@ -6,7 +6,7 @@ using static HouseManager4_0.RoomMainF.RoomMain;
 
 namespace HouseManager4_0.interfaceOfHM
 {
-    interface ListenInterface : MapEditor, ModelTranstractionI
+    interface ListenInterface : MapEditor, ModelTranstractionI, Resistance
     {
         /// <summary>
         /// 新增玩家
@@ -107,6 +107,7 @@ namespace HouseManager4_0.interfaceOfHM
         string updateView(View v);
         string CheckCarStateF(CheckCarState ccs);
         void SystemBradcast(SystemBradcast sb);
+
     }
 
     interface MapEditor
@@ -144,5 +145,11 @@ namespace HouseManager4_0.interfaceOfHM
         string GetAllModelPosition();
         string GetModelByID(ModelTranstraction.GetModelByID gmbid);
         string TradeIndex(ModelTranstraction.TradeIndex tc);
+        string GetRewardFromBuildingF(GetRewardFromBuildingM m);
+    }
+
+    interface Resistance
+    {
+        string GetResistance(GetResistanceObj r);
     }
 }

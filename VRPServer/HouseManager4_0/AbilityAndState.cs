@@ -1,6 +1,7 @@
 ﻿using CommonClass.driversource;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HouseManager4_0
@@ -9,17 +10,24 @@ namespace HouseManager4_0
     {
         RoleInGame role;
         Dictionary<string, List<DateTime>> Data { get; set; }
-        public int getDataCount(string key)
+        public int[] getDataCount(string key)
         {
+
             if (this.Data.ContainsKey(key))
             {
-                return this.Data[key].Count;
+
+                return new int[1] {
+                    this.Data[key].Count,
+
+                };
             }
             else
             {
-                return 0;
+                return new int[1] { 0 };
+                // return 0;
             }
         }
+
         public void AbilityAdd(string pType, int count, RoleInGame role, Car car, ref List<string> notifyMsg)
         {
             if (this.Data.ContainsKey(pType))

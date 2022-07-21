@@ -207,5 +207,7 @@ namespace HouseManager4_0.RoomMainF
         public Manager_Driver driverM;
         public Manager_GoodsReward goodsM;
         public Manager_Model modelM;
+        public Manager_Resistance modelR;
+        public Manager_Connection modelC;
     }
 }

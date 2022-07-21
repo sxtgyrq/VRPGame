@@ -213,7 +213,8 @@ namespace HouseManager4_0.RoomMainF
                     ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
                     //((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
                     ((Player)this._Players[addItem.Key]).backgroundData = new Dictionary<string, bool>();
-
+                    ((Player)this._Players[addItem.Key]).buildingReward = new Dictionary<int, int>();
+                    ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
                 }
             }
 
@@ -228,13 +229,19 @@ namespace HouseManager4_0.RoomMainF
             }
             //  throw new NotImplementedException();
         }
+
+        private bool GetConnectionF(Player player)
+        {
+            return this.modelC.IsOnline(player);
+        }
+
         private System.Numerics.Complex getComplex(View v, System.Numerics.Complex direciton)
         {
             double x1, y1, x2, y2;
-            x1 = v.x1;
-            x2 = v.x2;
-            y1 = v.y1;
-            y2 = v.y2;
+            x1 = 0;
+            x2 = Math.Cos(v.rotationY);
+            y1 = 0;
+            y2 = Math.Sin(v.rotationY);
             var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
             System.Numerics.Complex c;
             if (l > 1e-8)
@@ -286,7 +293,18 @@ namespace HouseManager4_0.RoomMainF
         internal double getAngle(System.Numerics.Complex complex)
         {
             //  complex.Imaginary
-            return Math.Acos(complex.Real);
+            if (Math.Abs(complex.Real) < 1 && Math.Abs(complex.Real) > -1)
+            {
+                return Math.Acos(complex.Real);
+            }
+            else if (Math.Abs(complex.Real) <= -1)
+            {
+                return Math.PI;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         private void AfterPlayerBroken(Player player, ref List<string> notifyMsgs)

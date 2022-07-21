@@ -768,6 +768,16 @@ namespace HouseManager4_0
         public string BTCAddress = "";
 
         public Dictionary<string, bool> backgroundData { get; set; }
+
+        public Dictionary<int, int> buildingReward { get; set; }
+
+        //  public enum RewardByModel
+        public delegate bool GetConnection(Player player);
+        public GetConnection GetConnectionF;
+        public bool IsOnline()
+        {
+            return this.GetConnectionF(this);
+        }
     }
     public class NPC : RoleInGame
     {

@@ -56,7 +56,7 @@ namespace HouseManager4_0
                 {
                     if (step == 0)
                     {
-                        this.ThreadSleep(startT);
+                        this.ThreadSleep(startT + 50);
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                         {
 
@@ -82,7 +82,7 @@ namespace HouseManager4_0
                     }
                     else
                     {
-                        this.ThreadSleep(startT);
+                        this.ThreadSleep(startT );
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                         {
 
@@ -216,7 +216,7 @@ namespace HouseManager4_0
                 var sendMsg = notifyMsg[i + 1];
                 Startup.sendMsg(url, sendMsg);
             }
-             
+
             if (needUpdatePromoteState)
             {
                 that.CheckAllPlayersPromoteState(dor.diamondType);

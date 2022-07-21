@@ -274,7 +274,7 @@ namespace HouseManager4_0
                 {
                     if (step == 0)
                     {
-                        this.ThreadSleep(startT);
+                        this.ThreadSleep(startT + 50);
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                         {
 
@@ -381,7 +381,10 @@ namespace HouseManager4_0
                 //拿到钱的单位是分！
                 long collectReWard = getCollectReWardByReward(pa.target);//依据target来判断应该收入多少！
                 if (role.playerType == RoleInGame.PlayerType.player)
-                    that.NPCM.Moleste((Player)role, pa.target, ref notifyMsg);
+                {
+                    //  that.NPCM.Moleste((Player)role, pa.target, ref notifyMsg);
+                }
+
                 long sumCollect = collectReWard; //DealWithTheFrequcy(this.CollectReWard);
                 var selfGet = sumCollect;
                 //  long sumDebet = 0;

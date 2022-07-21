@@ -319,7 +319,7 @@ namespace HouseManager4_0
                 {
                     if (step == 0)
                     {
-                        this.ThreadSleep(startT);
+                        this.ThreadSleep(startT + 50);
                         if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
                         {
 
@@ -515,7 +515,7 @@ namespace HouseManager4_0
                 for (var i = 0; i < notifyMsg.Count; i += 2)
                 {
                     var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1]; 
+                    var sendMsg = notifyMsg[i + 1];
                     if (!string.IsNullOrEmpty(url))
                     {
                         Startup.sendMsg(url, sendMsg);

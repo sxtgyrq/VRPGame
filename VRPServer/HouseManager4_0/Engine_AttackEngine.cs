@@ -60,7 +60,7 @@ namespace HouseManager4_0
                 if (car.ability.leftBusiness > 0)
                 {
                     SetAttack sa = (SetAttack)c;
-                    var state = CheckTargetState(sa.targetOwner);
+                    var state = CheckTargetState(player, sa.targetOwner);
                     if (state == CarStateForBeAttacked.CanBeAttacked)
                     {
                         return true;
@@ -147,8 +147,12 @@ namespace HouseManager4_0
             NotExisted,
             HasBeenBust,
         }
-        private CarStateForBeAttacked CheckTargetState(string targetOwner)
+        private CarStateForBeAttacked CheckTargetState(RoleInGame role, string targetOwner)
         {
+            if (role.playerType == RoleInGame.PlayerType.player) 
+            {
+                
+            }
             if (roomMain._Players.ContainsKey(targetOwner))
             {
                 if (roomMain._Players[targetOwner].Bust)
@@ -157,6 +161,10 @@ namespace HouseManager4_0
                 }
                 else
                 {
+                    if (roomMain._Players[targetOwner].playerType == RoleInGame.PlayerType.NPC)
+                    {
+
+                    }
                     return CarStateForBeAttacked.CanBeAttacked;
                 }
             }
@@ -268,7 +276,7 @@ namespace HouseManager4_0
                 {
                     if (step == 0)
                     {
-                        this.ThreadSleep(startT);
+                        this.ThreadSleep(startT + 50);
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust) { }
                         else
                             StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);

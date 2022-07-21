@@ -64,7 +64,7 @@ namespace HouseManager4_0
                                         }
                                         else
                                         {
-                                            actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                            // actionDo.failedThenDo(car, player, c, ref notifyMsg);
                                         }
                                     }; break;
                                 case CarState.working:
@@ -344,17 +344,22 @@ namespace HouseManager4_0
             while (true)
             {
 
-                if (isRight(selections, player.direciton))
+                if (isRight(selections, player.direciton, k))
                 {
                     break;
                 }
                 else
                 {
 
+                    // selections[0].start.
                     if (player.getCar().state != CarState.selecting)
                     {
                         // if (!bgHasSet) { }
                         List<string> notifyMsg = new List<string>();
+                        for (int i = 0; i < selections.Count; i++)
+                        {
+                            player.addUsedRoad(selections[i].start.roadCode, ref notifyMsg);
+                        }
                         player.getCar().setState(player, ref notifyMsg, CarState.selecting);
                         that.showDirecitonAndSelection(player, selections, selectionCenter, ref notifyMsg);
 
@@ -457,21 +462,34 @@ namespace HouseManager4_0
                 animations.Add(animation);
             }
         }
-        private bool isRight(List<Node.direction> selections, System.Numerics.Complex c2)
+        private bool isRight(List<Node.direction> selections, System.Numerics.Complex c2, int k)
         {
-            if (selections.Count == 0)
+            if (k == 0)
             {
-                return true;
+                if (selections.Count == 0)
+                {
+                    return true;
+                }
+                else if (selections.Count(item => item.right) == 0)
+                {
+                    return true;
+                }
+                var first = (from item in selections
+                             orderby that.getAngle(that.getComplex(item) / c2) ascending
+                             select item)
+                       .ToList()[0];
+                return first.right;
             }
-            else if (selections.Count(item => item.right) == 0)
+            else
             {
-                return true;
+                var rightItem = (from item in selections
+                                 where item.right
+                                 select item).ToList()[0];
+                ////                var angle = that.getAngle(that.getComplex(rightItem) / c2);
+                ////#warning 这里要调试完 要删除
+                ////                Console.WriteLine(angle);
+                return that.getAngle(that.getComplex(rightItem) / c2) < 0.0005;
             }
-            var first = (from item in selections
-                         orderby that.getAngle(that.getComplex(item) / c2) ascending
-                         select item)
-                   .ToList()[0];
-            return first.right;
         }
 
         public class notifyMsg

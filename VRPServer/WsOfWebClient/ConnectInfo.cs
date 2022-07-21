@@ -56,6 +56,8 @@ namespace WsOfWebClient
         public static string[] RobotBase64 = new string[] { };
 
         public static string DiamondObj = "";
+        public static string DiamondMtl = "";
+        public static string[] DiamondJpg = new string[] { };
 
         public static string YuanModel = "";
         public static string[] RMB100 = new string[] { };

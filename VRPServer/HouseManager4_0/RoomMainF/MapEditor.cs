@@ -681,6 +681,20 @@ namespace HouseManager4_0.RoomMainF
                 return "";
             }
         }
+
+        public string GetRewardFromBuildingF(GetRewardFromBuildingM m)
+        {
+            if (CommonClass.Format.IsModelID(m.selectObjName))
+            {
+                return this.modelM.GetRewardFromBuildingF(m);
+            }
+            else
+            {
+                return "";
+            }
+            // throw new NotImplementedException();
+        }
+
         public string GetRoadNearby(ModelTranstraction.GetRoadNearby grn)
         {
 

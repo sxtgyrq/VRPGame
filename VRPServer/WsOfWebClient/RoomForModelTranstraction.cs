@@ -97,7 +97,7 @@ namespace WsOfWebClient
                     bussinessAddr = addr,
                 };
                 var index = rm.Next(0, roomUrls.Count);
-                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn); 
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
                 var data = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 tradeDetail = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(data);
             }
@@ -390,6 +390,8 @@ namespace WsOfWebClient
             }
         }
 
+
+
         static async Task<bool> clearInfomation(WebSocket webSocket)
         {
             // var notifyMsg = info;
@@ -532,6 +534,19 @@ namespace WsOfWebClient
             return tradeDetail;
         }
 
-
+        internal static async Task<string> GetResistanceF(State s, GetResistance gr)
+        {
+            var grn = new CommonClass.GetResistanceObj()
+            {
+                c = "GetResistanceObj",
+                KeyLookfor = gr.KeyLookfor,
+                key = s.Key,
+                RequestType = gr.RequestType
+            };
+            var index = s.roomIndex;
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+            var respon = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            return respon;
+        }
     }
 }

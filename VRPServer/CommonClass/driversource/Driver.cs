@@ -5,7 +5,17 @@ using System.Text;
 
 namespace CommonClass.driversource
 {
-    public abstract class DriverSkill
+    public class Resistance
+    {
+        public int defensiveOfElectic { get; protected set; }
+        public int defensiveOfWater { get; protected set; }
+        public int defensiveOfFire { get; protected set; }
+        public int defensiveOfLose { get; protected set; }
+        public int defensiveOfConfuse { get; protected set; }
+        public int defensiveOfAmbush { get; protected set; }
+        public int defensiveOfPhysics { get; protected set; }
+    }
+    public abstract class DriverSkill : Resistance
     {
         public int Index { get; set; }
     }
@@ -20,6 +30,10 @@ namespace CommonClass.driversource
         people,
         immortal
     }
+    /// <summary>
+    /// 抵抗力
+    /// </summary>
+
     public class Driver : DriverSkill
     {
         public Driver(Sex s, Race r, string n, int index)
@@ -217,13 +231,7 @@ namespace CommonClass.driversource
         public string Name { get; private set; }
 
 
-        public int defensiveOfElectic { get; private set; }
-        public int defensiveOfWater { get; private set; }
-        public int defensiveOfFire { get; private set; }
-        public int defensiveOfLose { get; private set; }
-        public int defensiveOfConfuse { get; private set; }
-        public int defensiveOfAmbush { get; private set; }
-        public int defensiveOfPhysics { get; private set; }
+
 
         public string defensiveString
         {

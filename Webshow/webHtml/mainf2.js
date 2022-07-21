@@ -273,42 +273,42 @@ var objMain =
                     }
                     // var lineName=
                     var color = 0x000000;
+
+                    var objShow = null;
                     switch (received_obj.resultType) {
                         case 'mile':
                             {
+                                objShow = DiamondModel.red;
                                 color = 0xff0000;
                             }; break;
                         case 'business':
                             {
+                                objShow = DiamondModel.green;
                                 color = 0x00ff00;
                             }; break;
                         case 'volume':
                             {
+                                objShow = DiamondModel.blue;
                                 color = 0x0000ff;
                             }; break;
                         case 'speed':
                             {
+                                objShow = DiamondModel.black;
                                 color = 0x000000;
                             }; break;
                     }
-                    //var mirrorCubeCamera = new THREE.CubeCamera(0.1, 5000, 512);
-                    //objMain.scene.add(mirrorCubeCamera);
-                    var geometry = objMain.diamondGeometry;
-                    var material = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5, depthWrite: true });
+                    if (objShow == null) {
+                        return;
+                    }
 
-                    var diamond = new THREE.Mesh(geometry, material);
+                    var diamond = objShow.children[0].clone();// new THREE.Mesh(geometry, material);
                     diamond.userData.endF = endF;
                     diamond.name = 'diamond' + '_' + received_obj.resultType;
                     diamond.scale.set(0.2, 0.22, 0.2);
                     diamond.position.set(MercatorGetXbyLongitude(objMain.PromotePositions[received_obj.resultType].Fp.Longitude), 0, -MercatorGetYbyLatitude(objMain.PromotePositions[received_obj.resultType].Fp.Latitde));
 
                     objMain.promoteDiamond.add(diamond);
-
-                    //  objMain.mainF.lookTwoPositionCenter(objMain.promoteDiamond.children[0].position, objMain.carGroup.getObjectByName('car_' + objMain.indexKey).position);
-
                     objMain.mainF.drawLineOfFpToRoad(objMain.PromotePositions[received_obj.resultType].Fp, objMain.promoteDiamond, color, "diamond_" + received_obj.resultType);
-
-                    //objMain.mainF.drawPanelOfPromotion(objMain.Task.state, endF);
                 }
             }
         },
@@ -682,7 +682,7 @@ var objMain =
             objMain.mainF.drawDiamondCollected();
             objMain.mainF.lookAtPosition(objMain.basePoint);
             objMain.mainF.initilizeCars(objMain.basePoint, 'green', objMain.indexKey, true, objMain.positionInStation);
-         
+
 
 
             objMain.GetPositionNotify.data = null;
@@ -706,6 +706,7 @@ var objMain =
         theme: '',
         change: function () {
             var bgm = document.getElementById('backGroudMusick');
+            //   var paused = bgm.paused;
             if (bgm.currentTime === 0 || bgm.ended) {
                 switch (this.theme) {
                     case '':
@@ -725,7 +726,8 @@ var objMain =
                             bgm.appendChild(source1);
                             bgm.appendChild(source2);
                             bgm.load();
-                            bgm.play();
+                            if (this.on)
+                                bgm.play();
                         }; break;
                     default:
                         {
@@ -745,12 +747,14 @@ var objMain =
                             bgm.appendChild(source2);
 
                             bgm.load();
-                            bgm.play();
+                            if (this.on)
+                                bgm.play();
                         }; break;
                 }
 
             }
-        }
+        },
+        on: true
     },
     background:
     {
@@ -1236,7 +1240,17 @@ var objMain =
                     ModelOperateF.f(received_obj, {
                         bind: function (objectInput) {
                             //objMain.ModelInput.ambushPrepare = objectInput;
-                            objMain.ModelInput.directionArrow = objectInput;
+                            //objMain.ModelInput.directionArrow = objectInput;
+                            var oldM = objectInput.children[0].material;
+                            var newM = objectInput.children[0].material.clone();
+                            newM.transparent = false;
+                            newM.color = new THREE.Color(1, 2, 1);
+                            objMain.ModelInput.directionArrow =
+                            {
+                                'obj': objectInput,
+                                'oldM': oldM,
+                                'newM': newM
+                            };//objectInput;
                         },
                         transparent: { opacity: 0.3 },
                         //color: { r: 1, g: 1, b: 1 }
@@ -1279,9 +1293,10 @@ var objMain =
                 }; break;
             case 'SetDiamond':
                 {
+                    DiamondModel.initialize(received_obj);
                     var manager = new THREE.LoadingManager();
                     new THREE.OBJLoader(manager)
-                        .loadTextOnly(received_obj.DiamondObj, function (object) {
+                        .loadTextOnly(received_obj.objText, function (object) {
                             console.log('SetDiamond', object.children[0].geometry);
                             var geometry = object.children[0].geometry;
                             objMain.diamondGeometry = geometry;
@@ -1770,6 +1785,10 @@ var objMain =
                 {
                     drawGoodsSelection.f(received_obj);
                 }; break;
+            case 'ResistanceDisplay':
+                {
+                    resistance.display(received_obj);
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -1974,7 +1993,8 @@ function animate() {
                  */
                 if (objMain.promoteDiamond.children[i].isMesh) {
                     objMain.promoteDiamond.children[i].scale.set(0.2, 0.22, 0.2);
-
+                    objMain.promoteDiamond.children[i].position.y = 0;
+                    // objMain.promoteDiamond.children[i].rotation.y=
                 }
             }
 
@@ -2065,8 +2085,9 @@ function animate() {
 
                                         objMain.Task.state = '';
                                         selectObj = objMain.promoteDiamond.children[i];
-                                        scale = 2 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
+                                        scale = objMain.mainF.getLength(objMain.camera.position, position) / 20;
                                         scale = Math.max(scale, 0.2);
+                                        //  scale = Math.min(scale, 2);
                                         switch (selectObj.name) {
                                             case 'diamond_mile':
                                                 {
@@ -2092,7 +2113,7 @@ function animate() {
                     }
 
                     for (var i = 0; i < objMain.buildingGroup.children.length; i++) {
-                        {
+                        if (objMain.buildingGroup.visible) {
                             var position = objMain.buildingGroup.children[i].position;
                             var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
                             var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
@@ -2277,9 +2298,10 @@ function animate() {
                                 objMain.selectObj.type = objMain.Task.state;
                                 // objMain.promoteDiamond.getChildByName('diamond_' + objMain.Task.state).scale.set(scale, scale * 1.1, scale);
                                 //
+
                                 selectObj.scale.set(scale, scale * 1.1, scale);
-
-
+                                selectObj.position.y = Math.sin(Date.now() % 3000 / 3000 * Math.PI) * scale / 4;
+                                selectObj.rotation.y = (Date.now() % 8000 / 8000) * Math.PI * 2;
                                 //objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state }));
                             }; break;
                         case 'ability':
@@ -2342,8 +2364,15 @@ function animate() {
                             {
                                 objMain.selectObj.obj = selectObj;
                                 objMain.selectObj.type = objMain.Task.state;
-                                selectObj.scale.setX(Math.cos(Date.now() % 2000 / 2000 * Math.PI * 2) * -0.2 + 1);
-                                selectObj.scale.setZ(Math.cos(Date.now() % 2000 / 2000 * Math.PI * 2) * -0.2 + 1);
+                                var inteview = Date.now() % 4000;
+                                if (inteview > 2000) {
+                                    selectObj.scale.setX(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.05 + 1);
+                                    selectObj.scale.setZ(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.05 + 1);
+                                }
+                                else {
+                                    selectObj.scale.setX(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.1 + 1);
+                                    selectObj.scale.setZ(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.1 + 1);
+                                }
                             }; break;
                     }
                 }
@@ -2396,13 +2425,13 @@ function animate() {
             }
             {
                 /*放大选中的砖石*/
-                var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 35;
-                if (scale < 0.2) {
-                    scale = 0.2;
-                }
-                if (objMain.PromoteList.indexOf(objMain.Task.state) >= 0) {
-                    objMain.promoteDiamond.children[0].scale.set(scale, scale * 1.1, scale);
-                }
+                //var scale = 1;//objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 35;
+                //if (scale < 0.2) {
+                //    scale = 0.2;
+                //}
+                //if (objMain.PromoteList.indexOf(objMain.Task.state) >= 0) {
+                //    objMain.promoteDiamond.children[0].scale.set(scale, scale * 1.1, scale);
+                //}
             }
             {
                 /*放大选中的RMB*/
@@ -2635,46 +2664,67 @@ function animate() {
             if (objMain.carState.car == 'selecting') {
                 objMain.directionGroup.visible = true;
                 if (objMain.directionGroup.children.length > 0) {
-                    var p = objMain.directionGroup.children[0].position;
-                    var x = p.x;
-                    var y = -p.z;
-                    objMain.controls.target.set(x, 0, -y);
-                    var angle = objMain.controls.getPolarAngle();
-                    //if(
-                    //objMain.carStateTimestamp[received_obj.carID] = { 't': Date.now(), 'l': oldLength };
-                    var oldLength = objMain.carStateTimestamp.car.l;
-                    var oldTime = objMain.carStateTimestamp.car.t;
-                    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                    var distance = 3;
-                    var percent = (Date.now() - oldTime) / 2500;
-                    if (percent > 1) {
-                        distance = 3;
-                    }
-                    else {
-                        distance = oldLength + percent * (3 - oldLength);
-                    }
-                    var unitY = distance * Math.cos(angle);
-                    var unitZX = distance * Math.sin(angle);
+                    //var p = objMain.directionGroup.children[0].position;
+                    //var x = p.x;
+                    //var y = -p.z;
+                    //objMain.controls.target.set(x, 0, -y);
+                    //var angle = objMain.controls.getPolarAngle();
+                    ////if(
+                    ////objMain.carStateTimestamp[received_obj.carID] = { 't': Date.now(), 'l': oldLength };
+                    //var oldLength = objMain.carStateTimestamp.car.l;
+                    //var oldTime = objMain.carStateTimestamp.car.t;
+                    //var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                    //var distance = 3;
+                    //var percent = (Date.now() - oldTime) / 2500;
+                    //if (percent > 1) {
+                    //    distance = 3;
+                    //}
+                    //else {
+                    //    distance = oldLength + percent * (3 - oldLength);
+                    //}
+                    //var unitY = distance * Math.cos(angle);
+                    //var unitZX = distance * Math.sin(angle);
 
-                    var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                    var unitX = unitZX * Math.sin(angleOfCamara);
-                    var unitZ = unitZX * Math.cos(angleOfCamara);
+                    //var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                    //var unitX = unitZX * Math.sin(angleOfCamara);
+                    //var unitZ = unitZX * Math.cos(angleOfCamara);
                     //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
                     //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
 
-                    objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                    objMain.camera.lookAt(x, 0, -y);
+                    //objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
+                    //objMain.camera.lookAt(x, 0, -y);
                 }
+
+                objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;
             }
             else {
                 objMain.directionGroup.visible = false;
+                objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 36;
             }
             objMain.animation.animateCameraByCarAndTask();
 
             theLagestHoderKey.animate();
             objMain.renderer.render(objMain.scene, objMain.camera);
             objMain.labelRenderer.render(objMain.scene, objMain.camera);
-            objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
+            objMain.light1.position.set(objMain.camera.position.x + 10, objMain.camera.position.y, objMain.camera.position.z + 10);
+            if (objMain.directionGroup.visible) {
+                var minAngle = Math.PI / 20;
+                var selectIndex = -1;
+                for (var i = 1; i < objMain.directionGroup.children.length; i++) {
+                    objMain.directionGroup.children[i].children[0].material = objMain.ModelInput.directionArrow.oldM;
+                    var delta = (objMain.directionGroup.children[i].rotation.y - (objMain.controls.getAzimuthalAngle() + Math.PI / 2) + Math.PI * 2) % (Math.PI * 2);
+                    if (delta < minAngle) {
+                        minAngle = delta;
+                        selectIndex = i;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                if (selectIndex > 0) {
+                    objMain.directionGroup.children[selectIndex].children[0].material = objMain.ModelInput.directionArrow.newM;
+                }
+            }
         }
         else if ('LookForBuildings' == objMain.state) {
             //if (objMain.transtractionData != null)
@@ -2887,10 +2937,6 @@ var setTransactionHtml =
 
         var operateEnd = function (event) {
             operatePanel.refresh();
-
-            var json = JSON.stringify({ c: 'ViewAngle', x1: objMain.camera.position.x, y1: -objMain.camera.position.z, x2: objMain.controls.target.x, y2: -objMain.controls.target.z });
-            objMain.ws.send(json);
-            //objMain.ws
             return;
         }
         var operateStart = function (event) {
@@ -3116,8 +3162,26 @@ var set3DHtml = function () {
     var operateEnd = function (event) {
         operatePanel.refresh();
 
-        var json = JSON.stringify({ c: 'ViewAngle', x1: objMain.camera.position.x, y1: -objMain.camera.position.z, x2: objMain.controls.target.x, y2: -objMain.controls.target.z });
-        objMain.ws.send(json);
+        if (objMain.directionGroup.visible) {
+            var minAngle = Math.PI / 20;
+            var selectIndex = -1;
+            for (var i = 1; i < objMain.directionGroup.children.length; i++) {
+                // objMain.directionGroup.children[i].children[0].material = objMain.ModelInput.directionArrow.oldM;
+                var delta = (objMain.directionGroup.children[i].rotation.y - (objMain.controls.getAzimuthalAngle() + Math.PI / 2) + Math.PI * 4) % (Math.PI * 2);
+                if (delta < minAngle) {
+                    minAngle = delta;
+                    selectIndex = i;
+                }
+                else {
+                    continue;
+                }
+            }
+            if (selectIndex > 0) {
+                var rotationY = objMain.directionGroup.children[selectIndex].rotation.y;
+                var json = JSON.stringify({ c: 'ViewAngle', 'rotationY': rotationY });
+                objMain.ws.send(json);
+            }
+        }
         //objMain.ws
         return;
     }
@@ -3579,7 +3643,7 @@ var drawPoint = function (color, fp, indexKey) {
         objMain.camera.lookAt(objMain.basePoint.MacatuoX, 0, -objMain.basePoint.MacatuoY);
     }
 }
- 
+
 
 var SysOperatePanel =
 {
@@ -3593,6 +3657,7 @@ var SysOperatePanel =
         divSysOperatePanel.style.zIndex = '7';
         divSysOperatePanel.style.top = 'calc(100% - 2.5em - 8px)';
         divSysOperatePanel.style.left = '8px';
+        divSysOperatePanel.style.width = 'calc(100% - 16px)';
         {
             var img = document.createElement('img');
             img.id = 'msgToNotify'
@@ -3612,7 +3677,7 @@ var SysOperatePanel =
         }
         {
             var img = document.createElement('img');
-            img.id = 'moneyServe'
+            img.id = 'moneyServe';
             img.src = 'Pic/trade.png';
             img.classList.add('chatdialog');
             img.style.border = 'solid 1px yellowgreen';
@@ -3631,7 +3696,7 @@ var SysOperatePanel =
         }
         {
             var img = document.createElement('img');
-            img.id = 'moneySubsidize'
+            img.id = 'moneySubsidize';
             img.src = 'Pic/subsidize.png';
             img.classList.add('chatdialog');
             img.style.border = 'solid 1px yellowgreen';
@@ -3651,7 +3716,7 @@ var SysOperatePanel =
         }
         {
             var img = document.createElement('img');
-            img.id = 'moneySubsidize'
+            img.id = 'moneySubsidize';
             img.src = 'Pic/subsidize.png';
             img.classList.add('chatdialog');
             img.style.border = 'solid 1px yellowgreen';
@@ -3665,6 +3730,25 @@ var SysOperatePanel =
                 //alert('弹出对话框');
                 //subsidizeSys.add();
                 //moneyOperator.add();
+                resistance.bindData(objMain.indexKey);
+            };
+
+            divSysOperatePanel.appendChild(img);
+        }
+        {
+            var img = document.createElement('img');
+            img.id = 'gameFrontSetting';
+            img.src = 'Pic/settingIcon.png';
+            img.classList.add('chatdialog');
+            img.style.border = 'solid 1px yellowgreen';
+            img.style.borderRadius = '5px';
+            img.style.height = 'calc(2.5em - 2px)';
+            img.style.width = 'auto';
+            img.style.marginLeft = 'calc(100% - 15em + 10px)';
+            // img.style.right = '0.5em';
+
+            img.onclick = function () {
+                settingSys.add();
             };
 
             divSysOperatePanel.appendChild(img);
@@ -4063,6 +4147,36 @@ var operatePanel =
             });
         };
         var buildingDetailF = function () {
+            addItemToTaskOperatingPanle('求福', 'buildingGetRewardBtn', function () {
+                objMain.canSelect = false;
+                if (objMain.carState["car"] == 'waitOnRoad') {
+                    var selectObj = objMain.selectObj.obj;
+                    var animationData =
+                    {
+                        old: {
+                            x: objMain.controls.target.x,
+                            y: objMain.controls.target.y,
+                            z: objMain.controls.target.z,
+                            t: Date.now()
+                        },
+                        newT:
+                        {
+                            x: objMain.selectObj.obj.position.x,
+                            y: objMain.selectObj.obj.position.y,
+                            z: objMain.selectObj.obj.position.z,
+                            t: Date.now() + 3000
+                        }
+                    };
+                    objMain.camaraAnimateData = animationData;
+                    if (objMain.selectObj.obj != null) {
+                        var selectObjName = objMain.selectObj.obj.name;
+                        objMain.ws.send(JSON.stringify({ c: 'GetRewardFromBuildings', 'selectObjName': selectObjName }));
+                    }
+                    objMain.selectObj.obj = null;
+                    objMain.selectObj.type = '';
+                    operatePanel.refresh();
+                }
+            });
             addItemToTaskOperatingPanle('详情', 'buildingDetailBtn', function () {
                 objMain.canSelect = false;
                 if (objMain.carState["car"] == 'waitAtBaseStation' || objMain.carState["car"] == 'waitOnRoad') {
@@ -4094,7 +4208,35 @@ var operatePanel =
                 }
             });
         };
+        var selectPanle = function () {
+            addItemToTaskOperatingPanle('路口', 'selectDirectionBtn', function () {
+                if (objMain.carState["car"] == 'selecting') {
 
+                    if (objMain.directionGroup.children.length > 0) {
+                        //  var p = objMain.directionGroup.children[0].position;
+                        var selectObj = objMain.directionGroup.children[0];
+                        var animationData =
+                        {
+                            old: {
+                                x: objMain.controls.target.x,
+                                y: objMain.controls.target.y,
+                                z: objMain.controls.target.z,
+                                t: Date.now()
+                            },
+                            newT:
+                            {
+                                x: selectObj.position.x,
+                                y: selectObj.position.y,
+                                z: selectObj.position.z,
+                                t: Date.now() + 3000
+                            }
+                        };
+                        objMain.camaraAnimateData = animationData;
+                        operatePanel.refresh();
+                    }
+                }
+            });
+        };
         switch (carState) {
             case 'waitAtBaseStation':
                 {
@@ -4291,6 +4433,10 @@ var operatePanel =
                             }
                         });
                 }; break;
+            case 'selecting':
+                {
+                    selectPanle();
+                }; break;
         }
     }
 };
@@ -4301,7 +4447,6 @@ var ModelOperateF =
         new THREE.MTLLoader(manager)
             .loadTextOnly(received_obj.Mtl, 'data:image/jpeg;base64,' + received_obj.Img, function (materials) {
                 materials.preload();
-                // materials.depthTest = false;
                 new THREE.OBJLoader(manager)
                     .setMaterials(materials)
                     //.setPath('/Pic/')
@@ -4967,7 +5112,7 @@ var DirectionOperator =
 
         objMain.directionGroup.add(newDirectionModle);
         for (var i = 0; i < DirectionOperator.data.direction.length; i++) {
-            var newArrow = objMain.ModelInput.directionArrow.clone();
+            var newArrow = objMain.ModelInput.directionArrow.obj.clone();
             newArrow.scale.set(0.03, 0.03, 0.03);//(Math.PI / 2);
             newArrow.position.set(DirectionOperator.data.positionX, -0.1, -DirectionOperator.data.positionY);
             newArrow.rotation.y = DirectionOperator.data.direction[i];
@@ -5071,6 +5216,34 @@ var drawGoodsSelection =
         }
     },
     material: new THREE.LineBasicMaterial({ color: 0x33FF00 })
+};
+
+var DiamondModel =
+{
+    black: null,
+    blue: null,
+    green: null,
+    red: null,
+    initialize: function (received_obj) {
+        var indexStrs = ['black', 'blue', 'green', 'red'];
+        for (var i = 0; i < 4; i++) {
+            var indexV = i;
+            var indexStr = indexStrs[indexV];
+            var manager = new THREE.LoadingManager();
+            new THREE.MTLLoader(manager)
+                .loadTextOnly(received_obj.mtlText, 'data:image/jpeg;base64,' + received_obj.imageBase64s[indexV], function (materials) {
+                    materials.preload();
+                    // materials.depthTest = false;
+                    new THREE.OBJLoader(manager)
+                        .setMaterials(materials)
+                        //.setPath('/Pic/')
+                        .loadTextOnly(received_obj.objText, function (object) {
+                            DiamondModel[indexStr] = object;
+                        }, function () { }, function () { });
+                });
+        }
+
+    }
 };
 //////////
 /*

@@ -5,7 +5,7 @@
         <table style="width:100%;">
             <tr>
                  
-                <th>可捐献</th>
+                <th>可存储</th>
             </tr>
             <tr>
                 <td  id="MoneyForSave" >999999</td> 
@@ -16,19 +16,19 @@
         margin-top: 0.25em;border:1px solid gray;">
 
             <label>
-                --↓↓↓输入1打头的比特币地址↓↓↓--
+                --↓↓↓输入1或3打头的地址↓↓↓--
             </label>
             <input id="bitcoinAddressInput" type="text" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 1);" />
         </div> 
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
         margin-top: 0.25em;"  onclick="moneyOperator.donate('half');">
-            捐献一半
+            存储一半
         </div>
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
         margin-top: 0.25em;"  onclick="moneyOperator.donate('all');">
-            全部捐献
+            全部存储
         </div> 
         <div style="background: orange;
         margin-bottom: 0.25em;

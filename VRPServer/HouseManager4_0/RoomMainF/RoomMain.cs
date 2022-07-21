@@ -38,6 +38,9 @@ namespace HouseManager4_0.RoomMainF
             this.driverM = new Manager_Driver(this);
             this.goodsM = new Manager_GoodsReward(this, this.DrawGoodsSelection);
             this.modelM = new Manager_Model(this);
+            this.modelR = new Manager_Resistance(this);
+            this.modelC = new Manager_Connection(this);
+
             lock (PlayerLock)
             {
                 this._Players = new Dictionary<string, RoleInGame>();
@@ -315,4 +318,6 @@ namespace HouseManager4_0.RoomMainF
         //}
 
     }
+
+
 }

@@ -476,19 +476,7 @@ namespace CommonClass
         /// <summary>
         /// camera X
         /// </summary>
-        public double x1 { get; set; }
-        /// <summary>
-        /// camera Y
-        /// </summary>
-        public double y1 { get; set; }
-        /// <summary>
-        /// Target X
-        /// </summary>
-        public double x2 { get; set; }
-        /// <summary>
-        /// TargetY
-        /// </summary>
-        public double y2 { get; set; }
+        public double rotationY { get; set; }
     }
 
     public class SetBust : Command
@@ -634,7 +622,11 @@ namespace CommonClass
         public string CheckMd5 { get; set; }
 
     }
-
+    public class GetRewardFromBuildingM : Command
+    {
+        public string Key { get; set; }
+        public string selectObjName { get; set; }
+    }
     public class DialogMsg : CommandNotify
     {
         public string Key { get; set; }
@@ -668,4 +660,54 @@ namespace CommonClass
         public string pz { get; set; }
         public string nz { get; set; }
     }
+    public class GetResistanceObj : Command
+    {
+        public string KeyLookfor { get; set; }
+        public string key { get; set; }
+        /// <summary>
+        /// 0代表基础信息，1代表战斗抗性
+        /// </summary>
+        public int RequestType { get; set; }
+    };
+    public class ResistanceDisplay : CommandNotify
+    {
+        /// <summary>
+        /// 自己，队友，玩家，NPC，敌对NPC
+        /// </summary>
+        public string Relation { get; set; }
+        public string Name { get; set; }
+        public int Level { get; set; }
+        public long Money { get; set; }
+        /// <summary>
+        /// NPC Or player
+        /// </summary>
+        public string PlayerType { get; set; }
+
+        public int Driver { get; set; }
+        public string DriverName { get; set; }
+        public int[] MileCount { get; set; }
+        public int[] BusinessCount { get; set; }
+        public int[] VolumeCount { get; set; }
+        public int[] SpeedCount { get; set; }
+
+        public string BossKey { get; set; }
+        public string BossName { get; set; }
+        public string BTCAddr { get; set; }
+        public long Mile { get; set; }
+        public long Business { get; set; }
+        public long Volume { get; set; }
+        public int Speed { get; set; }
+
+        public string OnLineStr { get; set; }
+        public string KeyLookfor { get; set; }
+        //  public int 
+    }
+
+    public class ResistanceDisplay2 : CommandNotify
+    {
+        public driversource.Resistance Resistance { get; set; }
+        public string KeyLookfor { get; set; }
+        //  public int 
+    }
+
 }

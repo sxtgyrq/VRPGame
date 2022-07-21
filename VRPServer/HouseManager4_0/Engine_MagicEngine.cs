@@ -250,7 +250,7 @@ namespace HouseManager4_0
                 }
                 //else if (that._Players[ms.Key].getCar().ability.driver.race == Race.immortal) 
                 //{
-                    
+
                 //}
                 else
                 {
@@ -442,7 +442,7 @@ namespace HouseManager4_0
                 {
                     if (step == 0)
                     {
-                        this.ThreadSleep(startT);
+                        this.ThreadSleep(startT + 50);
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                         {
 
@@ -1107,6 +1107,7 @@ namespace HouseManager4_0
 
         public void newThreadDo(commandWithTime.baseC dObj)
         {
+            const int startNewReturnThInteview = 50;
             if (dObj.c == "speedSet")
             {
                 commandWithTime.speedSet ss = (commandWithTime.speedSet)dObj;
@@ -1174,7 +1175,7 @@ namespace HouseManager4_0
                             //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
                             {
                                 car.setState(player, ref notifyMsg, CarState.returning);
-                                that.retutnE.SetReturnT(0, new commandWithTime.returnning()
+                                that.retutnE.SetReturnT(startNewReturnThInteview, new commandWithTime.returnning()
                                 {
                                     c = "returnning",
                                     key = ss.key,
@@ -1272,7 +1273,7 @@ namespace HouseManager4_0
                             //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
                             {
                                 car.setState(player, ref notifyMsg, CarState.returning);
-                                that.retutnE.SetReturnT(0, new commandWithTime.returnning()
+                                that.retutnE.SetReturnT(startNewReturnThInteview, new commandWithTime.returnning()
                                 {
                                     c = "returnning",
                                     key = ats.key,
@@ -1370,7 +1371,7 @@ namespace HouseManager4_0
                             //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
                             {
                                 car.setState(player, ref notifyMsg, CarState.returning);
-                                that.retutnE.SetReturnT(0, new commandWithTime.returnning()
+                                that.retutnE.SetReturnT(startNewReturnThInteview, new commandWithTime.returnning()
                                 {
                                     c = "returnning",
                                     key = ats.key,

@@ -26,6 +26,12 @@ namespace WsOfWebClient
         public double x { get; set; }
         public double z { get; set; }
     }
+    public class GetRewardFromBuildings : CommonClass.Command
+    {
+        public string selectObjName { get; set; }
+        public double x { get; set; }
+        public double z { get; set; }
+    }
     public class CreateTeam : CommonClass.Command
     {
     }
@@ -76,13 +82,14 @@ namespace WsOfWebClient
     public class Skill2 : Attack
     {
     }
-
+    public class GetResistance
+    {
+        public string KeyLookfor { get; set; }
+        public int RequestType { get; internal set; }
+    }
     public class ViewAngle : CommonClass.Command
     {
-        public double x1 { get; set; }
-        public double y1 { get; set; }
-        public double x2 { get; set; }
-        public double y2 { get; set; }
+        public double rotationY { get; set; } 
     }
     public class Bust : Attack
     {

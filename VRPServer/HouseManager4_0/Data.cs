@@ -409,7 +409,7 @@ namespace HouseManager4_0
                 var item = Newtonsoft.Json.JsonConvert.DeserializeObject<OssModel.FastonPosition>(json);
                 item.region = Program.boundary.GetBoundry(item.Longitude, item.Latitde);
                 // if(string.ins)
-                Console.WriteLine($"{item.FastenPositionName}-{item.region}"); 
+                Console.WriteLine($"{item.FastenPositionName}-{item.region}");
                 result.Add(item);
                 index++;
             }
@@ -473,10 +473,10 @@ namespace HouseManager4_0
             //    Data.PathDataAll = input;
             //}
         }
-       // static string PathDataAll = "";
+        // static string PathDataAll = "";
         public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
         {
-            return this.pathCal.GetAFromB(start, end); 
+            return this.pathCal.GetAFromB(start, end);
         }
 
         private static byte[] Decompress(byte[] data, int comPressLength)
@@ -514,7 +514,7 @@ namespace HouseManager4_0
         {
             var lon = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLon(x);
             var lat = CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPositionLatWithAccuracy(-z, 0.0000001);
-            
+
             List<string> roads = new List<string>();
             Dictionary<string, double> lengthOfRoad = new Dictionary<string, double>();
             foreach (var road in this._road)
@@ -1180,7 +1180,7 @@ namespace HouseManager4_0
             // throw new NotImplementedException();
         }
         Dictionary<string, string> modelsBussinessAddr = new Dictionary<string, string>();
-        Dictionary<string, CommonClass.ModelStock> modelsStocks = new Dictionary<string, CommonClass.ModelStock>();
+        public Dictionary<string, CommonClass.ModelStock> modelsStocks = new Dictionary<string, CommonClass.ModelStock>();
         object modelStockLock = new object();
         internal void LoadStock(CommonClass.ModelStock sa)
         {
