@@ -130,7 +130,12 @@
       "ProjectGuid": "ce0849e2-90f1-4cab-8e29-96ceab288a23",
       "DisplayName": "LogClass",
       "ColorIndex": 8
+    },
+    "1b3943cb-2028-4637-9e6b-f5afc90cf096": {
+      "ProjectGuid": "1b3943cb-2028-4637-9e6b-f5afc90cf096",
+      "DisplayName": "ModelHelper",
+      "ColorIndex": 9
     }
   },
-  "NextColorIndex": 9
+  "NextColorIndex": 10
 }

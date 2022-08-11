@@ -85,11 +85,11 @@ namespace WsOfWebClient
     public class GetResistance
     {
         public string KeyLookfor { get; set; }
-        public int RequestType { get; internal set; }
+        public int RequestType { get; set; }
     }
     public class ViewAngle : CommonClass.Command
     {
-        public double rotationY { get; set; } 
+        public double rotationY { get; set; }
     }
     public class Bust : Attack
     {

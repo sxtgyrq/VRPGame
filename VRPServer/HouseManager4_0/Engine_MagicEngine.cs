@@ -12,7 +12,7 @@ using OssModel = Model;
 
 namespace HouseManager4_0
 {
-    public class Engine_MagicEngine : Engine_ContactEngine, interfaceOfEngine.engine, interfaceOfEngine.tryCatchAction, interfaceOfEngine.startNewThread
+    public partial class Engine_MagicEngine : Engine_ContactEngine, interfaceOfEngine.engine, interfaceOfEngine.tryCatchAction, interfaceOfEngine.startNewThread
     {
         internal int DefencePhysicsAdd { get { return 40; } }
 
@@ -172,6 +172,8 @@ namespace HouseManager4_0
                 return v;
         }
 
+
+
         private CarStateForBeMagiced CheckTargetCanBeImprovedByMagic(string targetOwner)
         {
             return this.CheckTargetCanBeElecticMagiced(targetOwner);
@@ -270,6 +272,8 @@ namespace HouseManager4_0
                 this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
             }
         }
+
+
 
         public commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out MileResultReason mrr)
         {
@@ -1402,6 +1406,70 @@ namespace HouseManager4_0
                     Startup.sendMsg(url, sendMsg);
                 }
             }
+        }
+    }
+
+
+
+    public partial class Engine_MagicEngine
+    {
+        public int GetAttackImprove(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[4] / 10);
+        }
+        public int GetDefenseImprove(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[3] / 10);
+        }
+        /// <summary>
+        /// 每次释放速法，会衰退90%;
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public int GetSpeedImprove(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[2] / 10);
+        }
+        /// <summary>
+        /// 每次攻击，会衰退几率的90%
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public int GetIgnorePhysics(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[1] / 10);
+        }
+        internal int GetConfuseIgnore(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[2] / 10);
+        }
+        public int GetLoseIgnore(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[3] / 10);
+        }
+        public int GetAmbushImprove(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[4] / 10);
+        }
+        public int GetControlImprove(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[1] / 10);
+        }
+        public int GetIgnoreElectic(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[2] / 10);
+        }
+        public int GetIgnoreFire(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[3] / 10);
+        }
+        public int GetIgnoreWater(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[4] / 10);
+        }
+        public int GetMagicViolent(RoleInGame role)
+        {
+            return Math.Min(75, role.buildingReward[1] / 10);
         }
     }
 }

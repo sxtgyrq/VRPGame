@@ -415,7 +415,14 @@ namespace HouseManager4_0
 
                     that.ConfigMagic(npc);
 
-
+                    npc.buildingReward = new Dictionary<int, int>()
+                    {
+                        {0,0},
+                        {1,0},
+                        {2,0},
+                        {3,0},
+                        {4,0}
+                    };
                     //npc.confuseUsing = null;
                 }
             }

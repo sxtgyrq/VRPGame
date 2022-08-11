@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "UZE/7dvmyCwgw0YGGViHrK8gXHZjm29kTZ69MtTIFXedWxKrRs4UiY8Fg9Uz9PcyqGYQKt4LeypKjSVvFzvjCQ==",
+  "success": true,
+  "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\ModelHelper\\ModelHelper.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.win32.systemevents\\4.5.0\\microsoft.win32.systemevents.4.5.0.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\netdxf.netstandard\\2.4.0\\netdxf.netstandard.2.4.0.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\system.drawing.common\\4.5.0\\system.drawing.common.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

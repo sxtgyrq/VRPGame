@@ -205,6 +205,19 @@ namespace HouseManager4_0
             }
         }
 
+        internal int GetRecruit(int v)
+        {
+            if (v / 3 < 100)
+            {
+                return v / 3;
+            }
+            else
+            {
+                return 100;
+            }
+            //  throw new NotImplementedException();
+        }
+
         internal void SetAsPeople(NPC npc, ref List<string> notifyMsg)
         {
             List<int> forSelect = new List<int>

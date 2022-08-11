@@ -164,7 +164,7 @@ namespace WsOfWebClient
                             }
                             return "";
                         };
-                }; 
+                };
             }
             catch (Exception e)
             {

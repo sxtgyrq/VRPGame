@@ -83,7 +83,7 @@ namespace HouseManager4_0
 
                                                 var hash = (m.Key + m.selectObjName).GetHashCode();
                                                 var newRm = new System.Random(hash);
-                                                hash = newRm.Next(2);
+                                                hash = newRm.Next(5);
 
                                                 int defendLevel = 1;
                                                 if (Program.dt.modelsStocks.ContainsKey(m.selectObjName))
@@ -116,16 +116,21 @@ namespace HouseManager4_0
                                                     }
                                                     if (hash < 1)
                                                     {
-                                                        player.buildingReward.Add(hash, defendLevel);
+                                                        if (player.buildingReward.ContainsKey(hash)) { }
+                                                        else
+                                                        {
+                                                            return "";
+                                                        }
+                                                        player.buildingReward[hash] += defendLevel;
                                                         switch (hash)
                                                         {
                                                             case 0:
                                                                 {
-                                                                    this.WebNotify(player, $"直接攻击+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                    this.WebNotify(player, $"招募+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                 }; break;
                                                         }
                                                     }
-                                                    else if (hash < 2)
+                                                    else if (hash < 5)
                                                     {
                                                         if (player.getCar().ability.driver == null)
                                                         {
@@ -133,16 +138,35 @@ namespace HouseManager4_0
                                                         }
                                                         else
                                                         {
-                                                            player.buildingReward.Add(hash, defendLevel);
+                                                            if (player.buildingReward.ContainsKey(hash))
+                                                            {
+
+                                                            }
+                                                            else
+                                                            {
+                                                                player.buildingReward.Add(hash, defendLevel);
+                                                            }
                                                             switch (player.getCar().ability.driver.race)
                                                             {
                                                                 case CommonClass.driversource.Race.immortal:
                                                                     {
                                                                         switch (hash)
                                                                         {
-                                                                            case 2:
+                                                                            case 1:
                                                                                 {
                                                                                     this.WebNotify(player, $"法术狂暴+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 2:
+                                                                                {
+                                                                                    this.WebNotify(player, $"忽视抗雷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 3:
+                                                                                {
+                                                                                    this.WebNotify(player, $"忽视抗火几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 4:
+                                                                                {
+                                                                                    this.WebNotify(player, $"忽视抗水几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                 }; break;
                                                                         };
                                                                     }; break;
@@ -150,9 +174,21 @@ namespace HouseManager4_0
                                                                     {
                                                                         switch (hash)
                                                                         {
+                                                                            case 1:
+                                                                                {
+                                                                                    this.WebNotify(player, $"故技重施+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
                                                                             case 2:
                                                                                 {
-                                                                                    this.WebNotify(player, $"计谋成功率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    this.WebNotify(player, $"忽视抗混几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 3:
+                                                                                {
+                                                                                    this.WebNotify(player, $"忽视抗迷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 4:
+                                                                                {
+                                                                                    this.WebNotify(player, $"忽视潜伏几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                 }; break;
                                                                         };
                                                                     }; break;
@@ -160,9 +196,21 @@ namespace HouseManager4_0
                                                                     {
                                                                         switch (hash)
                                                                         {
+                                                                            case 1:
+                                                                                {
+                                                                                    this.WebNotify(player, $"力争上游+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
                                                                             case 2:
                                                                                 {
-                                                                                    this.WebNotify(player, $"忽视抵抗+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    this.WebNotify(player, $"加速强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 3:
+                                                                                {
+                                                                                    this.WebNotify(player, $"加防强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                }; break;
+                                                                            case 4:
+                                                                                {
+                                                                                    this.WebNotify(player, $"比拼强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                 }; break;
                                                                         };
                                                                     }; break;

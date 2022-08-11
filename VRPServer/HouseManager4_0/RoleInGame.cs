@@ -638,6 +638,8 @@ namespace HouseManager4_0
         public Engine_MagicEngine.WaterMagicChanged waterMagicChanged;
         public Engine_MagicEngine.ElectricMagicChanged electricMagicChanged;
         // fireMagicChanged
+
+        public Dictionary<int, int> buildingReward { get; set; }
     }
     public class Player : RoleInGame, interfaceTag.HasContactInfo
     {
@@ -769,7 +771,7 @@ namespace HouseManager4_0
 
         public Dictionary<string, bool> backgroundData { get; set; }
 
-        public Dictionary<int, int> buildingReward { get; set; }
+      
 
         //  public enum RewardByModel
         public delegate bool GetConnection(Player player);

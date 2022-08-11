@@ -213,7 +213,14 @@ namespace HouseManager4_0.RoomMainF
                     ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
                     //((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
                     ((Player)this._Players[addItem.Key]).backgroundData = new Dictionary<string, bool>();
-                    ((Player)this._Players[addItem.Key]).buildingReward = new Dictionary<int, int>();
+                    ((Player)this._Players[addItem.Key]).buildingReward = new Dictionary<int, int>()
+                    {
+                        {0,0},
+                        {1,0},
+                        {2,0},
+                        {3,0},
+                        {4,0}
+                    };
                     ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
                 }
             }

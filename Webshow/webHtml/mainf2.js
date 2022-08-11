@@ -1,6 +1,8 @@
 ﻿function TaskClass(s, c) {
     this._state = s;
     this._carSelect = c;
+    this._oldState = s;
+    this._newState = s;
 }
 TaskClass.prototype.__defineGetter__("state", function () {
     //ShowGetInfo("Age"); 
@@ -8,14 +10,17 @@ TaskClass.prototype.__defineGetter__("state", function () {
 });
 
 TaskClass.prototype.__defineSetter__("state", function (val) {
-    if (this._state == 'getTax' && val != 'getTax') {
-        Tax.trunOffAnimate();
-    }
-    else if (this._state != 'getTax' && val == 'getTax') {
-        Tax.trunOnAnimate();
-    }
+    //if (this._state == 'getTax' && val != 'getTax') {
+    //    Tax.trunOffAnimate();
+    //}
+    //else if (this._state != 'getTax' && val == 'getTax') {
+    //    Tax.trunOnAnimate();
+    //}
     this._state = val;
-
+    if (this._oldState != this._state) {
+        operatePanel.refresh();
+        this._oldState = val;
+    }
     //ShowSetInfo("Age");
 });
 
@@ -431,14 +436,7 @@ var objMain =
                 var color = 0xFFD700;
 
                 objMain.mainF.drawLineOfFpToRoad(objMain.CollectPosition[collectIndex].Fp, objMain.collectGroup, color, 'money' + collectIndex);
-                //if (objMain.Task.state == 'collect') {
-                //    if (objMain.Task.carSelect == '') {
-                //        objMain.mainF.lookAtPosition(objMain.CollectPosition.Fp);
-                //    }
-                //    else {
-                //        objMain.mainF.lookTwoPositionCenter(objMain.collectGroup.children[0].position, objMain.carGroup.getObjectByName(objMain.Task.carSelect).position);
-                //    }
-                //}
+               
                 if (objMain.Task.state == 'collect') {
                     objMain.mainF.drawPanelOfCollect(endF);
                 }
@@ -1789,6 +1787,10 @@ var objMain =
                 {
                     resistance.display(received_obj);
                 }; break;
+            case 'ResistanceDisplay2':
+                {
+                    resistance.display2(received_obj);
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -2019,7 +2021,7 @@ function animate() {
             }
             if (objMain.canSelect) {
 
-                objMain.Task.state = '';
+                var objMainTaskstate = '';
                 var scale = 0.01;
                 objMain.raycasterOfSelector.setFromCamera(objMain.selectorPosition, objMain.camera);
                 var selectObj = null;
@@ -2033,7 +2035,7 @@ function animate() {
                             if (cosA > 0.984807753)
                                 if (cosA > maxCosA) {
                                     maxCosA = cosA;
-                                    objMain.Task.state = 'collect';
+                                    objMainTaskstate = 'collect';
                                     selectObj = objMain.collectGroup.children[i];
                                     scale = 0.01 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
                                     scale = Math.max(scale, 0.01);
@@ -2051,7 +2053,7 @@ function animate() {
                                 if (cosA > 0.984807753)
                                     if (cosA > maxCosA) {
                                         maxCosA = cosA;
-                                        objMain.Task.state = 'setReturn';
+                                        objMainTaskstate = 'setReturn';
                                         selectObj = objMain.playerGroup.children[i];
                                         scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
                                         scale = Math.max(scale, 0.0015);
@@ -2064,7 +2066,7 @@ function animate() {
                                 if (cosA > 0.984807753)
                                     if (cosA > maxCosA) {
                                         maxCosA = cosA;
-                                        objMain.Task.state = 'attack';
+                                        objMainTaskstate = 'attack';
                                         selectObj = objMain.playerGroup.children[i];
                                         scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
                                         scale = Math.max(scale, 0.0015);
@@ -2082,8 +2084,6 @@ function animate() {
                                 if (cosA > 0.984807753)
                                     if (cosA > maxCosA) {
                                         maxCosA = cosA;
-
-                                        objMain.Task.state = '';
                                         selectObj = objMain.promoteDiamond.children[i];
                                         scale = objMain.mainF.getLength(objMain.camera.position, position) / 20;
                                         scale = Math.max(scale, 0.2);
@@ -2091,19 +2091,19 @@ function animate() {
                                         switch (selectObj.name) {
                                             case 'diamond_mile':
                                                 {
-                                                    objMain.Task.state = 'mile';
+                                                    objMainTaskstate = 'mile';
                                                 }; break;
                                             case 'diamond_business':
                                                 {
-                                                    objMain.Task.state = 'business';
+                                                    objMainTaskstate = 'business';
                                                 }; break;
                                             case 'diamond_volume':
                                                 {
-                                                    objMain.Task.state = 'volume';
+                                                    objMainTaskstate = 'volume';
                                                 }; break;
                                             case 'diamond_speed':
                                                 {
-                                                    objMain.Task.state = 'speed';
+                                                    objMainTaskstate = 'speed';
                                                 }; break;
                                             default: { }; break;
                                         }
@@ -2120,7 +2120,7 @@ function animate() {
                             if (cosA > 0.984807753)
                                 if (cosA > maxCosA) {
                                     maxCosA = cosA;
-                                    objMain.Task.state = 'building';
+                                    objMainTaskstate = 'building';
                                     selectObj = objMain.buildingGroup.children[i];
                                 }
                         }
@@ -2136,27 +2136,26 @@ function animate() {
                                     if (cosA > 0.984807753)
                                         if (cosA > maxCosA) {
                                             maxCosA = cosA;
-
-                                            objMain.Task.state = '';
+                                            // objMainTaskstate = '';
                                             selectObj = objMain.columnGroup.children[i];
                                             //scale = 2 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
                                             //scale = Math.max(scale, 0.2);
                                             switch (selectObj.name) {
                                                 case 'BatteryMile':
                                                     {
-                                                        objMain.Task.state = 'ability';
+                                                        objMainTaskstate = 'ability';
                                                     }; break;
                                                 case 'BatteryBusiness':
                                                     {
-                                                        objMain.Task.state = 'ability';
+                                                        objMainTaskstate = 'ability';
                                                     }; break;
                                                 case 'BatteryVolume':
                                                     {
-                                                        objMain.Task.state = 'ability';
+                                                        objMainTaskstate = 'ability';
                                                     }; break;
                                                 case 'BatterySpeed':
                                                     {
-                                                        objMain.Task.state = 'ability';
+                                                        objMainTaskstate = 'ability';
                                                     }; break;
                                                 default: { }; break;
                                             }
@@ -2165,6 +2164,7 @@ function animate() {
                             }
                         }
 
+                    objMain.Task.state = objMainTaskstate;
                     switch (objMain.Task.state) {
                         case 'collect':
                             {
@@ -2376,6 +2376,10 @@ function animate() {
                             }; break;
                     }
                 }
+            }
+            else
+            {
+                objMain.Task.state = '';
             }
             for (var i = 0; i < objMain.playerGroup.children.length; i++) {
                 if (objMain.playerGroup.children[i].isMesh) {
@@ -3730,7 +3734,12 @@ var SysOperatePanel =
                 //alert('弹出对话框');
                 //subsidizeSys.add();
                 //moneyOperator.add();
-                resistance.bindData(objMain.indexKey);
+                if (objMain.Task.state == 'attack') {
+                    resistance.bindData(objMain.selectObj.obj.name.split('_')[1]);
+                }
+                else {
+                    resistance.bindData(objMain.indexKey);
+                }
             };
 
             divSysOperatePanel.appendChild(img);

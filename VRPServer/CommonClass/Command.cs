@@ -705,9 +705,39 @@ namespace CommonClass
 
     public class ResistanceDisplay2 : CommandNotify
     {
-        public driversource.Resistance Resistance { get; set; }
+        //  public driversource.Resistance Resistance { get; set; }
         public string KeyLookfor { get; set; }
-        //  public int 
+
+        /// <summary>
+        /// 招募成功次数
+        /// </summary> 
+        public int recruit { get; set; }
+
+        public int magicViolent { get; set; }
+        public int controlImprove { get; set; }
+        //public driversource.Resistance Ignore { get; set; }
+
+        public int SpeedImprove { get; set; }
+        public int DefenseImprove { get; set; }
+        public int AttackImprove { get; set; }
+
+        public int defensiveOfElectic { get; set; }
+        public int defensiveOfWater { get; set; }
+        public int defensiveOfFire { get; set; }
+        public int defensiveOfLose { get; set; }
+        public int defensiveOfConfuse { get; set; }
+        public int defensiveOfAmbush { get; set; }
+        public int defensiveOfPhysics { get; set; }
+
+        public int ignoreElectic { get; set; }
+        public int ignoreOfWater { get; set; }
+        public int ignoreFire { get; set; }
+        public int ignoreLose { get; set; }
+        public int ignoreConfuse { get; set; }
+        public int ignoreAmbush { get; set; }
+        public int ignorePhysics { get; set; }
+        public Dictionary<int, int> buildingReward { get; set; }
+        public int race { get; set; }
     }
 
 }
