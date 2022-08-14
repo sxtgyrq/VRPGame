@@ -1,5 +1,6 @@
 ﻿using CommonClass;
 using CommonClass.databaseModel;
+using HouseManager4_0.RoomMainF;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -177,36 +178,84 @@ namespace HouseManager4_0
             //}
         }
 
-        public delegate void TheLargestHolderKeyChangedF(string keyFrom, string keyTo, string roleKey, ref List<string> notifyMsg);
+        //public delegate void TheLargestHolderKeyChangedF(string keyFrom, string keyTo, string roleKey, ref List<string> notifyMsg);
 
 
 
-        public TheLargestHolderKeyChangedF TheLargestHolderKeyChanged;
+        // public TheLargestHolderKeyChangedF TheLargestHolderKeyChanged;
 
 
 
+        string _theLargestHolderKey = "";
         /// <summary>
         /// 最大股东,收三个因素印象，钱，债，比值（责任）
         /// </summary>
-        public string TheLargestHolderKey { get; private set; }
+        public string TheLargestHolderKey
+        {
+
+            get
+            {
+                //  throw new Exception("没完！");
+                if (string.IsNullOrEmpty(_theLargestHolderKey))
+                {
+
+                }
+                else if (Program.rm._Players.ContainsKey(_theLargestHolderKey))
+                {
+                    var boss = Program.rm._Players[_theLargestHolderKey];
+                    if (boss.playerType == PlayerType.NPC)
+                    {
+
+                        return _theLargestHolderKey;///NPC返回指定的
+                    }
+                    else
+                    {
+                        var playerBoss = (Player)boss;
+                        if (playerBoss.Bust)
+                        {
+                        }
+                        else if (playerBoss._theLargestHolderKey == playerBoss.Key)
+                        {
+                            return this._theLargestHolderKey;
+                        }
+                        else
+                        {
+                        }
+                    }
+                }
+                else
+                {
+                }
+                this._theLargestHolderKey = this.Key;
+                return this.Key;
+            }
+            //set
+            //{
+            //    if (value == this._theLargestHolderKey)
+            //    { }
+            //    else
+            //    {
+            //        this._theLargestHolderKey = value;
+            //    }
+            //}
+        }
 
 
 
         //ref notifyMsgs
         internal void InitializeTheLargestHolder(ref List<string> notifyMsg)
         {
-            this.TheLargestHolderKey = this.Key;
+            this._theLargestHolderKey = this.Key;
             if (this.playerType == PlayerType.player)
             {
-                this.getCar().ability.MileChanged((Player)this, this.getCar(), ref notifyMsg, "mile");
-                this.getCar().ability.BusinessChanged((Player)this, this.getCar(), ref notifyMsg, "business");
-                this.getCar().ability.VolumeChanged((Player)this, this.getCar(), ref notifyMsg, "volume");
-                this.getCar().ability.SpeedChanged((Player)this, this.getCar(), ref notifyMsg, "speed");
+                var player = (Player)this;
+                player.ValueChanged(ref notifyMsg);
+
             }
         }
         internal void InitializeTheLargestHolder()
         {
-            this.TheLargestHolderKey = this.Key;
+            this._theLargestHolderKey = this.Key;
         }
         /// <summary>
         /// 设置老大。
@@ -214,13 +263,22 @@ namespace HouseManager4_0
         /// <param name="boss"></param>
         internal void SetTheLargestHolder(RoleInGame boss, ref List<string> notifyMsg)
         {
-            this.TheLargestHolderKey = boss.Key;
+            List<Player> child = new List<Player>();
+            foreach (var item in Program.rm._Players)
+            {
+                if (item.Value.Key != this.Key && item.Value.TheLargestHolderKey == this.Key && item.Value.playerType == PlayerType.player)
+                {
+                    child.Add((Player)item.Value);
+                }
+            }
+            this._theLargestHolderKey = boss.Key;
             if (this.playerType == PlayerType.player)
             {
-                this.getCar().ability.MileChanged((Player)this, this.getCar(), ref notifyMsg, "mile");
-                this.getCar().ability.BusinessChanged((Player)this, this.getCar(), ref notifyMsg, "business");
-                this.getCar().ability.VolumeChanged((Player)this, this.getCar(), ref notifyMsg, "volume");
-                this.getCar().ability.SpeedChanged((Player)this, this.getCar(), ref notifyMsg, "speed");
+                ((Player)this).ValueChanged(ref notifyMsg);
+                for (int i = 0; i < child.Count; i++)
+                {
+                    child[i].InitializeTheLargestHolder(ref notifyMsg);
+                }
             }
 
         }
@@ -364,17 +422,23 @@ namespace HouseManager4_0
         public BustChanged BustChangedF;
         internal void SetBust(bool v, ref List<string> notifyMsg)
         {
-            this.Bust = v;
-            BustChangedF(this, this.Bust, ref notifyMsg);
-            if (this.Bust)
+            if (v)
+            {
                 if (this.playerType == PlayerType.NPC)
                 {
                     ((NPC)this).afterBrokeM(ref notifyMsg);
                 }
                 else if (this.playerType == PlayerType.player)
                 {
-                    ((Player)this).afterBrokeM(ref notifyMsg);
+
+                    ((Player)this).beforeBrokeM(ref notifyMsg);
                 }
+            }
+            this.Bust = v;
+            BustChangedF(this, this.Bust, ref notifyMsg);
+            //if (this.Bust)
+
+
         }
 
 
@@ -687,13 +751,14 @@ namespace HouseManager4_0
 
         public delegate void PlayerOperateF(Player player, ref List<string> notifyMsgs);
 
-        public PlayerOperateF afterBroke;
-        public void afterBrokeM(ref List<string> notifyMsg)
+        public PlayerOperateF beforeBroke;
+        public void beforeBrokeM(ref List<string> notifyMsg)
         {
-            this.afterBroke(this, ref notifyMsg);
+            //   this.InitializeTheLargestHolder(ref notifyMsg);
+            this.beforeBroke(this, ref notifyMsg);
         }
 
-        internal void SendBG(Player player, ref List<string> notifyMsg, Dictionary<string, string> Data, string crossKey)
+        internal void SendBG(Player player, ref List<string> notifyMsg, string crossKey, string Md5)
         {
             SetCrossBG obj;
             if (backgroundData.ContainsKey(crossKey))
@@ -703,13 +768,14 @@ namespace HouseManager4_0
                     c = "SetCrossBG",
                     WebSocketID = player.WebSocketID,
                     CrossID = crossKey,
-                    nx = null,
-                    ny = null,
-                    nz = null,
-                    px = null,
-                    py = null,
-                    pz = null,
+                    //nx = null,
+                    //ny = null,
+                    //nz = null,
+                    //px = null,
+                    //py = null,
+                    //pz = null,
                     IsDetalt = false,
+                    Md5Key = Md5,
                     AddNew = false
                 };
             }
@@ -720,13 +786,14 @@ namespace HouseManager4_0
                     c = "SetCrossBG",
                     WebSocketID = player.WebSocketID,
                     CrossID = crossKey,
-                    nx = Data["nx"],
-                    ny = Data["ny"],
-                    nz = Data["nz"],
-                    px = Data["px"],
-                    py = Data["py"],
-                    pz = Data["pz"],
+                    //nx = Data["nx"],
+                    //ny = Data["ny"],
+                    //nz = Data["nz"],
+                    //px = Data["px"],
+                    //py = Data["py"],
+                    //pz = Data["pz"],
                     IsDetalt = false,
+                    Md5Key = Md5,
                     AddNew = true
                 };
                 backgroundData.Add(crossKey, true);
@@ -745,14 +812,14 @@ namespace HouseManager4_0
                 c = "SetCrossBG",
                 WebSocketID = player.WebSocketID,
                 CrossID = "",
-                nx = null,
-                ny = null,
-                nz = null,
-                px = null,
-                py = null,
-                pz = null,
+                //nx = null,
+                //ny = null,
+                //nz = null,
+                //px = null,
+                //py = null,
+                //pz = null,
                 IsDetalt = true,
-                AddNew = false
+                //  AddNew = false
             };
             var url = player.FromUrl;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
@@ -770,8 +837,9 @@ namespace HouseManager4_0
         public string BTCAddress = "";
 
         public Dictionary<string, bool> backgroundData { get; set; }
+        public Action ShowCrossAfterWebUpdate = null;
 
-      
+
 
         //  public enum RewardByModel
         public delegate bool GetConnection(Player player);
@@ -780,6 +848,40 @@ namespace HouseManager4_0
         {
             return this.GetConnectionF(this);
         }
+
+        internal void ValueChanged(ref List<string> notifyMsg)
+        {
+            this.getCar().ability.MileChanged(this, this.getCar(), ref notifyMsg, "mile");
+            this.getCar().ability.BusinessChanged(this, this.getCar(), ref notifyMsg, "business");
+            this.getCar().ability.VolumeChanged(this, this.getCar(), ref notifyMsg, "volume");
+            this.getCar().ability.SpeedChanged(this, this.getCar(), ref notifyMsg, "speed");
+        }
+
+        internal void DrawTarget(int targetFpIndex, ref List<string> notifyMsg)
+        {
+            if (targetFpIndex >= 0)
+            {
+                var fp = Program.dt.GetFpByIndex(targetFpIndex);
+                if (fp == null) return;
+                var url = this.FromUrl;
+
+                DrawTarget dt = new DrawTarget()
+                {
+                    c = "DrawTarget",
+                    WebSocketID = this.WebSocketID,
+                    x = fp.MacatuoX,
+                    y = fp.MacatuoY
+                };
+
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(dt);
+                notifyMsg.Add(url);
+                notifyMsg.Add(sendMsg);
+            }
+        }
+
+        public System.Threading.Thread playerSelectDirectionTh = null;
+        //  internal Action NavigationAction = null;
+        internal RoomMain.Node NavigationData = null;
     }
     public class NPC : RoleInGame
     {
@@ -825,8 +927,9 @@ namespace HouseManager4_0
         public NPCOperateF afterReturnedM;
         internal void dealWithReturnedNPC(ref List<string> notifyMsg)
         {
-            if (!string.IsNullOrEmpty(this.molester)) { }
-            else if (!string.IsNullOrEmpty(this.challenger))
+            //if (!string.IsNullOrEmpty(this.molester)) { }
+            //else
+            if (!string.IsNullOrEmpty(this.challenger))
             {
                 this.afterReturnedM(this, ref notifyMsg);
             }
@@ -847,7 +950,7 @@ namespace HouseManager4_0
         /// <summary>
         /// 骚扰者，npc对待骚扰者的态度是教训一下即可！
         /// </summary>
-        public string molester { get { return this._molester; } }
+       // public string molester { get { return this._molester; } }
 
         public NPCOperateF BeingMolestedM;
 

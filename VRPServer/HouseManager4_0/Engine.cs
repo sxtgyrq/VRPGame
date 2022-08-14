@@ -111,7 +111,7 @@ namespace HouseManager4_0
         /// <exception cref="Exception"></exception>
         public void EditCarStateWhenActionStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, Node goPath, ref List<string> notifyMsg, out int startT_FirstPath)
         {
-            car.targetFpIndex = to;//A.更改小车目标，在其他地方引用。
+            car.targetFpIndexSet(to, ref notifyMsg);//A.更改小车目标，在其他地方引用。
 
             //car.purpose = Purpose.collect;//B.更改小车目的，用户操作控制
             //    car.changeState++;//C.更改状态用去前台更新动画   
@@ -335,92 +335,123 @@ namespace HouseManager4_0
         /// <param name="selections"></param>
         /// <param name="selectionCenter"></param>
         /// <param name="player"></param>
-        protected void StartSelectThread(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player)
+        protected bool StartSelectThreadA(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player, Action selectionIsRight, Node navigationData)
         {
             selections.RemoveAll(item => that.isZero(item));
-            int k = 0;
+            //  int k = 0;
             var oldState = player.getCar().state;
             //  bool bgHasSet = false;
-            while (true)
+            // while (true)
             {
 
-                if (isRight(selections, player.direciton, k))
+                if (isRight(selections, player.direciton, true))
                 {
-                    break;
+                    selectionIsRight();
+                    return false;
                 }
                 else
                 {
-
-                    // selections[0].start.
                     if (player.getCar().state != CarState.selecting)
                     {
                         // if (!bgHasSet) { }
-                        List<string> notifyMsg = new List<string>();
-                        for (int i = 0; i < selections.Count; i++)
+                        Action showCross = () =>
                         {
-                            player.addUsedRoad(selections[i].start.roadCode, ref notifyMsg);
-                        }
-                        player.getCar().setState(player, ref notifyMsg, CarState.selecting);
-                        that.showDirecitonAndSelection(player, selections, selectionCenter, ref notifyMsg);
-
-                        //selectionCenter.
-                        if (string.IsNullOrEmpty(selectionCenter.crossKey))
-                        {
-                            try
+                            List<string> notifyMsg = new List<string>();
+                            for (int i = 0; i < selections.Count; i++)
                             {
+                                player.addUsedRoad(selections[i].start.roadCode, ref notifyMsg);
+                            }
+                            player.getCar().setState(player, ref notifyMsg, CarState.selecting);
+                            that.showDirecitonAndSelection(player, selections, selectionCenter, ref notifyMsg);
+
+                            //selectionCenter.
+                            if (string.IsNullOrEmpty(selectionCenter.crossKey))
+                            {
+                                try
+                                {
 #warning 记录  
 
-                            }
-                            catch { }
-                        }
-                        else
-                        {
-                            if (Program.dt.AllCrossesBGData.ContainsKey(selectionCenter.crossKey))
-                            {
-                                player.SendBG(player, ref notifyMsg, Program.dt.AllCrossesBGData[selectionCenter.crossKey], selectionCenter.crossKey);
-
-                            }
-                            else if (Program.dt.AllCrossesBGData.ContainsKey(selectionCenter.postionCrossKey))
-                            {
-                                player.SendBG(player, ref notifyMsg, Program.dt.AllCrossesBGData[selectionCenter.postionCrossKey], selectionCenter.postionCrossKey);
+                                }
+                                catch { }
                             }
                             else
                             {
-                                if (Program.dt.CrossesNotHaveBGData.ContainsKey(selectionCenter.postionCrossKey))
+                                if (Program.dt.AllCrossesBGData.ContainsKey(selectionCenter.postionCrossKey))
                                 {
-                                    Program.dt.CrossesNotHaveBGData[selectionCenter.postionCrossKey] += 1;
+                                    player.SendBG(player, ref notifyMsg, selectionCenter.postionCrossKey, Program.dt.AllCrossesBGData[selectionCenter.postionCrossKey]);
                                 }
                                 else
                                 {
-                                    Program.dt.CrossesNotHaveBGData.Add(selectionCenter.postionCrossKey, 1);
-                                }
-                                if (Program.dt.CrossesNotHaveBGData[selectionCenter.postionCrossKey] % 15 == 0)
-                                {
-                                    DalOfAddress.backgroundneedjpg.Insert(selectionCenter.postionCrossKey, string.IsNullOrEmpty(selectionCenter.crossKey) ? "" : selectionCenter.crossKey);
+                                    if (Program.dt.CrossesNotHaveBGData.ContainsKey(selectionCenter.postionCrossKey))
+                                    {
+                                        Program.dt.CrossesNotHaveBGData[selectionCenter.postionCrossKey] += 1;
+                                    }
+                                    else
+                                    {
+                                        Program.dt.CrossesNotHaveBGData.Add(selectionCenter.postionCrossKey, 1);
+                                    }
+                                    if (Program.dt.CrossesNotHaveBGData[selectionCenter.postionCrossKey] % 3 == 0)
+                                    {
+                                        DalOfAddress.backgroundneedjpg.Insert(selectionCenter.postionCrossKey, string.IsNullOrEmpty(selectionCenter.crossKey) ? "" : selectionCenter.crossKey);
+                                    }
                                 }
                             }
+                            this.sendMsg(notifyMsg);
+                        };
+                        showCross();
+                        player.ShowCrossAfterWebUpdate = showCross;
+                        while (player.playerSelectDirectionTh != null && player.playerSelectDirectionTh.IsAlive)
+                        {
+                            this.ThreadSleep(40);
                         }
-                        this.sendMsg(notifyMsg);
+                        player.playerSelectDirectionTh = new Thread(() => StartSelectThreadB(selections, selectionCenter, player, oldState, selectionIsRight));
+                        player.NavigationData = navigationData;
                     }
-                    this.ThreadSleep(80);
+                    return true;
                 }
-                //ThreadSleep(250);
-                k++;
-                // $"提示，让玩家进行选择！！！");
-                if (k >= 250 * 3)
-                {
-                    break;
-                }
-
             }
-            if (player.getCar().state == CarState.selecting)
+
+        }
+
+
+        protected void StartSelectThreadB(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player, CarState oldState, Action p)
+        {
+            if (isRight(selections, player.direciton, false) || player.Bust)
             {
                 List<string> notifyMsg = new List<string>();
-                player.getCar().setState(player, ref notifyMsg, oldState);
-                player.SendBG(player, ref notifyMsg);
-
+                if (player.getCar().state == CarState.selecting)
+                {
+                    // List<string> notifyMsg = new List<string>();
+                    player.getCar().setState(player, ref notifyMsg, oldState);
+                    player.SendBG(player, ref notifyMsg);
+                }
                 this.sendMsg(notifyMsg);
+                p();
             }
+            else
+            {
+                List<string> notifyMsg = new List<string>();
+                var reduceValue = player.getCar().ability.ReduceBusinessAndVolume(player, player.getCar(), ref notifyMsg);
+                reduceValue = Math.Max(0, reduceValue);
+                SelectionIsWrong(player, reduceValue, notifyMsg);
+                this.sendMsg(notifyMsg);
+                player.playerSelectDirectionTh = new Thread(() => StartSelectThreadB(selections, selectionCenter, player, oldState, p));
+            }
+
+        }
+
+        private void SelectionIsWrong(Player player, long reduceValue, List<string> notifyMsg)
+        {
+            var obj = new SelectionIsWrong
+            {
+                c = "SelectionIsWrong",
+                WebSocketID = player.WebSocketID,
+                reduceValue = reduceValue
+            };
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            notifyMsg.Add(player.FromUrl);
+            notifyMsg.Add(json);
+            this.WebNotify(player, $"错误的选择让您损失了{reduceValue / 100}.{(reduceValue % 100) / 10}{(reduceValue % 10)}。");
         }
 
         /// <summary>
@@ -462,11 +493,16 @@ namespace HouseManager4_0
                 animations.Add(animation);
             }
         }
-        private bool isRight(List<Node.direction> selections, System.Numerics.Complex c2, int k)
+        private bool isRight(List<Node.direction> selections, System.Numerics.Complex c2, bool firstCheck)
         {
-            if (k == 0)
+            if (firstCheck)
             {
-                if (selections.Count == 0)
+                //if (that.rm.Next(100) < 20)
+                //{
+                //    return false;
+                //}
+                //else 
+                if (selections.Count < 2)
                 {
                     return true;
                 }
@@ -478,7 +514,12 @@ namespace HouseManager4_0
                              orderby that.getAngle(that.getComplex(item) / c2) ascending
                              select item)
                        .ToList()[0];
-                return first.right;
+                if (that.rm.Next(100) < 20)
+                {
+                    return false;
+                }
+                else
+                    return first.right;
             }
             else
             {

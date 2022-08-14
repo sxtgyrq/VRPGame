@@ -762,18 +762,18 @@ namespace HouseManager
         //delegate void SendStateAndPurposeF(Player player, Car car, ref List<string> notifyMsg);
         public static void SendStateOfCar(Player player, Car car, ref List<string> notifyMsg)
         {
-            var carIndexStr = car.IndexString;
+            //var carIndexStr = car.IndexString;
 
-            var obj = new BradCarState
-            {
-                c = "BradCarState",
-                WebSocketID = player.WebSocketID,
-                State = car.state.ToString(),
-                carID = carIndexStr
-            };
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-            notifyMsg.Add(player.FromUrl);
-            notifyMsg.Add(json);
+            //var obj = new BradCarState
+            //{
+            //    c = "BradCarState",
+            //    WebSocketID = player.WebSocketID,
+            //    State = car.state.ToString(),
+            //    carID = carIndexStr, 
+            //};
+            //var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            //notifyMsg.Add(player.FromUrl);
+            //notifyMsg.Add(json);
         }
         public static void SendPurposeOfCar(Player player, Car car, ref List<string> notifyMsg)
         {

@@ -90,7 +90,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="ss"></param>
         void Sell(SetSellDiamond ss);
-
+        string TakeApartF(TakeApart t);
         /// <summary>
         /// 命名为捐赠，实为存储！
         /// </summary>
@@ -107,6 +107,7 @@ namespace HouseManager4_0.interfaceOfHM
         string updateView(View v);
         string CheckCarStateF(CheckCarState ccs);
         void SystemBradcast(SystemBradcast sb);
+        string Statictis(ServerStatictis ss);
 
     }
 
@@ -133,6 +134,7 @@ namespace HouseManager4_0.interfaceOfHM
         string ClearModelObj();
         string GetUnLockedModel(CommonClass.MapEditor.GetUnLockedModel gulm);
         void UpdateModelStock(ModelStock sa);
+        string GetBG(SetCrossBG ss);
     }
 
     interface ModelTranstractionI

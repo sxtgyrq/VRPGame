@@ -180,6 +180,11 @@ namespace CommonClass
     {
         public string othersKey;
     }
+    public class DrawTarget : CommandNotify
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+    }
     public class WMsg : CommandNotify
     {
         public string Msg;
@@ -298,7 +303,10 @@ namespace CommonClass
         public int count { get; set; }
         public string pType { get; set; }
     }
-
+    public class SelectionIsWrong : CommandNotify
+    {
+        public long reduceValue { get; set; }
+    }
     public class BradCastAbility : CommandNotify
     {
         public string pType { get; set; }
@@ -310,6 +318,10 @@ namespace CommonClass
     {
         public string State { get; set; }
         public string carID { get; set; }
+        /// <summary>
+        /// 作用是保证前台能按顺序接受状态！
+        /// </summary>
+        public int countStamp { get; set; }
     }
     public class BradDiamondPrice : CommandNotify
     {
@@ -478,7 +490,10 @@ namespace CommonClass
         /// </summary>
         public double rotationY { get; set; }
     }
-
+    public class TakeApart : Command
+    {
+        public string Key { get; set; }
+    }
     public class SetBust : Command
     {
         public string Key { get; set; }
@@ -652,13 +667,14 @@ namespace CommonClass
     {
         public string CrossID { get; set; }
         public bool IsDetalt { get; set; }
+        public string Md5Key { get; set; }
         public bool AddNew { get; set; }
-        public string px { get; set; }
-        public string nx { get; set; }
-        public string py { get; set; }
-        public string ny { get; set; }
-        public string pz { get; set; }
-        public string nz { get; set; }
+        //public string px { get; set; }
+        //public string nx { get; set; }
+        //public string py { get; set; }
+        //public string ny { get; set; }
+        //public string pz { get; set; }
+        //public string nz { get; set; }
     }
     public class GetResistanceObj : Command
     {

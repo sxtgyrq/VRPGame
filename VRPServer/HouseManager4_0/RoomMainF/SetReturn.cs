@@ -43,6 +43,26 @@ namespace HouseManager4_0.RoomMainF
                             Key = keysNeedToSetReturn[i]
                         });
                     }
+                    else if (this._Players[keysNeedToSetReturn[i]].getCar().state == CarState.selecting)
+                    {
+                        if (this._Players[keysNeedToSetReturn[i]].playerType == RoleInGame.PlayerType.player)
+                        {
+                            var player = (Player)this._Players[keysNeedToSetReturn[i]];
+                            if ((player).getCar().state == CarState.selecting)
+                            {
+                                if ((player).playerSelectDirectionTh != null)
+                                {
+                                    if (!player.playerSelectDirectionTh.IsAlive)
+                                    {
+                                        if (player.playerSelectDirectionTh.ThreadState == System.Threading.ThreadState.Unstarted)
+                                        {
+                                            player.playerSelectDirectionTh.Start();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
             }

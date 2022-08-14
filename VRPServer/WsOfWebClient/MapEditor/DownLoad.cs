@@ -9,6 +9,8 @@ namespace WsOfWebClient.MapEditor
 {
     partial class Editor
     {
+       
+
         static int roomIndex = 0;
         private static void DownLoad(IApplicationBuilder app)
         {

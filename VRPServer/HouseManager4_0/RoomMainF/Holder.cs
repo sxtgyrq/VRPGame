@@ -9,6 +9,7 @@ namespace HouseManager4_0.RoomMainF
     {
         public void TheLargestHolderKeyChanged(string keyFrom, string keyTo, string roleKey, ref List<string> notifyMsg)
         {
+            return;
             /*
              * lock 机制，保证了所有的key 都存在
              */
@@ -103,7 +104,7 @@ namespace HouseManager4_0.RoomMainF
         }
         public bool isAtTheSameGroup(string player, string victim)
         {
-            return isAtTheSameGroup(this._Players[player], this._Players[victim]); 
+            return isAtTheSameGroup(this._Players[player], this._Players[victim]);
         }
     }
 }

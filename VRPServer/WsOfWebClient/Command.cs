@@ -87,6 +87,7 @@ namespace WsOfWebClient
         public string KeyLookfor { get; set; }
         public int RequestType { get; set; }
     }
+    
     public class ViewAngle : CommonClass.Command
     {
         public double rotationY { get; set; }

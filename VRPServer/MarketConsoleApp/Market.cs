@@ -83,11 +83,11 @@ namespace MarketConsoleApp
                 {
                     sleepTime = 60000 * 15;//15min
 
-                } 
+                }
                 Thread.Sleep(sleepTime);
                 var text = File.ReadAllText("config/endTime.txt");
-                endTime = DateTime.Parse(text); 
-            } 
+                endTime = DateTime.Parse(text);
+            }
         }
 
         private void tellAllPlayer(string msg)
@@ -108,11 +108,40 @@ namespace MarketConsoleApp
             }
         }
 
-        internal void startCountDown()
+        internal void startStatictis()
         {
-            // throw new NotImplementedException();
+            (new Thread(() => this.StaticAllSever())).Start(); 
         }
-
+        private void StaticAllSever()
+        {
+            while (true)
+            {
+                //  throw new NotImplementedException();
+                // Console.WriteLine(msg);
+                for (var j = 0; j < this.servers.Length; j++)
+                {
+                    var server = this.servers[j];
+                    var controllerUrl = server;
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+                            new CommonClass.ServerStatictis()
+                            {
+                                c = "ServerStatictis"
+                            });
+                    var r = Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
+                    if (string.IsNullOrEmpty(r.Result)) { }
+                    else
+                    {
+                        List<int> count = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(r.Result);
+                        var fileName = server.Replace('.', '_').Replace(':', '_');
+                        fileName = $"log/{fileName}.txt";
+                        var msg = $"{server},{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")},总共:{count[0]},玩家:{count[1]},NPC:{count[2]},在线玩家:{count[3]}";
+                        Console.WriteLine(msg);
+                        File.WriteAllText(fileName, msg);
+                    }
+                }
+                Thread.Sleep(60 * 1000);
+            }
+        }
         internal void sendInteview()
         {
             Thread th = new Thread(() => this.sendInteview(true));

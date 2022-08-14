@@ -187,7 +187,7 @@ namespace HouseManager4_0.RoomMainF
 
                     // this._Players[addItem.Key].SupportChangedF = RoomMain.SupportChanged;
 
-                    this._Players[addItem.Key].TheLargestHolderKeyChanged = this.TheLargestHolderKeyChanged;
+                    //  this._Players[addItem.Key].TheLargestHolderKeyChanged = this.TheLargestHolderKeyChanged;
                     this._Players[addItem.Key].InitializeTheLargestHolder();
 
                     // this._Players[addItem.Key].Money
@@ -205,7 +205,7 @@ namespace HouseManager4_0.RoomMainF
                     this._Players[addItem.Key].setType(RoleInGame.PlayerType.player);
                     this._Players[addItem.Key].SetLevel(1, ref notifyMsgs);
                     newPlayer.ShowLevelOfPlayerF = this.ShowLevelOfPlayerF;
-                    newPlayer.afterBroke = this.AfterPlayerBroken;
+                    newPlayer.beforeBroke = this.BeforePlayerBroken;
                     // newPlayer.driverSelected = this.driverSelected;
                     ConfigMagic(newPlayer);
                     ((Player)this._Players[addItem.Key]).direciton = getComplex(Program.dt.GetFpByIndex(fpIndex));
@@ -222,6 +222,7 @@ namespace HouseManager4_0.RoomMainF
                         {4,0}
                     };
                     ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
+                    ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null;
                 }
             }
 
@@ -314,24 +315,25 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-        private void AfterPlayerBroken(Player player, ref List<string> notifyMsgs)
+        private void BeforePlayerBroken(Player player, ref List<string> notifyMsgs)
         {
             {
-                var keys = new List<string>();
+                var players = new List<Player>();
                 foreach (var item in this._Players)
                 {
                     if (item.Value.TheLargestHolderKey == player.Key && item.Value.playerType == RoleInGame.PlayerType.player)
                     {
-                        keys.Add(item.Key);
+                        players.Add((Player)item.Value);
                     }
                 }
-                for (var i = 0; i < keys.Count; i++)
+                for (var i = 0; i < players.Count; i++)
                 {
-                    this._Players[keys[i]].InitializeTheLargestHolder(ref notifyMsgs);
+                    players[i].InitializeTheLargestHolder(ref notifyMsgs);
+                    //this._Players[keys[i]].InitializeTheLargestHolder(ref notifyMsgs);
                 }
             }
             {
-                var keys = new List<string>();
+                //var keys = new List<string>();
             }
             //  throw new NotImplementedException();
         }

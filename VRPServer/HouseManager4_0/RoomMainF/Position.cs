@@ -76,7 +76,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             if (item.Value.TheLargestHolderKey == player.Key)
                             {
-                                player.TheLargestHolderKeyChanged(item.Key, item.Value.TheLargestHolderKey, item.Key, ref notifyMsgs);
+                                //  player.TheLargestHolderKeyChanged(item.Key, item.Value.TheLargestHolderKey, item.Key, ref notifyMsgs);
                             }
                         }
                         var list = player.usedRoadsList;
@@ -131,6 +131,8 @@ namespace HouseManager4_0.RoomMainF
 
                 sendCarAbilityState(getPosition.Key);
                 sendCarStateAndPurpose(getPosition.Key);
+
+                ((Player)this._Players[getPosition.Key]).getCar().UpdateSelection();//保证前台的3D建立
             }
             return result;
         }

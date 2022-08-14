@@ -65,6 +65,7 @@ namespace WsOfWebClient
         public static string[] RMB20 = new string[] { };
         public static string[] RMB10 = new string[] { };
         public static string[] RMB5 = new string[] { };
+        public static string[] RMB1 = new string[] { };
 
         //   public static string LeaveGameModel = "";
         public static string[] LeaveGameModel = new string[] { };

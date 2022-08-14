@@ -135,7 +135,12 @@
       "ProjectGuid": "1b3943cb-2028-4637-9e6b-f5afc90cf096",
       "DisplayName": "ModelHelper",
       "ColorIndex": 9
+    },
+    "0356b2d3-b6dc-4c75-b964-cbcdab21c046": {
+      "ProjectGuid": "0356b2d3-b6dc-4c75-b964-cbcdab21c046",
+      "DisplayName": "TestCore",
+      "ColorIndex": 10
     }
   },
-  "NextColorIndex": 10
+  "NextColorIndex": 11
 }

@@ -1266,35 +1266,45 @@ THREE.OrbitControls = function (object, domElement) {
                             }
                             if (buttonIndex == 3) {
                                 //key Y  
-                                if (myGamepad.buttons[6].pressed && !myGamepad.buttons[7].pressed) {
-                                    keyFunction(function () {
-                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
-                                        objMain.ws.send(JSON.stringify({ c: 'PreviousUnLockedModel' }));
-                                    }, buttonIndex);
-                                    $.notify('PreviousUnLockedModel');
+                                switch (objMain.gamePadState) {
+                                    case 'shop':
+                                        {
+                                            if (myGamepad.buttons[6].pressed && !myGamepad.buttons[7].pressed) {
+                                                keyFunction(function () {
+                                                    var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                    objMain.ws.send(JSON.stringify({ c: 'PreviousUnLockedModel' }));
+                                                }, buttonIndex);
+                                                $.notify('PreviousUnLockedModel');
+                                            }
+                                            else if (myGamepad.buttons[7].pressed && !myGamepad.buttons[6].pressed) {
+                                                keyFunction(function () {
+                                                    var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                    objMain.ws.send(JSON.stringify({ c: 'NextUnLockedModel' }));
+                                                }, buttonIndex);
+                                                $.notify('NextUnLockedModel');
+                                            }
+                                            else if (myGamepad.buttons[7].pressed && myGamepad.buttons[6].pressed) {
+                                                keyFunction(function () {
+                                                    var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
+                                                    objMain.ws.send(JSON.stringify({ c: 'LockModelObj', name: objMain.closestObjName, used: false }));
+                                                }, buttonIndex);
+                                                objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+                                                $.notify('unlock obj');
+                                            }
+                                            else {
+                                                if (document.getElementById('confirmAlert').style.zIndex == '10') {
+                                                    document.getElementById('confirmAlert').style.zIndex = '-10';
+                                                }
+                                                objMain.mainF.removeF.clearNearObj(objMain.controls.target.x, objMain.controls.target.z, objMain.buildingShowGroup);
+                                                keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'ShowOBJFile', x: objMain.controls.target.x, z: objMain.controls.target.z })) }, buttonIndex);
+                                            }
+                                        }; break;
+                                    case 'road':
+                                        {
+                                            keyFunction(function () { showBackground(); }, buttonIndex);
+                                        }; break;
                                 }
-                                else if (myGamepad.buttons[7].pressed && !myGamepad.buttons[6].pressed) {
-                                    keyFunction(function () {
-                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
-                                        objMain.ws.send(JSON.stringify({ c: 'NextUnLockedModel' }));
-                                    }, buttonIndex);
-                                    $.notify('NextUnLockedModel');
-                                }
-                                else if (myGamepad.buttons[7].pressed && myGamepad.buttons[6].pressed) {
-                                    keyFunction(function () {
-                                        var objOperate = objMain.buildingShowGroup.getObjectByName(objMain.closestObjName);
-                                        objMain.ws.send(JSON.stringify({ c: 'LockModelObj', name: objMain.closestObjName, used: false }));
-                                    }, buttonIndex);
-                                    objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
-                                    $.notify('unlock obj');
-                                }
-                                else {
-                                    if (document.getElementById('confirmAlert').style.zIndex == '10') {
-                                        document.getElementById('confirmAlert').style.zIndex = '-10';
-                                    }
-                                    objMain.mainF.removeF.clearNearObj(objMain.controls.target.x, objMain.controls.target.z, objMain.buildingShowGroup);
-                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'ShowOBJFile', x: objMain.controls.target.x, z: objMain.controls.target.z })) }, buttonIndex);
-                                }
+
                             }
                             if (buttonIndex == 4) {
                                 //key LB

@@ -9,11 +9,40 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using static CommonClass.MapEditor;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace WsOfWebClient.MapEditor
 {
     partial class Editor
     {
+        public void ConfigureServices(IServiceCollection services)
+        {
+
+            services.AddCors(options =>
+            {
+                //options.AddPolicy(name: "MyPolicy",
+                //    builder =>
+                //    {
+                //        builder.WithOrigins("http://*");
+                //    });
+                //options.AddPolicy("AllowSpecificOrigins",
+                //builder =>
+                //{
+                //    builder.WithOrigins("http://www.nyrq123.com", "http://localhost:1978", "https://www.nyrq123.com", "*");
+                //});
+                options.AddPolicy("AllowAny", p => p.AllowAnyOrigin()
+                                                                          .AllowAnyMethod()
+                                                                          .AllowAnyHeader());
+            });
+            services.AddLogging(builder =>
+            {
+                builder.AddFilter("Microsoft", LogLevel.Error)
+                .AddFilter("System", LogLevel.Error)
+                .AddFilter("NToastNotify", LogLevel.Error)
+                .AddConsole();
+            });
+        }
         public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
         {
 
@@ -43,6 +72,10 @@ namespace WsOfWebClient.MapEditor
             app.Map("/editor", WebSocketF);
 
             app.Map("/file", DownLoad);
+
+            app.Map("/upload", Upload);
+
+            app.Map("/img", BackGroundImg);
             // app.Map("/notify", notify);
 
             //Console.WriteLine($"启动TCP连接！{ ConnectInfo.tcpServerPort}");

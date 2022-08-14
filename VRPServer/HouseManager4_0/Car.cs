@@ -10,11 +10,13 @@ namespace HouseManager4_0
     public class Car
     {
         RoleInGame role;
+        int _targetFpIndex = -1;
         public Car(RoleInGame roleInGame)
         {
             this.ability = new AbilityAndState(roleInGame);
-            this.targetFpIndex = -1;
+            this._targetFpIndex = -1;
             this.role = roleInGame;
+            this.countStamp = 0;
         }
         public enum CarState
         {
@@ -67,12 +69,23 @@ namespace HouseManager4_0
                 return this._state;
             }
         }
+        public int countStamp { get; private set; }
         public void setState(RoleInGame player, ref List<string> notifyMsg, CarState s)
         {
+
+            /*
+             * A.将状态发送至前台。
+             */
             this._state = s;
             if (player.playerType == RoleInGame.PlayerType.player)
+            {
                 SendStateAndPurpose((Player)player, this, ref notifyMsg);
+                this.countStamp++;
+            }
 
+            /*
+             * 这里不懂
+             */
             if (s == CarState.waitOnRoad)
             {
                 if (player.playerType == RoleInGame.PlayerType.NPC)
@@ -101,8 +114,27 @@ namespace HouseManager4_0
         /// <summary>
         /// 汽车的目标地点。
         /// </summary>
-        public int targetFpIndex { get; set; }
-
+        public int targetFpIndex
+        {
+            get
+            {
+                return this._targetFpIndex;
+            }
+        }
+        internal void targetFpIndexSet(int to, ref List<string> notifyMsg)
+        {
+            if (this._targetFpIndex == to) { }
+            else
+            {
+                //this.role
+                this._targetFpIndex = to;
+                if (this.role.playerType == RoleInGame.PlayerType.player)
+                {
+                    ((Player)this.role).DrawTarget(this._targetFpIndex, ref notifyMsg);
+                }
+            }
+            //  throw new NotImplementedException();
+        }
 
         /// <summary>
         ///  控制法术的被施对象的Key
@@ -194,6 +226,8 @@ namespace HouseManager4_0
             }
         }
 
+
+
         internal string IndexString
         {
             get
@@ -206,7 +240,7 @@ namespace HouseManager4_0
         internal void Refresh(RoleInGame player, ref List<string> notifyMsg)
         {
             this.setState(player, ref notifyMsg, CarState.waitAtBaseStation);
-            this.targetFpIndex = -1;
+            this._targetFpIndex = -1;
         }
 
         //private int animateHashCode = 0;
@@ -384,12 +418,19 @@ namespace HouseManager4_0
             //throw new NotImplementedException();
         }
 
-        //internal void setAnimateData(RoleInGame player, ref List<string> notifyMsg, RoomMain.Node goPath)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-
+        internal void UpdateSelection()
+        {
+            if (this.state == CarState.selecting)
+            {
+                if (this.role.playerType == RoleInGame.PlayerType.player)
+                {
+                    if (((Player)this.role).ShowCrossAfterWebUpdate != null)
+                    {
+                        ((Player)this.role).ShowCrossAfterWebUpdate();
+                    }
+                }
+            }
+        }
     }
 
 }

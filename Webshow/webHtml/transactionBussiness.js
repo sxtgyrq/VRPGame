@@ -23,6 +23,8 @@ var transactionBussiness = function () {
         divAddr.innerText = address;
         container_Editor.appendChild(divAddr);
 
+
+
         var divImgContainer = document.createElement('div');
         divImgContainer.style.textAlign = 'center';
 
@@ -39,6 +41,29 @@ var transactionBussiness = function () {
         setTimeout(f, 100);
 
         container_Editor.appendChild(divImgContainer);
+
+
+        //var divCancleBtn = document.createElement('button');
+        //divCancleBtn.id = "divCancleBtn";
+        //divCancleBtn.style.width = 'width:calc(100% - 2px)';
+        //divCancleBtn.style.wordWrap = 'anywhere';
+        //divCancleBtn.style.wordBreak = 'break-all';
+        ////word-break: break-all;
+        ////  divAddr.innerText = address;
+        ////var btnInput = document.createElement('input');
+        ////btnInput.type = 'button';
+        ////btnInput.value = '返回';
+        ////btnInput.onclick = function () {
+        ////    //objMain.ws.send(JSON.stringify({ c: 'CancleLookForBuildings' }));
+        ////};
+        //divCancleBtn.value = '×';
+        //divCancleBtn.onclick = function () {
+        //    objMain.ws.send(JSON.stringify({ c: 'CancleLookForBuildings' }));
+        //};
+        ////"";
+        //// divCancleBtn.appendChild(btnInput);
+        //// <input type="button" value="生成协议"  onclick="setTransactionHtml.generateAgreement();" />
+        //container_Editor.appendChild(divCancleBtn);
 
         document.getElementById('rootContainer').appendChild(container_Editor);
 

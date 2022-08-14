@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace WsOfWebClient
 {
+    public partial class Room { }
     public partial class Room
     {
         //public static List<string> roomUrls = new List<string>()
@@ -379,7 +380,10 @@ namespace WsOfWebClient
                 {
                     #region 校验响应
                     var checkIsOk = await CheckRespon(webSocket, "SetOnLine");
-                    if (checkIsOk) { }
+                    if (checkIsOk)
+                    {
+                        // UpdateAfter3DCreate();
+                    }
                     else
                     {
                         return null;
@@ -1033,6 +1037,43 @@ namespace WsOfWebClient
                 var checkIsOk = await CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk)
                 {
+                    //return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            #endregion
+
+            if (ConnectInfo.RMB1.Length == 0)
+            {
+                string mtl, rmbJpg;
+                {
+                    var bytes = File.ReadAllBytes("rmb/rmb1.jpg");
+                    var Base64 = Convert.ToBase64String(bytes);
+                    rmbJpg = Base64;
+                }
+                {
+                    mtl = File.ReadAllText("rmb/rmb1.mtl");
+                }
+                ConnectInfo.RMB1 = new string[] { mtl, rmbJpg };
+            }
+            {
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                {
+                    c = "SetRMB",
+                    modelBase64 = ConnectInfo.RMB1,
+                    faceValue = "rmb1"
+                });
+                var sendData = Encoding.ASCII.GetBytes(msg);
+                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            #region 校验响应
+            {
+                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                if (checkIsOk)
+                {
                     return true;
                 }
                 else
@@ -1084,6 +1125,18 @@ namespace WsOfWebClient
             await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return "";
             // throw new NotImplementedException();
+        }
+
+        internal static async Task<string> TakeApart(State s)
+        {
+            var ms = new CommonClass.TakeApart()
+            {
+                c = "TakeApart",
+                Key = s.Key,
+            };
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
+            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            return "";
         }
         internal static async Task<string> magic(State s, Skill1 s1)
         {

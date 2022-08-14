@@ -15,7 +15,7 @@ namespace ConsoleTestAPP
         {
             ModelScaleCal.Test();
             //Consol.WriteLine("你好啊，测试员！！！");
-            
+            //ThreadTest.Test();
         }
     }
 }

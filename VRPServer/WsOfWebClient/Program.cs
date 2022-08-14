@@ -75,20 +75,28 @@ B.地图编辑器WebSocket服务");
                 ConnectInfo.HostIP = ip;
                 ConnectInfo.webSocketPort = websocketPort;
                 ConnectInfo.tcpServerPort = tcpServerPort;
-                CreateWebHostBuilder(new string[] { $"http://{ip}:{ConnectInfo.webSocketPort}" }).Build().Run();
+
+                var builder = CreateWebHostBuilder(new string[] { $"http://{ip}:{ConnectInfo.webSocketPort}" });
+
+                var app = builder.Build();
+                app.Run();
+
+                //CreateWebHostBuilder(new string[] { $"http://{ip}:{ConnectInfo.webSocketPort}" })
+                //    .Build().Run();
 
                 //Consol.WriteLine("Hello World!");
             }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-WebHost.CreateDefaultBuilder(args).Configure(item => item.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-})).UseKestrel(options =>
-{
-    options.AllowSynchronousIO = true;
-})
+            WebHost.CreateDefaultBuilder(args).
+            Configure(item => item.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+            })).UseKestrel(options =>
+            {
+                options.AllowSynchronousIO = true;
+            })
 .UseUrls(args[0])
    .UseStartup<Startup>();
 

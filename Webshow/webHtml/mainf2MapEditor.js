@@ -864,10 +864,10 @@ var objMain =
                             "pz.jpg", "nz.jpg"
                         ]);
                         backgroundData['main'] = cubeTexture;
-                        objMain.scene.background = backgroundData['main'] ;
+                        objMain.scene.background = backgroundData['main'];
                     }; break;
             }
-        }, 
+        },
         backgroundData: {}
     },
     rightAndDuty:
@@ -1048,9 +1048,9 @@ var objMain =
                 }; break;
             case 'SetBackgroundScene':
                 {
-                    setScenseFromData(received_obj.r);
+                    setScenseFromData(received_obj.r, received_obj.name);
                 }; break;
-          
+
         }
     },
 
@@ -1773,7 +1773,7 @@ var set3DHtml = function () {
         //objMain.controls.minDistance = 3;
         // objMain.controls.maxPolarAngle = Math.PI;
         objMain.controls.minPolarAngle = Math.PI / 600;
-        objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 36;
+        objMain.controls.maxPolarAngle = Math.PI - Math.PI / 36;
         objMain.controls.minDistance = 2;
         objMain.controls.maxDistance = 256;
     }
@@ -2930,24 +2930,22 @@ var uploadObj =
 };
 
 var setScense = function () {
-    if (window.localStorage.px != undefined) {
+    if (window.localStorage['crossName'] != undefined) {
         var cubeTextureLoader = new THREE.CubeTextureLoader();
-        cubeTextureLoader.setPath('');
-        //var cubeTexture = cubeTextureLoader.load([
-        //    "xi_r.jpg", "dong_r.jpg",
-        //    "ding_r.jpg", "di_r.jpg",
-        //    "nan_r.jpg", "bei_r.jpg"
-        //]);
+        //https://www.nyrq123.com/websockettaiyuaneditor/upload
+        cubeTextureLoader.setPath('https://www.nyrq123.com/websockettaiyuaneditor/img/' + window.localStorage['crossName'] + '/');
+        var suffix = '?rm=' + Date.now();
         var cubeTexture = cubeTextureLoader.load([
-            window.localStorage.px, window.localStorage.nx,
-            window.localStorage.py, window.localStorage.ny,
-            window.localStorage.pz, window.localStorage.nz
+            'px.jpg' + suffix, 'nx.jpg' + suffix,
+            'py.jpg' + suffix, 'ny.jpg' + suffix,
+            'pz.jpg' + suffix, 'nz.jpg' + suffix
         ]);
         objMain.scene.background = cubeTexture;
     }
 }
-var setScenseFromData = function (r) {
-    if (window.localStorage.px != undefined) {
+var setScenseFromData = function (r, name) {
+    //if (window.localStorage.px != undefined)
+    {
         if (r.hasValue) {
             var cubeTextureLoader = new THREE.CubeTextureLoader();
             cubeTextureLoader.setPath('');
@@ -2973,7 +2971,7 @@ var setScenseFromData = function (r) {
         else {
             objMain.scene.background = objMain.defaultCube;
         }
-
+        window.localStorage['crossName'] = name;
     }
 }
 var uploadBackground = function () {
@@ -2982,18 +2980,22 @@ var uploadBackground = function () {
         var backgroundData =
         {
             'c': 'SetBG',
-            'px': window.localStorage.px,
-            'nx': window.localStorage.nx,
-            'py': window.localStorage.py,
-            'ny': window.localStorage.ny,
-            'pz': window.localStorage.pz,
-            'nz': window.localStorage.nz,
         };
         var json = JSON.stringify(backgroundData);
         objMain.ws.send(json);
     }
     //var json = JSON.stringify({ c: 'ViewAngle', x1: objMain.camera.position.x, y1: -objMain.camera.position.z, x2: objMain.controls.target.x, y2: -objMain.controls.target.z });
     //objMain.ws.send(json);
+}
+var showBackground = function () {
+    if (window.localStorage.px != undefined) {
+        var backgroundData =
+        {
+            'c': 'showBackground',
+        };
+        var json = JSON.stringify(backgroundData);
+        objMain.ws.send(json);
+    }
 }
 //////////
 /*

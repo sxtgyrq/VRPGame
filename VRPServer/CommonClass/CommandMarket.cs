@@ -25,7 +25,11 @@ namespace CommonClass
     }
     public class SystemBradcast : Command
     {
-        public string msg { get; set; } 
+        public string msg { get; set; }
+    }
+    public class ServerStatictis : Command
+    {
+        //public string msg { get; set; }
     }
     public class BuyDiamondInMarket : Command
     {

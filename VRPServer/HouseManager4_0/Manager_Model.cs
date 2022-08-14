@@ -8,8 +8,10 @@ using static HouseManager4_0.Car;
 
 namespace HouseManager4_0
 {
-    public class Manager_Model : Manager
+    public partial class Manager_Model : Manager
     {
+
+
         public Manager_Model(RoomMain roomMain)
         {
             this.roomMain = roomMain;
@@ -80,21 +82,19 @@ namespace HouseManager4_0
                                             var models = that.goodsM.GetConnectionModels(player.getCar().targetFpIndex);
                                             if (models.Count(item => item.modelID == m.selectObjName) > 0)
                                             {
-
                                                 var hash = (m.Key + m.selectObjName).GetHashCode();
                                                 var newRm = new System.Random(hash);
                                                 hash = newRm.Next(5);
-
                                                 int defendLevel = 1;
-                                                if (Program.dt.modelsStocks.ContainsKey(m.selectObjName))
+                                                string rewardLittleReason;
+                                                if (string.IsNullOrEmpty(player.BTCAddress))
                                                 {
-                                                    string rewardLittleReason;
-                                                    if (string.IsNullOrEmpty(player.BTCAddress))
-                                                    {
-                                                        rewardLittleReason = ",你还没有登录，登录可获取更多加成。";
-                                                        defendLevel = 1;
-                                                    }
-                                                    else if (Program.dt.modelsStocks[m.selectObjName].stocks.ContainsKey(player.BTCAddress))
+                                                    rewardLittleReason = ",你还没有登录，登录可获取更多加成。";
+                                                    defendLevel = 1;
+                                                }
+                                                else if (Program.dt.modelsStocks.ContainsKey(m.selectObjName))
+                                                {
+                                                    if (Program.dt.modelsStocks[m.selectObjName].stocks.ContainsKey(player.BTCAddress))
                                                     {
                                                         defendLevel = 3;
                                                         var sum = Program.dt.modelsStocks[m.selectObjName].stocks.Sum(item => item.Value);
@@ -114,6 +114,16 @@ namespace HouseManager4_0
                                                         rewardLittleReason = ",你在此处还没有股份，成为股东获取更多加成！";
                                                         defendLevel = 2;
                                                     }
+                                                }
+                                                else
+                                                {
+                                                    rewardLittleReason = ",你在此处还没有股份，成为股东获取更多加成！";
+                                                    defendLevel = 2;
+                                                }
+                                                {
+
+
+
                                                     if (hash < 1)
                                                     {
                                                         if (player.buildingReward.ContainsKey(hash)) { }
@@ -126,26 +136,24 @@ namespace HouseManager4_0
                                                         {
                                                             case 0:
                                                                 {
-                                                                    this.WebNotify(player, $"招募+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                    this.WebNotify(player, $"招募力+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                 }; break;
                                                         }
                                                     }
                                                     else if (hash < 5)
                                                     {
+                                                        if (player.buildingReward.ContainsKey(hash)) { }
+                                                        else
+                                                        {
+                                                            return "";
+                                                        }
                                                         if (player.getCar().ability.driver == null)
                                                         {
                                                             this.WebNotify(player, "你还没有选司机，没有获得任何奖励");
                                                         }
                                                         else
                                                         {
-                                                            if (player.buildingReward.ContainsKey(hash))
-                                                            {
-
-                                                            }
-                                                            else
-                                                            {
-                                                                player.buildingReward.Add(hash, defendLevel);
-                                                            }
+                                                            player.buildingReward[hash] += defendLevel;
                                                             switch (player.getCar().ability.driver.race)
                                                             {
                                                                 case CommonClass.driversource.Race.immortal:
@@ -210,22 +218,14 @@ namespace HouseManager4_0
                                                                                 }; break;
                                                                             case 4:
                                                                                 {
-                                                                                    this.WebNotify(player, $"比拼强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    this.WebNotify(player, $"强化冲撞几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                 }; break;
                                                                         };
                                                                     }; break;
                                                             }
                                                         }
                                                     }
-                                                    //for(int i=0;)
                                                 }
-                                                else
-                                                {
-                                                    WebNotify(player, "稍等，系统正在从区块链获取信息！");
-                                                }
-
-
-
                                             }
                                         }; break;
                                     default:
@@ -277,5 +277,11 @@ namespace HouseManager4_0
             ignoreLost,//10
             ingoreAmbush//11
         }
+    }
+    public partial class Manager_Model
+    {
+        public const int IgnorePhysics = 50;
+        public const int IgnoreMagic = 30;
+        public const int IgnoreControl = 25;
     }
 }

@@ -121,7 +121,7 @@
         </div>
 <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="">
+        margin-top: 0.25em;" onclick="dialogSys.toBeMyBoss('${obj.KeyLookfor}');">
             认作老大
         </div>
         <div style="background: yellowgreen;

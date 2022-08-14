@@ -11,19 +11,35 @@ namespace CubeImageTool
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("你好，欢迎使用720°下载器！");
-            while (true)
+            Console.WriteLine(
+                @"A:下载
+B:Cube To Panorama");
+            var switchItem = Console.ReadLine().Trim().ToUpper();
+            switch (switchItem)
             {
-                var t = Task.Run<string>(() => Contact()).Result;
-                Console.WriteLine(t);
-                Console.WriteLine("C继续");
-                if (Console.ReadLine().ToLower().Trim() == "c")
-                { }
-                else
-                {
-                    break;
-                }
+                case "B":
+                    {
+                        Console.WriteLine("Cube To Panorama，生成器！");
+                        CubeToPanorama.Generate();
+                    }; break;
+                default:
+                    {
+                        Console.WriteLine("你好，欢迎使用720°下载器！");
+                        while (true)
+                        {
+                            var t = Task.Run<string>(() => Contact()).Result;
+                            Console.WriteLine(t);
+                            Console.WriteLine("C继续");
+                            if (Console.ReadLine().ToLower().Trim() == "c")
+                            { }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }; break;
             }
+
         }
 
         private static async Task<string> Contact()
@@ -74,7 +90,7 @@ namespace CubeImageTool
                 }
             }
             //Consol.WriteLine($"seckey={seckey}");
-            Console.ReadLine();
+          //  Console.ReadLine();
 
             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(16 * 512, 8 * 512);
 

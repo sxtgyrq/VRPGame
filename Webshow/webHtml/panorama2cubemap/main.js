@@ -200,7 +200,7 @@ var writeIntoLh = function () {
             ctx.drawImage(this, 0, 0, widthOfImage, widthOfImage);
             dataURL = canvas.toDataURL(outputFormat);
             window.localStorage[titleOfImage] = dataURL;
-           // callback(dataURL);
+            // callback(dataURL);
         };
         img.src = src;
         if (img.complete || img.complete === undefined) {
@@ -221,4 +221,59 @@ var writeIntoLh = function () {
         )
     }
     //  window.localStorage.cubeValue = JSON.stringify(cubeValue);
+}
+
+var writeToServer = function () {
+    //var   window.localStorage[]
+
+    var crossName = window.localStorage['crossName'];
+    if (crossName) { }
+    else
+    {
+        alert('没有路口数据');
+        return;
+    }
+    var faces = document.getElementById('faces');
+    for (var i = 0; i < faces.children.length; i++) {
+        var face = faces.children[i];
+        //var href = face.href;
+        //var title = face.title;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', face.href, true);
+        xhr.responseType = 'blob';
+        xhr.onload = function (e) {
+            if (this.status == 200) {
+                var myBlob = this.response;
+                //console.log('myBlob:', myBlob);
+                //console.log('myBlob:' + title, e);
+                //console.log('myBlob:' + title, this);
+                var faces = document.getElementById('faces');
+                var title = 'null';
+                for (var j = 0; j < faces.children.length; j++) {
+                    var face = faces.children[j];
+                    if (face.href == this.responseURL) {
+                        title = face.title;
+                        var fd = new FormData();
+                        fd.append('crossName', crossName);
+                        fd.append('fname', title);
+
+                        fd.append('data', myBlob);
+                        $.ajax({
+                            type: 'POST',
+                            url: 'https://www.nyrq123.com/websockettaiyuaneditor/upload',
+                            data: fd,
+                            processData: false,
+                            contentType: false
+                        }).done(function (data) {
+                            console.log(data);
+                        });
+                        continue;
+                    }
+                }
+                console.log('myBlob:' + title, myBlob);
+            }
+        };
+        xhr.send();
+    }
+
 }

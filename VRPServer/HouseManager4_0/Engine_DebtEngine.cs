@@ -16,7 +16,7 @@ namespace HouseManager4_0
         {
             this.roomMain = roomMain;
         }
-        internal class attackTool : interfaceOfHM.AttackT
+        internal partial class attackTool : interfaceOfHM.AttackT
         {
             public bool isMagic { get { return false; } }
 
@@ -44,7 +44,10 @@ namespace HouseManager4_0
                 }
                 else
                 {
-                    return driver.defensiveOfPhysics;
+                    if (this.PhysicsIsIgnored())
+                        return Math.Max(0, driver.defensiveOfPhysics - Manager_Model.IgnorePhysics);
+                    else
+                        return driver.defensiveOfPhysics;
                 }
             }
 
@@ -54,11 +57,11 @@ namespace HouseManager4_0
                 {
                     if (driver == null)
                     {
-                        return Program.rm.magicE.DefencePhysicsAdd;
+                        return Math.Max(0, Program.rm.magicE.DefencePhysicsAdd - (this.PhysicsIsIgnored() ? Manager_Model.IgnorePhysics : 0));
                     }
                     else
                     {
-                        return driver.defensiveOfPhysics + Program.rm.magicE.DefencePhysicsAdd;
+                        return Math.Max(0, driver.defensiveOfPhysics + Program.rm.magicE.DefencePhysicsAdd - (this.PhysicsIsIgnored() ? Manager_Model.IgnorePhysics : 0));
                     }
                 }
                 else
@@ -69,8 +72,13 @@ namespace HouseManager4_0
 
             public string GetSkillName()
             {
-                return "业务切磋";
+                return "冲撞";
             }
+
+            //public bool Ignore(ref RoleInGame role, ref System.Random rm)
+            //{
+
+            //}
 
             //public long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation)
             //{
@@ -113,17 +121,72 @@ namespace HouseManager4_0
                 // throw new NotImplementedException();
             }
 
+            public int MagicImprovedValue(RoleInGame player)
+            {
+                return 0;
+                //throw new NotImplementedException();
+            }
+
+            public void ReduceMagicImprovedValue(RoleInGame player)
+            {
+                // throw new NotImplementedException();
+            }
+
             public void setCost(long reduce, RoleInGame player, Car car, ref List<string> notifyMsg)
             {
                 car.ability.setCostBusiness(car.ability.costBusiness + reduce, player, car, ref notifyMsg);
             }
         }
+        internal partial class attackTool
+        {
+            bool _physicsIsIgnored = false;
+            public bool PhysicsIsIgnored()
+            {
+                return _physicsIsIgnored;
+                // throw new NotImplementedException();
+            }
+            public void IgnorePhysics(ref RoleInGame role, ref System.Random rm)
+            {
+                var driver = role.getCar().ability.driver;
+                if (driver == null) _physicsIsIgnored = false;
+                else if (rm.Next(100) < role.buildingReward[1] / 2) _physicsIsIgnored = true;
+                else _physicsIsIgnored = false;
+            }
+
+            public void ReduceIgnorePhysics(ref RoleInGame role)
+            {
+                var reduceValue = role.buildingReward[1] / 20;
+                reduceValue = Math.Max(reduceValue, 1);
+                role.buildingReward[1] -= reduceValue;
+                _physicsIsIgnored = false;
+            }
+        }
+
+        internal partial class attackTool : interfaceOfHM.AttackIgnore
+        {
+            public void Ignore(ref RoleInGame role, ref System.Random rm)
+            {
+                this.IgnorePhysics(ref role, ref rm);
+            }
+
+            public bool Ignored()
+            {
+                return this.PhysicsIsIgnored();
+            }
+
+            public void ReduceIgnore(ref RoleInGame role)
+            {
+                this.ReduceIgnorePhysics(ref role);
+            }
+        }
+
         public void newThreadDo(baseC bObj)
         {
             if (bObj.c == "debtOwner")
             {
                 var dOwner = (commandWithTime.debtOwner)bObj;
-                this.setDebt(dOwner, new attackTool());
+                var at = new attackTool();
+                this.setDebt(dOwner, at);
             }
             //throw new NotImplementedException();
         }
@@ -149,8 +212,6 @@ namespace HouseManager4_0
             //Thread th = new Thread(() => setDebt(startT,);
             //th.Start();
         }
-
-
 
         internal void setDebt(commandWithTime.debtOwner dOwner, interfaceOfHM.AttackT at)
         {
@@ -233,7 +294,7 @@ namespace HouseManager4_0
                         //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
                         {
                             car.setState(player, ref notifyMsg, CarState.returning);
-                            that.retutnE.SetReturnT(0, new commandWithTime.returnning()
+                            that.retutnE.SetReturnT(5, new commandWithTime.returnning()
                             {
                                 c = "returnning",
                                 key = dOwner.key,
@@ -266,6 +327,121 @@ namespace HouseManager4_0
             // Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
 
         }
+
+        //internal void setDebt(commandWithTime.debtOwner dOwner, interfaceOfHM.AttackTByPhysics at)
+        //{
+        //    List<string> notifyMsg = new List<string>();
+        //    //  bool needUpdatePlayers = false;
+        //    lock (that.PlayerLock)
+        //    {
+        //        var player = that._Players[dOwner.key];
+        //        var car = that._Players[dOwner.key].getCar();
+        //        // car.targetFpIndex = this._Players[dor.key].StartFPIndex;
+        //        ;
+        //        if (at.CheckCarState(car))
+        //        {
+        //            if (car.targetFpIndex == -1)
+        //            {
+        //                throw new Exception("居然来了一个没有目标的车！！！");
+        //            }
+        //            else
+        //            {
+        //                /*
+        //                 * 当到达地点时，有可能攻击对象不存在。
+        //                 * 也有可能攻击对象已破产。
+        //                 * 还有正常情况。
+        //                 * 这三种情况都要考虑到。
+        //                 */
+        //                //attackTool at = new attackTool();
+        //                // var attackMoney = car.ability.Business;
+        //                if (that._Players.ContainsKey(dOwner.victim))
+        //                {
+        //                    var victim = that._Players[dOwner.victim];
+        //                    if (!victim.Bust)
+        //                    {
+        //                        var percentValue = getAttackPercentValue(player, victim);
+        //                        percentValue = at.DealWithPercentValue(percentValue, player, victim, this.that);
+        //                        //if(victim.Money*100/ car.ability.Business)
+        //                        long reduceSum = 0;
+        //                        var m = victim.Money - reduceSum;
+        //                        long reduce;
+        //                        if (m > 0)
+        //                        {
+        //                            this.DealWithReduceWhenAttack(at, player, car, victim, percentValue, ref notifyMsg, out reduce, m, ref reduceSum);
+        //                        }
+        //                        else
+        //                        {
+        //                            reduceSum = 0;
+        //                            reduce = 0;
+        //                        }
+        //                        if (at.isMagic)
+        //                        {
+        //                            that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref reduceSum);
+        //                            at.MagicAnimateShow(player, victim, ref notifyMsg);
+        //                        }
+
+        //                        if (reduceSum > 0)
+        //                            victim.MoneySet(victim.Money - reduceSum, ref notifyMsg);
+        //                        if (reduce > 0)
+        //                            this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
+        //                        if (victim.Money == 0)
+        //                        {
+        //                            victim.SetBust(true, ref notifyMsg);
+        //                        }
+        //                        if (victim.playerType == RoleInGame.PlayerType.NPC)
+        //                        {
+        //                            ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        //这种情况也有可能存在。
+        //                    }
+
+        //                }
+        //                else
+        //                {
+        //                    //这种情况有可能存在.
+        //                }
+        //                /*
+        //                 * 无论什么情况，直接返回。
+        //                 */
+        //                //  if (car.ability.leftBusiness <= 0 && car.ability.leftVolume <= 0)
+        //                {
+        //                    car.setState(player, ref notifyMsg, CarState.returning);
+        //                    that.retutnE.SetReturnT(5, new commandWithTime.returnning()
+        //                    {
+        //                        c = "returnning",
+        //                        key = dOwner.key,
+        //                        // car = dOwner.car,
+        //                        //returnPath = dOwner.returnPath,//returnPath_Record,
+        //                        target = dOwner.target,
+        //                        changeType = dOwner.changeType,
+        //                        returningOjb = dOwner.returningOjb
+        //                    });
+
+        //                }
+        //                //else
+        //                //{
+        //                //    car.setState(player, ref notifyMsg, CarState.waitOnRoad);
+        //                //}
+        //            }
+        //        }
+        //        else
+        //        {
+        //            throw new Exception("car.state == CarState.buying!或者 dor.changeType不是四种类型");
+        //        }
+        //    }
+        //    for (var i = 0; i < notifyMsg.Count; i += 2)
+        //    {
+        //        var url = notifyMsg[i];
+        //        var sendMsg = notifyMsg[i + 1];
+        //        //Consol.WriteLine($"url:{url}");
+        //        Startup.sendMsg(url, sendMsg);
+        //    }
+        //    // Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}执行setReturn结束");
+
+        //}
         internal long DealWithReduceWhenSimulationWithoutDefendMagic(interfaceOfHM.AttackT at, RoleInGame player, Car car, RoleInGame victim, long percentValue)
         {
             var attackMoneyBeforeDefend = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
@@ -273,8 +449,11 @@ namespace HouseManager4_0
         }
         internal void DealWithReduceWhenAttack(interfaceOfHM.AttackT at, RoleInGame player, Car car, RoleInGame victim, long percentValue, ref List<string> notifyMsg, out long reduce, long m, ref long reduceSum)
         {
-            var attackMoneyBeforeDefend = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100;
-            var attackMoneyAfterDefend = (at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100) * percentValue / 100;
+            var improvedV = at.MagicImprovedValue(player);
+            at.Ignore(ref player, ref that.rm);
+
+            var attackMoneyBeforeDefend = ((at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100) * percentValue / 100) * (100 + improvedV) / 100;
+            var attackMoneyAfterDefend = ((at.leftValue(car.ability) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100) * percentValue / 100) * (100 + improvedV) / 100;
             attackMoneyBeforeDefend = Math.Max(1, attackMoneyBeforeDefend);
             attackMoneyAfterDefend = Math.Max(1, attackMoneyAfterDefend);
 
@@ -286,8 +465,8 @@ namespace HouseManager4_0
                 attackMoney = attackMoneyAfterDefend;
                 victim.improvementRecord.reduceDefend(victim, attackMoneyBeforeDefend, ref notifyMsg);
             }
-
-            attackMoney = at.ImproveAttack(player, attackMoney, ref notifyMsg);
+            if (!at.isMagic)
+                attackMoney = at.ImproveAttack(player, attackMoney, ref notifyMsg);
             reduce = attackMoney;
             if (reduce > m)
             {
@@ -299,6 +478,14 @@ namespace HouseManager4_0
             this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
             this.WebNotify(victim, $"【{player.PlayerName}】对你进行了{at.GetSkillName()}，损失{(reduce / 100.00).ToString("f2")}金币 ");
             reduceSum += reduce;
+            if (at.Ignored())
+            {
+                that.WebNotify(player, $"你忽略了其抵抗{at.GetSkillName()}的能力！");
+                that.WebNotify(victim, $"【{player.PlayerName}】忽略了你的抵抗{at.GetSkillName()}的能力！");
+                at.ReduceIgnore(ref player);
+            }
+            if (improvedV > 0)
+                at.ReduceMagicImprovedValue(player);
         }
 
 

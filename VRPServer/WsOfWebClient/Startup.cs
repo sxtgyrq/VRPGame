@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -26,11 +27,28 @@ namespace WsOfWebClient
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "MyPolicy",
-                    builder =>
-                    {
-                        builder.WithOrigins("http://*");
-                    });
+                //options.AddPolicy(name: "MyPolicy",
+                //    builder =>
+                //    {
+                //        builder.WithOrigins("http://*");
+                //    });
+                //options.AddPolicy("AllowSpecificOrigins",
+                //builder =>
+                //{
+                //    builder.WithOrigins("http://www.nyrq123.com", "http://localhost:1978", "https://www.nyrq123.com", "*");
+                //});
+                options.AddPolicy("AllowAny", p => p.AllowAnyOrigin()
+                                                                          .AllowAnyMethod()
+                                                                          .AllowAnyHeader());
+            });
+
+            //↓↓↓此处代码是设置App console等级↓↓↓
+            services.AddLogging(builder =>
+            {
+                builder.AddFilter("Microsoft", LogLevel.Error)
+                .AddFilter("System", LogLevel.Error)
+                .AddFilter("NToastNotify", LogLevel.Error)
+                .AddConsole();
             });
         }
 
@@ -44,6 +62,8 @@ namespace WsOfWebClient
             {
                 app.UseDeveloperExceptionPage();
             }
+            //app.log
+
             app.UseWebSockets();
             // app.useSt(); // For the wwwroot folder
             //app.UseStaticFiles(new StaticFileOptions
@@ -62,7 +82,9 @@ namespace WsOfWebClient
             app.UseWebSockets(webSocketOptions);
 
             app.Map("/websocket", WebSocketF);
-
+            // app.UseCors("AllowAny");
+            app.Map("/bgimg", BackGroundImg);
+            //app.Map("/websocket", WebSocketF);
             // app.Map("/notify", notify);
 
             //Consol.WriteLine($"启动TCP连接！{ ConnectInfo.tcpServerPort}");
@@ -186,6 +208,68 @@ namespace WsOfWebClient
                 }
             });
         }
+        static int indexOfCall = 0;
+
+        private static void BackGroundImg(IApplicationBuilder app)
+        {
+            app.UseCors("AllowAny");
+            app.Run(async context =>
+            {
+                try
+                {
+                    // throw new NotImplementedException();
+                    var pathValue = context.Request.Path.Value;
+                    //Console.Write($" {context.Request.Path.Value}");
+                    var regex = new System.Text.RegularExpressions.Regex("^/[a-zA-Z0-9]{32}/[np]{1}[xyz]{1}.jpg$");
+                    if (regex.IsMatch(pathValue))
+                    {
+                        var filePath = $"{Room.ImgPath}{pathValue}";
+                        if (File.Exists(filePath))
+                        {
+                            await getImage(filePath, context.Response);
+                        }
+                        {
+                            indexOfCall++;
+                            indexOfCall = indexOfCall % Room.roomUrls.Count;
+                            var fileName = pathValue.Split('/').Last();
+                            var dataGetFromDB = await Room.getImg(indexOfCall, pathValue.Split('/')[1], fileName);
+                            if (dataGetFromDB.Length > 0)
+                            {
+                                await getImage(dataGetFromDB, context.Response);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    //throw e;
+                }
+                //if (context.WebSockets.IsWebSocketRequest)
+                //{
+
+                //    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+                //    await Echo(webSocket);
+                //}
+            });
+        }
+
+        private static async Task getImage(string path, HttpResponse Response)
+        {
+            Response.ContentType = "image/jpeg";
+            {
+                var bytes = await File.ReadAllBytesAsync(path);
+                await Response.Body.WriteAsync(bytes, 0, bytes.Length);
+            }
+        }
+        private static async Task getImage(byte[] bytes, HttpResponse Response)
+        {
+            Response.ContentType = "image/jpeg";
+            {
+                await Response.Body.WriteAsync(bytes, 0, bytes.Length);
+            }
+        }
+        //BackGroundImg
 
         private static async Task Echo(System.Net.WebSockets.WebSocket webSocket)
         {
@@ -595,7 +679,10 @@ namespace WsOfWebClient
                                     GetResistance gr = Newtonsoft.Json.JsonConvert.DeserializeObject<GetResistance>(returnResult.result);
                                     await Room.GetResistanceF(s, gr);
                                 }; break;
-
+                            case "TakeApart":
+                                {
+                                    await Room.TakeApart(s);
+                                }; break;
                         }
                     }
                     catch (Exception e)

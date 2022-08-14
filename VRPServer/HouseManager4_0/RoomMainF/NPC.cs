@@ -51,7 +51,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             if (item.Value.TheLargestHolderKey == npc.Key)
                             {
-                                npc.TheLargestHolderKeyChanged(item.Key, item.Value.TheLargestHolderKey, item.Key, ref notifyMsgs);
+                               // npc.TheLargestHolderKeyChanged(item.Key, item.Value.TheLargestHolderKey, item.Key, ref notifyMsgs);
                             }
                         }
                         success = true;

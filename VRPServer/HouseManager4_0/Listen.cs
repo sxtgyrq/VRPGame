@@ -335,6 +335,21 @@ namespace HouseManager4_0
                             CommonClass.GetResistanceObj r = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.GetResistanceObj>(notifyJson);
                             outPut = objI.GetResistance(r);
                         }; break;
+                    case "TakeApart":
+                        {
+                            CommonClass.TakeApart t = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TakeApart>(notifyJson);
+                            outPut = objI.TakeApartF(t);
+                        }; break;
+                    case "ServerStatictis":
+                        {
+                            CommonClass.ServerStatictis ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ServerStatictis>(notifyJson);
+                            outPut = objI.Statictis(ss);
+                        }; break;
+                    case "GetCrossBG":
+                        {
+                            CommonClass.SetCrossBG ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetCrossBG>(notifyJson);
+                            outPut = objI.GetBG(ss);
+                        }; break;
                 }
             }
             {

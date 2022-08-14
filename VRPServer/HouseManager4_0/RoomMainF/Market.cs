@@ -270,6 +270,45 @@ namespace HouseManager4_0.RoomMainF
                 WebNotify(role, "市场没开放！");
             }
         }
+
+        public string TakeApartF(TakeApart t)
+        {
+            List<string> notifyMsg = new List<string>();
+            lock (this.PlayerLock)
+                if (this._Players.ContainsKey(t.Key))
+                {
+                    var role = (Player)this._Players[t.Key];
+                    if (role.Bust) { }
+                    //else if(player.)
+                    else
+                    {
+                        if (role.getCar().state == Car.CarState.waitAtBaseStation)
+                        {
+                            role.PromoteDiamondCount["mile"] += role.getCar().ability.getDataCount("mile")[0];
+                            role.PromoteDiamondCount["business"] += role.getCar().ability.getDataCount("business")[0];
+                            role.PromoteDiamondCount["volume"] += role.getCar().ability.getDataCount("volume")[0];
+                            role.PromoteDiamondCount["speed"] += role.getCar().ability.getDataCount("speed")[0];
+                            // if (player.playerType == RoleInGame.PlayerType.player)
+                            this.SendPromoteCountOfPlayer("mile", role.PromoteDiamondCount["mile"], role, ref notifyMsg);
+                            this.SendPromoteCountOfPlayer("business", role.PromoteDiamondCount["business"], role, ref notifyMsg);
+                            this.SendPromoteCountOfPlayer("volume", role.PromoteDiamondCount["volume"], role, ref notifyMsg);
+                            this.SendPromoteCountOfPlayer("speed", role.PromoteDiamondCount["speed"], role, ref notifyMsg);
+                            role.getCar().ability.AbilityClear("mile", role, role.getCar(), ref notifyMsg);
+                            role.getCar().ability.AbilityClear("business", role, role.getCar(), ref notifyMsg);
+                            role.getCar().ability.AbilityClear("volume", role, role.getCar(), ref notifyMsg);
+                            role.getCar().ability.AbilityClear("speed", role, role.getCar(), ref notifyMsg);
+                        }
+                    }
+                }
+            for (var i = 0; i < notifyMsg.Count; i += 2)
+            {
+                var url = notifyMsg[i];
+                var sendMsg = notifyMsg[i + 1];
+                //Consol.WriteLine($"url:{url}");
+                Startup.sendMsg(url, sendMsg);
+            }
+            return "";
+        }
         public void Sell(SetSellDiamond ss)
         {
             if (ss.count > 50 || ss.count < 0)

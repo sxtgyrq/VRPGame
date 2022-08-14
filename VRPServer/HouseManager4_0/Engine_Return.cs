@@ -29,7 +29,7 @@ namespace HouseManager4_0
             {
                 var player = that._Players[rObj.key];
                 var car = that._Players[rObj.key].getCar();
-                car.targetFpIndex = that._Players[rObj.key].StartFPIndex;
+                car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
                 ReturnThenSetComeBack(player, car, rObj, ref notifyMsg);
             }
             for (var i = 0; i < notifyMsg.Count; i += 2)
@@ -77,7 +77,7 @@ namespace HouseManager4_0
                 // result.RemoveAll(item => item.t == 0);
 
                 car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
-                car.targetFpIndex = self.StartFPIndex;
+                car.targetFpIndexSet(self.StartFPIndex, ref notifyMsg);
 
                 Data.PathStartPoint2 startPosition;
                 if (cmp.returningOjb.returnToSelfAddrPath.path.Count == 0)
@@ -163,7 +163,7 @@ namespace HouseManager4_0
                             // result.RemoveAll(item => item.t == 0);
 
                             car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
-                            car.targetFpIndex = self.StartFPIndex;
+                            car.targetFpIndexSet(self.StartFPIndex, ref notifyMsg);
                             var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255);
                             animations.Add(animation);
                         }
@@ -219,7 +219,7 @@ namespace HouseManager4_0
                             // result.RemoveAll(item => item.t == 0);
 
                             car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
-                            car.targetFpIndex = boss.StartFPIndex;
+                            car.targetFpIndexSet(boss.StartFPIndex, ref notifyMsg);
 
                             /* 
                              * A:这里的if 是正常情况
@@ -320,61 +320,69 @@ namespace HouseManager4_0
                     if (step == 0)
                     {
                         this.ThreadSleep(startT + 50);
+                        Action p = () =>
+                        {
+                            step++;
+                            List<string> notifyMsg = new List<string>();
+                            int newStartT;
+                            if (step < goPath.path.Count)
+                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                            else
+                                newStartT = 0;
+
+                            car.setState(player, ref notifyMsg, CarState.returning);
+                            this.sendMsg(notifyMsg);
+                            StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
+
+                        };
                         if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
                         {
-
+                            p();
                         }
                         else
                         {
-                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
                         }
-                        step++;
-                        List<string> notifyMsg = new List<string>();
-                        int newStartT;
-                        if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        else
-                            newStartT = 0;
-
-                        car.setState(player, ref notifyMsg, CarState.returning);
-                        this.sendMsg(notifyMsg);
-                        StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
                     }
                     else
                     {
                         this.ThreadSleep(startT);
+                        Action p = () =>
+                        {
+                            step++;
+                            List<string> notifyMsg = new List<string>();
+                            int newStartT;
+
+                            if (step == goPath.path.Count - 1)
+                            {
+                                //  car.setState(player, ref notifyMsg, CarState.returning);
+                                int positionInStation;
+                                if (player.Key == targetPlayer.Key)
+                                {
+                                    positionInStation = targetPlayer.positionInStation;
+                                }
+                                else
+                                    positionInStation = targetPlayer.positionInStation + 1;
+                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                            }
+                            else
+                            {
+
+                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                            }
+                            car.setState(player, ref notifyMsg, CarState.returning);
+                            this.sendMsg(notifyMsg);
+                            StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
+                        };
                         if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
                         {
-
+                            p();
                         }
                         else if (startT != 0)
                         {
-                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
                         }
-                        step++;
-                        List<string> notifyMsg = new List<string>();
-                        int newStartT;
 
-                        if (step == goPath.path.Count - 1)
-                        {
-                            //  car.setState(player, ref notifyMsg, CarState.returning);
-                            int positionInStation;
-                            if (player.Key == targetPlayer.Key)
-                            {
-                                positionInStation = targetPlayer.positionInStation;
-                            }
-                            else
-                                positionInStation = targetPlayer.positionInStation + 1;
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        }
-                        else
-                        {
-
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        }
-                        car.setState(player, ref notifyMsg, CarState.returning);
-                        this.sendMsg(notifyMsg);
-                        StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
                     }
                 }
             });

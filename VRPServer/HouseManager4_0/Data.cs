@@ -312,11 +312,18 @@ namespace HouseManager4_0
 
 
 
-        public Dictionary<string, Dictionary<string, string>> AllCrossesBGData { get; private set; }
+        public Dictionary<string, string> AllCrossesBGData { get; private set; }
+        public Dictionary<string, string> AllCrossesBGData_ { get; private set; }
         public Dictionary<string, int> CrossesNotHaveBGData { get; private set; }
         internal void LoadCrossBackground()
         {
-            this.AllCrossesBGData = DalOfAddress.backgroundjpg.GetAll();
+            this.AllCrossesBGData = DalOfAddress.backgroundjpg.GetAllKey();
+            this.AllCrossesBGData_ = new Dictionary<string, string>();
+            foreach (var item in this.AllCrossesBGData)
+            {
+                this.AllCrossesBGData_.Add(item.Value, item.Key);
+            }
+
             this.CrossesNotHaveBGData = new Dictionary<string, int>();
         }
 

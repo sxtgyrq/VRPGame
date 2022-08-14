@@ -15,7 +15,8 @@ namespace HouseManager4_0.RoomMainF
                 c = "BradCarState",
                 WebSocketID = player.WebSocketID,
                 State = car.state.ToString(),
-                carID = carIndexStr
+                carID = carIndexStr,
+                countStamp = car.countStamp
             };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
             notifyMsg.Add(player.FromUrl);
@@ -241,7 +242,7 @@ namespace HouseManager4_0.RoomMainF
                                 Animate = result,
                                 WebSocketID = self.WebSocketID,
                                 carID = getCarName() + "_" + other.Key,
-                                parentID = other.Key, 
+                                parentID = other.Key,
                             };
                             var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                             msgsWithUrl.Add(self.FromUrl);
@@ -347,7 +348,7 @@ namespace HouseManager4_0.RoomMainF
                     };
                 }
                 else if (car.WebSelf.privatekeysLength != car.animateObj.LengthOfPrivateKeys)
-                { 
+                {
                     var result = new AnimationKeyData
                     {
                         deltaT = 0,

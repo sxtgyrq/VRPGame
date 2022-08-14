@@ -71,6 +71,29 @@ namespace HouseManager4_0.RoomMainF
             return this.checkE.CheckCarStateF(ccs);
         }
 
+        public string Statictis(ServerStatictis ss)
+        {
+            var r = new List<int>(4) { 0, 0, 0, 0 };
+            foreach (var item in this._Players)
+            {
+                r[0]++;
+                if (item.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    r[1]++;
+                    if (((Player)item.Value).IsOnline())
+                    {
+                        r[3]++;
+                    }
+                }
+                else
+                {
+                    r[2]++;
+                }
+            }
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            //  throw new NotImplementedException();
+        }
+
         public void SystemBradcast(SystemBradcast sb)
         {
             foreach (var item in this._Players)
@@ -96,6 +119,19 @@ namespace HouseManager4_0.RoomMainF
                     if (player.playerType == RoleInGame.PlayerType.player)
                     {
                         ((Player)player).direciton = getComplex(v, ((Player)player).direciton);
+                        if (((Player)player).getCar().state == CarState.selecting)
+                        {
+                            if (((Player)player).playerSelectDirectionTh != null)
+                            {
+                                if (!((Player)player).playerSelectDirectionTh.IsAlive)
+                                {
+                                    if (((Player)player).playerSelectDirectionTh.ThreadState == System.Threading.ThreadState.Unstarted)
+                                    {
+                                        ((Player)player).playerSelectDirectionTh.Start();
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

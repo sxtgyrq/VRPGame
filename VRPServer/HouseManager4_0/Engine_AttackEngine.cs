@@ -61,24 +61,45 @@ namespace HouseManager4_0
                 {
                     SetAttack sa = (SetAttack)c;
                     var state = CheckTargetState(player, sa.targetOwner);
-                    if (state == CarStateForBeAttacked.CanBeAttacked)
+
+                    switch (state)
                     {
-                        return true;
-                        // doAttack(player, car, sa, ref notifyMsg);
-                    }
-                    else if (state == CarStateForBeAttacked.HasBeenBust)
-                    {
-                        this.WebNotify(player, "攻击的对象已经破产！");
-                        return false;
-                    }
-                    else if (state == CarStateForBeAttacked.NotExisted)
-                    {
-                        this.WebNotify(player, "攻击的对象已经退出游戏！");
-                        return false;
-                    }
-                    else
-                    {
-                        throw new Exception($"{state.ToString()}未注册！");
+                        case CarStateForBeAttacked.CanBeAttacked:
+                            return true;
+                        case CarStateForBeAttacked.HasBeenBust:
+                            {
+                                this.WebNotify(player, "攻击的对象已经破产！");
+                                return false;
+                            };
+                        case CarStateForBeAttacked.NotExisted:
+                            {
+                                this.WebNotify(player, "攻击的对象已经退出游戏！");
+                                return false;
+                            };
+                        case CarStateForBeAttacked.IsBeingChallenged:
+                            {
+                                this.WebNotify(player, "攻击的对象正在被挑战！");
+                                return false;
+                            };
+                        case CarStateForBeAttacked.LevelIsLow:
+                            {
+                                this.WebNotify(player, "你等级太低，被忽略！");
+                                return false;
+                            };
+                        case CarStateForBeAttacked.NotBoss:
+                            {
+                                this.WebNotify(player, "挑战是团队老大干来的事儿！");
+                                return false;
+                            };
+                        case CarStateForBeAttacked.IsGroupMate:
+                            {
+                                this.WebNotify(player, "不能攻击队友！");
+                                return false;
+                            };
+                        default:
+                            {
+                                throw new Exception($"{state.ToString()}未注册！");
+                            };
                     }
                 }
                 else
@@ -146,31 +167,82 @@ namespace HouseManager4_0
             CanBeAttacked,
             NotExisted,
             HasBeenBust,
+            NotBoss,
+            IsBeingChallenged,
+            LevelIsLow,
+            IsGroupMate,
         }
         private CarStateForBeAttacked CheckTargetState(RoleInGame role, string targetOwner)
         {
-            if (role.playerType == RoleInGame.PlayerType.player) 
+            if (role.playerType == RoleInGame.PlayerType.player)
             {
-                
-            }
-            if (roomMain._Players.ContainsKey(targetOwner))
-            {
-                if (roomMain._Players[targetOwner].Bust)
+                var player = (Player)role;
+                if (roomMain._Players.ContainsKey(targetOwner))
                 {
-                    return CarStateForBeAttacked.HasBeenBust;
+                    if (roomMain._Players[targetOwner].Bust)
+                    {
+                        return CarStateForBeAttacked.HasBeenBust;
+                    }
+                    else
+                    {
+                        if (roomMain._Players[targetOwner].playerType == RoleInGame.PlayerType.NPC)
+                        {
+                            var targetNPC = (NPC)roomMain._Players[targetOwner];
+                            if (string.IsNullOrEmpty(targetNPC.challenger))
+                            {
+                                if (player.TheLargestHolderKey == player.Key)
+                                {
+                                    if (player.Level + 1 >= targetNPC.Level)
+                                        return CarStateForBeAttacked.CanBeAttacked;
+                                    else
+                                        return CarStateForBeAttacked.LevelIsLow;
+                                }
+                                else
+                                {
+                                    return CarStateForBeAttacked.NotBoss;
+                                }
+                            }
+                            else
+                            {
+                                if (targetNPC.challenger == player.TheLargestHolderKey)
+                                    return CarStateForBeAttacked.CanBeAttacked;
+                                else
+                                    return CarStateForBeAttacked.IsBeingChallenged;
+                            }
+                        }
+                        else
+                        {
+                            var targetPlayer = (Player)roomMain._Players[targetOwner];
+                            if (targetPlayer.IsOnline())
+                            {
+                                if (that.isAtTheSameGroup(player.Key, targetPlayer.Key))
+                                {
+                                    return CarStateForBeAttacked.IsGroupMate;
+                                }
+                                else if (player.Level >= targetPlayer.Level)
+                                    return CarStateForBeAttacked.CanBeAttacked;
+                                else
+                                    return CarStateForBeAttacked.LevelIsLow;
+                            }
+                            else
+                            {
+                                return CarStateForBeAttacked.CanBeAttacked;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    if (roomMain._Players[targetOwner].playerType == RoleInGame.PlayerType.NPC)
-                    {
-
-                    }
-                    return CarStateForBeAttacked.CanBeAttacked;
+                    return CarStateForBeAttacked.NotExisted;
                 }
+            }
+            else if (role.playerType == RoleInGame.PlayerType.NPC)
+            {
+                return CarStateForBeAttacked.CanBeAttacked;
             }
             else
             {
-                return CarStateForBeAttacked.NotExisted;
+                throw new Exception("错误！");
             }
         }
 
@@ -279,20 +351,25 @@ namespace HouseManager4_0
                         this.ThreadSleep(startT + 50);
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust) { }
                         else
-                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                        {
+                            Action selectionIsRight = () =>
+                            {
+                                List<string> notifyMsg = new List<string>();
+                                int newStartT;
+                                step++;
+                                if (step < goPath.path.Count)
+                                    EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                                else
+                                    newStartT = 0;
 
-                        List<string> notifyMsg = new List<string>();
-                        int newStartT;
-                        step++;
-                        if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        else
-                            newStartT = 0;
+                                car.setState(player, ref notifyMsg, CarState.working);
+                                this.sendMsg(notifyMsg);
+                                //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                                SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+                            };
+                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, selectionIsRight, goPath);
 
-                        car.setState(player, ref notifyMsg, CarState.working);
-                        this.sendMsg(notifyMsg);
-                        //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                        SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+                        }
                     }
                     else
                     {
@@ -303,25 +380,31 @@ namespace HouseManager4_0
                         }
                         else if (startT != 0)
                         {
-                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                            Action selectionIsRight = () =>
+                            {
+                                step++;
+                                List<string> notifyMsg = new List<string>();
+                                int newStartT;
+                                if (step < goPath.path.Count)
+                                    EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                                // else if(step==goPath.path.Count-1)
+                                //EditCarStateAfterSelect(step,player,ref car,)
+                                else
+                                    throw new Exception("这种情况不会出现");
+                                //newStartT = 0;
+                                car.setState(player, ref notifyMsg, CarState.working);
+                                this.sendMsg(notifyMsg);
+                                SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+                            };
+                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, selectionIsRight, goPath);
                         }
-                        step++;
-                        List<string> notifyMsg = new List<string>();
-                        int newStartT;
-                        if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        // else if(step==goPath.path.Count-1)
-                        //EditCarStateAfterSelect(step,player,ref car,)
-                        else
-                            throw new Exception("这种情况不会出现");
-                        //newStartT = 0;
-                        car.setState(player, ref notifyMsg, CarState.working);
-                        this.sendMsg(notifyMsg);
-                        SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+
                     }
                 }
             });
             th.Start();
         }
+
+
     }
 }

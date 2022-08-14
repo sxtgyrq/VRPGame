@@ -86,129 +86,120 @@ namespace HouseManager4_0
             //dm.Msg = "不可以拜NPC为老大！";
             //notifyMsg.Add(Newtonsoft.Json.JsonConvert.SerializeObject(dm));
 
-
-            DialogMsg dm = (DialogMsg)c;
-            var boss = (Player)that._Players[dm.To];
-            if (boss.Key == boss.TheLargestHolderKey)
+            lock (this.that.PlayerLock)
             {
-                if (player.TheLargestHolderKey == boss.Key)
+                DialogMsg dm = (DialogMsg)c;
+                if (dm.Key.Trim() == dm.To.Trim())
                 {
-                    var dm1 = new DialogMsg()
-                    {
-                        c = dm.c,
-                        Key = dm.Key,
-                        Msg = $"【{that._Players[dm.To].PlayerName}】已经是你老大！",
-                        To = dm.To,
-                        WebSocketID = dm.WebSocketID
-                    };
-                    that.ResponMsg(dm1);
-                }
-                else if (player.TheLargestHolderKey == player.Key)
-                {
-                    player.SetTheLargestHolder(boss, ref notifyMsg);
-                    {
-                        var dm1 = new DialogMsg()
-                        {
-                            c = dm.c,
-                            Key = dm.Key,
-                            Msg = $"[系统]你拜了【{boss.PlayerName}】为老大！",
-                            To = dm.To,
-                            WebSocketID = dm.WebSocketID
-                        };
-                        that.ResponMsg(dm1);
-                    }
-                    {
-                        var dm1 = new DialogMsg()
-                        {
-                            c = dm.c,
-                            Key = dm.Key,
-                            Msg = $"[系统]【{boss.PlayerName}】拜了你为老大！",
-                            To = dm.To,
-                            WebSocketID = dm.WebSocketID
-                        };
-                        that.RequstMsg(dm1);
-                    }
+                    var boss = (Player)that._Players[dm.To];
+                    // boss.TheLargestHolderKey = dm.Key;
+                    // boss.InitializeTheLargestHolder
+                    boss.InitializeTheLargestHolder(ref notifyMsg);
+                    mrr = RoomMain.MileResultReason.Abundant;
+                    return player.returningOjb;
                 }
                 else
                 {
-                    var oldBoss = that._Players[player.TheLargestHolderKey];
+                    var boss = (Player)that._Players[dm.To];
+                    if (boss.Key == boss.TheLargestHolderKey)
                     {
-                        var dm1 = new DialogMsg()
+                        if (player.TheLargestHolderKey == boss.Key)
                         {
-                            c = dm.c,
-                            Key = dm.Key,
-                            Msg = $"[系统]【{player.PlayerName}】拜了别人为老大！",
-                            To = oldBoss.Key,
-                            WebSocketID = dm.WebSocketID
-                        };
-                        that.RequstMsg(dm1);
+                            var dm1 = new DialogMsg()
+                            {
+                                c = dm.c,
+                                Key = dm.Key,
+                                Msg = $"【{that._Players[dm.To].PlayerName}】已经是你老大！",
+                                To = dm.To,
+                                WebSocketID = dm.WebSocketID
+                            };
+                            that.ResponMsg(dm1);
+                        }
+                        else if (player.TheLargestHolderKey == player.Key)
+                        {
+                            player.SetTheLargestHolder(boss, ref notifyMsg);
+                            {
+                                var dm1 = new DialogMsg()
+                                {
+                                    c = dm.c,
+                                    Key = dm.Key,
+                                    Msg = $"[系统]你拜了【{boss.PlayerName}】为老大！",
+                                    To = dm.To,
+                                    WebSocketID = dm.WebSocketID
+                                };
+                                that.ResponMsg(dm1);
+                            }
+                            {
+                                var dm1 = new DialogMsg()
+                                {
+                                    c = dm.c,
+                                    Key = dm.Key,
+                                    Msg = $"[系统]【{boss.PlayerName}】拜了你为老大！",
+                                    To = dm.To,
+                                    WebSocketID = dm.WebSocketID
+                                };
+                                that.RequstMsg(dm1);
+                            }
+                        }
+                        else
+                        {
+                            var oldBoss = that._Players[player.TheLargestHolderKey];
+                            {
+                                var dm1 = new DialogMsg()
+                                {
+                                    c = dm.c,
+                                    Key = dm.Key,
+                                    Msg = $"[系统]【{player.PlayerName}】拜了别人为老大！",
+                                    To = oldBoss.Key,
+                                    WebSocketID = dm.WebSocketID
+                                };
+                                that.RequstMsg(dm1);
+                            }
+                            player.SetTheLargestHolder(boss, ref notifyMsg);
+                            {
+                                var dm1 = new DialogMsg()
+                                {
+                                    c = dm.c,
+                                    Key = dm.Key,
+                                    Msg = $"[系统]你拜了【{boss.PlayerName}】为老大！",
+                                    To = dm.To,
+                                    WebSocketID = dm.WebSocketID
+                                };
+                                that.ResponMsg(dm1);
+                            }
+                            {
+                                var dm1 = new DialogMsg()
+                                {
+                                    c = dm.c,
+                                    Key = dm.Key,
+                                    Msg = $"[系统]【{boss.PlayerName}】拜了你为老大！",
+                                    To = dm.To,
+                                    WebSocketID = dm.WebSocketID
+                                };
+                                that.RequstMsg(dm1);
+                            }
+                        }
+                        mrr = RoomMain.MileResultReason.Abundant;
+                        return player.returningOjb;
                     }
-                    player.SetTheLargestHolder(boss, ref notifyMsg);
+                    else
                     {
+                        var boss2 = (Player)that._Players[boss.TheLargestHolderKey];
                         var dm1 = new DialogMsg()
                         {
                             c = dm.c,
                             Key = dm.Key,
-                            Msg = $"[系统]你拜了【{boss.PlayerName}】为老大！",
+                            Msg = $"【{boss2.PlayerName}】是{boss.PlayerName}老大！",
                             To = dm.To,
                             WebSocketID = dm.WebSocketID
                         };
                         that.ResponMsg(dm1);
-                    }
-                    {
-                        var dm1 = new DialogMsg()
-                        {
-                            c = dm.c,
-                            Key = dm.Key,
-                            Msg = $"[系统]【{boss.PlayerName}】拜了你为老大！",
-                            To = dm.To,
-                            WebSocketID = dm.WebSocketID
-                        };
-                        that.RequstMsg(dm1);
+                        mrr = RoomMain.MileResultReason.Abundant;
+                        return player.returningOjb;
                     }
                 }
-
-                List<string> keys = new List<string>();
-                foreach (var item in that._Players)
-                {
-                    if (item.Value.TheLargestHolderKey == player.Key)
-                    {
-                        keys.Add(item.Value.Key);
-                    }
-                }
-                for (int i = 0; i < keys.Count; i++)
-                {
-                    var worker = (Player)that._Players[keys[i]];
-                    that._Players[keys[i]].InitializeTheLargestHolder(ref notifyMsg);
-                    var dm1 = new DialogMsg()
-                    {
-                        c = dm.c,
-                        Key = dm.Key,
-                        Msg = $"[系统]【{player.PlayerName}】拜了【{boss.PlayerName}】为老大，你恢复自由身！",
-                        To = worker.Key,
-                        WebSocketID = worker.WebSocketID
-                    };
-                    that.RequstMsg(dm1);
-
-                }
-                mrr = RoomMain.MileResultReason.Abundant;
-                return player.returningOjb;
             }
-            else
-            {
-                var boss2 = (Player)that._Players[boss.TheLargestHolderKey];
-                var dm1 = new DialogMsg()
-                {
-                    c = dm.c,
-                    Key = dm.Key,
-                    Msg = $"【{boss2.PlayerName}】是{boss.PlayerName}老大！",
-                    To = dm.To,
-                    WebSocketID = dm.WebSocketID
-                };
-                that.ResponMsg(dm1);
-                mrr = RoomMain.MileResultReason.Abundant;
-                return player.returningOjb;
-            }
+
         }
 
         internal void DealWithMsg(DialogMsg dm)

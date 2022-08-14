@@ -141,11 +141,9 @@ createTime
 
         }
 
-
-
-        public static Dictionary<string, Dictionary<string, string>> GetAll()
+        public static Dictionary<string, string> GetAllKey()
         {
-            Dictionary<string, Dictionary<string, string>> allData = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, string> allData = new Dictionary<string, string>();
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
                 con.Open();
@@ -154,7 +152,7 @@ createTime
                     try
                     {
                         {
-                            string sQL = @"SELECT a.crossID,jpgTextValue,direction FROM backgroundjpg a LEFT JOIN bgjpgfiletext b on a.crossID=b.crossID WHERE a.crossState=1 ORDER BY a.crossID asc,direction ASC,textIndex asc;";
+                            string sQL = @"SELECT a.crossID FROM backgroundjpg a WHERE a.crossState=1 ORDER BY a.crossID asc;";
                             using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
                             {
                                 using (var reader = command.ExecuteReader())
@@ -162,22 +160,12 @@ createTime
                                     while (reader.Read())
                                     {
                                         var crossID = Convert.ToString(reader["crossID"]).Trim();
-                                        var jpgTextValue = Convert.ToString(reader["jpgTextValue"]).Trim();
-                                        var direction = Convert.ToString(reader["direction"]).Trim();
 
                                         if (allData.ContainsKey(crossID))
                                         { }
                                         else
                                         {
-                                            allData.Add(crossID, new Dictionary<string, string>());
-                                        }
-                                        if (allData[crossID].ContainsKey(direction))
-                                        {
-                                            allData[crossID][direction] += jpgTextValue;
-                                        }
-                                        else
-                                        {
-                                            allData[crossID].Add(direction, jpgTextValue);
+                                            allData.Add(crossID, CommonClass.Random.GetMD5HashFromStr(crossID));
                                         }
                                     }
                                 }
@@ -192,6 +180,66 @@ createTime
                 }
             }
             return allData;
+        }
+
+        public static Dictionary<string, string> GetItemDetail(string crossIDInput)
+        {
+            Dictionary<string, Dictionary<string, string>> allData = new Dictionary<string, Dictionary<string, string>>();
+            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("^[0-9]{1,3}.[0-9]{5},[0-9]{1,3}.[0-9]{5}$");
+            if (reg.IsMatch(crossIDInput))
+                using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+                {
+                    con.Open();
+                    using (MySqlTransaction tran = con.BeginTransaction())
+                    {
+                        try
+                        {
+                            {
+                                string sQL = $"SELECT a.crossID,jpgTextValue,direction FROM backgroundjpg a LEFT JOIN bgjpgfiletext b on a.crossID=b.crossID WHERE a.crossState=1 AND a.crossID='{crossIDInput.Trim()}' ORDER BY a.crossID asc,direction ASC,textIndex asc;";
+                                using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                {
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            var crossID = Convert.ToString(reader["crossID"]).Trim();
+                                            var jpgTextValue = Convert.ToString(reader["jpgTextValue"]).Trim();
+                                            var direction = Convert.ToString(reader["direction"]).Trim();
+
+                                            if (allData.ContainsKey(crossID))
+                                            { }
+                                            else
+                                            {
+                                                allData.Add(crossID, new Dictionary<string, string>());
+                                            }
+                                            if (allData[crossID].ContainsKey(direction))
+                                            {
+                                                allData[crossID][direction] += jpgTextValue;
+                                            }
+                                            else
+                                            {
+                                                allData[crossID].Add(direction, jpgTextValue);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw e;
+                            throw new Exception("新增错误");
+                        }
+                    }
+                }
+            if (allData.ContainsKey(crossIDInput))
+            {
+                return allData[crossIDInput];
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

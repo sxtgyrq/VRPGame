@@ -645,7 +645,19 @@ namespace HouseManager4_0.RoomMainF
             return "";
         }
 
-
+        public string GetBG(SetCrossBG ss)
+        { 
+            if (Program.dt.AllCrossesBGData_.ContainsKey(ss.Md5Key))
+            {
+                var r = DalOfAddress.backgroundjpg.GetItemDetail(Program.dt.AllCrossesBGData_[ss.Md5Key]);
+                 return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+            else
+            {
+                Console.WriteLine($"没有结果");
+                return "";
+            } 
+        }
     }
 
     public partial class RoomMain : interfaceOfHM.ModelTranstractionI

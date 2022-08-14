@@ -390,7 +390,7 @@ namespace HouseManager4_0
 
                     // this._Players[addItem.Key].SupportChangedF = RoomMain.SupportChanged;
 
-                    that._Players[key].TheLargestHolderKeyChanged = that.TheLargestHolderKeyChanged;
+                    // that._Players[key].TheLargestHolderKeyChanged = that.TheLargestHolderKeyChanged;
                     that._Players[key].InitializeTheLargestHolder();
 
                     // this._Players[addItem.Key].Money
@@ -535,9 +535,17 @@ namespace HouseManager4_0
         private void afterWaitedM(NPC npc, ref List<string> notifyMsgs)
         {
             if (waitedFunctionMWithChanllenger(npc, ref notifyMsgs, npc.challenger)) { }
-            else if (waitedFunctionM(npc, ref notifyMsgs, npc.molester)) { }
+            //    else if (waitedFunctionM(npc, ref notifyMsgs, npc.molester)) { }
         }
 
+        /// <summary>
+        /// 给返回自己基地的NPC分配任务！
+        /// </summary>
+        /// <param name="npc2"></param>
+        /// <param name="notifyMsgs"></param>
+        /// <param name="operateKye"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         bool waitedFunctionMWithChanllenger(NPC npc2, ref List<string> notifyMsgs, string operateKye)
         {
             if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
@@ -1083,7 +1091,7 @@ namespace HouseManager4_0
         internal void counterAttack(NPC npc, ref List<string> notifyMsg)
         {
             if (waitedFunctionMWithChanllenger(npc, ref notifyMsg, npc.challenger)) { }
-            else if (waitedFunctionM(npc, ref notifyMsg, npc.molester)) { }
+            // else if (waitedFunctionM(npc, ref notifyMsg, npc.molester)) { }
         }
         void dealWithChallenger(NPC npc_Operate, ref List<string> notifyMsg, string operateKey)
         {

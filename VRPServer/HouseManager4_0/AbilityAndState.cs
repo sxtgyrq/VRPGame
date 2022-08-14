@@ -527,6 +527,29 @@ namespace HouseManager4_0
                 }
             }
         }
+
+        internal long ReduceBusinessAndVolume(Player player, Car car, ref List<string> notifyMsg)
+        {
+            long reduceValue = 0;
+            var reduceBusiness = this.costBusiness / 5;
+            var reduceVolume = this.costVolume / 5;
+
+            if (this.costBusiness > 0)
+            {
+                reduceBusiness = Math.Max(1, reduceBusiness);
+            }
+            if (this.costVolume > 0)
+            {
+                reduceVolume = Math.Max(1, reduceVolume);
+            }
+            reduceValue += reduceBusiness;
+            reduceValue += reduceVolume;
+            //this.setCostMiles(this.costMiles + this.mile / 20, player, car, ref notifyMsg);
+            this.setCostBusiness(this.costBusiness - reduceBusiness, player, car, ref notifyMsg);
+            this.setCostVolume(this.costVolume - reduceVolume, player, car, ref notifyMsg);
+            return reduceValue;
+        }
+
         /// <summary>
         /// 小车能跑的最快速度！
         /// </summary>

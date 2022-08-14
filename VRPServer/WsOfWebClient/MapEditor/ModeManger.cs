@@ -170,6 +170,38 @@ namespace WsOfWebClient.MapEditor
                 //  throw new NotImplementedException();
             }
 
+            internal void AddDiction(Position baseCross)
+            {
+                string firstRoadcode, secondRoadcode;
+                int firstRoadorder, secondRoadorder;
+                if (baseCross.roadCode.CompareTo(baseCross.anotherRoadCode) > 0)
+                {
+                    firstRoadcode = baseCross.roadCode;
+                    secondRoadcode = baseCross.anotherRoadCode;
+                    firstRoadorder = baseCross.roadOrder;
+                    secondRoadorder = baseCross.anotherRoadOrder;
+                }
+                else
+                {
+                    firstRoadcode = baseCross.anotherRoadCode;
+                    secondRoadcode = baseCross.roadCode;
+                    firstRoadorder = baseCross.anotherRoadOrder;
+                    secondRoadorder = baseCross.roadOrder;
+                }
+                var crossName = $"{firstRoadcode}{firstRoadorder}{secondRoadcode}{secondRoadorder}";
+                // var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                {
+                    if (Directory.Exists($"imgT/{crossName}/"))
+                    {
+
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory($"imgT/{crossName}/");
+                    }
+                }
+            }
+
             //internal Task GetCrossBG(Position firstRoad)
             //{
             //    throw new NotImplementedException();
@@ -193,6 +225,7 @@ namespace WsOfWebClient.MapEditor
                     firstRoadorder = baseCross.anotherRoadOrder;
                     secondRoadorder = baseCross.roadOrder;
                 }
+                // if (true) { }
                 GetBackgroundScene ubs = new GetBackgroundScene()
                 {
                     c = "GetBackgroundScene",
@@ -204,7 +237,18 @@ namespace WsOfWebClient.MapEditor
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ubs);
+                var crossName = $"{firstRoadcode}{firstRoadorder}{secondRoadcode}{secondRoadorder}";
                 var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                {
+                    if (Directory.Exists($"imgT/{crossName}/"))
+                    {
+
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory($"imgT/{crossName}/");
+                    }
+                }
 
                 //Consol.WriteLine($"respon:{respon}");
                 GetBackgroundScene.Result r = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBackgroundScene.Result>(respon);
@@ -212,6 +256,8 @@ namespace WsOfWebClient.MapEditor
                 {
                     c = "SetBackgroundScene",
                     r = r,
+                    name = crossName
+                    //  name=$"{ubs.firstRoadcode}{ubs.}{}{}"
                 };
                 sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
                 var sendData = Encoding.UTF8.GetBytes(sendMsg);
@@ -266,20 +312,19 @@ namespace WsOfWebClient.MapEditor
                 return new Bitmap(image, 512, 512);
             }
 
-            public string ImageToBase64(Image image)
+            public string ImageToBase64(string imagePath)
             {
                 string result;
-                using (MemoryStream ms = new MemoryStream())
+                using (Image image = Image.FromFile(imagePath))
                 {
-                    // Convert Image to byte[]
-                    image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    byte[] imageBytes = ms.ToArray();
-
-                    // Convert byte[] to base 64 string
-                    string base64String = Convert.ToBase64String(imageBytes);
-                    result = $"data:image/jpeg;base64,{base64String}";
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        byte[] imageBytes = ms.ToArray();
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        result = $"data:image/jpeg;base64,{base64String}";
+                    }
                 }
-                //Consol.WriteLine(result);
                 return result;
             }
             internal async Task SetBackground(bool isUsed, Position baseCross, string address, Random rm, WebSocket webSocket)
@@ -345,26 +390,47 @@ namespace WsOfWebClient.MapEditor
                     secondRoadorder = baseCross.roadOrder;
                     //  crossKey = $"{baseCross.anotherRoadCode}{baseCross.anotherRoadOrder}{baseCross.roadCode}{baseCross.roadOrder}";
                 }
+
+                var crossName = $"{firstRoadcode}{firstRoadorder}{secondRoadcode}{secondRoadorder}";
+                // var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 {
-                    SetBackgroundScene_BLL sbgs = new SetBackgroundScene_BLL()
+                    if (Directory.Exists($"imgT/{crossName}/"))
                     {
-                        c = "SetBackgroundScene",
-                        firstRoadcode = firstRoadcode,
-                        firstRoadorder = firstRoadorder,
-                        secondRoadcode = secondRoadcode,
-                        secondRoadorder = secondRoadorder,
-                        author = address,
-                        nx = ImageToBase64(LoadBase64(sb.nx.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
-                        ny = ImageToBase64(LoadBase64(sb.ny.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
-                        nz = ImageToBase64(LoadBase64(sb.nz.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
-                        px = ImageToBase64(LoadBase64(sb.px.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
-                        py = ImageToBase64(LoadBase64(sb.py.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
-                        pz = ImageToBase64(LoadBase64(sb.pz.Split(',', StringSplitOptions.RemoveEmptyEntries)[1])),
-                    };
-                    var index = rm.Next(0, roomUrls.Count);
-                    var roomUrl = roomUrls[index];
-                    var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sbgs);
-                    await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                        if (File.Exists($"imgT/{crossName}/px.jpg") &&
+                            File.Exists($"imgT/{crossName}/nx.jpg") &&
+                            File.Exists($"imgT/{crossName}/py.jpg") &&
+                            File.Exists($"imgT/{crossName}/ny.jpg") &&
+                            File.Exists($"imgT/{crossName}/pz.jpg") &&
+                            File.Exists($"imgT/{crossName}/nz.jpg"))
+                        {
+                            SetBackgroundScene_BLL sbgs = new SetBackgroundScene_BLL()
+                            {
+                                c = "SetBackgroundScene",
+                                firstRoadcode = firstRoadcode,
+                                firstRoadorder = firstRoadorder,
+                                secondRoadcode = secondRoadcode,
+                                secondRoadorder = secondRoadorder,
+                                author = address,
+                                nx = ImageToBase64($"imgT/{crossName}/nx.jpg"),
+                                ny = ImageToBase64($"imgT/{crossName}/ny.jpg"),
+                                nz = ImageToBase64($"imgT/{crossName}/nz.jpg"),
+                                px = ImageToBase64($"imgT/{crossName}/px.jpg"),
+                                py = ImageToBase64($"imgT/{crossName}/py.jpg"),
+                                pz = ImageToBase64($"imgT/{crossName}/pz.jpg"),
+                            };
+                            var index = rm.Next(0, roomUrls.Count);
+                            var roomUrl = roomUrls[index];
+                            var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sbgs);
+                            await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                        }
+                    }
+                    else
+                    {
+                        //   Directory.CreateDirectory($"imgT/{crossName}/");
+                    }
+                }
+                {
+
                     //GetBackgroundScene.Result r = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBackgroundScene.Result>(respon);
                     //var sm = new
                     //{

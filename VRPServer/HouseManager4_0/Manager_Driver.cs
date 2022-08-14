@@ -35,9 +35,32 @@ namespace HouseManager4_0
                     {
 
                         var car = player.getCar();
+                        const int CostMoney = 5000;
                         if (car.state == Car.CarState.waitAtBaseStation)
                             if (car.ability.driver == null)
+                            {
                                 this.setDriver(player, car, dm.Index, ref notifyMsg);
+                            }
+                            else if (player.Money >= CostMoney)
+                            {
+                                player.MoneySet(player.Money - CostMoney, ref notifyMsg);
+                                var recruit = that.driverM.GetRecruit(player.buildingReward[0]);
+                                if (that.rm.Next(100) < recruit)
+                                {
+                                    this.setDriver(player, car, dm.Index, ref notifyMsg);
+                                }
+                                else
+                                {
+                                    this.WebNotify(player, "招聘失败！到指定地点祈更多福可以提高成功率");
+                                }
+                                that.driverM.SetRecruit(recruit, ref player);
+                                //  that.modelM.get
+                            }
+                            else
+                            {
+                                this.WebNotify(player, "换司机最少要消耗50.00刀！");
+                            }
+
                     }
                 }
             }
@@ -50,6 +73,8 @@ namespace HouseManager4_0
             }
             //  throw new NotImplementedException();
         }
+
+
 
         private void setDriver(RoleInGame player, Car car, int index, ref List<string> notifyMsg)
         {
@@ -205,6 +230,12 @@ namespace HouseManager4_0
             }
         }
 
+
+        private void SetRecruit(int recruit, ref RoleInGame player)
+        {
+            player.buildingReward[0] -= recruit / 2;
+            player.buildingReward[0] = Math.Max(0, player.buildingReward[0]);
+        }
         internal int GetRecruit(int v)
         {
             if (v / 3 < 100)
@@ -310,7 +341,7 @@ namespace HouseManager4_0
             }
             #region 控制区
             List<ControlInfomation> controlInfomations = new List<ControlInfomation>();
-            class ControlInfomation
+            internal class ControlInfomation
             {
                 public RoleInGame player { get; set; }
                 public OssModel.FastonPosition fpResult { get; set; }
@@ -385,103 +416,103 @@ namespace HouseManager4_0
 
 
 
-            enum programResult { runContinue, runReturn };
-            programResult dealWithItem(RoleInGame self, ControlInfomation magicItem, RoomMain that, webnotify ex, Car enemyCar, RoleInGame enemy, ref List<string> notifyMsg, out bool protecedByDefendMagic)
-            {
-                int defensiveOfControl;
-                if (self.getCar().ability.driver == null)
-                {
-                    defensiveOfControl = 0;
-                }
-                else
-                {
-                    if (magicItem.attackType == ControlAttackType.Confuse)
-                        defensiveOfControl = self.getCar().ability.driver.defensiveOfConfuse;
-                    else if (magicItem.attackType == ControlAttackType.Lost)
-                        defensiveOfControl = self.getCar().ability.driver.defensiveOfLose;
-                    else throw new Exception("意料之外！");
-                }
-                string name = "";
-                switch (magicItem.attackType)
-                {
-                    case ControlAttackType.Confuse:
-                        {
-                            name = "混乱";
-                        }; break;
-                    case ControlAttackType.Lost:
-                        {
-                            name = "迷失";
-                        }; break;
-                }
-                var randomValue = that.rm.Next(0, 100);
-                int defendedProbability;
-                if (self.improvementRecord.defenceValue > 0)
-                {
-                    if (magicItem.attackType == ControlAttackType.Confuse)
-                        defendedProbability = that.magicE.ProtectedByConfuse();//self.getCar().ability.driver.defensiveOfConfuse;
-                    else if (magicItem.attackType == ControlAttackType.Lost)
-                        defendedProbability = that.magicE.ProtectedByLost();
-                    else throw new Exception("意料之外！");
-                    //defendedProbability = // that.magicE.ProtectedByAmbush();
-                }
-                else
-                {
-                    defendedProbability = 0;
-                }
-                if (randomValue > this.getBaseControlProbability(magicItem.attackType) - defensiveOfControl)
-                {
+            internal enum programResult { runContinue, runReturn };
+            //programResult dealWithItem(RoleInGame self, ControlInfomation magicItem, RoomMain that, webnotify ex, Car enemyCar, RoleInGame enemy, ref List<string> notifyMsg, out bool protecedByDefendMagic)
+            //{
+            //    int defensiveOfControl;
+            //    if (self.getCar().ability.driver == null)
+            //    {
+            //        defensiveOfControl = 0;
+            //    }
+            //    else
+            //    {
+            //        if (magicItem.attackType == ControlAttackType.Confuse)
+            //            defensiveOfControl = self.getCar().ability.driver.defensiveOfConfuse;
+            //        else if (magicItem.attackType == ControlAttackType.Lost)
+            //            defensiveOfControl = self.getCar().ability.driver.defensiveOfLose;
+            //        else throw new Exception("意料之外！");
+            //    }
+            //    string name = "";
+            //    switch (magicItem.attackType)
+            //    {
+            //        case ControlAttackType.Confuse:
+            //            {
+            //                name = "混乱";
+            //            }; break;
+            //        case ControlAttackType.Lost:
+            //            {
+            //                name = "迷失";
+            //            }; break;
+            //    }
+            //    var randomValue = that.rm.Next(0, 100);
+            //    int defendedProbability;
+            //    if (self.improvementRecord.defenceValue > 0)
+            //    {
+            //        if (magicItem.attackType == ControlAttackType.Confuse)
+            //            defendedProbability = that.magicE.ProtectedByConfuse();//self.getCar().ability.driver.defensiveOfConfuse;
+            //        else if (magicItem.attackType == ControlAttackType.Lost)
+            //            defendedProbability = that.magicE.ProtectedByLost();
+            //        else throw new Exception("意料之外！");
+            //        //defendedProbability = // that.magicE.ProtectedByAmbush();
+            //    }
+            //    else
+            //    {
+            //        defendedProbability = 0;
+            //    }
+            //    if (randomValue > this.getBaseControlProbability(magicItem.attackType) - defensiveOfControl)
+            //    {
 
-                    ex.WebNotify(magicItem.player, $"你对【{self.PlayerName}】实施了{name}计谋，没成功！");
-                    ex.WebNotify(self, $"【{magicItem.player.PlayerName}】对你实施了{name}阴谋，没成功！");
+            //        ex.WebNotify(magicItem.player, $"你对【{self.PlayerName}】实施了{name}计谋，没成功！");
+            //        ex.WebNotify(self, $"【{magicItem.player.PlayerName}】对你实施了{name}阴谋，没成功！");
 
-                    enemyCar.setState(enemy, ref notifyMsg, CarState.returning);
-                    that.retutnE.SetReturnT(500, new commandWithTime.returnning()
-                    {
-                        c = "returnning",
-                        changeType = commandWithTime.returnning.ChangeType.BeforeTax,
-                        key = magicItem.player.Key,
-                        returningOjb = magicItem.player.returningOjb,
-                        target = enemyCar.targetFpIndex
-                    });
-                    protecedByDefendMagic = false;
-                    return programResult.runContinue;
-                }
-                else if (randomValue > this.getBaseControlProbability(magicItem.attackType) - defensiveOfControl - defendedProbability)
-                {
-                    ex.WebNotify(magicItem.player, $"你对【{self.PlayerName}】实施了{name}计谋，被其保护光环阻挡，没成功！");
-                    ex.WebNotify(self, $"【{magicItem.player.PlayerName}】对你实施了{name}阴谋，被其保护光环阻挡，没成功！");
+            //        enemyCar.setState(enemy, ref notifyMsg, CarState.returning);
+            //        that.retutnE.SetReturnT(500, new commandWithTime.returnning()
+            //        {
+            //            c = "returnning",
+            //            changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+            //            key = magicItem.player.Key,
+            //            returningOjb = magicItem.player.returningOjb,
+            //            target = enemyCar.targetFpIndex
+            //        });
+            //        protecedByDefendMagic = false;
+            //        return programResult.runContinue;
+            //    }
+            //    else if (randomValue > this.getBaseControlProbability(magicItem.attackType) - defensiveOfControl - defendedProbability)
+            //    {
+            //        ex.WebNotify(magicItem.player, $"你对【{self.PlayerName}】实施了{name}计谋，被其保护光环阻挡，没成功！");
+            //        ex.WebNotify(self, $"【{magicItem.player.PlayerName}】对你实施了{name}阴谋，被其保护光环阻挡，没成功！");
 
-                    enemyCar.setState(enemy, ref notifyMsg, CarState.returning);
-                    that.retutnE.SetReturnT(500, new commandWithTime.returnning()
-                    {
-                        c = "returnning",
-                        changeType = commandWithTime.returnning.ChangeType.BeforeTax,
-                        key = magicItem.player.Key,
-                        returningOjb = magicItem.player.returningOjb,
-                        target = enemyCar.targetFpIndex
-                    });
-                    protecedByDefendMagic = true;
-                    return programResult.runContinue;
-                }
-                else
-                {
-                    ex.WebNotify(magicItem.player, $"你对【{self.PlayerName}】成功实施了{name}计谋！");
-                    ex.WebNotify(self, $"【{magicItem.player.PlayerName}】让你陷入了{name}！");
-                    this._selectedControlItem = magicItem;
+            //        enemyCar.setState(enemy, ref notifyMsg, CarState.returning);
+            //        that.retutnE.SetReturnT(500, new commandWithTime.returnning()
+            //        {
+            //            c = "returnning",
+            //            changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+            //            key = magicItem.player.Key,
+            //            returningOjb = magicItem.player.returningOjb,
+            //            target = enemyCar.targetFpIndex
+            //        });
+            //        protecedByDefendMagic = true;
+            //        return programResult.runContinue;
+            //    }
+            //    else
+            //    {
+            //        ex.WebNotify(magicItem.player, $"你对【{self.PlayerName}】成功实施了{name}计谋！");
+            //        ex.WebNotify(self, $"【{magicItem.player.PlayerName}】让你陷入了{name}！");
+            //        this._selectedControlItem = magicItem;
 
-                    enemyCar.setState(enemy, ref notifyMsg, CarState.returning);
-                    that.retutnE.SetReturnT(500, new commandWithTime.returnning()
-                    {
-                        c = "returnning",
-                        changeType = commandWithTime.returnning.ChangeType.BeforeTax,
-                        key = magicItem.player.Key,
-                        returningOjb = magicItem.player.returningOjb,
-                        target = enemyCar.targetFpIndex
-                    });
-                    protecedByDefendMagic = false;
-                    return programResult.runReturn;
-                }
-            }
+            //        enemyCar.setState(enemy, ref notifyMsg, CarState.returning);
+            //        that.retutnE.SetReturnT(500, new commandWithTime.returnning()
+            //        {
+            //            c = "returnning",
+            //            changeType = commandWithTime.returnning.ChangeType.BeforeTax,
+            //            key = magicItem.player.Key,
+            //            returningOjb = magicItem.player.returningOjb,
+            //            target = enemyCar.targetFpIndex
+            //        });
+            //        protecedByDefendMagic = false;
+            //        return programResult.runReturn;
+            //    }
+            //}
 
             public class Simulate
             {
@@ -668,6 +699,7 @@ namespace HouseManager4_0
 
             bool dealWithItem(RoleInGame self, AmbushInfomation magicItem, RoomMain that, webnotify ex, Car enemyCar, RoleInGame enemy, ref List<string> notifyMsg, out bool protecedByDefendMagic)
             {
+
                 int defensiveOfAmbush;
                 if (self.getCar().ability.driver == null)
                 {
@@ -790,39 +822,40 @@ namespace HouseManager4_0
                     {
                         if (magicItem.attackType == ControlAttackType.Confuse)
                         {
-                            bool protecedByDefendMagic;
-                            var result = dealWithItem(self, magicItem, that, ex, enemyCar, enemy, ref notifyMsg, out protecedByDefendMagic);
+
+                            Engine_MagicEngine.confuseMagicTool t = new Engine_MagicEngine.confuseMagicTool(magicItem, self, enemy, that);
+                            long v = 0;
+                            var result = that.magicE.DealWithControlMagic(t, ref v);
                             if (result == programResult.runContinue)
-                            {
-                                if (protecedByDefendMagic)
-                                {
-                                    self.improvementRecord.reduceDefend(self, magicItem.volumeValue, ref notifyMsg);
-                                }
                                 continue;
-                            }
                             else
-                            {
-                                self.confuseMagicChanged(self, ref notifyMsg);
                                 return;
-                            }
                         }
                         else if (magicItem.attackType == ControlAttackType.Lost)
                         {
-                            bool protecedByDefendMagic;
-                            var result = dealWithItem(self, magicItem, that, ex, enemyCar, enemy, ref notifyMsg, out protecedByDefendMagic);
+                            Engine_MagicEngine.loseMagicTool t = new Engine_MagicEngine.loseMagicTool(magicItem, self, enemy, that);
+                            long v = 0;
+                            var result = that.magicE.DealWithControlMagic(t, ref v);
                             if (result == programResult.runContinue)
-                            {
-                                if (protecedByDefendMagic)
-                                {
-                                    self.improvementRecord.reduceDefend(self, magicItem.volumeValue, ref notifyMsg);
-                                }
                                 continue;
-                            }
                             else
-                            {
-                                self.loseMagicChanged(self, ref notifyMsg);
                                 return;
-                            }
+                            // Engine_MagicEngine.lose
+                            //bool protecedByDefendMagic;
+                            //var result = dealWithItem(self, magicItem, that, ex, enemyCar, enemy, ref notifyMsg, out protecedByDefendMagic);
+                            //if (result == programResult.runContinue)
+                            //{
+                            //    if (protecedByDefendMagic)
+                            //    {
+                            //        self.improvementRecord.reduceDefend(self, magicItem.volumeValue, ref notifyMsg);
+                            //    }
+                            //    continue;
+                            //}
+                            //else
+                            //{
+                            //    self.loseMagicChanged(self, ref notifyMsg);
+                            //    return;
+                            //}
                         }
                     }
                 }
@@ -834,7 +867,10 @@ namespace HouseManager4_0
                 return this._selectedControlItem.volumeValue;
                 //throw new NotImplementedException();
             }
-
+            internal void SelectItem(ControlInfomation magicItem)
+            {
+                this._selectedControlItem = magicItem;
+            }
             internal void reduceValue(long reduceValue)
             {
                 this._selectedControlItem.volumeValue -= reduceValue;
@@ -870,8 +906,8 @@ namespace HouseManager4_0
             //}
             internal List<AmbushInfomation> ambushInfomations = new List<AmbushInfomation>();
 
-            internal delegate void AmbushAttack(int i, ref List<string> notifyMsg, RoleInGame enemy, ref long reduceSumInput, bool protecedByDefendMagic);
-            internal void AmbushSelf(RoleInGame selfRole, RoomMain that, webnotify ex, ref List<string> notifyMsg, interfaceOfHM.AttackT at, ref long reduceSumInput, AmbushAttack aa)
+            // internal delegate void AmbushAttack(int i, ref List<string> notifyMsg, RoleInGame enemy, ref long reduceSumInput, bool protecedByDefendMagic);
+            internal void AmbushSelf(RoleInGame selfRole, RoomMain that, webnotify ex, ref List<string> notifyMsg, interfaceOfHM.AttackT at, ref long reduceSumInput)
             {
                 List<AmbushInfomation> newList = new List<AmbushInfomation>();
                 for (int i = 0; i < ambushInfomations.Count; i++)
@@ -896,16 +932,8 @@ namespace HouseManager4_0
                 {
                     var enemyCar = this.ambushInfomations[i].player.getCar();
                     var enemy = this.ambushInfomations[i].player;
-                    bool protecedByDefendMagic;
-                    var success = dealWithItem(selfRole, this.ambushInfomations[i], that, ex, enemyCar, enemy, ref notifyMsg, out protecedByDefendMagic);
-                    if (success)
-                    {
-                        aa(i, ref notifyMsg, enemy, ref reduceSumInput, protecedByDefendMagic);
-                    }
-                    else if (protecedByDefendMagic)
-                    {
-                        aa(i, ref notifyMsg, enemy, ref reduceSumInput, protecedByDefendMagic);
-                    }
+                    Engine_MagicEngine.ambushMagicTool amt = new Engine_MagicEngine.ambushMagicTool(enemy, selfRole, at, that);
+                    that.magicE.DealWithControlMagic(amt, ref reduceSumInput);//.de(amt, enemy); 
                 }
             }
 
@@ -1008,6 +1036,8 @@ namespace HouseManager4_0
                 }
                 return harmValue;
             }
+
+
 
 
 

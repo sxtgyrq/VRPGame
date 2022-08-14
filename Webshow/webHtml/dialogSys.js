@@ -427,8 +427,13 @@
         }
 
         // document.body.appendChild(friendsList);
-    }
+    },
+    toBeMyBoss: function (key)
+    {
+        var obj = { 'c': 'Msg', 'MsgPass': '认你做老大', 'to': key };
 
+        objMain.ws.send(JSON.stringify(obj));
+    }
 };
 
 /*

@@ -57,53 +57,62 @@ namespace HouseManager4_0
                     if (step == 0)
                     {
                         this.ThreadSleep(startT + 50);
+                        Action p = () =>
+                        {
+                            List<string> notifyMsg = new List<string>();
+                            int newStartT;
+                            step++;
+                            if (step < goPath.path.Count)
+                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                            else
+                                newStartT = 0;
+
+                            car.setState(player, ref notifyMsg, CarState.working);
+                            this.sendMsg(notifyMsg);
+                            //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                            StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
+
+                        };
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                         {
-
+                            p();
                         }
                         else
                         {
 
-                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
                         }
 
-                        List<string> notifyMsg = new List<string>();
-                        int newStartT;
-                        step++;
-                        if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        else
-                            newStartT = 0;
-
-                        car.setState(player, ref notifyMsg, CarState.working);
-                        this.sendMsg(notifyMsg);
-                        //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                        StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
                     }
                     else
                     {
-                        this.ThreadSleep(startT );
+                        this.ThreadSleep(startT);
+
+                        Action p = () =>
+                        {
+                            step++;
+                            List<string> notifyMsg = new List<string>();
+                            int newStartT;
+                            if (step < goPath.path.Count)
+                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                            // else if(step==goPath.path.Count-1)
+                            //EditCarStateAfterSelect(step,player,ref car,)
+                            else
+                                throw new Exception("这种情况不会出现");
+                            //newStartT = 0;
+                            car.setState(player, ref notifyMsg, CarState.working);
+                            this.sendMsg(notifyMsg);
+                            StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
+
+                        };
                         if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                         {
-
+                            p();
                         }
                         else if (startT != 0)
                         {
-                            StartSelectThread(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player);
+                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
                         }
-                        step++;
-                        List<string> notifyMsg = new List<string>();
-                        int newStartT;
-                        if (step < goPath.path.Count)
-                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                        // else if(step==goPath.path.Count-1)
-                        //EditCarStateAfterSelect(step,player,ref car,)
-                        else
-                            throw new Exception("这种情况不会出现");
-                        //newStartT = 0;
-                        car.setState(player, ref notifyMsg, CarState.working);
-                        this.sendMsg(notifyMsg);
-                        StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
                     }
                 }
             });

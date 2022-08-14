@@ -82,7 +82,9 @@ var objMain =
     waterGroup: null,
     fireGroup: null,
     lightningGroup: null,
+    absorbGroup: null,
     directionGroup: null,
+    targetGroup: null,
     clock: null,
     leaveGameModel: null,
     profileModel: null,
@@ -436,7 +438,7 @@ var objMain =
                 var color = 0xFFD700;
 
                 objMain.mainF.drawLineOfFpToRoad(objMain.CollectPosition[collectIndex].Fp, objMain.collectGroup, color, 'money' + collectIndex);
-               
+
                 if (objMain.Task.state == 'collect') {
                     objMain.mainF.drawPanelOfCollect(endF);
                 }
@@ -586,7 +588,10 @@ var objMain =
             }
         },
         updateCollectGroup: function () {
-            theLagestHoderKey.updateCollectGroup();
+            /*
+             * 后台已停用
+             */
+            // theLagestHoderKey.updateCollectGroup();
         },
         refreshBuyPanel: function () {
             objMain.mainF.removeF.clearGroup(objMain.groupOfOperatePanle);
@@ -697,7 +702,7 @@ var objMain =
 
     },
     panOrRotate: 'rotate',
-    carState: {},
+    carState: { 'stamp': -1 },
     carStateTimestamp: {},
     music:
     {
@@ -800,21 +805,52 @@ var objMain =
             if (r.IsDetalt) {
                 objMain.scene.background = objMain.background.backgroundData['main'];
             }
-            else if (r.AddNew) {
-                var cubeTextureLoader = new THREE.CubeTextureLoader();
-                cubeTextureLoader.setPath('');
-                var cubeTexture = cubeTextureLoader.load([r.px, r.nx, r.py, r.ny, r.pz, r.nz]);
-                objMain.background.backgroundData[r.CrossID] = cubeTexture;
-                objMain.scene.background = objMain.background.backgroundData[r.CrossID];
-            }
             else {
-                if (objMain.background.backgroundData[r.CrossID] == undefined) {
-                    throw 'background data miss';
+                if (objMain.background.backgroundData[r.Md5Key] == undefined) {
+                    if (objMain.debug != 2) {
+                        var cubeTextureLoader = new THREE.CubeTextureLoader();
+                        cubeTextureLoader.setPath('http://127.0.0.1:11001/bgimg/' + r.Md5Key + '/');
+                        // window.location.hostname + '/bgimg?key=1&y=2&p=px'
+                        var cubeTexture = cubeTextureLoader.load(
+                            [
+                                "px.jpg", "nx.jpg",
+                                "py.jpg", "ny.jpg",
+                                "pz.jpg", "nz.jpg"]);
+                        objMain.background.backgroundData[r.Md5Key] = cubeTexture;
+                        objMain.scene.background = objMain.background.backgroundData[r.Md5Key];
+                    }
+                    else {
+                        var cubeTextureLoader = new THREE.CubeTextureLoader();
+                        cubeTextureLoader.setPath('https://www.nyrq123.com/imgtaiyuan/' + r.Md5Key + '/');
+                        // window.location.hostname + '/bgimg?key=1&y=2&p=px'
+                        var cubeTexture = cubeTextureLoader.load(
+                            [
+                                "px.jpg", "nx.jpg",
+                                "py.jpg", "ny.jpg",
+                                "pz.jpg", "nz.jpg"]);
+                        objMain.background.backgroundData[r.Md5Key] = cubeTexture;
+                        objMain.scene.background = objMain.background.backgroundData[r.Md5Key];
+                    }
                 }
                 else {
-                    objMain.scene.background = objMain.background.backgroundData[r.CrossID];
+                    objMain.scene.background = objMain.background.backgroundData[r.Md5Key];
                 }
             }
+            //else if (r.AddNew) {
+            //    var cubeTextureLoader = new THREE.CubeTextureLoader();
+            //    cubeTextureLoader.setPath('');
+            //    var cubeTexture = cubeTextureLoader.load([r.px, r.nx, r.py, r.ny, r.pz, r.nz]);
+            //    objMain.background.backgroundData[r.CrossID] = cubeTexture;
+            //    objMain.scene.background = objMain.background.backgroundData[r.CrossID];
+            //}
+            //else {
+            //    if (objMain.background.backgroundData[r.CrossID] == undefined) {
+            //        throw 'background data miss';
+            //    }
+            //    else {
+            //        objMain.scene.background = objMain.background.backgroundData[r.CrossID];
+            //    }
+            //}
         }
     },
     rightAndDuty:
@@ -839,6 +875,7 @@ var objMain =
                                         objMain.state = objMain.receivedState;
                                         setTransactionHtml.cancle();
                                         setTransactionHtml.change();
+                                        //  operatePanel.refresh();
                                     }; break;
                                     default: {
                                         set3DHtml();
@@ -873,10 +910,8 @@ var objMain =
                                 if (objMain.state == 'OnLine') {
                                     objMain.state = objMain.receivedState;
                                     setTransactionHtml.change();
+                                    operatePanel.refresh();
                                 }
-                                //setTransactionHtml.draw3D();
-                                //// ws.send(JSON.stringify({ c: 'GetBuildings' }));
-                                //objMain.ws.send('GetBuildings');
                             }; break;
                     }
                 }; break;
@@ -1118,16 +1153,23 @@ var objMain =
                         case 'rmb50':
                         case 'rmb20':
                         case 'rmb10':
+                        case 'rmb5':
                             {
                                 f(received_obj, received_obj.faceValue);
                                 objMain.ws.send('SetRMB');
                             }; break;
-                        case 'rmb5':
+                        case 'rmb1':
                             {
                                 f(received_obj, received_obj.faceValue);
                                 objMain.rmbModel.geometry = undefined;
                                 objMain.ws.send('SetRMB');
                             }; break;
+                        //case 'rmb1':
+                        //    {
+                        //        f(received_obj, received_obj.faceValue);
+                        //        objMain.rmbModel.geometry = undefined;
+                        //        objMain.ws.send('SetRMB');
+                        //    }; break;
                     };
                 }; break;
             case 'SetSpeedIcon':
@@ -1538,13 +1580,16 @@ var objMain =
                 }; break;
             case 'BradCarState':
                 {
-                    objMain.carState[received_obj.carID] = received_obj.State;
-                    var oldLength = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                    objMain.carStateTimestamp[received_obj.carID] = { 't': Date.now(), 'l': oldLength };
-                    objNotify.notifyCar(received_obj.carID, received_obj.State);
-                    operatePanel.refresh();
-                    var checkObj = { 'c': 'CheckCarState', 'State': objMain.carState[received_obj.carID], 'Key': 'Key' };
-                    objMain.ws.send(JSON.stringify({ checkObj })); //当两个状态的间隔很小时，需要check.
+                    if (received_obj.countStamp > objMain.carState.stamp) {
+                        objMain.carState.stamp = received_obj.countStamp;
+                        objMain.carState[received_obj.carID] = received_obj.State;
+                        var oldLength = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                        objMain.carStateTimestamp[received_obj.carID] = { 't': Date.now(), 'l': oldLength };
+                        objNotify.notifyCar(received_obj.carID, received_obj.State);
+                        operatePanel.refresh();
+                        var checkObj = { 'c': 'CheckCarState', 'State': objMain.carState[received_obj.carID], 'Key': 'Key' };
+                        objMain.ws.send(JSON.stringify({ checkObj })); //当两个状态的间隔很小时，需要check.
+                    }
                 }; break;
             case 'BradCastCollectInfoDetail_v2':
                 {
@@ -1790,6 +1835,14 @@ var objMain =
             case 'ResistanceDisplay2':
                 {
                     resistance.display2(received_obj);
+                }; break;
+            case 'SelectionIsWrong':
+                {
+                    moneyAbsorb.copyModel(received_obj.reduceValue);
+                }; break;
+            case 'DrawTarget':
+                {
+                    targetShow.draw(received_obj.x, received_obj.y);
                 }; break;
             default:
                 {
@@ -2377,8 +2430,7 @@ function animate() {
                     }
                 }
             }
-            else
-            {
+            else {
                 objMain.Task.state = '';
             }
             for (var i = 0; i < objMain.playerGroup.children.length; i++) {
@@ -2446,223 +2498,137 @@ function animate() {
             }
 
             {
-                if (true) {
-                    for (let key of Object.keys(objMain.carsAnimateData)) {
-                        let animateDataForeach = objMain.carsAnimateData[key];
-                        var previous = animateDataForeach.previous;
-                        var current = animateDataForeach.current;
-                        var isSelf = (key == 'car_' + objMain.indexKey);
-                        var now = Date.now();
-                        var animationF = function (key, obj, now, isSelf) {
-                            var isAnimation = false;
-                            if (isSelf) {
-                                isAnimation = true;
-                            }
-                            for (var j = 0; j < obj.animateData.length; j++) {
-                                if (obj.animateData[j].privateKey >= 0) {
-                                    if (obj.animateData[j].initialData != undefined) {
-                                        var initialData = obj.animateData[j].initialData;
-                                        var start = initialData.start;
-                                        var end = initialData.end;
-                                        if (now > start && end > now) {
-                                            var animateData = initialData.animateData;
-                                            for (var i = 0; i < animateData.length; i++) {
-
-                                                var percent = (now - start - animateData[i].t0) / (animateData[i].t1 - animateData[i].t0);
-                                                if (percent < 0) {
-                                                    continue;
-                                                }
-                                                else if (percent < 1) {
-                                                    var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
-                                                    var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
-
-                                                    // console.log('position', x, y);
-                                                    if (objMain.carGroup.getObjectByName(key) != undefined) {
-                                                        objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
-
-                                                        var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                                        if (scale < 0.002) {
-                                                            scale = 0.002;
-                                                        }
-                                                        objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-
-                                                        var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
-                                                        ;
-                                                        if (!complexV.isZero()) {
-                                                            objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
-                                                            if (isSelf) {
-                                                                if (isAnimation) {
-                                                                    objMain.controls.target.set(x, 0, -y);
-                                                                    var angle = objMain.controls.getPolarAngle();
-                                                                    //if(
-                                                                    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                                                                    var distance = 32;
-                                                                    if (dCal >= 33) {
-                                                                        distance = dCal * 0.99 - 0.01;
-                                                                    }
-                                                                    else if (dCal <= 31) {
-                                                                        distance = dCal * 1.01 + 0.01;
-                                                                    }
-                                                                    var unitY = distance * Math.cos(angle);
-                                                                    var unitZX = distance * Math.sin(angle);
-
-                                                                    var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                                                                    var unitX = unitZX * Math.sin(angleOfCamara);
-                                                                    var unitZ = unitZX * Math.cos(angleOfCamara);
-                                                                    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                                                                    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                                                                    objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                                                                    objMain.camera.lookAt(x, 0, -y);
-                                                                }
-                                                                // objMain.controls.maxDistance
-                                                            }
-                                                        }
-
-                                                        break;
-                                                    }
-                                                }
-                                                else {
-                                                    var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
-                                                    var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
-                                                    if (objMain.carGroup.getObjectByName(key) != undefined) {
-                                                        objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
-
-                                                        var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                                        if (scale < 0.002) {
-                                                            scale = 0.002;
-                                                        }
-                                                        objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-
-                                                        var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
-                                                        ;
-                                                        if (!complexV.isZero()) {
-                                                            objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }
-                                else {
-                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                    if (scale < 0.002) {
-                                        scale = 0.002;
-                                    }
-                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-                                }
-                            }
-                            if (obj.animateData.length > 1) {
-                                if (obj.animateData[0].privateKey >= 0 && obj.animateData[1].privateKey < 0) {
-                                    var initialData = obj.animateData[0].initialData;
-                                    var animateData = initialData.animateData;
-                                    if (animateData.length == 0) {
-                                        var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                        if (scale < 0.002) {
-                                            scale = 0.002;
-                                        }
-                                        objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (previous != null) {
-                            animationF(key, previous, now, isSelf);
-                        }
-                        if (current != null) {
-                            animationF(key, current, now, isSelf);
-                        }
-                    }
-                }
-                else
-                    /*汽车的移动动画*/
-                    for (let key of Object.keys(objMain.carsAnimateData)) {
-                        let animateData = objMain.carsAnimateData[key].animateData;
-                        let recordTime = objMain.carsAnimateData[key].recordTime;
-                        var now = Date.now();
-                        var isSelf = (key == 'car_' + objMain.indexKey);
+                for (let key of Object.keys(objMain.carsAnimateData)) {
+                    let animateDataForeach = objMain.carsAnimateData[key];
+                    var previous = animateDataForeach.previous;
+                    var current = animateDataForeach.current;
+                    var isSelf = (key == 'car_' + objMain.indexKey);
+                    var now = Date.now();
+                    var animationF = function (key, obj, now, isSelf) {
                         var isAnimation = false;
                         if (isSelf) {
                             isAnimation = true;
-
                         }
-                        for (var i = 0; i < animateData.length; i++) {
-                            var percent = (now - recordTime - animateData[i].t0) / (animateData[i].t1 - animateData[i].t0);
-                            if (percent < 0) {
-                                continue;
-                            }
-                            else if (percent < 1) {
-                                var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
-                                var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
-                                if (objMain.carGroup.getObjectByName(key) != undefined) {
-                                    objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
+                        for (var j = 0; j < obj.animateData.length; j++) {
+                            if (obj.animateData[j].privateKey >= 0) {
+                                if (obj.animateData[j].initialData != undefined) {
+                                    var initialData = obj.animateData[j].initialData;
+                                    var start = initialData.start;
+                                    var end = initialData.end;
+                                    if (now > start && end > now) {
+                                        var animateData = initialData.animateData;
+                                        for (var i = 0; i < animateData.length; i++) {
 
-                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                    if (scale < 0.002) {
-                                        scale = 0.002;
-                                    }
-                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-
-                                    var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
-                                    ;
-                                    if (!complexV.isZero()) {
-                                        objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
-                                        if (isSelf) {
-                                            if (isAnimation) {
-                                                objMain.controls.target.set(x, 0, -y);
-                                                var angle = objMain.controls.getPolarAngle();
-                                                //if(
-                                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                                                var distance = 32;
-                                                if (dCal >= 33) {
-                                                    distance = dCal * 0.99 - 0.01;
-                                                }
-                                                else if (dCal <= 31) {
-                                                    distance = dCal * 1.01 + 0.01;
-                                                }
-                                                var unitY = distance * Math.cos(angle);
-                                                var unitZX = distance * Math.sin(angle);
-
-                                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                                                var unitX = unitZX * Math.sin(angleOfCamara);
-                                                var unitZ = unitZX * Math.cos(angleOfCamara);
-                                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                                                objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                                                objMain.camera.lookAt(x, 0, -y);
+                                            var percent = (now - start - animateData[i].t0) / (animateData[i].t1 - animateData[i].t0);
+                                            if (percent < 0) {
+                                                continue;
                                             }
-                                            // objMain.controls.maxDistance
+                                            else if (percent < 1) {
+                                                var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
+                                                var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
+
+                                                // console.log('position', x, y);
+                                                if (objMain.carGroup.getObjectByName(key) != undefined) {
+                                                    objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
+
+                                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                                    if (scale < 0.002) {
+                                                        scale = 0.002;
+                                                    }
+                                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+
+                                                    var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
+                                                    ;
+                                                    if (!complexV.isZero()) {
+                                                        objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
+                                                        if (isSelf) {
+                                                            if (isAnimation) {
+                                                                objMain.controls.target.set(x, 0, -y);
+                                                                var angle = objMain.controls.getPolarAngle();
+                                                                //if(
+                                                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                                                                var distance = 32;
+                                                                if (dCal >= 33) {
+                                                                    distance = dCal * 0.99 - 0.01;
+                                                                }
+                                                                else if (dCal <= 31) {
+                                                                    distance = dCal * 1.01 + 0.01;
+                                                                }
+                                                                var unitY = distance * Math.cos(angle);
+                                                                var unitZX = distance * Math.sin(angle);
+
+                                                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                                                                var unitX = unitZX * Math.sin(angleOfCamara);
+                                                                var unitZ = unitZX * Math.cos(angleOfCamara);
+                                                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                                                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                                                                objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
+                                                                objMain.camera.lookAt(x, 0, -y);
+                                                            }
+                                                            // objMain.controls.maxDistance
+                                                        }
+                                                    }
+
+                                                    break;
+                                                }
+                                            }
+                                            else {
+                                                var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
+                                                var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
+                                                if (objMain.carGroup.getObjectByName(key)) {
+                                                    objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
+
+                                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                                    if (scale < 0.002) {
+                                                        scale = 0.002;
+                                                    }
+
+                                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+
+                                                    var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
+                                                    ;
+                                                    if (!complexV.isZero()) {
+                                                        objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
 
-                                    break;
                                 }
                             }
-                            else {
-                                var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
-                                var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
-                                if (objMain.carGroup.getObjectByName(key) != undefined) {
-                                    objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
-
+                            else if (objMain.carGroup.getObjectByName(key)) {
+                                var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                if (scale < 0.002) {
+                                    scale = 0.002;
+                                }
+                                objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+                            }
+                        }
+                        if (obj.animateData.length > 1) {
+                            if (obj.animateData[0].privateKey >= 0 && obj.animateData[1].privateKey < 0) {
+                                var initialData = obj.animateData[0].initialData;
+                                var animateData = initialData.animateData;
+                                if (animateData.length == 0) {
                                     var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
                                     if (scale < 0.002) {
                                         scale = 0.002;
                                     }
-                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-
-                                    var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
-                                    ;
-                                    if (!complexV.isZero()) {
-                                        objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
-                                    }
+                                    if (objMain.carGroup.getObjectByName(key))
+                                        objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
                                 }
                             }
                         }
                     }
+
+                    if (previous != null) {
+                        animationF(key, previous, now, isSelf);
+                    }
+                    if (current != null) {
+                        animationF(key, current, now, isSelf);
+                    }
+                }
             }
 
             if (objMain.carState.car == 'selecting') {
@@ -2700,11 +2666,63 @@ function animate() {
                 }
 
                 objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;
+
+                {
+                    var cameraHeight = objMain.camera.position.y;
+                    if (cameraHeight > 0) {
+                        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                        if (calResult1 > 0) {
+                            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                            if (calAngle1 < Math.PI / 2) {
+                                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                                objMain.scene.position.y = cameraHeight - newCalHeight;
+                                //  objMain.controls.target.y = 0;
+                                if (objMain.scene.position.y < -3) {
+                                    objMain.scene.position.y = -3;
+                                }
+                            }
+                            else objMain.scene.position.y = 0; 
+
+                        }
+                        else objMain.scene.position.y = 0; 
+                    }
+                    else objMain.scene.position.y = 0;
+
+                }
             }
             else {
                 objMain.directionGroup.visible = false;
-                objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 36;
+                objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 30;//Math.PI / 2 - Math.PI / 36;
+                 
+                {
+                    var cameraHeight = objMain.camera.position.y;
+                    if (cameraHeight > 0) {
+                        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                        if (calResult1 > 0) {
+                            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                            if (calAngle1 < Math.PI / 2) {
+                                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                                objMain.scene.position.y = cameraHeight - newCalHeight;
+                                //  objMain.controls.target.y = 0;
+                                if (objMain.scene.position.y < -3) {
+                                    objMain.scene.position.y = -3;
+                                }
+                            }
+                            else objMain.scene.position.y = 0;
+
+                        }
+                        else objMain.scene.position.y = 0;
+                    }
+                    else objMain.scene.position.y = 0;
+
+                }
             }
+            moneyAbsorb.animate();
+            targetShow.animate();
             objMain.animation.animateCameraByCarAndTask();
 
             theLagestHoderKey.animate();
@@ -2729,6 +2747,8 @@ function animate() {
                     objMain.directionGroup.children[selectIndex].children[0].material = objMain.ModelInput.directionArrow.newM;
                 }
             }
+
+
         }
         else if ('LookForBuildings' == objMain.state) {
             //if (objMain.transtractionData != null)
@@ -3078,63 +3098,37 @@ var set3DHtml = function () {
     objMain.controls = new THREE.OrbitControls(objMain.camera, objMain.labelRenderer.domElement);
     objMain.controls.center.set(MercatorGetXbyLongitude(objMain.centerPosition.lon), 0, -MercatorGetYbyLatitude(objMain.centerPosition.lat));
 
-    objMain.roadGroup = new THREE.Group();
-    objMain.scene.add(objMain.roadGroup);
+    {
+        var registGroup = function (g) {
+            g = new THREE.Group();
+            objMain.scene.add(g);
+            return g;
+        }
+        objMain.roadGroup = registGroup(objMain.roadGroup);
+        objMain.playerGroup = registGroup(objMain.playerGroup);
+        objMain.promoteDiamond = registGroup(objMain.promoteDiamond);
+        objMain.columnGroup = registGroup(objMain.columnGroup);
+        objMain.carGroup = registGroup(objMain.carGroup);
+        objMain.groupOfOperatePanle = registGroup(objMain.groupOfOperatePanle);
+        objMain.collectGroup = registGroup(objMain.collectGroup);
+        objMain.getOutGroup = registGroup(objMain.getOutGroup);
+        objMain.taxGroup = registGroup(objMain.taxGroup);
+        objMain.shieldGroup = registGroup(objMain.shieldGroup);
+        objMain.confusePrepareGroup = registGroup(objMain.confusePrepareGroup);
+        objMain.lostPrepareGroup = registGroup(objMain.lostPrepareGroup);
+        objMain.ambushPrepareGroup = registGroup(objMain.ambushPrepareGroup);
+        objMain.waterGroup = registGroup(objMain.waterGroup);
+        objMain.fireGroup = registGroup(objMain.fireGroup);
+        objMain.lightningGroup = registGroup(objMain.lightningGroup);
+        objMain.absorbGroup = registGroup(objMain.absorbGroup);
+        objMain.directionGroup = registGroup(objMain.directionGroup);
+        objMain.buildingGroup = registGroup(objMain.buildingGroup);
+        objMain.targetGroup = registGroup(objMain.targetGroup);
+        objMain.buildingSelectionGroup = registGroup(objMain.buildingSelectionGroup);
+    }
+    if (false) {
 
-    objMain.playerGroup = new THREE.Group();
-    objMain.scene.add(objMain.playerGroup);
-
-    objMain.promoteDiamond = new THREE.Group();
-    objMain.scene.add(objMain.promoteDiamond);
-
-    objMain.columnGroup = new THREE.Group();
-    objMain.scene.add(objMain.columnGroup);
-
-    objMain.carGroup = new THREE.Group();
-    objMain.scene.add(objMain.carGroup);
-
-    objMain.groupOfOperatePanle = new THREE.Group();
-    objMain.scene.add(objMain.groupOfOperatePanle);
-
-    objMain.collectGroup = new THREE.Group();
-    objMain.scene.add(objMain.collectGroup);
-
-    objMain.getOutGroup = new THREE.Group();
-    objMain.scene.add(objMain.getOutGroup);
-
-    objMain.taxGroup = new THREE.Group();
-    objMain.scene.add(objMain.taxGroup);
-
-    objMain.shieldGroup = new THREE.Group();
-    objMain.scene.add(objMain.shieldGroup);
-
-    objMain.confusePrepareGroup = new THREE.Group();
-    objMain.scene.add(objMain.confusePrepareGroup);
-
-    objMain.lostPrepareGroup = new THREE.Group();
-    objMain.scene.add(objMain.lostPrepareGroup);
-
-    objMain.ambushPrepareGroup = new THREE.Group();
-    objMain.scene.add(objMain.ambushPrepareGroup);
-
-    objMain.waterGroup = new THREE.Group();
-    objMain.scene.add(objMain.waterGroup);
-
-    objMain.fireGroup = new THREE.Group();
-    objMain.scene.add(objMain.fireGroup);
-
-    objMain.lightningGroup = new THREE.Group();
-    objMain.scene.add(objMain.lightningGroup);
-
-    objMain.directionGroup = new THREE.Group();
-    objMain.scene.add(objMain.directionGroup);
-
-    objMain.buildingGroup = new THREE.Group();
-    objMain.scene.add(objMain.buildingGroup);
-
-    objMain.buildingSelectionGroup = new THREE.Group();
-    objMain.scene.add(objMain.buildingSelectionGroup);
-
+    }
     objMain.clock = new THREE.Clock();
 
     {
@@ -3757,7 +3751,12 @@ var SysOperatePanel =
             // img.style.right = '0.5em';
 
             img.onclick = function () {
-                settingSys.add();
+                if (objMain.state == 'LookForBuildings') {
+                    objMain.ws.send(JSON.stringify({ c: 'CancleLookForBuildings' }));
+                }
+                else {
+                    settingSys.add();
+                }
             };
 
             divSysOperatePanel.appendChild(img);
@@ -4345,17 +4344,33 @@ var operatePanel =
                             }; break;
                         case 'setReturn':
                             {
-                                if (objMain.driver.driverIndex > 0) { }
-                                else {
+                                /*if (objMain.driver.driverIndex > 0) { }*/
+                                //else
+                                {
                                     addItemToTaskOperatingPanle('招募', 'findDriver', function () {
                                         if (objMain.carState["car"] == 'waitAtBaseStation') {
-                                            if (objMain.driver.driverIndex < 0) {
+                                            //if (objMain.driver.driverIndex < 0)
+                                            {
                                                 driverSys.draw(function (driverIndex) {
                                                     // objMain.ws.send(sendStr);
-                                                    alert(driverIndex);
+                                                    // alert(driverIndex);
                                                     objMain.ws.send(JSON.stringify({ 'c': 'DriverSelect', 'driverIndex': driverIndex }));
                                                 });
                                             }
+                                        }
+                                    });
+                                }
+                                {
+                                    addItemToTaskOperatingPanle('释玉', 'takeapart', function () {
+                                        if (objMain.carState["car"] == 'waitAtBaseStation') {
+                                            objMain.ws.send(JSON.stringify({ 'c': 'TakeApart' }));
+                                            //if (objMain.driver.driverIndex < 0) {
+                                            //    driverSys.draw(function (driverIndex) {
+                                            //        // objMain.ws.send(sendStr);
+                                            //        alert(driverIndex);
+
+                                            //    });
+                                            //}
                                         }
                                     });
                                 }
@@ -4364,10 +4379,11 @@ var operatePanel =
                             }; break;
                         case 'building':
                             {
-                                if (objMain.state == 'LookForBuildings') {
-                                    cancelBuildingDetailF();
-                                }
-                                else if (objMain.state == 'OnLine')
+                                //if (objMain.state == 'LookForBuildings') {
+                                //    cancelBuildingDetailF();
+                                //}
+                                //else
+                                if (objMain.state == 'OnLine')
                                     buildingDetailF();
                             }; break;
                     }
