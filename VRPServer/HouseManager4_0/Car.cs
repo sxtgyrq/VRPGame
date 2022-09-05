@@ -70,6 +70,7 @@ namespace HouseManager4_0
             }
         }
         public int countStamp { get; private set; }
+
         public void setState(RoleInGame player, ref List<string> notifyMsg, CarState s)
         {
 
@@ -84,7 +85,7 @@ namespace HouseManager4_0
             }
 
             /*
-             * 这里不懂
+             * 这里对应 ，Engine_CollectEngine 回收完毕。
              */
             if (s == CarState.waitOnRoad)
             {

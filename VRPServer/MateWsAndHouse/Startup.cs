@@ -344,57 +344,57 @@ namespace MateWsAndHouse
             });
             return;
 
-            app.Run(async context =>
-            {
-                if (context.Request.Method.ToLower() == "post")
-                {
-                    // await context.Response.WriteAsync("ok");
-                    var notifyJson = getBodyStr(context);
+            ////  app.Run(async context =>
+            //{
+            //    if (context.Request.Method.ToLower() == "post")
+            //    {
+            //        // await context.Response.WriteAsync("ok");
+            //        var notifyJson = getBodyStr(context);
 
-                    //Consol.WriteLine($"teambegain receive:{notifyJson}");
-                    CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
+            //        //Consol.WriteLine($"teambegain receive:{notifyJson}");
+            //        CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
 
-                    switch (c.c)
-                    {
-                        case "TeamBegain":
-                            {
-                                CommonClass.TeamBegain teamBegain = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamBegain>(notifyJson);
+            //        switch (c.c)
+            //        {
+            //            case "TeamBegain":
+            //                {
+            //                    CommonClass.TeamBegain teamBegain = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamBegain>(notifyJson);
 
-                                Team t = null;
-                                lock (Program.teamLock)
-                                {
+            //                    Team t = null;
+            //                    lock (Program.teamLock)
+            //                    {
 
-                                    if (Program.allTeams.ContainsKey(teamBegain.TeamNum))
-                                    {
-                                        t = Program.allTeams[teamBegain.TeamNum];
-                                    }
-                                    //Program.allTeams.Add()
-                                }
-                                if (t == null)
-                                {
-                                    await context.Response.WriteAsync("ng");
-                                }
-                                else
-                                {
-                                    for (var i = 0; i < t.member.Count; i++)
-                                    {
-                                        var secret = CommonClass.AES.AesEncrypt("team:" + teamBegain.RoomIndex.ToString(), t.member[i].CommandStart);
-                                        CommonClass.TeamNumWithSecret teamNumWithSecret = new CommonClass.TeamNumWithSecret()
-                                        {
-                                            c = "TeamNumWithSecret",
-                                            WebSocketID = t.member[i].WebSocketID,
-                                            Secret = secret
-                                        };
-                                        var json = Newtonsoft.Json.JsonConvert.SerializeObject(teamNumWithSecret);
-                                        await sendMsg(t.captain.FromUrl, json);
-                                    }
-                                    t.IsBegun = true;
-                                    await context.Response.WriteAsync("ok");
-                                }
-                            }; break;
-                    }
-                }
-            });
+            //                        if (Program.allTeams.ContainsKey(teamBegain.TeamNum))
+            //                        {
+            //                            t = Program.allTeams[teamBegain.TeamNum];
+            //                        }
+            //                        //Program.allTeams.Add()
+            //                    }
+            //                    if (t == null)
+            //                    {
+            //                        await context.Response.WriteAsync("ng");
+            //                    }
+            //                    else
+            //                    {
+            //                        for (var i = 0; i < t.member.Count; i++)
+            //                        {
+            //                            var secret = CommonClass.AES.AesEncrypt("team:" + teamBegain.RoomIndex.ToString(), t.member[i].CommandStart);
+            //                            CommonClass.TeamNumWithSecret teamNumWithSecret = new CommonClass.TeamNumWithSecret()
+            //                            {
+            //                                c = "TeamNumWithSecret",
+            //                                WebSocketID = t.member[i].WebSocketID,
+            //                                Secret = secret
+            //                            };
+            //                            var json = Newtonsoft.Json.JsonConvert.SerializeObject(teamNumWithSecret);
+            //                            await sendMsg(t.captain.FromUrl, json);
+            //                        }
+            //                        t.IsBegun = true;
+            //                        await context.Response.WriteAsync("ok");
+            //                    }
+            //                }; break;
+            //        }
+            //    }
+            //});
         }
 
         private async Task dealWithTeamBegain(WebSocket webSocketFromGameHandler)
@@ -790,70 +790,82 @@ namespace MateWsAndHouse
         }
         static Dictionary<string, ClientWebSocket> _sockets = new Dictionary<string, ClientWebSocket>();
 
-        private static async Task sendMsg(string fromUrl, string json)
+        private static async Task<string> sendMsg(string fromUrl, string json)
         {
-
-#warning 这里必须要处理，防止 websocket服务挂了，导致此处退不出报错！
-            for (var i = 0; i < 3; i++)
+            var r = await TcpFunction.WithResponse.SendInmationToUrlAndGetRes(fromUrl, json);
+            switch (r)
             {
-                {
-                    if (_sockets.ContainsKey(fromUrl))
+                case "Baaaaaaaaaaaaaa'":
                     {
-                        if ((!_sockets[fromUrl].CloseStatus.HasValue) && _sockets[fromUrl].State == WebSocketState.Open)
-                        {
-                        }
-                        else
-                        {
-                            _sockets[fromUrl] = null;
-                            _sockets[fromUrl] = new ClientWebSocket();
-
-
-                            await _sockets[fromUrl].ConnectAsync(new Uri(fromUrl), CancellationToken.None);
-                        }
-                    }
-                    else
-                    {
-                        _sockets.Add(fromUrl, new ClientWebSocket());
-                        await _sockets[fromUrl].ConnectAsync(new Uri(fromUrl), CancellationToken.None);
-
-                        //if (result)
-                        //{ }
-                        //else
-                        //{
-                        //    _sockets.Remove(roomUrl);
-                        //}
-                        // await _sockets[roomUrl].ConnectAsync(new Uri(roomUrl), CancellationToken.None);
-
-                    }
-                }
-                //  while (!_sockets[roomUrl].CloseStatus.HasValue);
-                try
-                {
-                    var sendData = Encoding.UTF8.GetBytes(json);
-                    await _sockets[fromUrl].SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                    break;
-                }
-                catch (Exception e)
-                {
-                    _sockets.Remove(fromUrl);
-                    //Consol.WriteLine($"{fromUrl}连接失败！");
-                    continue;
-                }
-                return;
+                        return "aaa";
+                    };
             }
-            if (_sockets.ContainsKey(fromUrl))
-            {
-                if (_sockets[fromUrl].State == WebSocketState.Open)
-                {
-                }
-                else
-                {
-                    _sockets[fromUrl] = null;
-                    _sockets[fromUrl] = new ClientWebSocket();
-                    await _sockets[fromUrl].ConnectAsync(new Uri(fromUrl), CancellationToken.None);
-                }
-            }
+            return r;
         }
+        //        private static async Task sendMsg(string fromUrl, string json)
+        //        {
+
+        //#warning 这里必须要处理，防止 websocket服务挂了，导致此处退不出报错！
+        //            for (var i = 0; i < 3; i++)
+        //            {
+        //                {
+        //                    if (_sockets.ContainsKey(fromUrl))
+        //                    {
+        //                        if ((!_sockets[fromUrl].CloseStatus.HasValue) && _sockets[fromUrl].State == WebSocketState.Open)
+        //                        {
+        //                        }
+        //                        else
+        //                        {
+        //                            _sockets[fromUrl] = null;
+        //                            _sockets[fromUrl] = new ClientWebSocket();
+
+
+        //                            await _sockets[fromUrl].ConnectAsync(new Uri(fromUrl), CancellationToken.None);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        _sockets.Add(fromUrl, new ClientWebSocket());
+        //                        await _sockets[fromUrl].ConnectAsync(new Uri(fromUrl), CancellationToken.None);
+
+        //                        //if (result)
+        //                        //{ }
+        //                        //else
+        //                        //{
+        //                        //    _sockets.Remove(roomUrl);
+        //                        //}
+        //                        // await _sockets[roomUrl].ConnectAsync(new Uri(roomUrl), CancellationToken.None);
+
+        //                    }
+        //                }
+        //                //  while (!_sockets[roomUrl].CloseStatus.HasValue);
+        //                try
+        //                {
+        //                    var sendData = Encoding.UTF8.GetBytes(json);
+        //                    await _sockets[fromUrl].SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+        //                    break;
+        //                }
+        //                catch (Exception e)
+        //                {
+        //                    _sockets.Remove(fromUrl);
+        //                    //Consol.WriteLine($"{fromUrl}连接失败！");
+        //                    continue;
+        //                }
+        //                return;
+        //            }
+        //            if (_sockets.ContainsKey(fromUrl))
+        //            {
+        //                if (_sockets[fromUrl].State == WebSocketState.Open)
+        //                {
+        //                }
+        //                else
+        //                {
+        //                    _sockets[fromUrl] = null;
+        //                    _sockets[fromUrl] = new ClientWebSocket();
+        //                    await _sockets[fromUrl].ConnectAsync(new Uri(fromUrl), CancellationToken.None);
+        //                }
+        //            }
+        //        }
 
         //private void sendMsg(Microsoft.Extensions.Primitives.StringValues fromUrl, string json)
         //{

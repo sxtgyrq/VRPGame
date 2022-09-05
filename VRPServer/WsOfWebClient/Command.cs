@@ -137,6 +137,13 @@ namespace WsOfWebClient
         public long value { get; set; }
 
     }
+    public class UpdateLevel : CommonClass.Command
+    {
+        //    objMain.ws.send(JSON.stringify({ c: 'Donate', dType: type, address: address }));
+        public string signature { get; set; }
+        public string address { get; set; } 
+
+    }
 
     public class Collect1 : CommonClass.Command
     {

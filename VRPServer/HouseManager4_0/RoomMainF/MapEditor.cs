@@ -209,12 +209,12 @@ namespace HouseManager4_0.RoomMainF
             {
                 var roadItem = road[nc.roadCode][nc.roadOrder];
                 var a1 = (from item in roadItem.Cross1
-                          where item.CrossState == 1
+                          where (item.CrossState == 1 || item.CrossState == 2)
                           && item.RoadCode2 == nc.anotherRoadCode
                           && item.RoadOrder2 == nc.anotherRoadOrder
                           select item).ToList();
                 var a2 = (from item in roadItem.Cross2
-                          where item.CrossState == 1
+                          where (item.CrossState == 1 || item.CrossState == 3)
                           && item.RoadCode1 == nc.anotherRoadCode
                           && item.RoadOrder1 == nc.anotherRoadOrder
                           select item).ToList();
@@ -225,11 +225,15 @@ namespace HouseManager4_0.RoomMainF
                     lon = a1[0].BDLongitude;
                     lat = a1[0].BDLatitude;
                 }
-                else
+                else if (a2.Count == 1)
                 {
                     percent = a2[0].Percent2;
                     lon = a2[0].BDLongitude;
                     lat = a2[0].BDLatitude;
+                }
+                else
+                {
+                    return "";
                 }
             }
             double minValue = 1000000;
@@ -240,7 +244,7 @@ namespace HouseManager4_0.RoomMainF
                 var roadItem = road[nc.roadCode][roadOrder];
                 {
                     var a1 = (from item in roadItem.Cross1
-                              where item.CrossState == 1
+                              where (item.CrossState == 1 || item.CrossState == 2)
                               && (item.RoadCode2 != nc.anotherRoadCode || item.RoadOrder2 != nc.anotherRoadOrder)
                               && item.RoadOrder1 + item.Percent1 > percent + nc.roadOrder
                               select item).ToList();
@@ -265,7 +269,7 @@ namespace HouseManager4_0.RoomMainF
                 }
                 {
                     var a2 = (from item in roadItem.Cross2
-                              where item.CrossState == 1
+                              where (item.CrossState == 1 || item.CrossState == 3)
                               && (item.RoadCode1 != nc.anotherRoadCode || item.RoadOrder1 != nc.anotherRoadOrder)
                               && item.RoadOrder2 + item.Percent2 > percent + nc.roadOrder
                               select item).ToList();
@@ -317,12 +321,12 @@ namespace HouseManager4_0.RoomMainF
             {
                 var roadItem = road[pc.roadCode][pc.roadOrder];
                 var a1 = (from item in roadItem.Cross1
-                          where item.CrossState == 1
+                          where (item.CrossState == 1 || item.CrossState == 2)
                           && item.RoadCode2 == pc.anotherRoadCode
                           && item.RoadOrder2 == pc.anotherRoadOrder
                           select item).ToList();
                 var a2 = (from item in roadItem.Cross2
-                          where item.CrossState == 1
+                          where (item.CrossState == 1 || item.CrossState == 3)
                           && item.RoadCode1 == pc.anotherRoadCode
                           && item.RoadOrder1 == pc.anotherRoadOrder
                           select item).ToList();
@@ -333,11 +337,15 @@ namespace HouseManager4_0.RoomMainF
                     lon = a1[0].BDLongitude;
                     lat = a1[0].BDLatitude;
                 }
-                else
+                else if (a2.Count == 1)
                 {
                     percent = a2[0].Percent2;
                     lon = a2[0].BDLongitude;
                     lat = a2[0].BDLatitude;
+                }
+                else
+                {
+                    return "";
                 }
             }
             double maxValue = -1;
@@ -348,7 +356,7 @@ namespace HouseManager4_0.RoomMainF
                 var roadItem = road[pc.roadCode][roadOrder];
                 {
                     var a1 = (from item in roadItem.Cross1
-                              where item.CrossState == 1
+                              where (item.CrossState == 1 || item.CrossState == 2)
                               && (item.RoadCode2 != pc.anotherRoadCode || item.RoadOrder2 != pc.anotherRoadOrder)
                               && item.RoadOrder1 + item.Percent1 < percent + pc.roadOrder
                               select item).ToList();
@@ -373,7 +381,7 @@ namespace HouseManager4_0.RoomMainF
                 }
                 {
                     var a2 = (from item in roadItem.Cross2
-                              where item.CrossState == 1
+                              where (item.CrossState == 1 || item.CrossState == 3)
                               && (item.RoadCode1 != pc.anotherRoadCode || item.RoadOrder1 != pc.anotherRoadOrder)
                               && item.RoadOrder2 + item.Percent2 < percent + pc.roadOrder
                               select item).ToList();
@@ -646,17 +654,17 @@ namespace HouseManager4_0.RoomMainF
         }
 
         public string GetBG(SetCrossBG ss)
-        { 
+        {
             if (Program.dt.AllCrossesBGData_.ContainsKey(ss.Md5Key))
             {
                 var r = DalOfAddress.backgroundjpg.GetItemDetail(Program.dt.AllCrossesBGData_[ss.Md5Key]);
-                 return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
             }
             else
             {
                 Console.WriteLine($"没有结果");
                 return "";
-            } 
+            }
         }
     }
 

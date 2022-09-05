@@ -22,4 +22,9 @@
     <ProjectReference Include="..\Model\Model.csproj" />
     <ProjectReference Include="..\TcpFunction\TcpFunction.csproj" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Doc\" />
+  </ItemGroup>
 </Project>

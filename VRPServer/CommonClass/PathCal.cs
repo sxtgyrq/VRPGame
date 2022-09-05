@@ -38,6 +38,7 @@ namespace CommonClass
         public class CalModel_V2 : CalModel
         {
             public string FastenPositionID { get; set; }
+            public int EntranceORExit { get; set; }
         }
     }
 }

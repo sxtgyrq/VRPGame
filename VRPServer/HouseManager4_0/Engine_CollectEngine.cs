@@ -32,7 +32,7 @@ namespace HouseManager4_0
                 }
                 else
                 {
-                    this.WebNotify(player, "小车已经没有多余手机容量了，已经安排返回！");
+                    this.WebNotify(player, "小车已经没有多余手机容量了！");
                     return false;
                 }
             else
@@ -284,65 +284,79 @@ namespace HouseManager4_0
                     }, this);
                 else
                 {
-                    if (step == 0)
+                    Action p = () =>
                     {
-                        this.ThreadSleep(startT + 50);
-                        Action p = () =>
-                        {
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            step++;
-                            if (step < goPath.path.Count)
-                                //EditCarStateAfterSelect()
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            else
-                                newStartT = 0;
-
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
+                        List<string> notifyMsg = new List<string>();
+                        int newStartT;
+                        step++;
+                        if (step < goPath.path.Count)
+                            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                         else
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
+                            throw new Exception("这种情况不会出现");
+
+                        car.setState(player, ref notifyMsg, CarState.working);
+                        this.sendMsg(notifyMsg);
+                        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
+                    };
+                    this.loop(p,step,startT,player,goPath);
+                    //if (step == 0)
+                    //{
+                    //    this.ThreadSleep(startT + 50);
+                    //    Action p = () =>
+                    //    {
+                    //        List<string> notifyMsg = new List<string>();
+                    //        int newStartT;
+                    //        step++;
+                    //        if (step < goPath.path.Count) 
+                    //            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                    //        else
+                    //            throw new Exception("这种情况不会出现");
+
+                    //        car.setState(player, ref notifyMsg, CarState.working);
+                    //        this.sendMsg(notifyMsg);
+                    //        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
+                    //    };
+                    //    if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                    //    {
+                    //        p();
+                    //    }
+                    //    else
+                    //    {
+                    //        StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
+                    //    }
 
 
-                    }
-                    else
-                    {
-                        this.ThreadSleep(startT);
-                        Action p = () =>
-                        {
-                            step++;
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            if (step < goPath.path.Count)
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            // else if(step==goPath.path.Count-1)
-                            //EditCarStateAfterSelect(step,player,ref car,)
-                            else
-                                throw new Exception("这种情况不会出现");
-                            //newStartT = 0;
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
+                    //}
+                    //else
+                    //{
+                    //    this.ThreadSleep(startT);
+                    //    Action p = () =>
+                    //    {
+                    //        step++;
+                    //        List<string> notifyMsg = new List<string>();
+                    //        int newStartT;
+                    //        if (step < goPath.path.Count)
+                    //            EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                    //        // else if(step==goPath.path.Count-1)
+                    //        //EditCarStateAfterSelect(step,player,ref car,)
+                    //        else
+                    //            throw new Exception("这种情况不会出现");
+                    //        //newStartT = 0;
+                    //        car.setState(player, ref notifyMsg, CarState.working);
+                    //        this.sendMsg(notifyMsg);
+                    //        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
 
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            this.ThreadSleep(500);
-                            p();
-                        }
-                        else if (startT != 0)
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-                    }
+                    //    };
+                    //    if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                    //    {
+                    //        this.ThreadSleep(500);
+                    //        p();
+                    //    }
+                    //    else if (startT != 0)
+                    //    {
+                    //        StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
+                    //    }
+                    //}
                 }
             });
             th.Start();
@@ -433,6 +447,8 @@ namespace HouseManager4_0
 
 
             carParkOnRoad(pa.target, ref car, role, ref notifyMsg);
+
+            //在这个方法里，会安排NPC进行下一步工作。
             car.setState(role, ref notifyMsg, CarState.waitOnRoad);
             that._Players[pa.key].returningOjb = pa.returningOjb;
 

@@ -44,6 +44,10 @@
               "target": "Package",
               "version": "[3.1.3, )"
             },
+            "NBitcoin": {
+              "target": "Package",
+              "version": "[7.0.10, )"
+            },
             "RIPEMD": {
               "target": "Package",
               "version": "[4.3.0, )"

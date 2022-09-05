@@ -40,7 +40,7 @@ namespace HouseManager4_0.RoomMainF
             this.modelM = new Manager_Model(this);
             this.modelR = new Manager_Resistance(this);
             this.modelC = new Manager_Connection(this);
-
+            this.modelL = new Manager_Level(this);
             lock (PlayerLock)
             {
                 this._Players = new Dictionary<string, RoleInGame>();

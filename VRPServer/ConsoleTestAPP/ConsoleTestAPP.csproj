@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BitCoinTrasfer\BitCoinTrasfer.csproj" />
     <ProjectReference Include="..\BitCoin\BitCoin.csproj" />
     <ProjectReference Include="..\CityRunFunction\CityRunFunction.csproj" />
     <ProjectReference Include="..\CommonClass\CommonClass.csproj" />

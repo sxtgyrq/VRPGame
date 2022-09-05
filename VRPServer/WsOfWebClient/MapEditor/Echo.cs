@@ -130,14 +130,30 @@ namespace WsOfWebClient.MapEditor
                                             {
                                                 case "nextCross":
                                                     {
-                                                        firstRoad = await getNextCross(firstRoad, rm);
-                                                        mm.AddDiction(firstRoad);
+                                                        var r = await getNextCross(firstRoad, rm);
+                                                        if (r != null)
+                                                        {
+                                                            firstRoad = await getNextCross(firstRoad, rm);
+                                                            mm.AddDiction(firstRoad);
+                                                        }
+                                                        else
+                                                        {
+                                                            await mm.ShowMsg(webSocket, "这是一个单向口，按 B 退出线路");
+                                                        }
                                                         //  await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "previousCross":
                                                     {
-                                                        firstRoad = await getPreviousCross(firstRoad, rm);
-                                                        mm.AddDiction(firstRoad);
+                                                        var r = await getPreviousCross(firstRoad, rm);
+                                                        if (r != null)
+                                                        {
+                                                            firstRoad = await getPreviousCross(firstRoad, rm);
+                                                            mm.AddDiction(firstRoad);
+                                                        }
+                                                        else
+                                                        {
+                                                            await mm.ShowMsg(webSocket, "这是一个单向口，按 B 退出线路");
+                                                        }
                                                         //await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "changeRoad":
@@ -314,6 +330,8 @@ namespace WsOfWebClient.MapEditor
                 }
             };
         }
+
+
 
         //private static async Task SetBackground(SetBG sb, Position firstRoad, string address, Random rm)
         //{

@@ -37,7 +37,7 @@ var objMain =
 {
     debug: (function () {
         if (window.location.hostname == 'www.nyrq123.com') return 2;
-        else if (window.location.hostname == '192.168.0.108') return 1;
+        else if (window.location.hostname == '192.168.0.111') return 1;
         else return 0;
     })(),
     indexKey: '',
@@ -950,7 +950,10 @@ var objMain =
             case 'TeamNumWithSecret':
                 {
                     if (objMain.receivedState == 'WaitingToGetTeam') {
-                        objMain.ws.send(received_msg);
+                        console.log('secret', received_msg);
+                        // var obj = JSON.parse(
+                        var objPass = { 'Secret': received_obj.Secret, 'WebSocketID': received_obj.WebSocketID, 'c': 'TeamNumWithSecret' }
+                        objMain.ws.send(JSON.stringify(objPass));
                     }
                 }; break;
             case 'GetOthersPositionNotify_v2':
@@ -960,50 +963,54 @@ var objMain =
                      */
                     console.log(evt.data);
                     var objInput = JSON.parse(evt.data);
-                    var basePoint = objInput.fp;
-                    //var carsNames = objInput.carsNames;
-                    var indexKey = objInput.key;
-                    var PlayerName = objInput.PlayerName;
-                    var fPIndex = objInput.fPIndex;
-                    var positionInStation = objInput.positionInStation;
-                    var isNPC = objInput.isNPC;
-                    var isPlayer = objInput.isPlayer;
-                    var Level = objInput.Level;
-                    objMain.othersBasePoint[indexKey] =
-                    {
-                        'basePoint': basePoint,
-                        'indexKey': indexKey,
-                        'playerName': PlayerName,
-                        'fPIndex': fPIndex,
-                        'isNPC': isNPC,
-                        'isPlayer': isPlayer,
-                        'Level': Level
-                    };
-                    if (objMain.state == "OnLine") {
-                        drawPoint('orange', basePoint, indexKey);
-                        /*画引线*/
-                        objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'green', indexKey);
-                        //  objMain.mainF.lookAtPosition(objMain.basePoint);
-                        objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, positionInStation);
-                    }
+
+                    if (objInput.key == objMain.indexKey) { }
                     else {
-                        /*
-                         * 两个用户同时刷新，在update websocketID与 setOnline 这段时间可能出现这种情况。
-                         */
-                        //var msg = 'GetPositionNotify出入时，状态为' + objMain.state;
-                        //throw (msg);
-                        //return;
+                        var basePoint = objInput.fp;
+                        //var carsNames = objInput.carsNames;
+                        var indexKey = objInput.key;
+                        var PlayerName = objInput.PlayerName;
+                        var fPIndex = objInput.fPIndex;
+                        var positionInStation = objInput.positionInStation;
+                        var isNPC = objInput.isNPC;
+                        var isPlayer = objInput.isPlayer;
+                        var Level = objInput.Level;
+                        objMain.othersBasePoint[indexKey] =
+                        {
+                            'basePoint': basePoint,
+                            'indexKey': indexKey,
+                            'playerName': PlayerName,
+                            'fPIndex': fPIndex,
+                            'isNPC': isNPC,
+                            'isPlayer': isPlayer,
+                            'Level': Level
+                        };
+                        if (objMain.state == "OnLine") {
+                            drawPoint('orange', basePoint, indexKey);
+                            /*画引线*/
+                            objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'green', indexKey);
+                            //  objMain.mainF.lookAtPosition(objMain.basePoint);
+                            objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, positionInStation);
+                        }
+                        else {
+                            /*
+                             * 两个用户同时刷新，在update websocketID与 setOnline 这段时间可能出现这种情况。
+                             */
+                            //var msg = 'GetPositionNotify出入时，状态为' + objMain.state;
+                            //throw (msg);
+                            //return;
+                        }
+
+                        //    objMain.othersBasePoint[indexKey] = { 'basePoint': basePoint, 'carsNames': carsNames, 'indexKey': indexKey, 'playerName': PlayerName, 'fPIndex': fPIndex };
+                        //if (objMain.receivedState == 'WaitingToGetTeam') {
+                        //    objMain.ws.send(received_msg);
+                        //}
+                        //小车用 https://threejs.org/examples/#webgl_animation_skinning_morph
+                        //小车用 基地用 https://threejs.org/examples/#webgl_animation_cloth
+                        // drawFlag(); 
+
+                        // drawCarBtns(objMain.carsNames);
                     }
-
-                    //    objMain.othersBasePoint[indexKey] = { 'basePoint': basePoint, 'carsNames': carsNames, 'indexKey': indexKey, 'playerName': PlayerName, 'fPIndex': fPIndex };
-                    //if (objMain.receivedState == 'WaitingToGetTeam') {
-                    //    objMain.ws.send(received_msg);
-                    //}
-                    //小车用 https://threejs.org/examples/#webgl_animation_skinning_morph
-                    //小车用 基地用 https://threejs.org/examples/#webgl_animation_cloth
-                    // drawFlag(); 
-
-                    // drawCarBtns(objMain.carsNames);
                 }; break;
             case 'GetPositionNotify_v2':
                 {
@@ -1901,7 +1908,7 @@ var startA = function () {
             }; break;
         case 1:
             {
-                wsConnect = 'ws://192.168.0.108:11001/websocket';
+                wsConnect = 'ws://192.168.0.111:11001/websocket';
             }; break;
         default:
             {
@@ -2667,60 +2674,70 @@ function animate() {
 
                 objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;
 
-                {
-                    var cameraHeight = objMain.camera.position.y;
-                    if (cameraHeight > 0) {
-                        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
-                        if (calResult1 > 0) {
-                            var lengthToCenterOnPanel = Math.sqrt(calResult1);
-                            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
-                            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
-                            if (calAngle1 < Math.PI / 2) {
-                                var newCalHeight = Math.tan(calAngle1) * calResult1;
-                                objMain.scene.position.y = cameraHeight - newCalHeight;
-                                //  objMain.controls.target.y = 0;
-                                if (objMain.scene.position.y < -3) {
-                                    objMain.scene.position.y = -3;
-                                }
-                            }
-                            else objMain.scene.position.y = 0; 
+                //{
+                //    var cameraHeight = objMain.camera.position.y;
+                //    if (cameraHeight > 0) {
+                //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                //        if (calResult1 > 0) {
+                //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                //            if (calAngle1 < Math.PI / 2) {
+                //                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                //                objMain.scene.position.y = cameraHeight - newCalHeight;
+                //                //  objMain.controls.target.y = 0;
+                //                if (objMain.scene.position.y < -3) {
+                //                    objMain.scene.position.y = -3;
+                //                }
+                //            }
+                //            else objMain.scene.position.y = 0; 
 
-                        }
-                        else objMain.scene.position.y = 0; 
-                    }
-                    else objMain.scene.position.y = 0;
+                //        }
+                //        else objMain.scene.position.y = 0; 
+                //    }
+                //    else objMain.scene.position.y = 0;
 
-                }
+                //}
             }
             else {
                 objMain.directionGroup.visible = false;
-                objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 30;//Math.PI / 2 - Math.PI / 36;
-                 
-                {
-                    var cameraHeight = objMain.camera.position.y;
-                    if (cameraHeight > 0) {
-                        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
-                        if (calResult1 > 0) {
-                            var lengthToCenterOnPanel = Math.sqrt(calResult1);
-                            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
-                            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
-                            if (calAngle1 < Math.PI / 2) {
-                                var newCalHeight = Math.tan(calAngle1) * calResult1;
-                                objMain.scene.position.y = cameraHeight - newCalHeight;
-                                //  objMain.controls.target.y = 0;
-                                if (objMain.scene.position.y < -3) {
-                                    objMain.scene.position.y = -3;
-                                }
-                            }
-                            else objMain.scene.position.y = 0;
+                objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;//Math.PI / 2 - Math.PI / 36;
 
-                        }
-                        else objMain.scene.position.y = 0;
-                    }
-                    else objMain.scene.position.y = 0;
+                {
+
+                    //var lengthOfV = v1.length();
+                    //if (lengthOfV > 0) {
+                    //    v1.setLength(1);
+                    //    var v2 = new THREE.Vector3()
+                    //}
 
                 }
+                //{
+                //    var cameraHeight = objMain.camera.position.y;
+                //    if (cameraHeight > 0) {
+                //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                //        if (calResult1 > 0) {
+                //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                //            if (calAngle1 < Math.PI / 2) {
+                //                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                //                objMain.scene.position.y = cameraHeight - newCalHeight;
+                //                //  objMain.controls.target.y = 0;
+                //                //if (objMain.scene.position.y < -3) {
+                //                //    objMain.scene.position.y = -3;
+                //                //}
+                //            }
+                //            else objMain.scene.position.y = 0;
+
+                //        }
+                //        else objMain.scene.position.y = 0;
+                //    }
+                //    else objMain.scene.position.y = 0;
+
+                //}
             }
+            sceneYUpdate();
             moneyAbsorb.animate();
             targetShow.animate();
             objMain.animation.animateCameraByCarAndTask();
@@ -5270,6 +5287,36 @@ var DiamondModel =
 
     }
 };
+
+var sceneYUpdate = function () {
+    var v1 = new THREE.Vector3().subVectors(objMain.controls.target, objMain.camera.position);
+    if (v1.length() > 0) {
+        v1.setLength(1);
+        var v2 = new THREE.Vector3(0, 1, 0);
+        var v3 = new THREE.Vector3().crossVectors(v1, v2);
+        if (v3.length() > 0) {
+            v3.setLength(1);
+            v2 = new THREE.Vector3().crossVectors(v3, v1);
+
+            var v4 = v2.applyAxisAngle(v3, (0.5 - 0.618) * 35 / 180 * Math.PI);
+            var A = v4.x;
+            var B = v4.y;
+            var C = v4.z;
+            var D = -A * objMain.camera.position.x - B * objMain.camera.position.y - C * objMain.camera.position.z;
+
+            if (Math.abs(B) > 1e-4) {
+                var calY = (-D - A * objMain.controls.target.x - C * objMain.controls.target.z) / B;
+                if (calY > 25)
+                    calY = 25;
+                else if (calY < -25)
+                    calY = -25;
+                objMain.scene.position.y = calY;
+                //  objMain.scene.
+                return calY;
+            }
+        }
+    }
+}
 //////////
 /*
  * 手柄类，此游戏只支持单手柄操作。

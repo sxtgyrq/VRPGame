@@ -35,36 +35,49 @@ namespace HouseManager4_0
                                         {
                                             MileResultReason mrr;
                                             RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb = actionDo.maindDo(player, car, c, ref notifyMsg, out mrr);
-                                            if (mrr == MileResultReason.Abundant)
-                                            {
-                                                player.returningOjb = returningOjb;
-                                            }
-                                            else if (mrr == MileResultReason.CanNotReach)
-                                            {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                                this.WebNotify(player, "小车不能到达目的地，被安排返回！");
-                                            }
-                                            else if (mrr == MileResultReason.CanNotReturn)
-                                            {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                                this.WebNotify(player, "小车到达目的地后不能返回，在当前地点安排返回！");
-                                            }
-                                            else if (mrr == MileResultReason.MoneyIsNotEnougt)
-                                            {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
-                                            }
-                                            else if (mrr == MileResultReason.NearestIsMoneyWhenPromote)
-                                            {
 
-                                            }
-                                            else if (mrr == MileResultReason.NearestIsMoneyWhenAttack)
+                                            switch (mrr)
                                             {
-                                                // this.WebNotify(player, $"离宝石最近的是钱，不是你的车。请离宝石再近点儿！");
+                                                case MileResultReason.Abundant:
+                                                    {
+                                                        player.returningOjb = returningOjb;
+                                                    }; break;
+                                                case MileResultReason.CanNotReach:
+                                                    {
+                                                        actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                        this.WebNotify(player, "小车不能到达目的地，被安排返回！");
+                                                    }
+                                                    break;
+                                                case MileResultReason.CanNotReturn:
+                                                    {
+                                                        actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                        this.WebNotify(player, "小车到达目的地后不能返回，在当前地点安排返回！");
+                                                    }; break;
+                                                case MileResultReason.MoneyIsNotEnougt:
+                                                    {
+                                                        actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                    }; break;
+                                                case MileResultReason.NearestIsMoneyWhenPromote: { }; break;
+                                                case MileResultReason.NearestIsMoneyWhenAttack:
+                                                    {
+                                                        if (mrr == MileResultReason.NearestIsMoneyWhenAttack)
+                                                        {
+                                                            if (player.playerType == RoleInGame.PlayerType.NPC)
+                                                            {
+                                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                            }
+                                                            // this.WebNotify(player, $"离宝石最近的是钱，不是你的车。请离宝石再近点儿！");
+                                                        }
+                                                    }; break;
                                             }
                                         }
                                         else
                                         {
-                                            // actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                            if (player.playerType == RoleInGame.PlayerType.NPC)
+                                            {
+                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                            };
+                                            // 
                                         }
                                     }; break;
                                 case CarState.working:
@@ -414,6 +427,7 @@ namespace HouseManager4_0
         }
 
 
+
         protected void StartSelectThreadB(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player, CarState oldState, Action p)
         {
             if (isRight(selections, player.direciton, false) || player.Bust)
@@ -547,6 +561,36 @@ namespace HouseManager4_0
                     var url = notifyMsgs[i];
                     var sendMsg = notifyMsgs[i + 1];
                     e.sendMsg(url, sendMsg);
+                }
+            }
+        }
+
+        protected void loop(Action p, int step, int startT, RoleInGame player, Node goPath)
+        {
+            if (step == 0)
+            {
+                this.ThreadSleep(startT + 50);
+
+                if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                {
+                    p();
+                }
+                else
+                {
+                    StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
+                }
+            }
+            else
+            {
+                this.ThreadSleep(Math.Max(5, startT));
+                if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                {
+                    this.ThreadSleep(500);
+                    p();
+                }
+                else
+                {
+                    StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
                 }
             }
         }

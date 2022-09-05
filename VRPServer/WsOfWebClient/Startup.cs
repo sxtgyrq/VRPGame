@@ -278,7 +278,8 @@ namespace WsOfWebClient
                 //byte[] buffer = new byte[size];
                 //var buffer = new ArraySegment<byte>(new byte[8192]);
                 State s = new State();
-                s.WebsocketID = ConnectInfo.webSocketID++;
+                ConnectInfo.webSocketID++;
+                s.WebsocketID = ConnectInfo.webSocketID;
                 s.Ls = LoginState.empty;
                 s.roomIndex = -1;
                 s.mapRoadAndCrossMd5 = "";
@@ -293,12 +294,13 @@ namespace WsOfWebClient
 
                 do
                 {
-                    try
+                   // try
                     {
 
                         var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
 
                         wResult = returnResult.wr;
+                        //Console.WriteLine(returnResult.result);
                         CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                         switch (c.c)
                         {
@@ -392,19 +394,7 @@ namespace WsOfWebClient
 
                                                 if (result == "ok")
                                                 {
-                                                    returnResult = await ReceiveStringAsync(webSocket, webWsSize);
-
-                                                    wResult = returnResult.wr;
-
-                                                    int roomIndex;
-                                                    if (Room.CheckSecret(returnResult.result, command_start, out roomIndex))
-                                                    {
-                                                        s = await Room.GetRoomThenStartAfterJoinTeam(s, webSocket, roomIndex, playerName, carsNames);
-                                                    }
-                                                    else
-                                                    {
-                                                        return;
-                                                    }
+                                                    s.CommandStart = command_start;
                                                 }
                                                 else if (result == "game has begun")
                                                 {
@@ -432,6 +422,29 @@ namespace WsOfWebClient
                                                 }
                                             }
                                         }
+                                    }
+                                }; break;
+                            case "TeamNumWithSecret":
+                                {
+                                    if (s.Ls == LoginState.WaitingToGetTeam)
+                                    {
+                                        var command_start = s.CommandStart;
+                                        int roomIndex;
+                                        if (Room.CheckSecret(returnResult.result, command_start, out roomIndex))
+                                        {
+                                            Console.WriteLine("secret 正确");
+                                            s = await Room.GetRoomThenStartAfterJoinTeam(s, webSocket, roomIndex, playerName, carsNames);
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("secret 不正确");
+                                            return;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("错误的状态");
+                                        return;
                                     }
                                 }; break;
                             case "SetCarsName":
@@ -683,15 +696,23 @@ namespace WsOfWebClient
                                 {
                                     await Room.TakeApart(s);
                                 }; break;
+                            case "UpdateLevel":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        UpdateLevel uL = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateLevel>(returnResult.result);
+                                        await Room.UpdateLevelF(s, uL);
+                                    }
+                                }; break;
                         }
                     }
-                    catch (Exception e)
-                    {
+                    //catch (Exception e)
+                    //{
 
-                        await Room.setOffLine(s);
-                        removeWs(s.WebsocketID);
-                        throw e;
-                    }
+                    //    await Room.setOffLine(s);
+                    //    removeWs(s.WebsocketID);
+                    //    throw e;
+                    //}
                 }
                 while (!wResult.CloseStatus.HasValue);
                 await Room.setOffLine(s);

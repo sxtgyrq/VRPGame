@@ -535,6 +535,12 @@ namespace CommonClass
         public string signature { get; set; }
         public long value { get; set; }
     }
+    public class OrderToUpdateLevel : Command
+    {
+        public string Key { get; set; }
+        public string address { get; set; }
+        public string signature { get; set; }
+    }
     public class SaveMoney : Command
     {
         public string Key { get; set; }
@@ -611,6 +617,7 @@ namespace CommonClass
         /// 作为队伍的索引
         /// </summary>
         public int TeamNumber { get; set; }
+        public int Hash { get; set; }
     }
     public class TeamResultForGameBegain : TeamResult
     {

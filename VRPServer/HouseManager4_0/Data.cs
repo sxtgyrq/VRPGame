@@ -65,8 +65,38 @@ namespace HouseManager4_0
                         var road = roadItem.Value;
                         foreach (var cross in road.Cross1)
                         {
-                            if (cross.CrossState == 1)
+                            if (cross.CrossState > 0)
                             {
+                                /*
+                                 * CrossState与entranceORExit有对应关系
+                                 * 术语出口，这里的出口代表一条线路的出口
+                                 * 属于入口，这里的入口代表另一条陷入的入口
+                                 * 即从出口离开一条线路，从入口进入另一条线路。
+                                 * 
+                                 * CrossState=1,代表这个东西既是入口也是出口；
+                                 * CrossState=2,代表在roadCode1是出口，roadcode2是入口
+                                 * CrossState=3,代表在roadcode2是出口，roadCode1是入口
+                                 * 
+                                 * entranceORExit=6,代表可出可入
+                                 * entranceORExit=3,代表入口
+                                 * entranceORExit=2,代表出口
+                                 * 
+                                 * CrossState=1,可出可入,entranceORExit=6;
+                                 * 
+                                 * CrossState=2,在roadCode1,表示出口,entranceORExit=2;
+                                 * --------反之,在roadCode2,表示入口,entranceORExit=3;
+                                 * 
+                                 * CrossState=3,在roadCode2,表示出口,entranceORExit=2;
+                                 * --------反之,在roadCode1,表示入口,entranceORExit=3;
+                                 */
+                                int entranceORExit;
+                                switch (cross.CrossState)
+                                {
+                                    case 1: entranceORExit = 6; break;
+                                    case 2: entranceORExit = 2; break;
+                                    case 3: entranceORExit = 3; break;
+                                    default: throw new Exception("");
+                                }
                                 var Percent = cross.Percent1;
                                 var AnotherRoadCode = cross.RoadCode2;
                                 var AnotherRoadOrder = cross.RoadOrder2;
@@ -83,14 +113,23 @@ namespace HouseManager4_0
                                     ToNext = -1,
                                     ToPrevious = -1,
                                     Pass = 0,
-                                    FastenPositionID = ""
+                                    FastenPositionID = "",
+                                    EntranceORExit = entranceORExit
                                 });
                             }
                         }
                         foreach (var cross in road.Cross2)
                         {
-                            if (cross.CrossState == 1)
+                            if (cross.CrossState > 0)
                             {
+                                int entranceORExit;
+                                switch (cross.CrossState)
+                                {
+                                    case 1: entranceORExit = 6; break;
+                                    case 2: entranceORExit = 3; break;
+                                    case 3: entranceORExit = 2; break;
+                                    default: throw new Exception("");
+                                }
                                 var Percent = cross.Percent2;
                                 var AnotherRoadCode = cross.RoadCode1;
                                 var AnotherRoadOrder = cross.RoadOrder1;
@@ -107,7 +146,8 @@ namespace HouseManager4_0
                                     ToNext = -1,
                                     ToPrevious = -1,
                                     Pass = 0,
-                                    FastenPositionID = ""
+                                    FastenPositionID = "",
+                                    EntranceORExit = entranceORExit
                                 });
                             }
                         }
@@ -660,7 +700,7 @@ namespace HouseManager4_0
                             x = 0,
                             y = 0
                         };
-                        if (animate0.t != 0)
+                        // if (animate0.t != 0)
                         {
                             result.Add(animate0.x);
                             result.Add(animate0.y);
@@ -674,7 +714,7 @@ namespace HouseManager4_0
                         x = Convert.ToInt32((endX - startX) * 256),
                         y = Convert.ToInt32((endY - startY) * 256),
                     };
-                    if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)  //  if (animate1.t != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -724,7 +764,7 @@ namespace HouseManager4_0
                     //    y1 = endY
                     //};
                     startT += interview;
-                    if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)//if (animate1.t != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -765,7 +805,6 @@ namespace HouseManager4_0
                             x = 0,
                             y = 0
                         };
-                        if (animate0.t != 0)
                         {
                             result.Add(animate0.x);
                             result.Add(animate0.y);
@@ -779,7 +818,7 @@ namespace HouseManager4_0
                         x = Convert.ToInt32((endX - startX) * 256),
                         y = Convert.ToInt32((endY - startY) * 256),
                     };
-                    if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)  // if (animate1.t != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -809,7 +848,8 @@ namespace HouseManager4_0
                         t = interview
                     };
                     startT += interview;
-                    if (animate1.t != 0)
+                    //if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -1015,8 +1055,8 @@ namespace HouseManager4_0
             double KofPointStretchThirdAndFourth = 1;
             if (value.CarInOpposeDirection == 0)
             {
-                KofPointStretchFirstAndSecond = 0.1;
-                KofPointStretchThirdAndFourth = 1.5;
+                KofPointStretchFirstAndSecond = 1.5;
+                KofPointStretchThirdAndFourth = 0.1;
             }
 
             double[] point1, point2, point3, point4;

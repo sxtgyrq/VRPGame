@@ -57,15 +57,17 @@ namespace MateWsAndHouse
                                 WebSocketID = teamCreate.WebSocketID,
                                 PlayerName = teamCreate.PlayerName
                             };
-                            await sendMsg(teamCreate.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(teamCreateFinish));
+                            var msg = await sendMsg(teamCreate.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(teamCreateFinish));
                             //await (prot)
                             // await sendInmationToUrl(addItem.FromUrl, notifyJson);
+
                             CommonClass.TeamResult t = new CommonClass.TeamResult()
                             {
                                 c = "TeamResult",
                                 FromUrl = teamCreate.FromUrl,
                                 TeamNumber = indexV,
-                                WebSocketID = teamCreate.WebSocketID
+                                WebSocketID = teamCreate.WebSocketID,
+                                Hash = msg.GetHashCode(),
                             };
                             outPut = Newtonsoft.Json.JsonConvert.SerializeObject(t);
                         }; break;
@@ -89,6 +91,7 @@ namespace MateWsAndHouse
                             }
                             else
                             {
+                                int hash = 0;
                                 for (var i = 0; i < t.member.Count; i++)
                                 {
                                     var secret = CommonClass.AES.AesEncrypt("team:" + teamBegain.RoomIndex.ToString(), t.member[i].CommandStart);
@@ -99,10 +102,14 @@ namespace MateWsAndHouse
                                         Secret = secret
                                     };
                                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(teamNumWithSecret);
-                                    await sendMsg(t.member[i].FromUrl, json);
+                                    var url = t.member[i].FromUrl;
+                                    var msg = await sendMsg(url, json);
+                                    Console.WriteLine(msg);
+                                    
+                                    hash += msg.GetHashCode();
                                 }
-                                t.IsBegun = true;
-                                outPut = "ok";
+                                t.IsBegun = true; 
+                                outPut = $"ok{hash}";
                             }
                         }; break;
                     case "TeamJoin":
@@ -217,9 +224,10 @@ namespace MateWsAndHouse
             }
         }
 
-        private static async Task sendMsg(string fromUrl, string json)
+        private static async Task<string> sendMsg(string fromUrl, string json)
         {
             var r = await Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(fromUrl, json));
+            return r;
         }
     }
 }

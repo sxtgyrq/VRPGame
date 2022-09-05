@@ -20,6 +20,7 @@ namespace HouseManager4_0.RoomMainF
                     }
             }
             while (this.FpIsUsing(index));
+            
             return index;
         }
 

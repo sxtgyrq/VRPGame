@@ -25,23 +25,26 @@ namespace HouseManager4_0
         public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c)
         {
             if (c.c == "MagicSkill")
-                if (car.ability.leftVolume > 0)
+            //  if (car.ability.leftVolume > 0)
+            {
+                MagicSkill ms = (MagicSkill)c;
+                CommonClass.driversource.Skill skill;
+                if (ms.selectIndex == 1)
                 {
-                    MagicSkill ms = (MagicSkill)c;
-                    CommonClass.driversource.Skill skill;
-                    if (ms.selectIndex == 1)
-                    {
-                        skill = car.ability.driver.skill1;
-                    }
-                    else
-                    {
-                        skill = car.ability.driver.skill2;
-                    }
-                    switch (skill.skillEnum)
-                    {
-                        case SkillEnum.Electic:
-                        case SkillEnum.Water:
-                        case SkillEnum.Fire:
+                    skill = car.ability.driver.skill1;
+                }
+                else
+                {
+                    skill = car.ability.driver.skill2;
+                }
+
+                switch (skill.skillEnum)
+                {
+                    case SkillEnum.Electic:
+                    case SkillEnum.Water:
+                    case SkillEnum.Fire:
+                        {
+                            if (car.ability.leftVolume > 0)
                             {
                                 var state = CheckTargetCanBeElecticMagiced(player, ms.targetOwner);
                                 switch (state)
@@ -82,10 +85,18 @@ namespace HouseManager4_0
                                         };
                                     default: return false;
                                 }
-                            };
-                        case SkillEnum.Ambush:
-                        case SkillEnum.Confusion:
-                        case SkillEnum.Lose:
+                            }
+                            else
+                            {
+                                this.WebNotify(player, "小车已经没有多余业务容量！");
+                                return false;
+                            }
+                        };
+                    case SkillEnum.Ambush:
+                    case SkillEnum.Confusion:
+                    case SkillEnum.Lose:
+                        {
+                            if (car.ability.leftVolume > 0)
                             {
                                 var state = CheckTargetCanBeControleMagiced(player, ms.targetOwner);
                                 switch (state)
@@ -126,10 +137,18 @@ namespace HouseManager4_0
                                         };
                                     default: return false;
                                 }
-                            };
-                        case SkillEnum.Speed:
-                        case SkillEnum.Defense:
-                        case SkillEnum.Attack:
+                            }
+                            else
+                            {
+                                this.WebNotify(player, "小车已经没有多余业务容量！");
+                                return false;
+                            }
+
+                        };
+                    case SkillEnum.Speed:
+                    case SkillEnum.Defense:
+                        {
+                            if (car.ability.leftVolume > 0)
                             {
                                 var state = CheckTargetCanBeImprovedByMagic(player, ms.targetOwner);
                                 switch (state)
@@ -155,20 +174,56 @@ namespace HouseManager4_0
                                         };
                                     default: return false;
                                 }
-                            };
-                        default:
+                            }
+                            else
                             {
+                                this.WebNotify(player, "小车已经没有多余业务容量！");
                                 return false;
                             }
-                    }
+                        };
+                    case SkillEnum.Attack:
+                        {
+                            if (car.ability.leftBusiness > 0)
+                            {
+                                var state = CheckTargetCanBeImprovedByMagic(player, ms.targetOwner);
+                                switch (state)
+                                {
+                                    case CarStateForBeMagiced.CanBeMagiced:
+                                        {
+                                            return true;
+                                        };
+                                    case CarStateForBeMagiced.IsNotGroupMate:
+                                        {
+                                            this.WebNotify(player, $"只能对自己或队友进行{skill.skillName}！");
+                                            return false;
+                                        };
+                                    case CarStateForBeMagiced.HasBeenBust:
+                                        {
+                                            this.WebNotify(player, "提升的对象已经破产！");
+                                            return false;
+                                        }
+                                    case CarStateForBeMagiced.NotExisted:
+                                        {
+                                            this.WebNotify(player, "提升的对象已经退出游戏！");
+                                            return false;
+                                        };
+                                    default: return false;
+                                }
+                            }
+                            else
+                            {
+                                this.WebNotify(player, "小车已经没有多余冲撞容量！");
+                                return false;
+                            }
+                        };
+                    default:
+                        {
+                            return false;
+                        }
+                }
 
 
-                }
-                else
-                {
-                    this.WebNotify(player, "小车已经没有多余业务容量！");
-                    return false;
-                }
+            }
             else
             {
                 return false;
@@ -228,7 +283,7 @@ namespace HouseManager4_0
                     return CarStateForBeMagiced.NotExisted;
                 }
             }
-            else if (role.playerType != RoleInGame.PlayerType.NPC)
+            else if (role.playerType == RoleInGame.PlayerType.NPC)
             {
                 return CarStateForBeMagiced.CanBeMagiced;
             }
@@ -487,64 +542,22 @@ namespace HouseManager4_0
 
                 else
                 {
-                    if (step == 0)
-                    {
-                        this.ThreadSleep(startT + 50);
-                        Action p = () =>
-                        {
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            step++;
-                            if (step < goPath.path.Count)
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            else
-                                newStartT = 0;
+                    Action p = () =>
+                           {
+                               List<string> notifyMsg = new List<string>();
+                               int newStartT;
+                               step++;
+                               if (step < goPath.path.Count)
+                                   EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                               else
+                                   newStartT = 0;
 
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                            StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
-                        else
-                        {
-
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-
-                    }
-                    else
-                    {
-                        this.ThreadSleep(startT);
-                        Action p = () =>
-                        {
-                            step++;
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            if (step < goPath.path.Count)
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            // else if(step==goPath.path.Count-1)
-                            //EditCarStateAfterSelect(step,player,ref car,)
-                            else
-                                throw new Exception("这种情况不会出现");
-                            //newStartT = 0;
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
-
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
-                        else if (startT != 0)
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-                    }
+                               car.setState(player, ref notifyMsg, CarState.working);
+                               this.sendMsg(notifyMsg);
+                               //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                               StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
+                           };
+                    this.loop(p, step, startT, player, goPath);
                 }
             });
             th.Start();
@@ -2225,22 +2238,24 @@ namespace HouseManager4_0
 
         internal void TakeHalfMoneyWhenIsControlled(RoleInGame player, Car car, ref List<string> notifyMsg)
         {
-            if (car.state == CarState.waitAtBaseStation)
-            {
-                long reduceMoney = 0;
-                if (player.Money > car.ability.Business / 2)
-                {
-                    reduceMoney += car.ability.Business / 2;
-                    car.ability.setCostBusiness(car.ability.Business / 2, player, car, ref notifyMsg);
-                }
-                if (player.Money - reduceMoney > car.ability.Volume / 2)
-                {
-                    reduceMoney += car.ability.Volume / 2;
-                    car.ability.setCostVolume(car.ability.Volume / 2, player, car, ref notifyMsg);
-                }
-                if (reduceMoney > 0)
-                    player.MoneySet(player.Money - reduceMoney, ref notifyMsg);
-            }
+            if (player.playerType == RoleInGame.PlayerType.player)
+                if (player.confuseRecord.IsBeingControlled())
+                    if (car.state == CarState.waitAtBaseStation)
+                    {
+                        long reduceMoney = 0;
+                        if (player.Money > car.ability.Business / 2)
+                        {
+                            reduceMoney += car.ability.Business / 2;
+                            car.ability.setCostBusiness(car.ability.Business / 2, player, car, ref notifyMsg);
+                        }
+                        if (player.Money - reduceMoney > car.ability.Volume / 2)
+                        {
+                            reduceMoney += car.ability.Volume / 2;
+                            car.ability.setCostVolume(car.ability.Volume / 2, player, car, ref notifyMsg);
+                        }
+                        if (reduceMoney > 0)
+                            player.MoneySet(player.Money - reduceMoney, ref notifyMsg);
+                    }
         }
     }
 

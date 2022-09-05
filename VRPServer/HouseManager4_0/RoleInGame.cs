@@ -17,29 +17,73 @@ namespace HouseManager4_0
         public void ShowLevelOfPlayerDetail(ref List<string> notifyMsg)
         {
             if (this.playerType == PlayerType.player && this.ShowLevelOfPlayerF != null)
-                this.ShowLevelOfPlayerF((Player)this, this.Level, ref notifyMsg);
+                this.ShowLevelOfPlayerF((Player)this, this.levelObj.Level, ref notifyMsg);
         }
-        int _level = 1;
-        public int Level
+        LevelObj _level = new LevelObj();
+
+        public class LevelObj : CommonClass.databaseModel.LevelForSave
+        {
+            public bool InsertToSave { get; internal set; }
+
+            public LevelObj()
+            {
+                this.BtcAddr = "";
+                this.Level = 1;
+                this.TimeStampStr = "";
+                this.InsertToSave = true;
+            }
+
+            internal void SetLevel(int newLevel)
+            {
+                this.Level = newLevel;
+            }
+
+            internal void SetAddr(string btcAddr)
+            {
+                this.BtcAddr = btcAddr;
+            }
+
+            internal void SetTimeStamp(string timeStr)
+            {
+                this.TimeStampStr = timeStr;
+            }
+        }
+        public LevelObj levelObj
         {
             get
             {
                 return this._level;
             }
         }
-
+        public int Level
+        {
+            get
+            {
+                return this.levelObj.Level;
+            }
+        }
         public void SetLevel(int newLevel, ref List<string> notifyMsg)
         {
-            if (this._level == newLevel) { }
+            if (this._level.Level == newLevel)
+            {
+
+            }
             else
             {
-                this._level = newLevel;
+                this._level.SetLevel(newLevel);
                 ShowLevelOfPlayerDetail(ref notifyMsg);
                 if (this.playerType == PlayerType.NPC)
                 {
                     ((NPC)this).initializeCarOfNPC();
                 }
             }
+            //if (this._level == newLevel) { }
+            //else
+            //{
+            //    this._level = newLevel;
+            //    ShowLevelOfPlayerDetail(ref notifyMsg);
+
+            //}
         }
         public string Key { get; internal set; }
 
@@ -994,7 +1038,7 @@ namespace HouseManager4_0
             List<string> notifyMsg = new List<string>();
             var car = this.getCar();
 
-            for (var i = 2; i < this.Level; i++)
+            for (var i = 2; i < this.levelObj.Level; i++)
             {
                 for (var j = 0; j < 3; j++)
                 {

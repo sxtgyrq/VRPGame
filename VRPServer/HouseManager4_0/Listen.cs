@@ -33,7 +33,7 @@ namespace HouseManager4_0
             string outPut = "haveNothingToReturn";
             {
                 // CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
-
+                Console.WriteLine(c.c);
                 switch (c.c)
                 {
                     case "PlayerAdd_V2":
@@ -157,6 +157,12 @@ namespace HouseManager4_0
                         {
                             CommonClass.OrderToSubsidize ots = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.OrderToSubsidize>(notifyJson);
                             objI.OrderToSubsidize(ots);
+                            outPut = "ok";
+                        }; break;
+                    case "OrderToUpdateLevel":
+                        {
+                            //CommonClass.OrderToUpdateLevel oul = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.OrderToUpdateLevel>(notifyJson);
+                            //objI.OrderToUpdateLevel(oul);
                             outPut = "ok";
                         }; break;
                     case "DialogMsg":

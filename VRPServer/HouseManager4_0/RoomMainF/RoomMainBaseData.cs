@@ -209,5 +209,6 @@ namespace HouseManager4_0.RoomMainF
         public Manager_Model modelM;
         public Manager_Resistance modelR;
         public Manager_Connection modelC;
+        public Manager_Level modelL;
     }
 }

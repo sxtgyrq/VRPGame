@@ -1,0 +1,221 @@
+﻿.carRaceLine {
+}
+
+    .carRaceLine.carLine1MainPage {
+        border-left: 6px solid #ffd800eb;
+        height: 100%;
+        position: absolute;
+        left: 40px;
+        top: 0px;
+        width: 0px;
+    }
+
+    .carRaceLine.carLine2MainPage {
+        border-top: 6px solid #ffd800eb;
+        height: 0px;
+        position: absolute;
+        left: 0;
+        top: 40px;
+        width: 100%;
+    }
+
+    .carRaceLine.carLine3MainPage {
+        border-right: 6px solid #ffd800eb;
+        height: 100%;
+        position: absolute;
+        left: calc(100% - 46px);
+        top: 0px;
+        width: 0px;
+    }
+
+.animateCarToTop {
+    position: absolute;
+    left: 37px;
+    top: -40px;
+    width: 12px;
+    height: 20px;
+    background-color: #ff0000;
+    animation: moveToTop 2s linear 0s forwards;
+    /*  animation-duration: 0s;*/
+}
+
+    .animateCarToTop.segmentdelay1 {
+        animation-delay: 0;
+    }
+
+    .animateCarToTop.segmentdelay2 {
+        animation-delay: 2s;
+    }
+
+    .animateCarToTop.segmentdelay3 {
+    }
+
+@keyframes moveToTop {
+    from {
+        top: calc(100% - 0px);
+    }
+
+    20% {
+        top: calc(80% - 4px);
+    }
+
+    40% {
+        top: calc(60% - 8px);
+    }
+
+    60% {
+        top: calc(40% - 12px);
+    }
+
+    80% {
+        top: calc(20% - 16px);
+    }
+
+    to {
+        top: calc(0% - 20px);
+    }
+}
+
+.animateCarToCorner {
+    position: absolute;
+    /* left: 37px;*/
+    top: -40px;
+    width: 12px;
+    height: 20px;
+    background-color: #ff0000;
+    animation: moveThenTurnThenMoveThenTurn 8s linear 0s forwards;
+    animation-delay: 4s;
+}
+
+@keyframes moveThenTurnThenMoveThenTurn {
+    from {
+        top: calc(100% - 0px);
+        transform: rotateY(0deg);
+        left: 37px;
+    }
+
+    25% {
+        top: calc(0% + 33px);
+        transform-origin: 50% 50%;
+        transform: rotate(0deg);
+        left: 37px;
+    }
+
+    30% {
+        top: calc(0% + 33px);
+        transform-origin: 50% 50%;
+        transform: rotate(90deg);
+        left: 37px;
+    }
+
+    70% {
+        top: calc(0% + 33px);
+        transform-origin: 50% 50%;
+        transform: rotate(90deg);
+        left: calc(100% - 49px);
+    }
+
+    75% {
+        top: calc(0% + 33px);
+        transform-origin: 50% 50%;
+        transform: rotate(180deg);
+        left: calc(100% - 49px);
+    }
+
+    to {
+        top: calc(100% - 0px);
+        transform-origin: 50% 50%;
+        transform: rotate(180deg);
+        left: calc(100% - 49px);
+    }
+}
+
+.animateCarToBottom {
+    position: absolute;
+    left: calc(100% - 49px);
+    top: -20px;
+    width: 12px;
+    height: 20px;
+    background-color: #ff0000;
+    animation: moveToTop 2s linear 0s forwards;
+    animation-direction: reverse;
+    /*  animation-duration: 0s;*/
+}
+
+    .animateCarToBottom.segmentdelay3 {
+        animation-delay: 12s;
+    }
+
+    .animateCarToBottom.segmentdelay4 {
+        animation-delay: 14s;
+    }
+
+.animateTextBottom {
+    width: calc(100% - 22px);
+    height: 1em;
+    left: 10px;
+    top: calc((100% - 20px - 1em)/3 * 3);
+    position: absolute;
+    text-align: right;
+    color: green;
+    animation: bottomChangeColor 2s linear 0s forwards;
+    animation-delay: 16s;
+}
+
+@keyframes bottomChangeColor {
+    from {
+        color: green;
+    }
+
+    to {
+        color: red;
+    }
+}
+
+.animateOfBlockBtn {
+    animation: changeBtnColorAndBG 2s linear 0s forwards;
+    text-shadow: 0 0.1em 0.1em red;
+    color: wheat;
+    background: wheat;
+}
+
+    .animateOfBlockBtn.delay1 {
+        animation-delay: 2s;
+    }
+
+    .animateOfBlockBtn.delay2 {
+        animation-delay: 4s;
+    }
+
+    .animateOfBlockBtn.delay3 {
+        animation-delay: 12s;
+    }
+
+    .animateOfBlockBtn.delay4 {
+        animation-delay: 14s;
+    }
+
+    .animateOfBlockBtn.delay5 {
+        animation-delay: 16s;
+    }
+
+@keyframes changeBtnColorAndBG {
+
+    from {
+        background: wheat;
+        background-size: 20% 20%;
+        background-image: linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+        background-image: -webkit-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -webkit-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+    }
+
+    to {
+        background: #1ce640;
+        background-size: 50% 50%;
+        /* background-image: -webkit-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -webkit-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -moz-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -moz-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -moz-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -moz-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -ms-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -ms-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -ms-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -ms-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -o-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -o-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -o-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -o-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);*/
+        background-image: linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+        background-image: -webkit-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -webkit-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+    }
+}

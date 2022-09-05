@@ -173,7 +173,7 @@ namespace BitCoin
                         //Consol.WriteLine($"offset:{offset}");
                         if (offset == 225)
                         {
-                            Console.ReadLine();
+                            // Console.ReadLine();
                         }
                     }
                     //catch (Exception ex)
@@ -196,6 +196,76 @@ namespace BitCoin
             }
 
 
+            public class ReturnResult
+            {
+                public NBitcoin.uint256 hash { get; internal set; }
+                public int n { get; internal set; }
+                public NBitcoin.Script ScriptSig { get; internal set; }
+                public string hashHex { get; internal set; }
+                public long value { get; internal set; }
+            }
+            public static List<ReturnResult> GetDataFromJson(int current_block_count, string json, string Addr, out bool isEmpty)
+            {
+                var result = new List<ReturnResult>();
+                Transaction t = Newtonsoft.Json.JsonConvert.DeserializeObject<Transaction>(json);
+                if (t.txs.Count == 0)
+                {
+                    isEmpty = true;
+                    return result;
+                }
+                for (var i = 0; i < t.txs.Count; i++)
+                {
+                    var item = t.txs[i];
+                    {
+                        if (item.block_height.HasValue)
+                        {
+                            int transaction_block_height = item.block_height.Value;
+                            if (current_block_count - transaction_block_height + 1 > 3)
+                            {
+                                for (int j = 0; j < item.@out.Count; j++)
+                                {
+                                    if (string.IsNullOrEmpty(item.@out[j].addr))
+                                    {
+                                        continue;
+                                    }
+                                    else if (item.@out[j].addr.Trim() == Addr.Trim())
+                                    {
+                                        if (item.@out[j].value > 0)
+                                        {
+                                            if (!item.@out[j].spent)
+                                            {
+                                                result.Add
+                                                    (
+                                                     new ReturnResult()
+                                                     {
+                                                         hash = NBitcoin.uint256.Parse(item.hash),
+                                                         n = Convert.ToInt32(item.@out[j].n),
+                                                         ScriptSig = NBitcoin.Script.FromHex(item.@out[j].script),
+                                                         hashHex = item.hash,
+                                                         value = item.@out[j].value
+                                                     }
+                                                    );
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
+
+                }
+                isEmpty = false;
+                return result;
+            }
 
         }
         class Transaction

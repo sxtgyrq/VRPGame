@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "hKxUxsShvlxyC8+hq41auKXXz+pvl2iLKNmhP0iDXqOeTz3YZ5zyKMkFBHJdYBk+DA5g5tKTEsPUwsDp14YQIQ==",
+  "dgSpecHash": "IiU4HxcrslYyOwUmxGa18RW9ie5VNQ+9KrEz4k90O0VRWjCr/dbAaTS0oYpl8elrQ8vdTqS7EqpPNCczHPkwKQ==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\HouseManager\\HouseManager.csproj",
   "expectedPackageFiles": [
@@ -19,12 +19,14 @@
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\3.1.3\\microsoft.extensions.fileproviders.abstractions.3.1.3.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.extensions.fileproviders.physical\\3.1.3\\microsoft.extensions.fileproviders.physical.3.1.3.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.extensions.filesystemglobbing\\3.1.3\\microsoft.extensions.filesystemglobbing.3.1.3.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\1.0.0\\microsoft.extensions.logging.abstractions.1.0.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.extensions.primitives\\3.1.3\\microsoft.extensions.primitives.3.1.3.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\mysql.data\\8.0.23\\mysql.data.8.0.23.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\nbitcoin\\7.0.10\\nbitcoin.7.0.10.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",

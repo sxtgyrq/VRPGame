@@ -134,6 +134,7 @@ namespace HouseManager4_0.RoomMainF
                     {
                         if (!this._Players[ots.Key].Bust)
                         {
+                            this.modelL.OrderToUpdateLevel(ots.Key, ots.address, ots.signature);
                             long subsidizeGet, subsidizeLeft;
                             DalOfAddress.MoneyGet.GetSubsidizeAndLeft(ots.address, ots.value, out subsidizeGet, out subsidizeLeft);
 
@@ -144,6 +145,7 @@ namespace HouseManager4_0.RoomMainF
                             if (player.playerType == RoleInGame.PlayerType.player)
                                 this.SendLeftMoney((Player)player, subsidizeLeft, ots.address, ref notifyMsg);
                             //player.SupportToPlay.
+
                         }
                     }
             }
@@ -158,6 +160,16 @@ namespace HouseManager4_0.RoomMainF
                 //Consol.WriteLine($"url:{url}");
                 Startup.sendMsg(url, sendMsg);
             }
+        }
+
+        public void OrderToUpdateLevel(OrderToUpdateLevel ots)
+        {
+            /*
+             *            
+             */
+            // this.modelL.OrderToUpdateLevel(ots);
+            return;
+
         }
 
         private void SendLeftMoney(Player player, long subsidizeLeft, string address, ref List<string> notifyMsg)

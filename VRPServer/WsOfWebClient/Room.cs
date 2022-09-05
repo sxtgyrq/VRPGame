@@ -81,7 +81,7 @@ namespace WsOfWebClient
                 }
             }
             // var  
-            var key = CommonClass.Random.GetMD5HashFromStr(ConnectInfo.HostIP + websocketID + DateTime.Now.ToString());
+            var key = CommonClass.Random.GetMD5HashFromStr(ConnectInfo.HostIP + websocketID + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ConnectInfo.tcpServerPort + "_" + ConnectInfo.webSocketPort);
             var roomUrl = roomUrls[roomIndex];
             return new PlayerAdd_V2()
             {
@@ -110,7 +110,7 @@ namespace WsOfWebClient
 
         private static PlayerAdd_V2 getRoomNumByRoom(int websocketID, int roomIndex, string playerName, string[] carsNames)
         {
-            var key = CommonClass.Random.GetMD5HashFromStr(ConnectInfo.HostIP + websocketID + DateTime.Now.ToString());
+            var key = CommonClass.Random.GetMD5HashFromStr(ConnectInfo.HostIP + websocketID + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ConnectInfo.tcpServerPort + "_" + ConnectInfo.webSocketPort);
             var roomUrl = roomUrls[roomIndex];
             return new PlayerAdd_V2()
             {
@@ -821,7 +821,7 @@ namespace WsOfWebClient
         /// <returns></returns>
         private static async Task<bool> CheckRespon(WebSocket webSocket, string checkValue)
         {
-            var timeOut = new CancellationTokenSource(1500).Token;
+            var timeOut = new CancellationTokenSource(1500000).Token;
             var resultAsync = await Startup.ReceiveStringAsync(webSocket, timeOut);
             if (resultAsync.result == checkValue)
             {
@@ -1329,7 +1329,22 @@ namespace WsOfWebClient
                 return "";
             }
         }
-
+        internal static async Task UpdateLevelF(State s, UpdateLevel uL)
+        {
+            Regex r = new Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$");
+            if (r.IsMatch(uL.signature))
+            {
+                var getPosition = new OrderToUpdateLevel()
+                {
+                    c = "OrderToUpdateLevel",
+                    Key = s.Key,
+                    address = uL.address,
+                    signature = uL.signature,
+                };
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
+                await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            }
+        }
         internal static async Task GetSubsidize(State s, GetSubsidize getSubsidize)
         {
             Regex r = new Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$");
@@ -1543,10 +1558,12 @@ namespace WsOfWebClient
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
             var receivedMsg = await Team.SetToBegain(team, roomIndex);
+            receivedMsg = receivedMsg.Substring(0, 2);
             // var receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
             if (receivedMsg == "ok")
             {
                 receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
+                Console.WriteLine($"{receivedMsg},{s.Key},{s.WebsocketID}");
                 if (receivedMsg == "ok")
                 {
                     await WriteSession(roomInfo, webSocket);
@@ -1569,6 +1586,7 @@ namespace WsOfWebClient
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
             var receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomIndex], sendMsg);
+            Console.WriteLine($"{receivedMsg},{s.Key},{s.WebsocketID}");
             if (receivedMsg == "ok")
             {
                 await WriteSession(roomInfo, webSocket);

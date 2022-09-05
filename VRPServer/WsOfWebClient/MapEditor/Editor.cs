@@ -40,7 +40,7 @@ namespace WsOfWebClient.MapEditor
             public double z { get; set; }
         }
 
-        class SetBG : CommonClass.Command 
+        class SetBG : CommonClass.Command
         {
             //public string px { get; set; }
             //public string nx { get; set; }
@@ -191,8 +191,15 @@ namespace WsOfWebClient.MapEditor
                 anotherRoadOrder = firstRoad.anotherRoadOrder
             });
             var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-            var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.Position>(json);
-            return obj;
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
+            else
+            {
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.Position>(json);
+                return obj;
+            }
         }
         private static async Task<CommonClass.MapEditor.Position> getNextCross(Position firstRoad, Random rm)
         {
@@ -207,8 +214,15 @@ namespace WsOfWebClient.MapEditor
                 anotherRoadOrder = firstRoad.anotherRoadOrder
             });
             var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-            var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.Position>(json);
-            return obj;
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
+            else
+            {
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.Position>(json);
+                return obj;
+            }
         }
 
         private static async Task<Dictionary<string, bool>> Draw(Position firstRoad, Dictionary<string, bool> roads, WebSocket webSocket, Random rm)

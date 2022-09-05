@@ -318,8 +318,7 @@ namespace HouseManager4_0
                 else
                 {
                     if (step == 0)
-                    {
-                        this.ThreadSleep(startT + 50);
+                    { 
                         Action p = () =>
                         {
                             step++;
@@ -335,18 +334,10 @@ namespace HouseManager4_0
                             StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
 
                         };
-                        if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
-                        {
-                            p();
-                        }
-                        else
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
+                        this.loop(p, step, startT, player, goPath);
                     }
                     else
-                    {
-                        this.ThreadSleep(startT);
+                    { 
                         Action p = () =>
                         {
                             step++;
@@ -374,15 +365,7 @@ namespace HouseManager4_0
                             this.sendMsg(notifyMsg);
                             StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
                         };
-                        if ((player.playerType != RoleInGame.PlayerType.player) || player.Bust)
-                        {
-                            p();
-                        }
-                        else if (startT != 0)
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-
+                        this.loop(p, step, startT, player, goPath);  
                     }
                 }
             });

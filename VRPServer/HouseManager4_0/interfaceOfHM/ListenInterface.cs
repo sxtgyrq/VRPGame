@@ -96,7 +96,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="ots"></param>
         void OrderToSubsidize(OrderToSubsidize ots);
-
+        void OrderToUpdateLevel(OrderToUpdateLevel oul);
         /// <summary>
         /// 发送消息
         /// </summary>

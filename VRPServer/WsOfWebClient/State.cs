@@ -15,6 +15,7 @@ namespace WsOfWebClient
         /// AddPlayer产生的唯一ID
         /// </summary>
         public string Key { get; internal set; }
+        public string CommandStart { get; internal set; }
 
         public int indexOfModelToTranstract = 0;
     }

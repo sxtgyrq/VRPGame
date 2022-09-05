@@ -17,7 +17,7 @@
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
 
-            <label>
+            <label  onclick="subsidizeSys.readStr('bitcoinSubsidizeAddressInput');">
                 --↓↓↓输入1打头的比特币地址↓↓↓--
             </label>
             <input id="bitcoinSubsidizeAddressInput" type="text" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 0.6);" />
@@ -26,16 +26,16 @@
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
 
-            <label onclick="alert('弹出二维码');">
+            <label onclick="subsidizeSys.copyStr();">
                 --↓↓↓对以下信息进行签名↓↓↓--
             </label> 
-            <input  id="msgNeedToSign" type="text" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 0.6);" readonly />
+            <input  id="msgNeedToSign" type="text" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 0.6);" readonly onclick="subsidizeSys.copyStr();" />
         </div>
         <div style="
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
 
-            <label onclick="alert('弹出扫描二维码');">
+            <label onclick="subsidizeSys.readStr('signatureInputTextArea');">
                 --↓↓↓输入签名↓↓↓--
             </label>
             <textarea id="signatureInputTextArea" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 0.6);height:4em;overflow:hidden;">1111111111111111111111</textarea>
@@ -68,6 +68,11 @@
                 </td>
             </tr> 
         </table>
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;" onclick="subsidizeSys.updateLevel();">
+            同步等级
+        </div>
          <div style="background: yellowgreen;
         margin-bottom: 0.25em;
         margin-top: 0.25em;" onclick="subsidizeSys.signOnline();">
@@ -246,7 +251,58 @@
     SupportMoney: 0,
     getPrivateKey: function () {
         document.getElementById('subsidizePanelPromptPrivateKeyValue').value = yrqGetRandomPrivateKey();
-    }
+    },
+    updateLevel: function () {
+        var bitcoinAddress = document.getElementById('bitcoinSubsidizeAddressInput').value;
+        if (yrqCheckAddress(bitcoinAddress)) {
+            document.getElementById('bitcoinSubsidizeAddressInput').style.background = 'rgba(127, 255, 127, 0.6)';
+
+            var signature = document.getElementById('signatureInputTextArea').value;
+            var signMsg = JSON.parse(sessionStorage['session']).Key;
+            document.getElementById('msgNeedToSign').value = signMsg;
+            if (yrqVerify(bitcoinAddress, signature, signMsg)) {
+                document.getElementById('signatureInputTextArea').style.background = 'rgba(127, 255, 127, 0.6)';
+                objMain.ws.send(JSON.stringify({ c: 'GetSubsidize', signature: signature, address: bitcoinAddress, value: 0 }));
+                subsidizeSys.operateAddress = bitcoinAddress;
+                subsidizeSys.signInfoMatiion = [signature, bitcoinAddress];
+            }
+            else {
+                document.getElementById('signatureInputTextArea').style.background = 'rgba(255, 127, 127, 0.9)';
+            }
+            //var signature=
+            //            if (yrqVerify(bitcoinAddress
+
+        }
+        else {
+            document.getElementById('bitcoinSubsidizeAddressInput').style.background = 'rgba(255, 127, 127, 0.9)';
+        }
+        //objMain.ws.send(JSON.stringify({ c: 'UpdateLevel', signature: signature, address: bitcoinAddress, value: subsidizeValue }));
+    },
+    copyStr: function () {
+        if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+            var msg = document.getElementById('msgNeedToSign').value;
+            $.notify('"' + msg + '"   已经复制到剪切板', "success");
+            //  $(".elem-demo").notify("Hello Box");
+            return navigator.clipboard.writeText(msg);
+        }
+        else {
+            alert('浏览器设置不支持访问剪切板！');
+        }
+    },
+    readStr: function (eId) {
+        if (navigator && navigator.clipboard && navigator.clipboard.readText) {
+            // var msg = document.getElementById('msgNeedToSign').value;
+            // $.notify('"' + msg + '"   已经复制到剪切板', "success");
+            //  $(".elem-demo").notify("Hello Box");
+            // return navigator.clipboard.writeText(msg);
+            // document.getElementById('signatureInputTextArea').value = navigator.clipboard.readText();
+            navigator.clipboard.readText().then(
+                clipText => document.getElementById(eId).value = clipText);
+        }
+        else {
+            alert('浏览器设置不支持访问剪切板！');
+        }
+    },
 }
     ;
 var debtInfoSys =

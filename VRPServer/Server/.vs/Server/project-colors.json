@@ -140,7 +140,12 @@
       "ProjectGuid": "0356b2d3-b6dc-4c75-b964-cbcdab21c046",
       "DisplayName": "TestCore",
       "ColorIndex": 10
+    },
+    "f091d8fc-9348-4c50-ba2e-d1276ab25081": {
+      "ProjectGuid": "f091d8fc-9348-4c50-ba2e-d1276ab25081",
+      "DisplayName": "BitCoinTrasfer",
+      "ColorIndex": 11
     }
   },
-  "NextColorIndex": 11
+  "NextColorIndex": 12
 }

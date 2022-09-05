@@ -53,8 +53,17 @@ namespace AppCheckConnection
         {
             for (int i = 0; i < c1.Length; i++)
             {
-                checkCrossOfIndex(roadCode, limit, c1[i].RoadCode1, c1[i].RoadOrder1 + c1[i].Percent1, c1[i].RoadCode2, c1[i].RoadOrder2, c1[i].Percent2, ref roadCodes, ref limits);
-                checkCrossOfIndex(roadCode, limit, c1[i].RoadCode2, c1[i].RoadOrder2 + c1[i].Percent2, c1[i].RoadCode1, c1[i].RoadOrder1, c1[i].Percent1, ref roadCodes, ref limits);
+                //if (c1[i].CrossState == 1) 
+                //{
+                if (c1[i].CrossState == 1)
+                    checkCrossOfIndex(roadCode, limit, c1[i].RoadCode1, c1[i].RoadOrder1 + c1[i].Percent1, c1[i].RoadCode2, c1[i].RoadOrder2, c1[i].Percent2, ref roadCodes, ref limits);
+                else if (c1[i].CrossState == 3)//新道路的入口在cross  roadCode2上，入口在roadCode1上；
+                    checkCrossOfIndex(roadCode, limit, c1[i].RoadCode1, c1[i].RoadOrder1 + c1[i].Percent1, c1[i].RoadCode2, c1[i].RoadOrder2, c1[i].Percent2, ref roadCodes, ref limits);
+                //}
+                if (c1[i].CrossState == 1)
+                    checkCrossOfIndex(roadCode, limit, c1[i].RoadCode2, c1[i].RoadOrder2 + c1[i].Percent2, c1[i].RoadCode1, c1[i].RoadOrder1, c1[i].Percent1, ref roadCodes, ref limits);
+                else if (c1[i].CrossState == 2)
+                    checkCrossOfIndex(roadCode, limit, c1[i].RoadCode2, c1[i].RoadOrder2 + c1[i].Percent2, c1[i].RoadCode1, c1[i].RoadOrder1, c1[i].Percent1, ref roadCodes, ref limits);
             }
         }
 
