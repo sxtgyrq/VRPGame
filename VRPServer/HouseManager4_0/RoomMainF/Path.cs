@@ -1083,7 +1083,7 @@ namespace HouseManager4_0.RoomMainF
             //    x1 = startX,
             //    y1 = startY
             //};
-            if (animate1.t != 0)
+            if (animate1.x != 0 || animate1.y != 0) //  if (animate1.t != 0)
             {
                 animateResult.Add(animate1.x);
                 animateResult.Add(animate1.y);
@@ -1093,11 +1093,24 @@ namespace HouseManager4_0.RoomMainF
             /*
              * 上道路的速度为10m/s 即36km/h
              */
-            var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
-            interview = this.magicE.shotTime(interview, speedImproved);
+            //  var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
+            int interview;
+            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000;
+            if (calInterview < 1e-8)
+            {
+                interview = 0;
+            }
+            else if (calInterview < 1)
+            {
+                interview = 1;
+            }
+            else
+            {
+                interview = Convert.ToInt32(calInterview + 1);
 
-            //startT1 = startTInput;
-            //endT1 = startT1 + interview;
+            }
+            interview = Program.rm.magicE.shotTime(interview, speedImproved);
+
             startTInput += interview;
 
             var animate2 = new Data.PathResult3()
@@ -1115,7 +1128,7 @@ namespace HouseManager4_0.RoomMainF
             //    x1 = endX,
             //    y1 = endY
             //};
-            if (animate2.t != 0)
+            if (animate2.x != 0 || animate2.y != 0)
             {
                 animateResult.Add(animate2.x);
                 animateResult.Add(animate2.y);
@@ -1242,8 +1255,24 @@ namespace HouseManager4_0.RoomMainF
             /*
              * 上道路的速度为10m/s 即36km/h
              */
-            var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
+            // var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
+            int interview;
+            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000;
+            if (calInterview < 1e-8)
+            {
+                interview = 0;
+            }
+            else if (calInterview < 1)
+            {
+                interview = 1;
+            }
+            else
+            {
+                interview = Convert.ToInt32(calInterview + 1);
+
+            }
             interview = this.magicE.shotTime(interview, speedImproved);
+
             startT1 = startTInput;
             endT1 = startT1 + interview;
             startTInput += interview;
@@ -1263,7 +1292,7 @@ namespace HouseManager4_0.RoomMainF
             //    y1 = endY
             //};
             //animateResult.Add(animate2);
-            if (animate2.t != 0)
+            if (animate2.x != 0 || animate2.y != 0)   // if (animate2.t != 0)
             {
                 animateResult.Add(animate2.x);
                 animateResult.Add(animate2.y);
@@ -1290,7 +1319,7 @@ namespace HouseManager4_0.RoomMainF
             //    y1 = carPositionY
             //};
             //  animateResult.Add(animate1);
-            if (animate1.t != 0)
+            if (animate1.x != 0 || animate1.y != 0)  // if (animate1.t != 0)
             {
                 animateResult.Add(animate1.x);
                 animateResult.Add(animate1.y);

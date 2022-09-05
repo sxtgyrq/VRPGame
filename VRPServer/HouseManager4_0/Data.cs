@@ -660,7 +660,7 @@ namespace HouseManager4_0
                             x = 0,
                             y = 0
                         };
-                        if (animate0.t != 0)
+                        // if (animate0.t != 0)
                         {
                             result.Add(animate0.x);
                             result.Add(animate0.y);
@@ -674,7 +674,7 @@ namespace HouseManager4_0
                         x = Convert.ToInt32((endX - startX) * 256),
                         y = Convert.ToInt32((endY - startY) * 256),
                     };
-                    if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)  //  if (animate1.t != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -724,7 +724,7 @@ namespace HouseManager4_0
                     //    y1 = endY
                     //};
                     startT += interview;
-                    if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)//if (animate1.t != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -765,7 +765,6 @@ namespace HouseManager4_0
                             x = 0,
                             y = 0
                         };
-                        if (animate0.t != 0)
                         {
                             result.Add(animate0.x);
                             result.Add(animate0.y);
@@ -779,7 +778,7 @@ namespace HouseManager4_0
                         x = Convert.ToInt32((endX - startX) * 256),
                         y = Convert.ToInt32((endY - startY) * 256),
                     };
-                    if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)  // if (animate1.t != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -809,7 +808,8 @@ namespace HouseManager4_0
                         t = interview
                     };
                     startT += interview;
-                    if (animate1.t != 0)
+                    //if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)
                     {
                         result.Add(animate1.x);
                         result.Add(animate1.y);
@@ -1015,8 +1015,8 @@ namespace HouseManager4_0
             double KofPointStretchThirdAndFourth = 1;
             if (value.CarInOpposeDirection == 0)
             {
-                KofPointStretchFirstAndSecond = 0.1;
-                KofPointStretchThirdAndFourth = 1.5;
+                KofPointStretchFirstAndSecond = 1.5;
+                KofPointStretchThirdAndFourth = 0.1;
             }
 
             double[] point1, point2, point3, point4;

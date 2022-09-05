@@ -414,6 +414,7 @@ namespace HouseManager4_0
         }
 
 
+
         protected void StartSelectThreadB(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player, CarState oldState, Action p)
         {
             if (isRight(selections, player.direciton, false) || player.Bust)
@@ -547,6 +548,36 @@ namespace HouseManager4_0
                     var url = notifyMsgs[i];
                     var sendMsg = notifyMsgs[i + 1];
                     e.sendMsg(url, sendMsg);
+                }
+            }
+        }
+
+        protected void loop(Action p, int step,int startT,RoleInGame player, Node goPath)
+        {
+            if (step == 0)
+            {
+                this.ThreadSleep(startT + 50);
+               
+                if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                {
+                    p();
+                }
+                else
+                {
+                    StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
+                } 
+            }
+            else
+            {
+                this.ThreadSleep(Math.Max(5, startT)); 
+                if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
+                {
+                    this.ThreadSleep(500);
+                    p();
+                }
+                else
+                {
+                    StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
                 }
             }
         }

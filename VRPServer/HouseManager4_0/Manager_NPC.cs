@@ -890,6 +890,7 @@ namespace HouseManager4_0
         }
         public void NPCBeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsg)
         {
+            //lock()
             if (that._Players.ContainsKey(keyOfAttacker))
             {
                 if (that._Players[keyOfAttacker].playerType == RoleInGame.PlayerType.player)
@@ -1081,6 +1082,8 @@ namespace HouseManager4_0
                     }
                     else
                     {
+                        var player = (Player)that._Players[keyOfAttacker];
+                        that.WebNotify(player, $"【{npc.PlayerName}】已有挑战者！");
 #warning 这里要提示。
                     }
                 }

@@ -346,13 +346,7 @@ namespace HouseManager4_0
                 //}, this);
                 else
                 {
-                    if (step == 0)
-                    {
-                        this.ThreadSleep(startT + 50);
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust) { }
-                        else
-                        {
-                            Action selectionIsRight = () =>
+                    Action selectionIsRight = () =>
                             {
                                 List<string> notifyMsg = new List<string>();
                                 int newStartT;
@@ -367,39 +361,7 @@ namespace HouseManager4_0
                                 //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
                                 SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
                             };
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, selectionIsRight, goPath);
-
-                        }
-                    }
-                    else
-                    {
-                        this.ThreadSleep(startT);
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-
-                        }
-                        else if (startT != 0)
-                        {
-                            Action selectionIsRight = () =>
-                            {
-                                step++;
-                                List<string> notifyMsg = new List<string>();
-                                int newStartT;
-                                if (step < goPath.path.Count)
-                                    EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                                // else if(step==goPath.path.Count-1)
-                                //EditCarStateAfterSelect(step,player,ref car,)
-                                else
-                                    throw new Exception("这种情况不会出现");
-                                //newStartT = 0;
-                                car.setState(player, ref notifyMsg, CarState.working);
-                                this.sendMsg(notifyMsg);
-                                SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
-                            };
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, selectionIsRight, goPath);
-                        }
-
-                    }
+                    loop(selectionIsRight, step, startT, player, goPath); 
                 }
             });
             th.Start();

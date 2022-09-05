@@ -2667,60 +2667,70 @@ function animate() {
 
                 objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;
 
-                {
-                    var cameraHeight = objMain.camera.position.y;
-                    if (cameraHeight > 0) {
-                        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
-                        if (calResult1 > 0) {
-                            var lengthToCenterOnPanel = Math.sqrt(calResult1);
-                            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
-                            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
-                            if (calAngle1 < Math.PI / 2) {
-                                var newCalHeight = Math.tan(calAngle1) * calResult1;
-                                objMain.scene.position.y = cameraHeight - newCalHeight;
-                                //  objMain.controls.target.y = 0;
-                                if (objMain.scene.position.y < -3) {
-                                    objMain.scene.position.y = -3;
-                                }
-                            }
-                            else objMain.scene.position.y = 0; 
+                //{
+                //    var cameraHeight = objMain.camera.position.y;
+                //    if (cameraHeight > 0) {
+                //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                //        if (calResult1 > 0) {
+                //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                //            if (calAngle1 < Math.PI / 2) {
+                //                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                //                objMain.scene.position.y = cameraHeight - newCalHeight;
+                //                //  objMain.controls.target.y = 0;
+                //                if (objMain.scene.position.y < -3) {
+                //                    objMain.scene.position.y = -3;
+                //                }
+                //            }
+                //            else objMain.scene.position.y = 0; 
 
-                        }
-                        else objMain.scene.position.y = 0; 
-                    }
-                    else objMain.scene.position.y = 0;
+                //        }
+                //        else objMain.scene.position.y = 0; 
+                //    }
+                //    else objMain.scene.position.y = 0;
 
-                }
+                //}
             }
             else {
                 objMain.directionGroup.visible = false;
-                objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 30;//Math.PI / 2 - Math.PI / 36;
-                 
-                {
-                    var cameraHeight = objMain.camera.position.y;
-                    if (cameraHeight > 0) {
-                        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
-                        if (calResult1 > 0) {
-                            var lengthToCenterOnPanel = Math.sqrt(calResult1);
-                            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
-                            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
-                            if (calAngle1 < Math.PI / 2) {
-                                var newCalHeight = Math.tan(calAngle1) * calResult1;
-                                objMain.scene.position.y = cameraHeight - newCalHeight;
-                                //  objMain.controls.target.y = 0;
-                                if (objMain.scene.position.y < -3) {
-                                    objMain.scene.position.y = -3;
-                                }
-                            }
-                            else objMain.scene.position.y = 0;
+                objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;//Math.PI / 2 - Math.PI / 36;
 
-                        }
-                        else objMain.scene.position.y = 0;
-                    }
-                    else objMain.scene.position.y = 0;
+                {
+
+                    //var lengthOfV = v1.length();
+                    //if (lengthOfV > 0) {
+                    //    v1.setLength(1);
+                    //    var v2 = new THREE.Vector3()
+                    //}
 
                 }
+                //{
+                //    var cameraHeight = objMain.camera.position.y;
+                //    if (cameraHeight > 0) {
+                //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                //        if (calResult1 > 0) {
+                //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                //            if (calAngle1 < Math.PI / 2) {
+                //                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                //                objMain.scene.position.y = cameraHeight - newCalHeight;
+                //                //  objMain.controls.target.y = 0;
+                //                //if (objMain.scene.position.y < -3) {
+                //                //    objMain.scene.position.y = -3;
+                //                //}
+                //            }
+                //            else objMain.scene.position.y = 0;
+
+                //        }
+                //        else objMain.scene.position.y = 0;
+                //    }
+                //    else objMain.scene.position.y = 0;
+
+                //}
             }
+            sceneYUpdate();
             moneyAbsorb.animate();
             targetShow.animate();
             objMain.animation.animateCameraByCarAndTask();
@@ -5270,6 +5280,36 @@ var DiamondModel =
 
     }
 };
+
+var sceneYUpdate = function () {
+    var v1 = new THREE.Vector3().subVectors(objMain.controls.target, objMain.camera.position);
+    if (v1.length() > 0) {
+        v1.setLength(1);
+        var v2 = new THREE.Vector3(0, 1, 0);
+        var v3 = new THREE.Vector3().crossVectors(v1, v2);
+        if (v3.length() > 0) {
+            v3.setLength(1);
+            v2 = new THREE.Vector3().crossVectors(v3, v1);
+
+            var v4 = v2.applyAxisAngle(v3, (0.5 - 0.618) * 35 / 180 * Math.PI);
+            var A = v4.x;
+            var B = v4.y;
+            var C = v4.z;
+            var D = -A * objMain.camera.position.x - B * objMain.camera.position.y - C * objMain.camera.position.z;
+
+            if (Math.abs(B) > 1e-4) {
+                var calY = (-D - A * objMain.controls.target.x - C * objMain.controls.target.z) / B;
+                if (calY > 25)
+                    calY = 25;
+                else if (calY < -25)
+                    calY = -25;
+                objMain.scene.position.y = calY;
+                //  objMain.scene.
+                return calY;
+            }
+        }
+    }
+}
 //////////
 /*
  * 手柄类，此游戏只支持单手柄操作。

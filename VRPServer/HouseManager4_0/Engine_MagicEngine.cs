@@ -487,64 +487,22 @@ namespace HouseManager4_0
 
                 else
                 {
-                    if (step == 0)
-                    {
-                        this.ThreadSleep(startT + 50);
-                        Action p = () =>
-                        {
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            step++;
-                            if (step < goPath.path.Count)
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            else
-                                newStartT = 0;
+                    Action p = () =>
+                           {
+                               List<string> notifyMsg = new List<string>();
+                               int newStartT;
+                               step++;
+                               if (step < goPath.path.Count)
+                                   EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
+                               else
+                                   newStartT = 0;
 
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                            StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
-                        else
-                        {
-
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-
-                    }
-                    else
-                    {
-                        this.ThreadSleep(startT);
-                        Action p = () =>
-                        {
-                            step++;
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            if (step < goPath.path.Count)
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            // else if(step==goPath.path.Count-1)
-                            //EditCarStateAfterSelect(step,player,ref car,)
-                            else
-                                throw new Exception("这种情况不会出现");
-                            //newStartT = 0;
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
-
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
-                        else if (startT != 0)
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-                    }
+                               car.setState(player, ref notifyMsg, CarState.working);
+                               this.sendMsg(notifyMsg);
+                               //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
+                               StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
+                           };
+                    this.loop(p, step, startT, player, goPath);
                 }
             });
             th.Start();
@@ -2225,22 +2183,24 @@ namespace HouseManager4_0
 
         internal void TakeHalfMoneyWhenIsControlled(RoleInGame player, Car car, ref List<string> notifyMsg)
         {
-            if (car.state == CarState.waitAtBaseStation)
-            {
-                long reduceMoney = 0;
-                if (player.Money > car.ability.Business / 2)
-                {
-                    reduceMoney += car.ability.Business / 2;
-                    car.ability.setCostBusiness(car.ability.Business / 2, player, car, ref notifyMsg);
-                }
-                if (player.Money - reduceMoney > car.ability.Volume / 2)
-                {
-                    reduceMoney += car.ability.Volume / 2;
-                    car.ability.setCostVolume(car.ability.Volume / 2, player, car, ref notifyMsg);
-                }
-                if (reduceMoney > 0)
-                    player.MoneySet(player.Money - reduceMoney, ref notifyMsg);
-            }
+            if (player.playerType == RoleInGame.PlayerType.player)
+                if (player.confuseRecord.IsBeingControlled())
+                    if (car.state == CarState.waitAtBaseStation)
+                    {
+                        long reduceMoney = 0;
+                        if (player.Money > car.ability.Business / 2)
+                        {
+                            reduceMoney += car.ability.Business / 2;
+                            car.ability.setCostBusiness(car.ability.Business / 2, player, car, ref notifyMsg);
+                        }
+                        if (player.Money - reduceMoney > car.ability.Volume / 2)
+                        {
+                            reduceMoney += car.ability.Volume / 2;
+                            car.ability.setCostVolume(car.ability.Volume / 2, player, car, ref notifyMsg);
+                        }
+                        if (reduceMoney > 0)
+                            player.MoneySet(player.Money - reduceMoney, ref notifyMsg);
+                    }
         }
     }
 

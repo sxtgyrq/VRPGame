@@ -54,10 +54,7 @@ namespace HouseManager4_0
                 //}, this);
                 else
                 {
-                    if (step == 0)
-                    {
-                        this.ThreadSleep(startT + 50);
-                        Action p = () =>
+                    Action p = () =>
                         {
                             List<string> notifyMsg = new List<string>();
                             int newStartT;
@@ -73,47 +70,7 @@ namespace HouseManager4_0
                             StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
 
                         };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
-                        else
-                        {
-
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-
-                    }
-                    else
-                    {
-                        this.ThreadSleep(startT);
-
-                        Action p = () =>
-                        {
-                            step++;
-                            List<string> notifyMsg = new List<string>();
-                            int newStartT;
-                            if (step < goPath.path.Count)
-                                EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
-                            // else if(step==goPath.path.Count-1)
-                            //EditCarStateAfterSelect(step,player,ref car,)
-                            else
-                                throw new Exception("这种情况不会出现");
-                            //newStartT = 0;
-                            car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
-                            StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
-
-                        };
-                        if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
-                        {
-                            p();
-                        }
-                        else if (startT != 0)
-                        {
-                            StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
-                        }
-                    }
+                    this.loop(p, step, startT, player, goPath);
                 }
             });
             th.Start();
