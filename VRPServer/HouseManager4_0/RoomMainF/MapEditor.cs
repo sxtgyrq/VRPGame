@@ -670,11 +670,23 @@ namespace HouseManager4_0.RoomMainF
 
     public partial class RoomMain : interfaceOfHM.ModelTranstractionI
     {
+        public string GetAllBuiisnessAddr()
+        {
+            var r = DalOfAddress.detailmodel.GetAllBussinessAddr();
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+        }
+
         public string GetAllModelPosition()
         {
             var result = DalOfAddress.detailmodel.GetAll();
             return Newtonsoft.Json.JsonConvert.SerializeObject(result);
         }
+
+        //public string GetAllStockAddr(AllStockAddr ss)
+        //{
+        //    return "";
+        //    //  throw new NotImplementedException();
+        //}
 
         //public string GetFirstModelAddr(ModelTranstraction.GetFirstModelAddr gfm)
         //{
@@ -740,14 +752,37 @@ namespace HouseManager4_0.RoomMainF
 
         public string TradeCoinF(ModelTranstraction.TradeCoin tc)
         {
-            DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin);
-            return "";
+
+            string notifyMsg;
+            DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
+            return notifyMsg;
         }
 
         public string TradeIndex(ModelTranstraction.TradeIndex tc)
         {
             var Index = DalOfAddress.TradeRecord.GetCount(tc.addrBussiness, tc.addrFrom);
             return Index.ToString();
+        }
+
+        public string TradeSetAsRewardF(ModelTranstraction.TradeSetAsReward tsar)
+        {
+
+            string dateStrng;
+            var dateTime = DateTime.Now;
+            for (int i = 0; i < tsar.afterWeek; i++)
+            {
+                dateTime = dateTime.AddDays(7);
+            }
+            while (dateTime.DayOfWeek != DayOfWeek.Monday)
+            {
+                dateTime = dateTime.AddDays(1);
+            }
+            dateStrng = dateTime.ToString("yyyyMMdd");
+            int dataInt = int.Parse(dateStrng);
+            var msg = DalOfAddress.TradeReward.Update(dataInt, tsar.tradeIndex, tsar.addrReward, tsar.addrBussiness, tsar.passCoin, tsar.signOfAddrReward, tsar.signOfaddrBussiness, tsar.msg);
+            //string notifyMsg;
+            //DalOfAddress.TradeRecord.Update(tsar.tradeIndex, tsar.addrFrom, tsar.addrBussiness, tsar.sign, tsar.msg, tsar.passCoin, out notifyMsg);
+            return msg;
         }
 
         public void UpdateModelStock(ModelStock sa)

@@ -289,23 +289,25 @@ namespace WsOfWebClient
             {
                 int indexNumber = 0;
                 indexNumber = await GetIndexOfTrade(ga.addrBussiness, ga.addrFrom);
-                //var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.DrawRoad()
-                //{
-                //    c = "DrawRoad",
-                //    roadCode = roadCode
-                //});
-                //var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-
-                var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{ga.tranNum * 100000000}Satoshi";
-                var passObj = new
+                if (indexNumber >= 0)
                 {
-                    agreement = agreement,
-                    c = "ShowAgreement"
-                };
-                var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                var sendData = Encoding.UTF8.GetBytes(returnMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    //var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.DrawRoad()
+                    //{
+                    //    c = "DrawRoad",
+                    //    roadCode = roadCode
+                    //});
+                    //var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
+                    var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{ga.tranNum * 100000000}Satoshi";
+                    var passObj = new
+                    {
+                        agreement = agreement,
+                        c = "ShowAgreement"
+                    };
+                    var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                    var sendData = Encoding.UTF8.GetBytes(returnMsg);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
             }
             //throw new NotImplementedException();
         }
@@ -390,7 +392,483 @@ namespace WsOfWebClient
             }
         }
 
+        internal static async Task PublicReward(State s, WebSocket webSocket, RewardPublicSign rewardPub)
+        {
+            var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+            var firstIndex = rewardPub.msg.IndexOf('@');
+            var secondIndex = rewardPub.msg.IndexOf('@', firstIndex + 1);
+            if (secondIndex > firstIndex)
+            {
+            }
+            else
+            {
+                return;
+            }
 
+            if (parameter.Length == 5)
+            {
+                if (BitCoin.Sign.checkSign(rewardPub.signOfAddrReward, rewardPub.msg, parameter[1]))
+                {
+                    if (BitCoin.Sign.checkSign(rewardPub.signOfAddrBussiness, rewardPub.msg, parameter[2]))
+                    {
+                        var tradeIndex = int.Parse(parameter[0]);
+
+                        var addrFrom = parameter[1];
+                        var addrBussiness = parameter[2];
+                        var addrTo = parameter[3];
+                        if (addrTo == "SetAsReward")
+                        {
+                            var indexV = await GetIndexOfTrade(addrBussiness, addrFrom);
+                            if (indexV < 0)
+                            {
+                                await NotifyMsg(webSocket, $"错误的addrBussiness:{addrBussiness}");
+                            }
+                            else if (tradeIndex == indexV)
+                            {
+                                var passCoinStr = parameter[4];
+
+                                if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
+                                {
+                                    var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                                    if (passCoin > 0)
+                                    {
+                                        var trDetail = await getValueOfAddr(addrBussiness);
+                                        if (trDetail.ContainsKey(addrFrom))
+                                        {
+                                            if (trDetail[addrFrom] >= passCoin)
+                                            {
+                                                var tc = new TradeSetAsReward()
+                                                {
+                                                    tradeIndex = tradeIndex,
+                                                    addrBussiness = addrBussiness,
+                                                    addrReward = addrFrom,
+                                                    c = "TradeSetAsReward",
+                                                    msg = rewardPub.msg,
+                                                    passCoin = passCoin,
+                                                    signOfaddrBussiness = rewardPub.signOfAddrBussiness,
+                                                    signOfAddrReward = rewardPub.signOfAddrReward
+                                                };
+                                                var index = rm.Next(0, roomUrls.Count);
+                                                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
+                                                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                                                if (string.IsNullOrEmpty(info))
+                                                {
+                                                    var ok = await clearInfomation(webSocket);
+                                                    if (ok)
+                                                        s = await getTradeDetail(s, webSocket, addrBussiness);
+                                                }
+                                                else
+                                                {
+                                                    await NotifyMsg(webSocket, info);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var notifyMsg = $"{addrFrom}没有足够的余额。";
+                                                await NotifyMsg(webSocket, notifyMsg);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var notifyMsg = $"{addrFrom}没有足够的余额。";
+                                            await NotifyMsg(webSocket, notifyMsg);
+                                        }
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                await NotifyMsg(webSocket, $"错误的tradeIndex:{tradeIndex}");
+                            }
+
+                        }
+                    }
+                }
+
+                //if (BitCoin.Sign.checkSign(mts.signOfAddr,))
+                //{
+
+
+
+                //    var addrTo = parameter[3];
+
+
+
+                //    {
+                //        // var trDetail = await getValueOfAddr(addrBussiness);
+
+                //        // var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                //        if (passCoin > 0)
+                //        {
+                //            if (trDetail.ContainsKey(addrFrom))
+                //            {
+                //                if (trDetail[addrFrom] >= passCoin)
+                //                {
+                //                    var tc = new TradeCoin()
+                //                    {
+                //                        tradeIndex = tradeIndex,
+                //                        addrBussiness = addrBussiness,
+                //                        addrFrom = addrFrom,
+                //                        addrTo = addrTo,
+                //                        c = "TradeCoin",
+                //                        msg = mts.msg,
+                //                        passCoin = passCoin,
+                //                        sign = mts.sign,
+                //                    };
+                //                    var index = rm.Next(0, roomUrls.Count);
+                //                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
+                //                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                //                    if (string.IsNullOrEmpty(info))
+                //                    {
+                //                        var ok = await clearInfomation(webSocket);
+                //                        if (ok)
+                //                            s = await getTradeDetail(s, webSocket, addrBussiness);
+                //                    }
+                //                    else
+                //                    {
+                //                        await NotifyMsg(webSocket, info);
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    var notifyMsg = $"{addrFrom}没有足够的余额。";
+                //                    await NotifyMsg(webSocket, notifyMsg);
+                //                }
+                //            }
+                //            else
+                //            {
+                //                var notifyMsg = $"{addrFrom}没有足够的余额。";
+                //                await NotifyMsg(webSocket, notifyMsg);
+                //            }
+                //        }
+                //    }
+                //}
+            }
+        }
+        internal static async Task GetAllStockAddr(WebSocket webSocket, AllStockAddr asa)
+        {
+            if (AdministratorBTCAddr._addresses.ContainsKey(asa.administratorAddr))
+            {
+                if (BitCoin.Sign.checkSign(asa.signOfAdministrator, DateTime.Now.ToString("yyyyMMdd"), asa.administratorAddr))
+                {
+                    if (BitCoin.CheckAddress.CheckAddressIsUseful(asa.bAddr))
+                    {
+                        //    Console.WriteLine(asa.bAddr);
+                        //var index = rm.Next(0, roomUrls.Count);
+                        //var msg = Newtonsoft.Json.JsonConvert.SerializeObject(asa);
+                        //var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                        //var f = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(info);
+
+                        var trDetail = await getValueOfAddr(asa.bAddr);
+                        foreach (var i in trDetail)
+                        {
+                            //       Console.WriteLine($"{i.Key},{i.Value}");
+                            var passObj = new
+                            {
+                                id = "stockAddrForAddReward",
+                                c = "addOption",
+                                value = $"{i.Key}:{i.Value}"
+                            };
+                            var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                            var sendData = Encoding.UTF8.GetBytes(returnMsg);
+                            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static async Task GenerateRewardAgreementF(WebSocket webSocket, GenerateRewardAgreement ga)
+        {
+            if (AdministratorBTCAddr._addresses.ContainsKey(ga.administratorAddr))
+            {
+                if (BitCoin.Sign.checkSign(ga.signOfAdministrator, DateTime.Now.ToString("yyyyMMdd"), ga.administratorAddr))
+                {
+                    if (
+      BitCoin.CheckAddress.CheckAddressIsUseful(ga.addrBussiness) &&
+      BitCoin.CheckAddress.CheckAddressIsUseful(ga.addrFrom) &&
+      ga.tranNum >= 0.00000001
+      )
+                    {
+                        int indexNumber = 0;
+                        indexNumber = await GetIndexOfTrade(ga.addrBussiness, ga.addrFrom);
+                        if (indexNumber >= 0)
+                        {
+                            //var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.DrawRoad()
+                            //{
+                            //    c = "DrawRoad",
+                            //    roadCode = roadCode
+                            //});
+                            //var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+
+                            var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->SetAsReward:{ga.tranNum }Satoshi";
+                            var passObj = new
+                            {
+                                agreement = agreement,
+                                c = "ShowRewardAgreement"
+                            };
+                            var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                            var sendData = Encoding.UTF8.GetBytes(returnMsg);
+                            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                    }
+                }
+            }
+
+        }
+        internal static async Task<string> GetAllBusinessAddr(WebSocket webSocket, RewardSet rs)
+        {
+            string r = "";
+            if (AdministratorBTCAddr._addresses.ContainsKey(rs.administratorAddr))
+            {
+                if (BitCoin.Sign.checkSign(rs.signOfAdministrator, DateTime.Now.ToString("yyyyMMdd"), rs.administratorAddr))
+                {
+                    var ti = new AllBuiisnessAddr()
+                    {
+                        c = "AllBuiisnessAddr"
+                    };
+                    r = r.GetHashCode().ToString();
+                    var index = rm.Next(0, roomUrls.Count);
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ti);
+                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    var f = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(info);
+                    for (int i = 0; i < f.Count; i++)
+                    {
+                        var passObj = new
+                        {
+                            id = "buidingAddrForAddReward",
+                            c = "addOption",
+                            value = f[i]
+                        };
+                        var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                        var sendData = Encoding.UTF8.GetBytes(returnMsg);
+                        await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                        r = r.GetHashCode().ToString() + f[i];
+                    }
+                }
+            }
+            return r;
+        }
+        internal static async Task RewardPublicSignF(State s, WebSocket webSocket, RewardPublicSign rewardPub)
+        {
+            var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+            var firstIndex = rewardPub.msg.IndexOf('@');
+            var secondIndex = rewardPub.msg.IndexOf('@', firstIndex + 1);
+            if (secondIndex > firstIndex)
+            {
+            }
+            else
+            {
+                return;
+            }
+
+            if (parameter.Length == 5)
+            {
+                if (BitCoin.Sign.checkSign(rewardPub.signOfAddrReward, rewardPub.msg, parameter[1]))
+                {
+                    if (BitCoin.Sign.checkSign(rewardPub.signOfAddrBussiness, rewardPub.msg, parameter[2]))
+                    {
+                        var tradeIndex = int.Parse(parameter[0]);
+
+                        var addrFrom = parameter[1];
+                        var addrBussiness = parameter[2];
+                        var addrTo = parameter[3];
+                        if (addrTo == "SetAsReward")
+                        {
+                            if (tradeIndex == await GetIndexOfTrade(addrBussiness, addrFrom))
+                            {
+                                var passCoinStr = parameter[4];
+
+                                if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
+                                {
+                                    var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                                    if (passCoin > 0)
+                                    {
+                                        var trDetail = await getValueOfAddr(addrBussiness);
+                                        if (trDetail.ContainsKey(addrFrom))
+                                        {
+                                            if (trDetail[addrFrom] >= passCoin)
+                                            {
+                                                var tc = new TradeSetAsReward()
+                                                {
+                                                    tradeIndex = tradeIndex,
+                                                    addrBussiness = addrBussiness,
+                                                    addrReward = addrFrom,
+                                                    c = "TradeSetAsReward",
+                                                    msg = rewardPub.msg,
+                                                    passCoin = passCoin,
+                                                    signOfaddrBussiness = rewardPub.signOfAddrBussiness,
+                                                    signOfAddrReward = rewardPub.signOfAddrReward
+                                                };
+                                                var index = rm.Next(0, roomUrls.Count);
+                                                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
+                                                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                                                if (string.IsNullOrEmpty(info))
+                                                {
+                                                    var ok = await clearInfomation(webSocket);
+                                                    if (ok)
+                                                        s = await getTradeDetail(s, webSocket, addrBussiness);
+                                                }
+                                                else
+                                                {
+                                                    await NotifyMsg(webSocket, info);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var notifyMsg = $"{addrFrom}没有足够的余额。";
+                                                await NotifyMsg(webSocket, notifyMsg);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var notifyMsg = $"{addrFrom}没有足够的余额。";
+                                            await NotifyMsg(webSocket, notifyMsg);
+                                        }
+                                    }
+                                }
+
+                            }
+
+
+                        }
+                    }
+                }
+
+                //if (BitCoin.Sign.checkSign(mts.signOfAddr,))
+                //{
+
+
+
+                //    var addrTo = parameter[3];
+
+
+
+                //    {
+                //        // var trDetail = await getValueOfAddr(addrBussiness);
+
+                //        // var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                //        if (passCoin > 0)
+                //        {
+                //            if (trDetail.ContainsKey(addrFrom))
+                //            {
+                //                if (trDetail[addrFrom] >= passCoin)
+                //                {
+                //                    var tc = new TradeCoin()
+                //                    {
+                //                        tradeIndex = tradeIndex,
+                //                        addrBussiness = addrBussiness,
+                //                        addrFrom = addrFrom,
+                //                        addrTo = addrTo,
+                //                        c = "TradeCoin",
+                //                        msg = mts.msg,
+                //                        passCoin = passCoin,
+                //                        sign = mts.sign,
+                //                    };
+                //                    var index = rm.Next(0, roomUrls.Count);
+                //                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
+                //                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                //                    if (string.IsNullOrEmpty(info))
+                //                    {
+                //                        var ok = await clearInfomation(webSocket);
+                //                        if (ok)
+                //                            s = await getTradeDetail(s, webSocket, addrBussiness);
+                //                    }
+                //                    else
+                //                    {
+                //                        await NotifyMsg(webSocket, info);
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    var notifyMsg = $"{addrFrom}没有足够的余额。";
+                //                    await NotifyMsg(webSocket, notifyMsg);
+                //                }
+                //            }
+                //            else
+                //            {
+                //                var notifyMsg = $"{addrFrom}没有足够的余额。";
+                //                await NotifyMsg(webSocket, notifyMsg);
+                //            }
+                //        }
+                //    }
+                //}
+            }
+        }
+
+        //internal static async Task ModelTransSignAsReward(State s, WebSocket webSocket, ModelTransSign mts)
+        //{
+        //    var parameter = mts.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+        //    if (parameter.Length == 5)
+        //    {
+        //        if (BitCoin.Sign.checkSign(mts.sign, mts.msg, parameter[1]))
+        //            if (BitCoin.Sign.checkSign(mts.sign, mts.msg, parameter[1]))
+        //            {
+        //                var tradeIndex = int.Parse(parameter[0]);
+        //                var addrFrom = parameter[1];
+        //                var addrBussiness = parameter[2];
+        //                var addrTo = parameter[3];
+        //                if (addrTo == "GameReward")
+        //                {
+        //                    var passCoinStr = parameter[4];
+        //                    if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
+        //                    {
+        //                        var trDetail = await getValueOfAddr(addrBussiness);
+
+        //                        var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+        //                        if (passCoin > 0)
+        //                        {
+        //                            if (trDetail.ContainsKey(addrFrom))
+        //                            {
+        //                                if (trDetail[addrFrom] >= passCoin)
+        //                                {
+        //                                    var tc = new TradeSetAsReward()
+        //                                    {
+
+        //                                        tradeIndex = tradeIndex,
+        //                                        addrBussiness = addrBussiness,
+        //                                        addrFrom = addrFrom,
+        //                                        addrTo = addrTo,
+        //                                        c = "TradeSetAsReward",
+        //                                        msg = mts.msg,
+        //                                        passCoin = passCoin,
+        //                                        sign = mts.sign,
+        //                                    };
+        //                                    var index = rm.Next(0, roomUrls.Count);
+        //                                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
+        //                                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+
+        //                                    if (string.IsNullOrEmpty(info))
+        //                                    {
+        //                                        var ok = await clearInfomation(webSocket);
+        //                                        if (ok)
+        //                                            s = await getTradeDetail(s, webSocket, addrBussiness);
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        await NotifyMsg(webSocket, info);
+        //                                    }
+        //                                }
+        //                                else
+        //                                {
+        //                                    var notifyMsg = $"{addrFrom}没有足够的余额。";
+        //                                    await NotifyMsg(webSocket, notifyMsg);
+        //                                }
+        //                            }
+        //                            else
+        //                            {
+        //                                var notifyMsg = $"{addrFrom}没有足够的余额。";
+        //                                await NotifyMsg(webSocket, notifyMsg);
+        //                            }
+        //                        }
+        //                    }
+        //                }
+
+
+        //            }
+        //    }
+        //}
 
         static async Task<bool> clearInfomation(WebSocket webSocket)
         {
@@ -549,6 +1027,6 @@ namespace WsOfWebClient
             return respon;
         }
 
-       
+
     }
 }

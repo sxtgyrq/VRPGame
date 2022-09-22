@@ -456,9 +456,6 @@ namespace HouseManager4_0
                 }
                 for (int i = 0; i < keys.Count; i++)
                 {
-                    // that._
-                    ///that.
-                    ///
                     if (that._Players[keys[i]].Level < npc.Level)
                     {
                         that._Players[keys[i]].SetLevel(npc.Level, ref notifyMsgs);

@@ -6,8 +6,14 @@ namespace DalOfAddress
 {
     public class TradeRecord
     {
-        public static void Add(int tradeIndex, string addrFrom, string addrBussiness, string sign, string msg, double passCoin)
+        public static void Add(int tradeIndex, string addrFrom, string addrBussiness, string sign, string msg, double passCoin, out string notifyMsg)
         {
+            /*
+             * 当你读到这里的时候，一定，会有疑问，不要判addrFrom的余额吗？
+             * 再前天调用时余额已经判断。
+             * 二者这里插入，只能按顺序0,1,2,3,4,5自然排序，从而避免了数据库双花！
+             * addrBussiness addrFrom tradeIndex三个组成的主键，避免了数据库层面的双花！
+             */
             var mysql = "INSERT INTO traderecord(msg,sign,bussinessAddr,tradeIndex,addrFrom) VALUES(@msg,@sign,@bussinessAddr,@tradeIndex,@addrFrom);";
 
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
@@ -17,6 +23,13 @@ namespace DalOfAddress
                 {
                     try
                     {
+                        if (TradeReward.Count(tran, con, addrBussiness, addrFrom) > 0)
+                        {
+                            notifyMsg = $"{addrBussiness}资金锁定中，其正作为奖励使用中。";
+                            tran.Rollback();
+                            return;
+                        }
+                        else
                         {
                             int tradeIndexInDB;
                             string sQL = "SELECT count(*) FROM traderecord WHERE bussinessAddr=@bussinessAddr AND addrFrom=@addrFrom";
@@ -28,6 +41,7 @@ namespace DalOfAddress
                             }
                             if (tradeIndexInDB != tradeIndex)
                             {
+                                notifyMsg = "";
                                 return;
                             }
                         }
@@ -53,6 +67,7 @@ namespace DalOfAddress
                     }
                 }
             }
+            notifyMsg = "";
         }
 
         public static List<string> GetAll(string bussinessAddr)
@@ -93,7 +108,7 @@ namespace DalOfAddress
 
         public static int GetCount(string bussinessAddr, string addrFrom)
         {
-            int result = 0;
+            int result;
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
                 con.Open();
@@ -101,6 +116,7 @@ namespace DalOfAddress
                 {
                     try
                     {
+                        if (administratorwallet.Exist(con, tran, bussinessAddr))
                         {
                             string sQL = "SELECT COUNT(*) FROM traderecord WHERE bussinessAddr=@bussinessAddr AND addrFrom=@addrFrom";
                             using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
@@ -110,6 +126,8 @@ namespace DalOfAddress
                                 result = Convert.ToInt32(command.ExecuteScalar());
                             }
                         }
+                        else
+                            result = -1;
                     }
                     catch (Exception e)
                     {
@@ -118,7 +136,12 @@ namespace DalOfAddress
                     }
                 }
             }
-            return result; 
+            return result;
+        }
+
+        public static void Update(int dataInt, int tradeIndex, string addrReward, string addrBussiness, string signOfAddrReward, string signOfaddrBussiness, string msg, long passCoin)
+        {
+            throw new NotImplementedException();
         }
     }
 }

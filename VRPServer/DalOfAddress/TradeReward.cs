@@ -1,0 +1,125 @@
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DalOfAddress
+{
+    public class TradeReward
+    {
+        public static void Add(string addrBussiness, string StartDate, string TradeAddress, long passCoin)
+        {
+            //string mysql = "INSERT INTO tradereward(bussinessAddr,StartDate,TradeAddress,passCoin,waitingForAddition)VALUES(@bussinessAddr,@StartDate,@TradeAddress,@passCoin,1);";
+            //// throw new NotImplementedException();
+
+            ////    var mysql = "INSERT INTO traderecord(msg,sign,bussinessAddr,tradeIndex,addrFrom) VALUES(@msg,@sign,@bussinessAddr,@tradeIndex,@addrFrom);";
+
+            //using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            //{
+            //    con.Open();
+            //    using (MySqlTransaction tran = con.BeginTransaction())
+            //    {
+            //        try
+            //        {
+            //            {
+            //                string sQL = mysql;
+            //                // long moneycount;
+            //                using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+            //                {
+            //                    command.Parameters.AddWithValue("@bussinessAddr", addrBussiness);
+            //                    command.Parameters.AddWithValue("@StartDate", StartDate);
+            //                    command.Parameters.AddWithValue("@TradeAddress", TradeAddress);
+            //                    command.Parameters.AddWithValue("@passCoin", passCoin);
+            //                    command.ExecuteNonQuery();
+            //                }
+            //            }
+            //            tran.Commit();
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            throw e;
+            //            throw new Exception("新增错误");
+            //        }
+            //    }
+            //}
+        }
+
+        internal static int Count(MySqlTransaction tran, MySqlConnection con, string addrBussiness, string addrFrom)
+        {
+            return 1;
+            //int resultFound;
+            //string sQL = "SELECT count(*) FROM tradereward WHERE bussinessAddr=@bussinessAddr AND TradeAddress=@TradeAddress AND waitingForAddition=1;";
+            //using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+            //{
+            //    command.Parameters.AddWithValue("@bussinessAddr", addrBussiness);
+            //    command.Parameters.AddWithValue("@addrFrom", addrFrom);
+            //    resultFound = Convert.ToInt32(command.ExecuteScalar());
+            //}
+            //return resultFound;
+        }
+
+        public static string Update(int startDate, int tradeIndex, string tradeAddress, string bussinessAddr, long passCoin, string signOfTradeAddress, string signOfBussinessAddr, string orderMessage)
+        {
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+                        int itemCount;
+                        {
+                            var sql = $"SELECT COUNT(*) FROM tradereward WHERE StartDate={startDate}";
+                            using (MySqlCommand command = new MySqlCommand(sql, con, tran))
+                            {
+                                itemCount = Convert.ToInt32(command.ExecuteScalar());
+                            }
+
+                        }
+                        if (itemCount > 0)
+                        {
+                            tran.Rollback();
+                            return $"{startDate}已经再数据库中拥有数据了！";
+                        }
+                        else
+                        {
+                            string mysql = @"INSERT INTO tradereward(
+startDate,
+tradeIndex,
+tradeAddress,
+bussinessAddr,
+passCoin, 
+signOfTradeAddress,
+signOfBussinessAddr,
+orderMessage,
+waitingForAddition) VALUES (@startDate,@tradeIndex,@tradeAddress,@bussinessAddr,@passCoin,@signOfTradeAddress,@signOfBussinessAddr,@orderMessage,1);";
+
+                            string sQL = mysql;
+                            // long moneycount;
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                command.Parameters.AddWithValue("@startDate", startDate);
+                                command.Parameters.AddWithValue("@tradeIndex", tradeIndex);
+                                command.Parameters.AddWithValue("@tradeAddress", tradeAddress);
+                                command.Parameters.AddWithValue("@bussinessAddr", bussinessAddr);
+                                command.Parameters.AddWithValue("@passCoin", passCoin);
+                                command.Parameters.AddWithValue("@signOfTradeAddress", signOfTradeAddress);
+                                command.Parameters.AddWithValue("@signOfBussinessAddr", signOfBussinessAddr);
+                                command.Parameters.AddWithValue("@orderMessage", orderMessage);
+                                command.ExecuteNonQuery();
+                            }
+                            tran.Commit();
+                            return $"{startDate}录入数据成功！";
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                        throw new Exception("新增错误");
+                    }
+                }
+            }
+        }
+    }
+}

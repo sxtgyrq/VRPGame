@@ -27,5 +27,20 @@ namespace DalOfAddress
             }
             return reuslt;
         }
+
+        internal static bool Exist(MySqlConnection con, MySqlTransaction tran, string addr)
+        {
+            string sQL = "SELECT count(*) FROM administratorwallet WHERE btcAdd=@addr;";
+            int count;
+            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+            {
+                command.Parameters.AddWithValue("@addr", addr);
+                count = Convert.ToInt32(command.ExecuteScalar());
+            }
+            if (count == 0)
+                return false;
+            else
+                return true;
+        }
     }
 }

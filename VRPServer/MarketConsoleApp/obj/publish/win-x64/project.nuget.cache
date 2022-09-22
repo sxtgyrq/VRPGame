@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "nuZYarNueC7jVLU+HCmSrp9EuU30K7Bz3QyWO4+ffHptst6zNmNkI/HvqteF1rJodT5yrxnTjj+BZtLOqcsmyA==",
+  "dgSpecHash": "jeSJW+Qh97nxnAqJJd42ikxVwnVanT7eMABaVCn8tsB418U5djrsyRbNlwkZHJqIuumjLLs1q58VRnlMU2QdCA==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\MarketConsoleApp\\MarketConsoleApp.csproj",
   "expectedPackageFiles": [
@@ -12,11 +12,13 @@
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.13\\microsoft.aspnetcore.jsonpatch.3.1.13.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.13\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.13.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\1.0.0\\microsoft.extensions.logging.abstractions.1.0.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\mysql.data\\8.0.23\\mysql.data.8.0.23.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\nbitcoin\\7.0.10\\nbitcoin.7.0.10.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",

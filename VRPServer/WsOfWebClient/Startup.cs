@@ -294,13 +294,13 @@ namespace WsOfWebClient
 
                 do
                 {
-                   // try
+                    // try
                     {
 
                         var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
 
                         wResult = returnResult.wr;
-                        //Console.WriteLine(returnResult.result);
+                        // Console.WriteLine(returnResult.result);
                         CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                         switch (c.c)
                         {
@@ -681,6 +681,11 @@ namespace WsOfWebClient
                                     ModelTransSign mts = Newtonsoft.Json.JsonConvert.DeserializeObject<ModelTransSign>(returnResult.result);
                                     await Room.ModelTransSignF(s, webSocket, mts);
                                 }; break;
+                            case "RewardPublicSign":
+                                {
+                                    RewardPublicSign rps = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardPublicSign>(returnResult.result);
+                                    await Room.PublicReward(s, webSocket, rps);
+                                }; break;
                             case "CheckCarState":
                                 {
                                     CommonClass.CheckCarState ccs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.CheckCarState>(returnResult.result);
@@ -703,6 +708,22 @@ namespace WsOfWebClient
                                         UpdateLevel uL = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateLevel>(returnResult.result);
                                         await Room.UpdateLevelF(s, uL);
                                     }
+                                }; break;
+                            case "AllBusinessAddr"://AllBusinessAddr
+                                {
+                                    RewardSet rs = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSet>(returnResult.result);
+                                    var r = await Room.GetAllBusinessAddr(webSocket, rs);
+                                    Console.WriteLine(r);
+                                }; break;
+                            case "AllStockAddr":
+                                {
+                                    AllStockAddr asa = Newtonsoft.Json.JsonConvert.DeserializeObject<AllStockAddr>(returnResult.result);
+                                    await Room.GetAllStockAddr(webSocket, asa);
+                                }; break;
+                            case "GenerateRewardAgreement":
+                                {
+                                    GenerateRewardAgreement ga = Newtonsoft.Json.JsonConvert.DeserializeObject<GenerateRewardAgreement>(returnResult.result);
+                                    await Room.GenerateRewardAgreementF(webSocket, ga);
                                 }; break;
                         }
                     }

@@ -332,9 +332,9 @@ namespace HouseManager4_0.RoomMainF
                     //this._Players[keys[i]].InitializeTheLargestHolder(ref notifyMsgs);
                 }
             }
-            {
-                //var keys = new List<string>();
-            }
+            //{
+            //    //var keys = new List<string>();
+            //}
             //  throw new NotImplementedException();
         }
 

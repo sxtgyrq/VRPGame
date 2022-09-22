@@ -33,7 +33,7 @@ namespace HouseManager4_0
             string outPut = "haveNothingToReturn";
             {
                 // CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
-                Console.WriteLine(c.c);
+                //  Console.WriteLine(c.c);
                 switch (c.c)
                 {
                     case "PlayerAdd_V2":
@@ -305,6 +305,11 @@ namespace HouseManager4_0
                             CommonClass.ModelTranstraction.TradeCoin tc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.TradeCoin>(notifyJson);
                             outPut = objI.TradeCoinF(tc);
                         }; break;
+                    case "TradeSetAsReward":
+                        {
+                            CommonClass.ModelTranstraction.TradeSetAsReward tsar = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.TradeSetAsReward>(notifyJson);
+                            outPut = objI.TradeSetAsRewardF(tsar);
+                        }; break;
                     case "TradeIndex":
                         {
                             CommonClass.ModelTranstraction.TradeIndex tc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.TradeIndex>(notifyJson);
@@ -355,6 +360,15 @@ namespace HouseManager4_0
                         {
                             CommonClass.SetCrossBG ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetCrossBG>(notifyJson);
                             outPut = objI.GetBG(ss);
+                        }; break;
+                    case "AllBuiisnessAddr":
+                        {
+                            outPut = objI.GetAllBuiisnessAddr();
+                        }; break;
+                    case "AllStockAddr":
+                        {
+                            //CommonClass.AllStockAddr ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.AllStockAddr>(notifyJson);
+                            //outPut = objI.GetAllStockAddr(ss);
                         }; break;
                 }
             }

@@ -87,7 +87,7 @@ namespace WsOfWebClient
         public string KeyLookfor { get; set; }
         public int RequestType { get; set; }
     }
-    
+
     public class ViewAngle : CommonClass.Command
     {
         public double rotationY { get; set; }
@@ -141,7 +141,7 @@ namespace WsOfWebClient
     {
         //    objMain.ws.send(JSON.stringify({ c: 'Donate', dType: type, address: address }));
         public string signature { get; set; }
-        public string address { get; set; } 
+        public string address { get; set; }
 
     }
 
@@ -163,10 +163,32 @@ namespace WsOfWebClient
         public double tranNum { get; set; }
         public string addrBussiness { get; set; }
     }
+    public class RewardSet : CommonClass.Command
+    {
+        public string administratorAddr { get; set; }
+        public string signOfAdministrator { get; set; }
+    }
+    public class GenerateRewardAgreement : RewardSet
+    {
+        public string addrFrom { get; set; }
+        public long tranNum { get; set; }
+        public string addrBussiness { get; set; }
+    }
     public class ModelTransSign : CommonClass.Command
     {
         public string msg { get; set; }
         public string sign { get; set; }
         public string addrBussiness { get; set; }
     }
+    public class RewardPublicSign : RewardSet
+    {
+        public string msg { get; set; }
+        public string signOfAddrBussiness { get; set; }
+        public string signOfAddrReward { get; set; } 
+    }
+    public class AllStockAddr : RewardSet
+    {
+        public string bAddr { get; set; }
+    }
+
 }

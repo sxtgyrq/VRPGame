@@ -17,8 +17,8 @@ namespace ConsoleTestAPP
         {
 
 
-
-            Task.Run(() => TestYrqObj());
+            // BitCoin.Sign.verify_message
+            // Task.Run(() => TestYrqObj());
             // Console.WriteLine(a);
             //Console.Read();
             //Console.Read();

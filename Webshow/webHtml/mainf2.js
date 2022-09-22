@@ -1810,7 +1810,7 @@ var objMain =
                 }; break;
             case 'ShowAgreementMsg':
                 {
-
+                    $.notify(received_obj.msg, 'error');
                 }; break;
             case 'ShowAllPts':
                 {
@@ -1850,6 +1850,20 @@ var objMain =
             case 'DrawTarget':
                 {
                     targetShow.draw(received_obj.x, received_obj.y);
+                }; break;
+            case 'addOption':
+                {
+                    var id = received_obj.id;
+                    var op = document.createElement('option');
+                    op.value = received_obj.value;
+                    op.innerText = received_obj.value;
+                    document.getElementById(id).add(op);
+                    //addOption
+                    //document.getElementById('buidingAddrForAddReward').add();
+                }; break;
+            case 'ShowRewardAgreement':
+                {
+                    reward.showAgreement(received_obj.agreement);
                 }; break;
             default:
                 {
@@ -2822,6 +2836,10 @@ var buttonClick = function (v) {
                     objMain.receivedState = 'setCarsName';
                     selectSingleTeamJoinHtmlF.setCarsNameHtmlShow();
                     objMain.ws.send(JSON.stringify({ c: 'GetCarsName' }));
+                }; break;
+            case 'setReward':
+                {
+                    selectSingleTeamJoinHtmlF.setNameHtmlShow();
                 }; break;
             //case 'lookForBuildings':
             //    {

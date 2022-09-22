@@ -534,7 +534,7 @@ set b.locked=@locked WHERE b.dmState=1 AND a.amState=1 AND b.modelID=@modelID;";
         }
 
         public static ModelTranstraction.GetModelByID.Result GetByID(string modelID)
-        { 
+        {
             ModelTranstraction.GetModelByID.Result r;
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
@@ -665,65 +665,99 @@ WHERE locked=1 AND dmState=1 AND A.modelID='{modelID}';";
             }
             return allmodelPoints;
         }
-//        public static CommonClass.ModelTranstraction.GetFirstModelAddr.Result GetFirst()
-//        {
-//            int index = 0;
-//            ModelTranstraction.GetFirstModelAddr.Result first;
-//            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
-//            {
-//                con.Open();
-//                using (MySqlTransaction tran = con.BeginTransaction())
-//                {
-//                    try
-//                    {
-//                        {
-//                            var sQL = "SELECT   COUNT(*) FROM detailmodel WHERE locked=1 AND dmState=1;";
-//                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
-//                            {
-//                                var count = Convert.ToInt32(command.ExecuteScalar());
-//                                if (count > 0)
-//                                    index = index % count;
-//                            }
-//                        }
-//                        {
-//                            string sQL = $@"SELECT  A.x,A.y,A.z ,A.amodel,A.rotatey,A.bussinessAddress,A.modelID,
-//B.author
-//FROM detailmodel A 
-//LEFT JOIN abtractmodels B ON A.amodel=B.amID
-//WHERE locked=1 AND dmState=1  ORDER BY bussinessAddress LIMIT {index},1;";
-//                            // long moneycount;
-//                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
-//                            {
-//                                using (var reader = command.ExecuteReader())
-//                                {
-//                                    if (reader.Read())
-//                                    {
-//                                        first = new ModelTranstraction.GetFirstModelAddr.Result()
-//                                        {
-//                                            x = Convert.ToDouble(reader["x"]),
-//                                            y = Convert.ToDouble(reader["y"]),
-//                                            z = Convert.ToDouble(reader["z"]),
-//                                            amodel = Convert.ToString(reader["amodel"]).Trim(),
-//                                            rotatey = Convert.ToDouble(reader["rotatey"]),
-//                                            bussinessAddress = Convert.ToString(reader["bussinessAddress"]).Trim(),
-//                                            modelID = Convert.ToString(reader["modelID"]).Trim(),
-//                                            author = Convert.ToString(reader["author"]).Trim(),
-//                                        };
-//                                    }
-//                                    else
-//                                        first = null;
-//                                }
-//                            }
 
-//                        }
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        throw e;
-//                    }
-//                }
-//            }
-//            return first;
-//        }
+
+        public static List<string> GetAllBussinessAddr()
+        {
+            var result = new List<string>();
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+                        {
+                            var sQL = "SELECT  bussinessAddress FROM detailmodel WHERE locked=1 AND dmState=1 ORDER BY bussinessAddress ASC;";
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    { 
+                                        result.Add(Convert.ToString(reader["bussinessAddress"]).Trim());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+            return result;
+        }
+        //        public static CommonClass.ModelTranstraction.GetFirstModelAddr.Result GetFirst()
+        //        {
+        //            int index = 0;
+        //            ModelTranstraction.GetFirstModelAddr.Result first;
+        //            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+        //            {
+        //                con.Open();
+        //                using (MySqlTransaction tran = con.BeginTransaction())
+        //                {
+        //                    try
+        //                    {
+        //                        {
+        //                            var sQL = "SELECT   COUNT(*) FROM detailmodel WHERE locked=1 AND dmState=1;";
+        //                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+        //                            {
+        //                                var count = Convert.ToInt32(command.ExecuteScalar());
+        //                                if (count > 0)
+        //                                    index = index % count;
+        //                            }
+        //                        }
+        //                        {
+        //                            string sQL = $@"SELECT  A.x,A.y,A.z ,A.amodel,A.rotatey,A.bussinessAddress,A.modelID,
+        //B.author
+        //FROM detailmodel A 
+        //LEFT JOIN abtractmodels B ON A.amodel=B.amID
+        //WHERE locked=1 AND dmState=1  ORDER BY bussinessAddress LIMIT {index},1;";
+        //                            // long moneycount;
+        //                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+        //                            {
+        //                                using (var reader = command.ExecuteReader())
+        //                                {
+        //                                    if (reader.Read())
+        //                                    {
+        //                                        first = new ModelTranstraction.GetFirstModelAddr.Result()
+        //                                        {
+        //                                            x = Convert.ToDouble(reader["x"]),
+        //                                            y = Convert.ToDouble(reader["y"]),
+        //                                            z = Convert.ToDouble(reader["z"]),
+        //                                            amodel = Convert.ToString(reader["amodel"]).Trim(),
+        //                                            rotatey = Convert.ToDouble(reader["rotatey"]),
+        //                                            bussinessAddress = Convert.ToString(reader["bussinessAddress"]).Trim(),
+        //                                            modelID = Convert.ToString(reader["modelID"]).Trim(),
+        //                                            author = Convert.ToString(reader["author"]).Trim(),
+        //                                        };
+        //                                    }
+        //                                    else
+        //                                        first = null;
+        //                                }
+        //                            }
+
+        //                        }
+        //                    }
+        //                    catch (Exception e)
+        //                    {
+        //                        throw e;
+        //                    }
+        //                }
+        //            }
+        //            return first;
+        //        }
     }
 }

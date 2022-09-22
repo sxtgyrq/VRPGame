@@ -144,10 +144,13 @@ namespace HouseManager4_0.interfaceOfHM
         string GetTransctionFromChainF(ModelTranstraction.GetTransctionFromChain gtfc);
         string GetRoadNearby(ModelTranstraction.GetRoadNearby grn);
         string TradeCoinF(ModelTranstraction.TradeCoin tc);
+        string TradeSetAsRewardF(ModelTranstraction.TradeSetAsReward tsar);
         string GetAllModelPosition();
         string GetModelByID(ModelTranstraction.GetModelByID gmbid);
         string TradeIndex(ModelTranstraction.TradeIndex tc);
         string GetRewardFromBuildingF(GetRewardFromBuildingM m);
+        string GetAllBuiisnessAddr();
+       // string GetAllStockAddr(AllStockAddr ss);
     }
 
     interface Resistance

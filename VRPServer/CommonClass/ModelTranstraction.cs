@@ -56,7 +56,9 @@ namespace CommonClass
             public string addrBussiness { get; set; }
             public string addrFrom { get; set; }
         }
-
+        public class AllBuiisnessAddr : Command
+        {
+        } 
         public class TradeCoin : Command
         {
             public int tradeIndex { get; set; }
@@ -78,6 +80,17 @@ namespace CommonClass
             }
         }
 
+        public class TradeSetAsReward : Command
+        {
+            public int tradeIndex { get; set; }
+            public string addrReward { get; set; }
+            public string addrBussiness { get; set; }
+            public long passCoin { get; set; }
+            public string signOfaddrBussiness { get; set; }
+            public string signOfAddrReward { get; set; }
+            public string msg { get; set; }
+            public int afterWeek { get; set; }
 
+        }
     }
 }
