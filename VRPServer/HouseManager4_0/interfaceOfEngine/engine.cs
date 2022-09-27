@@ -24,7 +24,7 @@ namespace HouseManager4_0.interfaceOfEngine
 
     interface tryCatchAction
     {
-        RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out RoomMainF.RoomMain.MileResultReason mrr);
+        RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out RoomMainF.RoomMain.MileResultReason mrr);
         void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg);
         /// <summary>
         /// 返回为真/假，但不一定要执行返回
@@ -32,7 +32,7 @@ namespace HouseManager4_0.interfaceOfEngine
         /// <param name="c"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        bool conditionsOk(Command c, out string reason);
+        bool conditionsOk(Command c, GetRandomPos grp, out string reason);
 
         /// <summary>
         /// 返回为真/假，要执行failedThenDo
@@ -41,7 +41,7 @@ namespace HouseManager4_0.interfaceOfEngine
         /// <param name="car"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        bool carAbilitConditionsOk(RoleInGame player, Car car, Command c);
+        bool carAbilitConditionsOk(RoleInGame player, Car car, Command c, GetRandomPos grp);
         //  Command get
     }
 
@@ -57,7 +57,7 @@ namespace HouseManager4_0.interfaceOfEngine
 
     public interface startNewCommandThread
     {
-        void startNewCommandThread(int timeC, CommonClass.Command c, startNewCommandThread self);
-        void newThreadDo(CommonClass.Command c);
+        void startNewCommandThread(int timeC, CommonClass.Command c, startNewCommandThread self, GetRandomPos grp);
+        void newThreadDo(CommonClass.Command c, GetRandomPos grp);
     }
 }

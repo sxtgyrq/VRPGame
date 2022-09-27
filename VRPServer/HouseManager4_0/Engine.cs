@@ -11,10 +11,10 @@ namespace HouseManager4_0
 {
     public abstract class Engine : EngineAndManger
     {
-        internal string updateAction(interfaceOfEngine.tryCatchAction actionDo, Command c, string operateKey)
+        internal string updateAction(interfaceOfEngine.tryCatchAction actionDo, Command c, GetRandomPos grp, string operateKey)
         {
             string conditionNotReason;
-            if (actionDo.conditionsOk(c, out conditionNotReason))
+            if (actionDo.conditionsOk(c, grp, out conditionNotReason))
             {
                 List<string> notifyMsg = new List<string>();
                 lock (that.PlayerLock)
@@ -31,10 +31,10 @@ namespace HouseManager4_0
                                 case CarState.waitAtBaseStation:
                                 case CarState.waitOnRoad:
                                     {
-                                        if (actionDo.carAbilitConditionsOk(player, car, c))
+                                        if (actionDo.carAbilitConditionsOk(player, car, c, grp))
                                         {
                                             MileResultReason mrr;
-                                            RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb = actionDo.maindDo(player, car, c, ref notifyMsg, out mrr);
+                                            RoomMainF.RoomMain.commandWithTime.ReturningOjb returningOjb = actionDo.maindDo(player, car, c, grp, ref notifyMsg, out mrr);
 
                                             switch (mrr)
                                             {
@@ -122,7 +122,7 @@ namespace HouseManager4_0
         /// <param name="notifyMsg"></param>
         /// <param name="startT_FirstPath"></param>
         /// <exception cref="Exception"></exception>
-        public void EditCarStateWhenActionStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, Node goPath, ref List<string> notifyMsg, out int startT_FirstPath)
+        public void EditCarStateWhenActionStartOK(RoleInGame player, ref Car car, int to, Model.FastonPosition fp1, Node goPath, GetRandomPos grp, ref List<string> notifyMsg, out int startT_FirstPath)
         {
             car.targetFpIndexSet(to, ref notifyMsg);//A.更改小车目标，在其他地方引用。
 
@@ -141,7 +141,7 @@ namespace HouseManager4_0
                 var speed = car.ability.Speed;
                 startT_FirstPath = 0;
                 List<int> result;
-                Data.PathStartPoint2 startPosition;
+                Data.PathStartPoint3 startPosition;
                 if (car.state == CarState.waitAtBaseStation)
                 {
                     result = that.getStartPositon(fp1, player.positionInStation, ref startT_FirstPath, out startPosition, player.improvementRecord.speedValue > 0);
@@ -160,9 +160,9 @@ namespace HouseManager4_0
                 car.setState(player, ref notifyMsg, CarState.working);
                 //car.state = CarState.roadForCollect;
                 //  var position = new Model.MapGo.nyrqPosition(fp1.RoadCode, fp1.RoadOrder, fp1.RoadPercent, fp1.positionLongitudeOnRoad, fp1.positionLatitudeOnRoad, Program.dt.GetItemRoadInfo(fp1.RoadCode, fp1.RoadOrder).MaxSpeed);
-                Program.dt.GetAFromBPoint(goPath.path[0].path, goPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0);
+                grp.GetAFromBPoint(goPath.path[0].path, goPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0, that);
                 //  result.RemoveAll(item => item.t == 0);
-                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, goPath.path.Count > 0 ? privateKeys[0] : 255);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, goPath.path.Count > 0 ? privateKeys[0] : 255, ref that.rm);
                 animations.Add(animation);
             }
             for (int i = 1; i < goPath.path.Count; i++)
@@ -177,13 +177,13 @@ namespace HouseManager4_0
                     var speed = car.ability.Speed;
                     int startT_PathLast = 0;
                     List<int> result;
-                    Data.PathStartPoint2 startPosition;
+                    Data.PathStartPoint3 startPosition;
                     {
                         result = new List<int>();
                         that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                     }
-                    Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                    var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[indexValue]);
+                    grp.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0, that);
+                    var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[indexValue], ref that.rm);
                     animations.Add(animation);
                 }
             }
@@ -279,16 +279,21 @@ namespace HouseManager4_0
         {
             List<AnimateDataItem> animations = new List<AnimateDataItem>();
             var fp = Program.dt.GetFpByIndex(target);
-            double endX, endY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
+            double endX, endY, endZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, fp.Height, out endX, out endY, out endZ);
             //var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref that.rm, 1);
 
 
             var animate = new AnimateDataItem(
-                new Data.PathStartPoint2() { x = Convert.ToInt32(endX * 256), y = Convert.ToInt32(endY * 256) },
+                new Data.PathStartPoint3()
+                {
+                    x = Convert.ToInt32(endX * 256),
+                    y = Convert.ToInt32(endY * 256),
+                    z = Convert.ToInt32(endZ * 256)
+                },
                 new List<int>() { 0, 0, 20000 },
                 true,
-                20000, 255
+                20000, 255, ref that.rm
                 );
             animations.Add(animate);
             car.setAnimateData(player, ref notifyMsgs, animations, DateTime.Now);
@@ -483,12 +488,12 @@ namespace HouseManager4_0
                 // var speed = car.ability.Speed;
                 int startT_PathLast = 0;
                 List<int> result;
-                Data.PathStartPoint2 startPosition;
+                Data.PathStartPoint3 startPosition;
                 {
                     result = new List<int>();
                     that.getStartPositionByGoPath(out startPosition, node.path[indexValue]);
                 }
-                Program.dt.GetAFromBPoint(node.path[indexValue].path, node.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
+                Program.dt.GetAFromBPoint(node.path[indexValue].path, node.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0, that);
                 {
                     int positionInStation;
                     if (player.Key == targetPlayer.Key)
@@ -503,7 +508,7 @@ namespace HouseManager4_0
                     }
                     that.getEndPositon(Program.dt.GetFpByIndex(targetPlayer.StartFPIndex), positionInStation, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
                 }
-                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[indexValue]);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[indexValue], ref that.rm);
                 animations.Add(animation);
             }
         }

@@ -37,7 +37,7 @@
         text-align: center;
         line-height:100%;
         overflow:hidden;
-    " onclick="buttonClick('QueryAndGetReward')">
+    " onclick="buttonClick('QueryReward')">
                 <div class="carRaceLine carLine3MainPage"></div>
                 <div class="animateCarToBottom segmentdelay3"></div>
                 <span style="top: calc(50% - 0.5em); left: calc(50% - 1em); position: absolute;">

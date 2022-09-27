@@ -39,16 +39,16 @@ namespace HouseManager4_0.RoomMainF
             // throw new NotImplementedException();
         }
 
-        public void LookFor()
+        public void LookFor(GetRandomPos gp)
         {
             lock (this.PlayerLock)
             {
                 this._collectPosition = new Dictionary<int, int>();
-                this.SetLookForPromote();
-                SetLookForMoney();
+                this.SetLookForPromote(gp);
+                SetLookForMoney(gp);
             }
         }
-        public void SetLookForMoney()
+        public void SetLookForMoney(GetRandomPos gp)
         {
             /*
              * 0->100.00
@@ -61,7 +61,7 @@ namespace HouseManager4_0.RoomMainF
 
             for (var i = 0; i < 38; i++)
             {
-                this._collectPosition.Add(i, GetRandomPosition(true));
+                this._collectPosition.Add(i, GetRandomPosition(true, gp));
                 //  throw new NotImplementedException();
             }
         }

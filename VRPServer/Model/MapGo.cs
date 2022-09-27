@@ -9,13 +9,14 @@ namespace Model
         public class pathResut { }
         public class nyrqPosition
         {
-            public nyrqPosition(string rc, int rorder, double percent_, double BDlongitude_, double BDlatitude_, int maxSpeed_)
+            public nyrqPosition(string rc, int rorder, double percent_, double BDlongitude_, double BDlatitude_, double BDheight_, int maxSpeed_)
             {
                 this.roadCode = rc;
                 this.roadOrder = rorder;
                 this.percent = percent_;
                 this.BDlongitude = BDlongitude_;
                 this.BDlatitude = BDlatitude_;
+                this.BDheight = BDheight_;
                 this.maxSpeed = maxSpeed_;
             }
             public string roadCode { get; private set; }
@@ -23,11 +24,12 @@ namespace Model
             public double percent { get; private set; }
             public double BDlongitude { get; private set; }
             public double BDlatitude { get; private set; }
+            public double BDheight { get; private set; }
             public int maxSpeed { get; private set; }
 
             public nyrqPosition copy()
             {
-                return new nyrqPosition(this.roadCode, this.roadOrder, this.percent, this.BDlongitude, this.BDlatitude, this.maxSpeed);
+                return new nyrqPosition(this.roadCode, this.roadOrder, this.percent, this.BDlongitude, this.BDlatitude, this.BDheight, this.maxSpeed);
             }
             public override bool Equals(object obj)
             {
@@ -48,20 +50,21 @@ namespace Model
             }
             public nyrqPosition_Simple ToSimple()
             {
-                return new nyrqPosition_Simple(this.roadCode, this.roadOrder, this.percent, this.BDlongitude, this.BDlatitude, this.maxSpeed);
+                return new nyrqPosition_Simple(this.roadCode, this.roadOrder, this.percent, this.BDlongitude, this.BDlatitude, this.BDheight, this.maxSpeed);
             }
         }
 
         public class nyrqPosition_Simple
         {
             public nyrqPosition_Simple() { }
-            public nyrqPosition_Simple(string rc, int rorder, double percent_, double BDlongitude_, double BDlatitude_, int maxSpeed_)
+            public nyrqPosition_Simple(string rc, int rorder, double percent_, double BDlongitude_, double BDlatitude_, double BDheight_, int maxSpeed_)
             {
                 this.r = rc;
                 this.o = rorder;
                 this.p = Math.Round(percent_, 6);
                 this.g = Math.Round(BDlongitude_, 8);
                 this.t = Math.Round(BDlatitude_, 8);
+                this.h = BDheight_;
                 this.s = maxSpeed_;
             }
             public string r { get; set; }
@@ -69,11 +72,12 @@ namespace Model
             public double p { get; set; }
             public double g { get; set; }
             public double t { get; set; }
+            public double h { get; set; }
             public int s { get; set; }
 
             public nyrqPosition copy()
             {
-                return new nyrqPosition(this.r, this.o, this.p, this.g, this.t, this.s);
+                return new nyrqPosition(this.r, this.o, this.p, this.g, this.t, this.h, this.s);
             }
             public override bool Equals(object obj)
             {

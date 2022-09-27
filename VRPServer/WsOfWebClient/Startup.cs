@@ -97,7 +97,7 @@ namespace WsOfWebClient
             TcpFunction.WithResponse.ListenIpAndPort(ConnectInfo.HostIP, ConnectInfo.tcpServerPort, dealWithF);
         }
         //private async void startTcp()
-        async Task<string> StartTcpDealWithF(string notifyJson)
+        async Task<string> StartTcpDealWithF(string notifyJson, int tcpPort)
         {
             try
             {
@@ -294,13 +294,13 @@ namespace WsOfWebClient
 
                 do
                 {
-                    // try
+                    try
                     {
 
                         var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
 
                         wResult = returnResult.wr;
-                        // Console.WriteLine(returnResult.result);
+                        Console.WriteLine(returnResult.result);
                         CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                         switch (c.c)
                         {
@@ -339,6 +339,20 @@ namespace WsOfWebClient
 
                                     }
 
+                                }; break;
+                            case "QueryReward":
+                                {
+                                    if (s.Ls == LoginState.selectSingleTeamJoin)
+                                    {
+                                        s = await Room.setState(s, webSocket, LoginState.QueryReward);
+                                    }
+                                }; break;
+                            case "QueryRewardCancle":
+                                {
+                                    if (s.Ls == LoginState.QueryReward)
+                                    {
+                                        s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                    }
                                 }; break;
                             case "CreateTeam":
                                 {
@@ -725,15 +739,31 @@ namespace WsOfWebClient
                                     GenerateRewardAgreement ga = Newtonsoft.Json.JsonConvert.DeserializeObject<GenerateRewardAgreement>(returnResult.result);
                                     await Room.GenerateRewardAgreementF(webSocket, ga);
                                 }; break;
+                            case "RewardInfomation":
+                                {
+                                    RewardInfomation gra = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardInfomation>(returnResult.result);
+                                    await Room.GetRewardInfomation(webSocket, gra);
+                                }; break;
+                            case "RewardApply":
+                                {
+                                    RewardApply rA = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardApply>(returnResult.result);
+                                    await Room.RewardApply(webSocket, rA);
+                                }; break;
+                            case "AwardsGiving":
+                                {
+                                    CommonClass.ModelTranstraction.AwardsGiving ag = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.AwardsGiving>(returnResult.result);
+                                    await Room.GiveAward(webSocket, ag);
+                                }; break;
+
                         }
                     }
-                    //catch (Exception e)
-                    //{
+                    catch (Exception e)
+                    {
 
-                    //    await Room.setOffLine(s);
-                    //    removeWs(s.WebsocketID);
-                    //    throw e;
-                    //}
+                        await Room.setOffLine(s);
+                        removeWs(s.WebsocketID);
+                        throw e;
+                    }
                 }
                 while (!wResult.CloseStatus.HasValue);
                 await Room.setOffLine(s);

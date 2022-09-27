@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using CommonClass;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -139,9 +140,202 @@ namespace DalOfAddress
             return result;
         }
 
-        public static void Update(int dataInt, int tradeIndex, string addrReward, string addrBussiness, string signOfAddrReward, string signOfaddrBussiness, string msg, long passCoin)
+        //public static void Update(int dataInt, int tradeIndex, string addrReward, string addrBussiness, string signOfAddrReward, string signOfaddrBussiness, string msg, long passCoin)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public enum AddResult
         {
-            throw new NotImplementedException();
+            HasNoData,
+            Success,
+            HasGiven,
+            DataError
+        }
+        public static void Add(ModelTranstraction.AwardsGivingPass agp, out AddResult r)
+        {
+            var tr = DalOfAddress.TradeReward.GetByStartDate(int.Parse(agp.time));
+            if (tr == null)
+            {
+                r = AddResult.HasNoData;
+                return;
+            }
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+
+                    if (agp.msgs.Count == 0)
+                    {
+                        if (traderewardapply.Count(con, tran, Convert.ToInt32(agp.time)) == 0)
+                        {
+                            int updateRow;
+                            string sQL = $"UPDATE tradereward SET waitingForAddition=0 WHERE startDate={agp.time} AND waitingForAddition=1;";
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                updateRow = command.ExecuteNonQuery();
+                            }
+                            if (updateRow == 1)
+                            {
+                                tran.Commit();
+                                r = AddResult.Success;
+                                return;
+                            }
+                            else
+                            {
+                                r = AddResult.HasGiven;
+                                tran.Rollback();
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            tran.Rollback();
+                            r = AddResult.DataError;
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        int count;
+                        {
+                            string sQL = $"SELECT COUNT(*) FROM traderewardapply WHERE startDate={agp.time};";
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                count = Convert.ToInt32(command.ExecuteScalar());
+                            }
+                        }
+                        if (count == agp.msgs.Count)
+                        {
+                            //   CommonClass.Agreement
+                            //  var splitChars = new char[] { '@', '-' };
+                            int sumPassCoin = 0;
+                            for (int i = 0; i < agp.msgs.Count; i++)
+                            {
+                                // var msgItem = agp.msgs[i].Split();
+                                int index, passValue;
+                                string tradeAddr, businessAddr, acceptAddr;
+                                var formatIsWrite = CommonClass.Agreement.IsUseful(agp.msgs[i], out index, out tradeAddr, out businessAddr, out acceptAddr, out passValue);
+                                sumPassCoin += passValue;
+                                if (formatIsWrite)
+                                {
+                                    int tradeIndexInDB;
+                                    {
+                                        string sQL = "SELECT count(*) FROM traderecord WHERE bussinessAddr=@bussinessAddr AND addrFrom=@addrFrom";
+                                        using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                        {
+                                            command.Parameters.AddWithValue("@bussinessAddr", tr.bussinessAddr);
+                                            command.Parameters.AddWithValue("@addrFrom", tr.tradeAddress);
+                                            tradeIndexInDB = Convert.ToInt32(command.ExecuteScalar());
+                                        }
+                                    }
+                                    if (tradeIndexInDB != index)
+                                    {
+                                        r = AddResult.DataError;
+                                        tran.Rollback();
+                                        return;
+
+                                    }
+                                    else if (tradeAddr != tr.tradeAddress)
+                                    {
+                                        r = AddResult.DataError;
+                                        tran.Rollback();
+                                        return;
+                                    }
+                                    else if (businessAddr != tr.bussinessAddr)
+                                    {
+                                        r = AddResult.DataError;
+                                        tran.Rollback();
+                                        return;
+                                    }
+                                    else if (traderewardapply.UpdateItem(con, tran, Convert.ToInt32(agp.time), agp.ranks[i], acceptAddr, passValue) != 1)
+                                    {
+                                        r = AddResult.DataError;
+                                        tran.Rollback();
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        {
+                                            var sQL = "INSERT INTO traderecord(msg,sign,bussinessAddr,tradeIndex,addrFrom) VALUES(@msg,@sign,@bussinessAddr,@tradeIndex,@addrFrom);";
+                                            // string sQL = mysql;
+                                            // long moneycount;
+                                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                            {
+                                                command.Parameters.AddWithValue("@msg", agp.msgs[i]);
+                                                command.Parameters.AddWithValue("@sign", agp.list[i]);
+                                                command.Parameters.AddWithValue("@bussinessAddr", tr.bussinessAddr);
+                                                command.Parameters.AddWithValue("@tradeIndex", tradeIndexInDB);
+                                                command.Parameters.AddWithValue("@addrFrom", tr.tradeAddress);
+                                                count = command.ExecuteNonQuery();
+                                            }
+                                            if (count != 1)
+                                            {
+                                                r = AddResult.DataError;
+                                                tran.Rollback();
+                                                return;
+                                            }
+                                        }
+                                        {
+
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    r = AddResult.DataError;
+                                    tran.Rollback();
+                                    return;
+                                }
+
+                            }
+                            if (sumPassCoin == tr.passCoin)
+                            {
+                                int updateRow;
+                                string sQL = $"UPDATE tradereward SET waitingForAddition=0 WHERE startDate={agp.time} AND waitingForAddition=1 AND passCoin={sumPassCoin};";
+                                using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                {
+                                    updateRow = command.ExecuteNonQuery();
+                                }
+                                if (updateRow == 1)
+                                {
+                                    if (traderewardapply.HasAddrGetNoReward(tran, con, Convert.ToInt32(agp.time)))
+                                    {
+                                        r = AddResult.DataError;
+                                        tran.Rollback();
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        r = AddResult.Success;
+                                        tran.Commit();
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    r = AddResult.DataError;
+                                    tran.Rollback();
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                tran.Rollback();
+                                r = AddResult.DataError;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            r = AddResult.DataError;
+                            tran.Rollback();
+                            return;
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -119,25 +119,29 @@ var carAnimationData = function (passObj) {
                 if (dataObj.animateData[j].privateKey >= 0) {
                     if (j == 0) {
                         var initialData = Decrypt_90021457(dataObj.animateData[0].privateKey, dataObj.animateData[0].dataEncrypted);
-                        var start = { 'x': initialData[0], 'y': initialData[1] };
+                        var start = { 'x': initialData[0], 'y': initialData[1], 'z': initialData[2] };
                         start.x /= 256;
                         start.y /= 256;
+                        start.z /= 256;
 
                         var animateData = [];
                         var startT = 0;
-                        for (var i = 2; i < initialData.length; i += 3) {
+                        for (var i = 3; i < initialData.length; i += 4) {
                             animateData.push(
                                 {
                                     x0: start.x,
                                     y0: start.y,
+                                    z0: start.z,
                                     t0: startT,
-                                    x1: initialData[i] / 256 + start.x,
+                                    x1: initialData[i + 0] / 256 + start.x,
                                     y1: initialData[i + 1] / 256 + start.y,
-                                    t1: initialData[i + 2] + startT
+                                    z1: initialData[i + 2] / 256 + start.z,
+                                    t1: initialData[i + 3] + startT
                                 });
-                            start.x += initialData[i] / 256;
+                            start.x += initialData[i + 0] / 256;
                             start.y += initialData[i + 1] / 256;
-                            startT += initialData[i + 2];
+                            start.z += initialData[i + 2] / 256;
+                            startT += initialData[i + 3];
                         };
                         dataObj.animateData[0].initialData =
                         {
@@ -150,25 +154,29 @@ var carAnimationData = function (passObj) {
                     }
                     else {
                         var initialData = Decrypt_90021457(dataObj.animateData[j].privateKey, dataObj.animateData[j].dataEncrypted);
-                        var start = { 'x': initialData[0], 'y': initialData[1] };
+                        var start = { 'x': initialData[0], 'y': initialData[1], 'z': initialData[2] };
                         start.x /= 256;
                         start.y /= 256;
+                        start.z /= 256;
 
                         var animateData = [];
                         var startT = 0;
-                        for (var i = 2; i < initialData.length; i += 3) {
+                        for (var i = 3; i < initialData.length; i += 4) {
                             animateData.push(
                                 {
                                     x0: start.x,
                                     y0: start.y,
+                                    z0: start.z,
                                     t0: startT,
-                                    x1: initialData[i] / 256 + start.x,
+                                    x1: initialData[i + 0] / 256 + start.x,
                                     y1: initialData[i + 1] / 256 + start.y,
-                                    t1: initialData[i + 2] + startT
+                                    z1: initialData[i + 2] / 256 + start.z,
+                                    t1: initialData[i + 3] + startT
                                 });
-                            start.x += initialData[i] / 256;
+                            start.x += initialData[i + 0] / 256;
                             start.y += initialData[i + 1] / 256;
-                            startT += initialData[i + 2];
+                            start.z += initialData[i + 2] / 256;
+                            startT += initialData[i + 3];
                         };
                         //var start, end;
                         var lastRecord = dataObj.animateData[j - 1].initialData;
@@ -214,25 +222,29 @@ var carAnimationData = function (passObj) {
                     {
                         objOperate.animateData[j].privateKey = patch[j];
                         var initialData = Decrypt_90021457(objOperate.animateData[j].privateKey, objOperate.animateData[j].dataEncrypted);
-                        var start = { 'x': initialData[0], 'y': initialData[1] };
+                        var start = { 'x': initialData[0], 'y': initialData[1], 'z': initialData[2] };
                         start.x /= 256;
                         start.y /= 256;
+                        start.z /= 256;
 
                         var animateData = [];
                         var startT = 0;
-                        for (var i = 2; i < initialData.length; i += 3) {
+                        for (var i = 3; i < initialData.length; i += 4) {
                             animateData.push(
                                 {
                                     x0: start.x,
                                     y0: start.y,
+                                    z0: start.z,
                                     t0: startT,
-                                    x1: initialData[i] / 256 + start.x,
+                                    x1: initialData[i + 0] / 256 + start.x,
                                     y1: initialData[i + 1] / 256 + start.y,
-                                    t1: initialData[i + 2] + startT
+                                    z1: initialData[i + 2] / 256 + start.z,
+                                    t1: initialData[i + 3] + startT
                                 });
-                            start.x += initialData[i] / 256;
+                            start.x += initialData[i + 0] / 256;
                             start.y += initialData[i + 1] / 256;
-                            startT += initialData[i + 2];
+                            start.z += initialData[i + 2] / 256;
+                            startT += initialData[i + 3];
                         };
                         //var start, end;
                         //var lastRecord;

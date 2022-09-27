@@ -280,7 +280,7 @@ namespace HouseManager4_0
             // throw new NotImplementedException();
         }
 
-        public void newThreadDo(CommonClass.Command c)
+        public void newThreadDo(CommonClass.Command c, GetRandomPos grp)
         {
             // throw new NotImplementedException();
         }
@@ -808,7 +808,7 @@ namespace HouseManager4_0
                 FastonPosition baseFp = Program.dt.GetFpByIndex(self.StartFPIndex);
                 this.controlInfomations.RemoveAll(item => item.player.Bust);
                 var orderedMagic = (from item in this.controlInfomations
-                                    orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, Program.dt.GetFpByIndex(item.player.StartFPIndex).Latitde, Program.dt.GetFpByIndex(item.player.StartFPIndex).Longitude)
+                                    orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, baseFp.Height, Program.dt.GetFpByIndex(item.player.StartFPIndex).Latitde, Program.dt.GetFpByIndex(item.player.StartFPIndex).Longitude, Program.dt.GetFpByIndex(item.player.StartFPIndex).Height)
                                     select item).ToList();
                 for (var i = 0; i < orderedMagic.Count; i++)
                 {
@@ -924,7 +924,7 @@ namespace HouseManager4_0
                 var baseFp = Program.dt.GetFpByIndex(selfRole.StartFPIndex);
 
                 this.ambushInfomations = (from item in newList
-                                          orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, item.fpResult.Latitde, item.fpResult.Longitude) ascending,
+                                          orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, baseFp.Height, item.fpResult.Latitde, item.fpResult.Longitude, item.fpResult.Height) ascending,
                                           (item.volumeValue) descending
                                           select item).ToList();
 
@@ -937,7 +937,7 @@ namespace HouseManager4_0
                 }
             }
 
-            internal long AmbushSelf(RoleInGame selfRole, RoomMain that, Engine_MagicEngine.attackMagicTool at)
+            internal long AmbushSelf(RoleInGame selfRole, RoomMain that, Engine_MagicEngine.attackMagicTool at, GetRandomPos gp)
             {
                 List<AmbushInfomation> newList = new List<AmbushInfomation>();
                 for (int i = 0; i < ambushInfomations.Count; i++)
@@ -951,10 +951,10 @@ namespace HouseManager4_0
                             }
                         }
                 }
-                var baseFp = Program.dt.GetFpByIndex(selfRole.StartFPIndex);
+                var baseFp = gp.GetFpByIndex(selfRole.StartFPIndex);
 
                 this.ambushInfomations = (from item in newList
-                                          orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, item.fpResult.Latitde, item.fpResult.Longitude) ascending,
+                                          orderby Geography.getLengthOfTwoPoint.GetDistance(baseFp.Latitde, baseFp.Longitude, baseFp.Height, item.fpResult.Latitde, item.fpResult.Longitude, item.fpResult.Height) ascending,
                                           (item.volumeValue) descending
                                           select item).ToList();
                 long result = 0;
@@ -1212,37 +1212,37 @@ namespace HouseManager4_0
                         // throw new NotImplementedException();
                     }
                 }
-                internal double improveAttack(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, out FastonPosition fp)
+                internal double improveAttack(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, GetRandomPos grp, out FastonPosition fp)
                 {
 
                     improveAttackMagic lo = new improveAttackMagic();
-                    return improve(partner, that, car, npc_Operate, lo, out fp);
+                    return improve(partner, that, car, npc_Operate, lo, grp, out fp);
 
                 }
 
-                private double improve(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, improveMagic im, out FastonPosition fp)
+                private double improve(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, improveMagic im, GetRandomPos grp, out FastonPosition fp)
                 {
 
                     if (that._Players.ContainsKey(partner.Key))
                     {
-                        var listIndexes = that.getCollectPositionsByDistance(Program.dt.GetFpByIndex(partner.StartFPIndex));
-                        fp = Program.dt.GetFpByIndex(that._collectPosition[listIndexes[0]]);
+                        var listIndexes = that.getCollectPositionsByDistance(grp.GetFpByIndex(partner.StartFPIndex), grp);
+                        fp = grp.GetFpByIndex(that._collectPosition[listIndexes[0]]);
                         var longCollectMoney = that.GetCollectReWard(listIndexes[0]) * 100;
                         double distance;
                         RoleInGame boss;
-                        var fromTarget = Program.dt.GetFpByIndex(npc_Operate.StartFPIndex);
+                        var fromTarget = grp.GetFpByIndex(npc_Operate.StartFPIndex);
                         var endTarget = fp;
                         if (npc_Operate.HasTheBoss(that._Players, out boss))
                         {
-                            var bossPoint = Program.dt.GetFpByIndex(boss.StartFPIndex);
+                            var bossPoint = grp.GetFpByIndex(boss.StartFPIndex);
                             distance =
-                                CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fromTarget.Latitde, fromTarget.Longitude, endTarget.Latitde, endTarget.Longitude)
-                                + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, endTarget.Latitde, endTarget.Longitude)
-                                + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, fromTarget.Latitde, fromTarget.Longitude);
+                                CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height);
                         }
                         else
                         {
-                            distance = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(endTarget.Latitde, endTarget.Longitude, fromTarget.Latitde, fromTarget.Longitude) * 2;
+                            distance = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(endTarget.Latitde, endTarget.Longitude, endTarget.Height, fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height) * 2;
                         }
                         var beneficiary = that._Players[partner.Key];
                         if (!beneficiary.Bust)
@@ -1264,17 +1264,17 @@ namespace HouseManager4_0
                     }
                 }
 
-                internal double improveSpeed(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, out FastonPosition fp)
+                internal double improveSpeed(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, GetRandomPos grp, out FastonPosition fp)
                 {
 
                     improveSpeedMagic ism = new improveSpeedMagic();
-                    return improve(partner, that, car, npc_Operate, ism, out fp);
+                    return improve(partner, that, car, npc_Operate, ism, grp, out fp);
                 }
 
-                internal double improveDefend(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, out FastonPosition fp)
+                internal double improveDefend(RoleInGame partner, RoomMain that, Car car, NPC npc_Operate, GetRandomPos grp, out FastonPosition fp)
                 {
                     improveDefendMagic idm = new improveDefendMagic();
-                    return improve(partner, that, car, npc_Operate, idm, out fp);
+                    return improve(partner, that, car, npc_Operate, idm, grp, out fp);
                 }
             }
 

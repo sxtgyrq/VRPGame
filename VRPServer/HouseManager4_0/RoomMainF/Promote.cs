@@ -11,17 +11,17 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Promote
     {
-        public void SetLookForPromote()
+        public void SetLookForPromote(GetRandomPos gp)
         {
-            this.promoteMilePosition = GetRandomPosition(true);
-            this.promoteBusinessPosition = GetRandomPosition(true);
-            this.promoteVolumePosition = GetRandomPosition(true);
-            this.promoteSpeedPosition = GetRandomPosition(true);
+            this.promoteMilePosition = GetRandomPosition(true, gp);
+            this.promoteBusinessPosition = GetRandomPosition(true, gp);
+            this.promoteVolumePosition = GetRandomPosition(true, gp);
+            this.promoteSpeedPosition = GetRandomPosition(true, gp);
         }
 
-        public string updatePromote(SetPromote sp)
+        public string updatePromote(SetPromote sp, GetRandomPos grp)
         {
-            return this.promoteE.updatePromote(sp);
+            return this.promoteE.updatePromote(sp, grp);
         }
 
         ///// <summary>
@@ -153,13 +153,13 @@ namespace HouseManager4_0.RoomMainF
                 {
                     var fpTo = Program.dt.GetFpByIndex(player.StartFPIndex); ;//this.GetPromotePositionTo(pType);
 
-                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                 }
                 foreach (var item in this._collectPosition)
                 {
                     //  var from = Program.dt.GetFpByIndex(player.StartFPIndex);
                     var fpTo = Program.dt.GetFpByIndex(item.Value);
-                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                     if (distanceToMoney <= distanceToDiamond)
                     {
                         rank++;
@@ -173,12 +173,12 @@ namespace HouseManager4_0.RoomMainF
                 double distanceToDiamond;
                 {
                     var fpTo = Program.dt.GetFpByIndex(car.targetFpIndex);
-                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                 }
                 foreach (var item in this._collectPosition)
                 {
                     var fpTo = Program.dt.GetFpByIndex(item.Value);
-                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                     if (distanceToMoney <= distanceToDiamond)
                     {
                         rank++;
@@ -191,28 +191,27 @@ namespace HouseManager4_0.RoomMainF
                 throw new Exception("非法调用");
             }
         }
-        public bool theNearestToDiamondIsCarNotMoney(RoleInGame player, Car car, string pType, out OssModel.FastonPosition fp)
+        public bool theNearestToDiamondIsCarNotMoney(RoleInGame player, Car car, string pType, GetRandomPos grp, out OssModel.FastonPosition fp)
         {
 
-            return theNearestToObjIsCarNotMoney(player, car, new PromoteObj(pType), out fp);
+            return theNearestToObjIsCarNotMoney(player, car, new PromoteObj(pType), grp, out fp);
         }
-        bool theNearestToObjIsCarNotMoney(RoleInGame player, Car car, interfaceOfHM.GetFPIndex getF, out OssModel.FastonPosition fp)
+        bool theNearestToObjIsCarNotMoney(RoleInGame player, Car car, interfaceOfHM.GetFPIndex getF, GetRandomPos grp, out OssModel.FastonPosition fp)
         {
             fp = null;
             if (car.state == CarState.waitAtBaseStation)
             {
                 double distanceToDiamond;
-                var from = Program.dt.GetFpByIndex(getF.GetFPIndex());
+                var from = grp.GetFpByIndex(getF.GetFPIndex());
                 {
-                    var fpTo = Program.dt.GetFpByIndex(player.StartFPIndex); ;//this.GetPromotePositionTo(pType);
-
-                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var fpTo = grp.GetFpByIndex(player.StartFPIndex); ;//this.GetPromotePositionTo(pType);
+                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                 }
                 foreach (var item in this._collectPosition)
                 {
                     //  var from = Program.dt.GetFpByIndex(player.StartFPIndex);
-                    var fpTo = Program.dt.GetFpByIndex(item.Value);
-                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var fpTo = grp.GetFpByIndex(item.Value);
+                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                     if (distanceToMoney <= distanceToDiamond)
                     {
                         distanceToDiamond = distanceToMoney;
@@ -224,16 +223,16 @@ namespace HouseManager4_0.RoomMainF
             }
             else if (car.state == CarState.waitOnRoad)
             {
-                var from = Program.dt.GetFpByIndex(getF.GetFPIndex());
+                var from = grp.GetFpByIndex(getF.GetFPIndex());
                 double distanceToDiamond;
                 {
-                    var fpTo = Program.dt.GetFpByIndex(car.targetFpIndex);
-                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var fpTo = grp.GetFpByIndex(car.targetFpIndex);
+                    distanceToDiamond = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                 }
                 foreach (var item in this._collectPosition)
                 {
-                    var fpTo = Program.dt.GetFpByIndex(item.Value);
-                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var fpTo = grp.GetFpByIndex(item.Value);
+                    var distanceToMoney = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                     if (distanceToMoney <= distanceToDiamond)
                     {
                         distanceToDiamond = distanceToMoney;
@@ -248,9 +247,9 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
-        public bool theNearestToPlayerIsCarNotMoney(RoleInGame player, Car car, RoleInGame victim, out OssModel.FastonPosition fp)
+        public bool theNearestToPlayerIsCarNotMoney(RoleInGame player, Car car, RoleInGame victim, GetRandomPos grp, out OssModel.FastonPosition fp)
         {
-            return theNearestToObjIsCarNotMoney(player, car, victim, out fp);
+            return theNearestToObjIsCarNotMoney(player, car, victim, grp, out fp);
         }
         public int GetPromotePositionTo(string pType)
         {
@@ -394,13 +393,13 @@ namespace HouseManager4_0.RoomMainF
         public void setPromtePosition(string changeType)
         {
             if (changeType == "mile")
-                this.promoteMilePosition = GetRandomPosition(true);
+                this.promoteMilePosition = GetRandomPosition(true, Program.dt);
             else if (changeType == "business")
-                this.promoteBusinessPosition = GetRandomPosition(true);
+                this.promoteBusinessPosition = GetRandomPosition(true, Program.dt);
             else if (changeType == "volume")
-                this.promoteVolumePosition = GetRandomPosition(true);
+                this.promoteVolumePosition = GetRandomPosition(true, Program.dt);
             else if (changeType == "speed")
-                this.promoteSpeedPosition = GetRandomPosition(true);
+                this.promoteSpeedPosition = GetRandomPosition(true, Program.dt);
             else
             {
                 throw new Exception($"{changeType}是什么类型？");

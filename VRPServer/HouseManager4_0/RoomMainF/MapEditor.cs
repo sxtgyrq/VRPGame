@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using OssModel = Model;
 
 namespace HouseManager4_0.RoomMainF
@@ -670,6 +671,39 @@ namespace HouseManager4_0.RoomMainF
 
     public partial class RoomMain : interfaceOfHM.ModelTranstractionI
     {
+        public string AwardsGive(ModelTranstraction.AwardsGivingPass agp)
+        {
+            int startDate = int.Parse(agp.time);
+            //var dt = new DateTime(startDate / 10000, (startDate / 100) % 100, startDate % 100);
+            var now = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
+            if (now - startDate >= 7)
+            {
+                DalOfAddress.TradeRecord.AddResult r;
+                DalOfAddress.TradeRecord.Add(agp, out r);
+                if (r == DalOfAddress.TradeRecord.AddResult.Success)
+                {
+                    return "颁奖成功";
+                }
+                else if (r == DalOfAddress.TradeRecord.AddResult.DataError)
+                {
+                    return "数据错误";
+                }
+                else if (r == DalOfAddress.TradeRecord.AddResult.HasGiven)
+                {
+                    return $"{startDate}期奖励已颁发！";
+                }
+                else if (r == DalOfAddress.TradeRecord.AddResult.HasNoData)
+                {
+                    return "无奖可颁发";
+                }
+                else return "";
+            }
+            else
+            {
+                return $"{startDate}需在其发布七日后，方可进行颁奖";
+            }
+        }
+
         public string GetAllBuiisnessAddr()
         {
             var r = DalOfAddress.detailmodel.GetAllBussinessAddr();
@@ -714,6 +748,12 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
+        public string GetRewardApplyInfomationByStartDate(ModelTranstraction.RewardInfomation ri)
+        {
+            var list = DalOfAddress.traderewardapply.GetByStartDate(ri.startDate);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(list);
+        }
+
         public string GetRewardFromBuildingF(GetRewardFromBuildingM m)
         {
             if (CommonClass.Format.IsModelID(m.selectObjName))
@@ -725,6 +765,19 @@ namespace HouseManager4_0.RoomMainF
                 return "";
             }
             // throw new NotImplementedException();
+        }
+
+        public string GetRewardInfomationByStartDate(ModelTranstraction.RewardInfomation ri)
+        {
+            var obj = DalOfAddress.TradeReward.GetByStartDate(ri.startDate);
+            if (obj == null)
+            {
+                return "";
+            }
+            else
+            {
+                return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            }
         }
 
         public string GetRoadNearby(ModelTranstraction.GetRoadNearby grn)
@@ -748,6 +801,65 @@ namespace HouseManager4_0.RoomMainF
         {
             var r = DalOfAddress.TradeRecord.GetAll(gtmd.bussinessAddr);
             return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+        }
+
+        public string RewardApplyF(ModelTranstraction.RewardApply rA)
+        {
+            Regex r = new Regex("^[0-9]{8}$");
+            if (r.IsMatch(rA.msgNeedToSign))
+            {
+                if (BitCoin.Sign.checkSign(rA.signature, rA.msgNeedToSign, rA.addr))
+                {
+                    int level;
+                    var applyResult = DalOfAddress.traderewardapply.Add(rA, out level);
+                    if (applyResult == DalOfAddress.traderewardapply.AddResult.LevelIsLow)
+                    {
+                        ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
+                        {
+                            success = false,
+                            msg = "申请奖励，最低要求达到2级"
+                        };
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
+                    }
+                    else if (applyResult == DalOfAddress.traderewardapply.AddResult.IsFullInTheLevel)
+                    {
+                        ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
+                        {
+                            success = false,
+                            msg = $"{level}等级的申请已经用完了，你可以提升自己的等级后在进行申请！"
+                        };
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
+                    }
+                    else if (applyResult == DalOfAddress.traderewardapply.AddResult.HaveNotEnoughtSatoshi)
+                    {
+                        ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
+                        {
+                            success = false,
+                            msg = $"本期奖励已申请完毕，你可以下期再申请！"
+                        };
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
+                    }
+                    else if (applyResult == DalOfAddress.traderewardapply.AddResult.Success)
+                    {
+                        ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
+                        {
+                            success = true,
+                            msg = ""
+                        };
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
+                    }
+                    else
+                    {
+                        ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
+                        {
+                            success = true,
+                            msg = ""
+                        };
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
+                    }
+                }
+            }
+            return "";
         }
 
         public string TradeCoinF(ModelTranstraction.TradeCoin tc)

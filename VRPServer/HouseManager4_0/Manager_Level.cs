@@ -12,7 +12,7 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        internal void OrderToUpdateLevel(string key, string addr, string signature)
+        public void OrderToUpdateLevel(string key, string addr, string signature)
         {
             // ots.
             List<string> notifyMsg = new List<string>();
@@ -30,7 +30,7 @@ namespace HouseManager4_0
                                 var player = (Player)role;
                                 if (string.IsNullOrEmpty(player.levelObj.BtcAddr))
                                 {
-                                    player.levelObj.SetAddr(player.levelObj.BtcAddr);
+                                    player.levelObj.SetAddr(addr);
                                 }
                                 else if (player.levelObj.BtcAddr == addr)
                                 {
@@ -60,15 +60,24 @@ namespace HouseManager4_0
 
         private void synchronize(Player player, ref List<string> notifyMsg)
         {
-            var result = DalOfAddress.LevelForSave.Update(player.levelObj.BtcAddr, player.levelObj.TimeStampStr, player.Level);
+            DalOfAddress.LevelForSave.UpdateResultInDB remarkI;
+            var result = DalOfAddress.LevelForSave.Update(player.levelObj.BtcAddr, player.levelObj.TimeStampStr, player.Level, out remarkI);
             if (result != null)
             {
                 player.levelObj.SetLevel(result.Level);
                 player.levelObj.SetTimeStamp(result.TimeStampStr);
             }
+            else if (remarkI == DalOfAddress.LevelForSave.UpdateResultInDB.WrongTimeStr)
+            {
+                WebNotify(player, "等级更新失败");
+            }
+            else if (remarkI == DalOfAddress.LevelForSave.UpdateResultInDB.LevelHasUsedForRewad) 
+            {
+                WebNotify(player, "等级更新失败，是不是已经用于领奖了？");
+            } 
         }
 
-        internal void OrderToUpdateLevel(RoleInGame role, ref List<string> notifyMsgs)
+        public void OrderToUpdateLevel(RoleInGame role, ref List<string> notifyMsgs)
         {
             if (role.playerType == RoleInGame.PlayerType.player)
             {
@@ -76,6 +85,10 @@ namespace HouseManager4_0
                 if (!string.IsNullOrEmpty(player.levelObj.BtcAddr))
                 {
                     synchronize(player, ref notifyMsgs);
+                }
+                else
+                {
+                    this.WebNotify(player, "您还没有登录，系统无法记录您的等级！");
                 }
             }
         }

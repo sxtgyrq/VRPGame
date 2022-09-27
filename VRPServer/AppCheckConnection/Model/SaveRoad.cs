@@ -20,6 +20,9 @@ namespace AppCheckConnection.Model
             public double endLongitude { get; set; }
             public double endLatitude { get; set; }
 
+            public int startHeight { get; set; }
+            public int endHeight { get; set; }
+
             public int CarInDirection { get; set; }
             public int CarInOpposeDirection { get; set; }
             public int EBicycleInDirection { get; set; }

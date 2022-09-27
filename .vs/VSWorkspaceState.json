@@ -4,7 +4,8 @@
     "\\VRPServer",
     "\\VRPServer\\Server",
     "\\Webshow",
-    "\\Webshow\\WebApplication1"
+    "\\Webshow\\WebApplication1",
+    "\\Webshow\\webHtml"
   ],
   "SelectedNode": "\\VRPServer\\Server\\Server.sln",
   "PreviewInSolutionExplorer": false

@@ -15,7 +15,9 @@
         public string UserName { get; set; }
         public double positionLongitudeOnRoad { get; set; }
         public double positionLatitudeOnRoad { get; set; }
+        public double Height { get; set; }
         public int MacatuoX { get; set; }
         public int MacatuoY { get; set; }
+
     }
 }

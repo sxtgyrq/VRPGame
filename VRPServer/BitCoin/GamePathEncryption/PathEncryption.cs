@@ -258,7 +258,7 @@ namespace BitCoin.GamePathEncryption
                 var newData = new List<long>();
                 var array = dataEncrypted.ToArray();
                 // array.Length
-                for (var i = 70; i < 75; i += 5)
+                for (var i = 0; i < dataEncrypted.Count; i += 5)
                 {
                     var rP = new Int64[] { array[i], array[i + 1] };
                     var MplusrQ = new Int64[] { array[i + 2], array[i + 3] };
@@ -318,7 +318,7 @@ namespace BitCoin.GamePathEncryption
                 //privateKey = rm.Next(Convert.ToInt32(Parameter.QHalf), Convert.ToInt32(Parameter.Q));
                 var newData = new List<long>();
 
-             //   //Consol.WriteLine("解密之前");
+                //   //Consol.WriteLine("解密之前");
                 for (int i = 0; i < data.Count; i++)
                 {
                     //Consol.WriteLine(data[i]);
@@ -362,7 +362,7 @@ namespace BitCoin.GamePathEncryption
                 {
                     str += $"{array[i]},";
                 }
-              //  Console.WriteLine($"{Environment.NewLine}{str}");
+                //  Console.WriteLine($"{Environment.NewLine}{str}");
                 str = "";
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -397,7 +397,7 @@ namespace BitCoin.GamePathEncryption
                 //}
                  */
 
-             //   //Consol.WriteLine("校验OK");
+                //   //Consol.WriteLine("校验OK");
                 return newData;
             }
             //public static Int64 getQ()

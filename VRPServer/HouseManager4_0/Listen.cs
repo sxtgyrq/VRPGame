@@ -13,17 +13,18 @@ namespace HouseManager4_0
             var dealWith = new TcpFunction.WithResponse.DealWith(DealWith);
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
-        private static async Task<string> DealWith(string notifyJson)
+        private static async Task<string> DealWith(string notifyJson, int port)
         {
             try
             {
                 CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
-                return DealWithInterfaceAndObj(Program.rm, c, notifyJson);
+                var r = await Task.Run<string>(() => DealWithInterfaceAndObj(Program.rm, c, notifyJson));
+                return r;
             }
             catch
             {
                 //Consol.WriteLine($"notify receive:{notifyJson}");
-                File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
+                File.AppendAllText($"log/d{port}.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
                 return "haveNothingToReturn";
             }
         }
@@ -39,7 +40,7 @@ namespace HouseManager4_0
                     case "PlayerAdd_V2":
                         {
                             CommonClass.PlayerAdd_V2 addItem = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.PlayerAdd_V2>(notifyJson);
-                            var result = objI.AddPlayer(addItem);
+                            var result = objI.AddPlayer(addItem, Program.rm, Program.dt);
                             outPut = result;
                         }; break;
                     case "GetPosition":
@@ -72,7 +73,7 @@ namespace HouseManager4_0
                     case "SetPromote":
                         {
                             CommonClass.SetPromote sp = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetPromote>(notifyJson);
-                            var result = objI.updatePromote(sp);
+                            var result = objI.updatePromote(sp, Program.dt);
                             outPut = "ok";
                             //await context.Response.WriteAsync("ok");
                         }; break;
@@ -91,14 +92,14 @@ namespace HouseManager4_0
                     case "SetCollect":
                         {
                             CommonClass.SetCollect sc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetCollect>(notifyJson);
-                            var result = objI.updateCollect(sc);
+                            var result = objI.updateCollect(sc, Program.dt);
                             outPut = "ok";
                             //await context.Response.WriteAsync("ok");
                         }; break;
                     case "SetAttack":
                         {
                             CommonClass.SetAttack sa = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetAttack>(notifyJson);
-                            var result = objI.updateAttack(sa);
+                            var result = objI.updateAttack(sa, Program.dt);
                             outPut = "ok";
                             //await context.Response.WriteAsync("ok");
                         }; break;
@@ -116,7 +117,7 @@ namespace HouseManager4_0
                     case "OrderToReturn":
                         {
                             CommonClass.OrderToReturn otr = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.OrderToReturn>(notifyJson);
-                            objI.OrderToReturn(otr);
+                            objI.OrderToReturn(otr, Program.dt);
                             outPut = "ok";
                         }; break;
                     case "SaveMoney":
@@ -180,7 +181,7 @@ namespace HouseManager4_0
                     case "MagicSkill":
                         {
                             CommonClass.MagicSkill ms = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MagicSkill>(notifyJson);
-                            var result = objI.updateMagic(ms);
+                            var result = objI.updateMagic(ms, Program.dt);
                             outPut = "ok";
                         }; break;
                     case "View":
@@ -370,6 +371,26 @@ namespace HouseManager4_0
                             //CommonClass.AllStockAddr ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.AllStockAddr>(notifyJson);
                             //outPut = objI.GetAllStockAddr(ss);
                         }; break;
+                    case "RewardInfomation":
+                        {
+                            CommonClass.ModelTranstraction.RewardInfomation ri = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardInfomation>(notifyJson);
+                            outPut = objI.GetRewardInfomationByStartDate(ri);
+                        }; break;
+                    case "RewardApplyInfomation":
+                        {
+                            CommonClass.ModelTranstraction.RewardInfomation ri = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardInfomation>(notifyJson);
+                            outPut = objI.GetRewardApplyInfomationByStartDate(ri);
+                        }; break;
+                    case "RewardApply":
+                        {
+                            CommonClass.ModelTranstraction.RewardApply rA = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardApply>(notifyJson);
+                            outPut = objI.RewardApplyF(rA);
+                        }; break;
+                    case "AwardsGivingPass":
+                        {
+                            CommonClass.ModelTranstraction.AwardsGivingPass aG = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.AwardsGivingPass>(notifyJson);
+                            outPut = objI.AwardsGive(aG);
+                        }; break;
                 }
             }
             {
@@ -382,7 +403,7 @@ namespace HouseManager4_0
             var dealWith = new TcpFunction.WithResponse.DealWith(DealWithMonitor);
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
-        private static async Task<string> DealWithMonitor(string notifyJson)
+        private static async Task<string> DealWithMonitor(string notifyJson, int tcpPort)
         {
             return await Task.Run(() => DealWithMonitorValue(notifyJson));
         }

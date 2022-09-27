@@ -22,7 +22,7 @@ namespace HouseManager4_0
                 foreach (var fpIndex in that._collectPosition)
                 {
                     var fp = Program.dt.GetFpByIndex(fpIndex.Value);
-                    var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, model.lat, model.lon);
+                    var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
                     if (length < minLength[model.modelID])
                     {
                         minLength[model.modelID] = length;
@@ -35,7 +35,7 @@ namespace HouseManager4_0
                 {
                     foreach (var model in models)
                     {
-                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, model.lat, model.lon);
+                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
                         // model.
                         if (length < minLength[model.modelID])
                             modelsNeedToShow.Add(model);
@@ -68,7 +68,7 @@ namespace HouseManager4_0
                 foreach (var fpIndex in that._collectPosition)
                 {
                     var fp = Program.dt.GetFpByIndex(fpIndex.Value);
-                    var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, model.lat, model.lon);
+                    var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
                     if (length < minLength[model.modelID])
                     {
                         minLength[model.modelID] = length;
@@ -80,7 +80,7 @@ namespace HouseManager4_0
                 {
                     foreach (var model in models)
                     {
-                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, model.lat, model.lon);
+                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
                         // model.
                         if (length < minLength[model.modelID])
                             modelsNeedToShow.Add(model);

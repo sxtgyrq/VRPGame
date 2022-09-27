@@ -1,5 +1,5 @@
 ﻿function getMaps(longitude, latitude, deltaLength) {
-    var EarthRadio = 6370856;
+    var EarthRadio = 6371393;
     var DeltaLongitude = deltaLength / (EarthRadio * Math.PI * 2 * Math.cos(latitude / 180 * Math.PI)) * 360;
     var DeltaLatitude = deltaLength / (EarthRadio * Math.PI * 2) * 360;
     console.log("", DeltaLongitude, DeltaLatitude);
@@ -28,6 +28,12 @@ var LongitudeK = 18.25621546434640;
 function MercatorGetXbyLongitude(Longitude) {
     var Zoom = 19;
     return Math.pow(2, LongitudeK + (Zoom - 19)) * Longitude / 360;
+}
+function MercatorGetZbyHeight(Height) {
+    var EarthRadio = 6370856;
+    var rad = Height / EarthRadio;//'' (Math.PI*2);
+    var angle = rad / (Math.PI * 2) * 360;
+    return MercatorGetXbyLongitude(angle);
 }
 
 var LatitudeE = 0.0822699;

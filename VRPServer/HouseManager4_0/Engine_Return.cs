@@ -70,7 +70,7 @@ namespace HouseManager4_0
 
                 if (cmp.returningOjb.returnToSelfAddrPath.path.Count > 0)
                 {
-                    Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0);
+                    Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0, that);
                 }
                 var self = player;
                 //  that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
@@ -79,18 +79,19 @@ namespace HouseManager4_0
                 car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
                 car.targetFpIndexSet(self.StartFPIndex, ref notifyMsg);
 
-                Data.PathStartPoint2 startPosition;
+                Data.PathStartPoint3 startPosition;
                 if (cmp.returningOjb.returnToSelfAddrPath.path.Count == 0)
                 {
                     //that.getStartPositionByFp(out startPosition, cmp.returningOjb.returnToSelfAddrPath.path[0].position);
                     // that.getStartPositionByFp(out startPosition, Program.dt.GetFpByIndex(player.StartFPIndex));
                     var fp = Program.dt.GetFpByIndex(player.StartFPIndex);
-                    double x, y;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out x, out y);
-                    startPosition = new Data.PathStartPoint2()
+                    double x, y, z;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, fp.Height, out x, out y, out z);
+                    startPosition = new Data.PathStartPoint3()
                     {
                         x = Convert.ToInt32(x * 256),
-                        y = Convert.ToInt32(y * 256)
+                        y = Convert.ToInt32(y * 256),
+                        z = Convert.ToInt32(z * 256)
                     };
                 }
                 else
@@ -99,7 +100,7 @@ namespace HouseManager4_0
                 }
                 car.setState(player, ref notifyMsg, CarState.returning);
 
-                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255, ref that.rm);
                 animations.Add(animation);
             }
             for (int i = 1; i < cmp.returningOjb.returnToSelfAddrPath.path.Count - 1; i++)
@@ -109,13 +110,13 @@ namespace HouseManager4_0
                 var speed = car.ability.Speed;
                 int startT_PathLast = 0;
                 List<int> result;
-                Data.PathStartPoint2 startPosition;
+                Data.PathStartPoint3 startPosition;
                 {
                     result = new List<int>();
                     that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                 }
-                Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i]);
+                Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0, that);
+                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i], ref that.rm);
                 animations.Add(animation);
             }
             EndWithRightPosition(cmp.returningOjb.returnToSelfAddrPath, car.ability.Speed, player, player, ref animations, privateKeys);
@@ -153,10 +154,10 @@ namespace HouseManager4_0
                             //  that.getStartPositon(Program.dt.GetFpByIndex(cmp.target), (boss.positionInStation + 1) % 5, ref startT);
                             var boss = cmp.returningOjb.Boss;
 
-                            Data.PathStartPoint2 startPosition;
+                            Data.PathStartPoint3 startPosition;
                             var fp1 = Program.dt.GetFpByIndex(boss.StartFPIndex);
                             result = that.getStartPositon(fp1, boss.positionInStation + 1, ref startT_FirstPath, out startPosition, player.improvementRecord.speedValue > 0);
-                            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0);
+                            Program.dt.GetAFromBPoint(cmp.returningOjb.returnToSelfAddrPath.path[0].path, cmp.returningOjb.returnToSelfAddrPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0, that);
 
 
                             // that.getEndPositon(Program.dt.GetFpByIndex(self.StartFPIndex), self.positionInStation, ref result, ref startT, player.improvementRecord.speedValue > 0);
@@ -164,7 +165,7 @@ namespace HouseManager4_0
 
                             car.setState(that._Players[cmp.key], ref notifyMsg, CarState.returning);
                             car.targetFpIndexSet(self.StartFPIndex, ref notifyMsg);
-                            var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255);
+                            var animation = new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToSelfAddrPath.path.Count > 0 ? privateKeys[0] : 255, ref that.rm);
                             animations.Add(animation);
                         }
                         var goPath = cmp.returningOjb.returnToSelfAddrPath;
@@ -174,13 +175,13 @@ namespace HouseManager4_0
                             var speed = car.ability.Speed;
                             int startT_PathLast = 0;
                             List<int> result;
-                            Data.PathStartPoint2 startPosition;
+                            Data.PathStartPoint3 startPosition;
                             {
                                 result = new List<int>();
                                 that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                             }
-                            Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                            var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i]);
+                            Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0, that);
+                            var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i], ref that.rm);
                             animations.Add(animation);
                         }
                         EndWithRightPosition(goPath, car.ability.Speed, player, player, ref animations, privateKeys);
@@ -214,7 +215,7 @@ namespace HouseManager4_0
 
 
                             if (cmp.returningOjb.returnToBossAddrPath.path.Count > 0)
-                                Program.dt.GetAFromBPoint(cmp.returningOjb.returnToBossAddrPath.path[0].path, cmp.returningOjb.returnToBossAddrPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0);
+                                Program.dt.GetAFromBPoint(cmp.returningOjb.returnToBossAddrPath.path[0].path, cmp.returningOjb.returnToBossAddrPath.path[0].position, speed, ref result, ref startT_FirstPath, player.improvementRecord.speedValue > 0, that);
                             //  that.getEndPositon(Program.dt.GetFpByIndex(boss.StartFPIndex), boss.positionInStation + 1, ref result, ref startT, player.improvementRecord.speedValue > 0);
                             // result.RemoveAll(item => item.t == 0);
 
@@ -227,10 +228,10 @@ namespace HouseManager4_0
                              */
                             if (cmp.returningOjb.returnToBossAddrPath.path.Count > 0)
                             {
-                                Data.PathStartPoint2 startPosition;
+                                Data.PathStartPoint3 startPosition;
                                 that.getStartPositionByGoPath(out startPosition, cmp.returningOjb.returnToBossAddrPath.path[0]);
 
-                                animations.Add(new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToBossAddrPath.path.Count > 0 ? privateKeys[0] : 255));
+                                animations.Add(new AnimateDataItem(startPosition, result, false, startT_FirstPath, cmp.returningOjb.returnToBossAddrPath.path.Count > 0 ? privateKeys[0] : 255, ref that.rm));
                             }
                             else
                             {
@@ -247,13 +248,13 @@ namespace HouseManager4_0
                                 var indexValue = i;
                                 int startT_PathLast = 0;
                                 List<int> result;
-                                Data.PathStartPoint2 startPosition;
+                                Data.PathStartPoint3 startPosition;
                                 {
                                     result = new List<int>();
                                     that.getStartPositionByGoPath(out startPosition, goPath.path[indexValue]);
                                 }
-                                Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0);
-                                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i]);
+                                Program.dt.GetAFromBPoint(goPath.path[indexValue].path, goPath.path[indexValue].path[0], speed, ref result, ref startT_PathLast, player.improvementRecord.speedValue > 0, that);
+                                var animation = new AnimateDataItem(startPosition, result, false, startT_PathLast, privateKeys[i], ref that.rm);
                                 animations.Add(animation);
                             }
                             EndWithRightPosition(goPath, car.ability.Speed, player, boss, ref animations, privateKeys);
@@ -318,7 +319,7 @@ namespace HouseManager4_0
                 else
                 {
                     if (step == 0)
-                    { 
+                    {
                         Action p = () =>
                         {
                             step++;
@@ -337,7 +338,7 @@ namespace HouseManager4_0
                         this.loop(p, step, startT, player, goPath);
                     }
                     else
-                    { 
+                    {
                         Action p = () =>
                         {
                             step++;
@@ -365,7 +366,7 @@ namespace HouseManager4_0
                             this.sendMsg(notifyMsg);
                             StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
                         };
-                        this.loop(p, step, startT, player, goPath);  
+                        this.loop(p, step, startT, player, goPath);
                     }
                 }
             });
@@ -415,7 +416,7 @@ namespace HouseManager4_0
                     if (player.playerType == RoleInGame.PlayerType.NPC)
                     {
                         //that.
-                        that.GetMaxHarmInfomation((NPC)player);
+                        that.GetMaxHarmInfomation((NPC)player, Program.dt);
                         ///  NPC
                         ((NPC)player).dealWithReturnedNPC(ref notifyMsg);
                     }
@@ -449,16 +450,16 @@ namespace HouseManager4_0
             }
         }
 
-        internal string OrderToReturn(OrderToReturn otr)
+        internal string OrderToReturn(OrderToReturn otr, GetRandomPos grp)
         {
 
             if (otr.c == "OrderToReturn")
                 //   return this.
-                return this.updateAction(this, otr, otr.Key);
+                return this.updateAction(this, otr, grp, otr.Key);
             else if (otr.c == "OrderToReturnBySystem")
             {
                 OrderToReturnBySystem otrbs = (OrderToReturnBySystem)otr;
-                return this.updateActionBySys(this, otrbs, otrbs.Key);
+                return this.updateActionBySys(this, otrbs, grp, otrbs.Key);
             }
             else
             {
@@ -467,10 +468,10 @@ namespace HouseManager4_0
             //throw new NotImplementedException();
         }
 
-        string updateActionBySys(interfaceOfEngine.tryCatchAction actionDo, OrderToReturnBySystem c, string operateKey)
+        string updateActionBySys(interfaceOfEngine.tryCatchAction actionDo, OrderToReturnBySystem c, GetRandomPos grp, string operateKey)
         {
             string conditionNotReason;
-            if (actionDo.conditionsOk(c, out conditionNotReason))
+            if (actionDo.conditionsOk(c, grp, out conditionNotReason))
             {
                 List<string> notifyMsg = new List<string>();
                 lock (that.PlayerLock)
@@ -485,7 +486,7 @@ namespace HouseManager4_0
                             {
                                 case CarState.waitOnRoad:
                                     {
-                                        if (actionDo.carAbilitConditionsOk(player, car, c))
+                                        if (actionDo.carAbilitConditionsOk(player, car, c, grp))
                                         {
                                             car.setState(player, ref notifyMsg, CarState.returning);
                                             setReturn(new returnning()
@@ -521,7 +522,7 @@ namespace HouseManager4_0
         }
 
 
-        public ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out MileResultReason mrr)
+        public ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason mrr)
         {
             //throw new NotImplementedException();
             //    car.state = CarState.returning;
@@ -543,7 +544,7 @@ namespace HouseManager4_0
         {
         }
 
-        public bool conditionsOk(Command c, out string reason)
+        public bool conditionsOk(Command c, GetRandomPos grp, out string reason)
         {
             if (c.c == "OrderToReturn")
             {
@@ -562,7 +563,7 @@ namespace HouseManager4_0
             }
         }
 
-        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c)
+        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c, GetRandomPos grp)
         {
             return car.state == CarState.waitOnRoad;
         }

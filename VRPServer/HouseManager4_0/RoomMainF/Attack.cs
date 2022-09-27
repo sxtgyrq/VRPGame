@@ -10,9 +10,9 @@ namespace HouseManager4_0.RoomMainF
     public partial class RoomMain : interfaceOfHM.Attack
     {
         const string AttackFailedReturn = "attack-failed-return";
-        public string updateAttack(SetAttack sa)
-        { 
-            return this.attackE.updateAttack(sa); 
+        public string updateAttack(SetAttack sa, GetRandomPos grp)
+        {
+            return this.attackE.updateAttack(sa, grp);
         }
 
 
@@ -27,70 +27,70 @@ namespace HouseManager4_0.RoomMainF
         /// <param name="notifyMsg"></param>
         /// <param name="victimState"></param>
         /// <param name="reason"></param>
-//        void attack(RoleInGame player, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
-//        {
-//            RoleInGame boss;
-//            if (player.HasTheBoss(this._Players, out boss))
-//            {
-//                //    attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
-//                //return promotePassBossAddress(player, boss, car, sp, ref notifyMsg, out reason);
-//            }
-//            else
-//            {
-//                if (car.ability.leftBusiness > 0)
-//                {
-//                    var from = this.getFromWhenAttack(player, car);
-//                    var to = sa.target;
-//                    var fp1 = Program.dt.GetFpByIndex(from);
-//                    var fp2 = Program.dt.GetFpByIndex(to);
-//                    var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
+        //        void attack(RoleInGame player, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
+        //        {
+        //            RoleInGame boss;
+        //            if (player.HasTheBoss(this._Players, out boss))
+        //            {
+        //                //    attackPassBossAddress(player, boss, car, sa, ref notifyMsg, out Mrr);
+        //                //return promotePassBossAddress(player, boss, car, sp, ref notifyMsg, out reason);
+        //            }
+        //            else
+        //            {
+        //                if (car.ability.leftBusiness > 0)
+        //                {
+        //                    var from = this.getFromWhenAttack(player, car);
+        //                    var to = sa.target;
+        //                    var fp1 = Program.dt.GetFpByIndex(from);
+        //                    var fp2 = Program.dt.GetFpByIndex(to);
+        //                    var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
 
-//                    // var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
+        //                    // var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
 
-//                    //var goPath = Program.dt.GetAFromB(from, to);
-//                    var goPath = this.GetAFromB(from, to, player, ref notifyMsg);
-//                    //var returnPath = Program.dt.GetAFromB(fp2, baseFp.FastenPositionID);
-//                    //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-//                    var returnPath = this.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
+        //                    //var goPath = Program.dt.GetAFromB(from, to);
+        //                    var goPath = this.GetAFromB(from, to, player, ref notifyMsg);
+        //                    //var returnPath = Program.dt.GetAFromB(fp2, baseFp.FastenPositionID);
+        //                    //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
+        //                    var returnPath = this.GetAFromB(to, player.StartFPIndex, player, ref notifyMsg);
 
-//                    var goMile = GetMile(goPath);
-//                    var returnMile = GetMile(returnPath);
+        //                    var goMile = GetMile(goPath);
+        //                    var returnMile = GetMile(returnPath);
 
 
 
-//                    //第一步，计算去程和回程。
-//                    if (car.ability.leftMile >= goMile + returnMile)
-//                    {
-//                        int startT;
+        //                    //第一步，计算去程和回程。
+        //                    if (car.ability.leftMile >= goMile + returnMile)
+        //                    {
+        //                        int startT;
 
-//                        EditCarStateWhenAttackStartOK(player, ref car, to, fp1, sa, goPath, out startT, ref notifyMsg);
-//                        SetAttackArrivalThread(startT, car, sa, returnPath, goMile);
-//                        // getAllCarInfomations(sa.Key, ref notifyMsg);
-//                        Mrr = MileResultReason.Abundant;
-//                    }
+        //                        EditCarStateWhenAttackStartOK(player, ref car, to, fp1, sa, goPath, out startT, ref notifyMsg);
+        //                        SetAttackArrivalThread(startT, car, sa, returnPath, goMile);
+        //                        // getAllCarInfomations(sa.Key, ref notifyMsg);
+        //                        Mrr = MileResultReason.Abundant;
+        //                    }
 
-//                    else if (car.ability.leftMile >= goMile)
-//                    {
-//                        //当攻击失败，必须返回
-//                        Console.Write($"去程{goMile}，回程{returnMile}");
-//                        Console.Write($"你去了回不来");
-//                        Mrr = MileResultReason.CanNotReturn;
-//                    }
-//                    else
-//                    {
-//#warning 这里要在web前台进行提示
-//                        //当攻击失败，必须返回
-//                        Console.Write($"去程{goMile}，回程{returnMile}");
-//                        Console.Write($"你去不了");
-//                        Mrr = MileResultReason.CanNotReach;
-//                    }
-//                }
-//                else
-//                {
-//                    Mrr = MileResultReason.MoneyIsNotEnougt;
-//                }
-//            }
-//        }
+        //                    else if (car.ability.leftMile >= goMile)
+        //                    {
+        //                        //当攻击失败，必须返回
+        //                        Console.Write($"去程{goMile}，回程{returnMile}");
+        //                        Console.Write($"你去了回不来");
+        //                        Mrr = MileResultReason.CanNotReturn;
+        //                    }
+        //                    else
+        //                    {
+        //#warning 这里要在web前台进行提示
+        //                        //当攻击失败，必须返回
+        //                        Console.Write($"去程{goMile}，回程{returnMile}");
+        //                        Console.Write($"你去不了");
+        //                        Mrr = MileResultReason.CanNotReach;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    Mrr = MileResultReason.MoneyIsNotEnougt;
+        //                }
+        //            }
+        //        }
 
 
 
@@ -144,7 +144,7 @@ namespace HouseManager4_0.RoomMainF
 
         //    car.setAnimateData(player, ref notifyMsg, animateData);
         //}
-         
+
 
 
 

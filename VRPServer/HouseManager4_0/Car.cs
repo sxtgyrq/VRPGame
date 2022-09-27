@@ -357,7 +357,7 @@ namespace HouseManager4_0
         {
             //90151163 is prime! 2^18.25622*256 =313,090.45478*256=   80,151,156.423
             //so get max number 90151163。
-            public AnimateDataItem(Data.PathStartPoint2 _start, List<int> _animateData, bool _isParking, int _startT, long privateKeyInput)
+            public AnimateDataItem(Data.PathStartPoint3 _start, List<int> _animateData, bool _isParking, int _startT, long privateKeyInput, ref Random rm)
             {
                 this.start = _start;
                 var animateData = _animateData;
@@ -368,13 +368,15 @@ namespace HouseManager4_0
                 List<long> data = new List<long>();
                 data.Add(this.start.x);
                 data.Add(this.start.y);
+                data.Add(this.start.z);
                 for (int i = 0; i < animateData.Count; i++)
                 {
                     data.Add(animateData[i]);
                 }
                 // for (int i = 0; i < data.Count; i++) { }
                 // int privateKey;
-                this.dataEncrypted = BitCoin.GamePathEncryption.PathEncryption.MainC.Encrypt(ref Program.rm.rm, data, privateKeyInput);
+
+                this.dataEncrypted = BitCoin.GamePathEncryption.PathEncryption.MainC.Encrypt(ref rm, data, privateKeyInput);
                 this.privateKey = Convert.ToInt32(privateKeyInput);
 
                 var int64Array = data.ToArray();
@@ -383,7 +385,7 @@ namespace HouseManager4_0
                 this.Md5Code = CommonClass.Random.GetMD5HashFromBytes(arrayBytes);
                 //data.ToArray()
             }
-            public Data.PathStartPoint2 start { get; private set; }
+            public Data.PathStartPoint3 start { get; private set; }
             //public List<Data.PathResult3> animateData { get; internal set; }
             // public List<int> animateData { get; private set; }
             public List<long> dataEncrypted { get; private set; }

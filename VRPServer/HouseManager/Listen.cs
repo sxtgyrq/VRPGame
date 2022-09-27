@@ -32,7 +32,7 @@ namespace HouseManager
             string outPut = "haveNothingToReturn";
             {
                 //  var notifyJson = returnResult.result;
-                 
+
                 CommonClass.Monitor m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Monitor>(notifyJson);
 
                 switch (m.c)
@@ -84,12 +84,12 @@ namespace HouseManager
             }
             return outPut;
         }
-        private static async Task<string> DealWithMonitor(string notifyJson)
+        private static async Task<string> DealWithMonitor(string notifyJson, int tcpPort)
         {
             return await Task.Run(() => DealWithMonitorValue(notifyJson));
         }
 
-        private static async Task<string> DealWith(string notifyJson)
+        private static async Task<string> DealWith(string notifyJson, int tcpPort)
         {
             //Consol.WriteLine($"notify receive:{notifyJson}");
             // CommonClass.TeamCreateFinish teamCreateFinish = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamCreateFinish>(notifyJson);
@@ -259,12 +259,12 @@ namespace HouseManager
 
                                 BaseInfomation.rm.Buy(bd);
                             }; break;
-                        case "SetSellDiamond": 
+                        case "SetSellDiamond":
                             {
                                 CommonClass.SetSellDiamond ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetSellDiamond>(notifyJson);
 
                                 BaseInfomation.rm.Sell(ss);
-                            };break;
+                            }; break;
                     }
                 }
             }

@@ -7,9 +7,9 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain
     {
-        public string updateMagic(MagicSkill ms)
+        public string updateMagic(MagicSkill ms, GetRandomPos grp)
         {
-            return this.magicE.updateMagic(ms);
+            return this.magicE.updateMagic(ms, grp);
             //throw new NotImplementedException();
         }
         internal void speedMagicChanged(RoleInGame role, ref List<string> notifyMsgs)
@@ -97,11 +97,11 @@ namespace HouseManager4_0.RoomMainF
                         if (On)
                         {
                             var carPosition = Program.dt.GetFpByIndex(role.getCar().targetFpIndex);
-                            double startX, startY;
-                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, out startX, out startY);
+                            double startX, startY, startZ;
+                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, carPosition.Height, out startX, out startY, out startZ);
                             var targetPosition = Program.dt.GetFpByIndex(victim.StartFPIndex);
-                            double endX, endY;
-                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, out endX, out endY);
+                            double endX, endY, endZ;
+                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, targetPosition.Height, out endX, out endY, out endZ);
 
                             ConfusePrepareNotify an = new ConfusePrepareNotify()
                             {
@@ -111,8 +111,10 @@ namespace HouseManager4_0.RoomMainF
                                 On = On,
                                 StartX = Convert.ToInt32(startX * 256),
                                 StartY = Convert.ToInt32(startY * 256),
+                                StartZ = Convert.ToInt32(startZ * 256),
                                 EndX = Convert.ToInt32(endX * 256),
-                                EndY = Convert.ToInt32(endY * 256)
+                                EndY = Convert.ToInt32(endY * 256),
+                                EndZ = Convert.ToInt32(endZ * 256),
                             };
 
                             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(an);
@@ -296,11 +298,11 @@ namespace HouseManager4_0.RoomMainF
                         if (On)
                         {
                             var carPosition = Program.dt.GetFpByIndex(role.getCar().targetFpIndex);
-                            double startX, startY;
-                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, out startX, out startY);
+                            double startX, startY, startZ;
+                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, carPosition.Height, out startX, out startY, out startZ);
                             var targetPosition = Program.dt.GetFpByIndex(victim.StartFPIndex);
-                            double endX, endY;
-                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, out endX, out endY);
+                            double endX, endY, endZ;
+                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, targetPosition.Height, out endX, out endY, out endZ);
 
                             LostPrepareNotify an = new LostPrepareNotify()
                             {
@@ -310,8 +312,10 @@ namespace HouseManager4_0.RoomMainF
                                 On = On,
                                 StartX = Convert.ToInt32(startX * 256),
                                 StartY = Convert.ToInt32(startY * 256),
+                                StartZ = Convert.ToInt32(startZ * 256),
                                 EndX = Convert.ToInt32(endX * 256),
-                                EndY = Convert.ToInt32(endY * 256)
+                                EndY = Convert.ToInt32(endY * 256),
+                                EndZ = Convert.ToInt32(endZ * 256)
                             };
 
                             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(an);
@@ -342,11 +346,11 @@ namespace HouseManager4_0.RoomMainF
                         if (On)
                         {
                             var carPosition = Program.dt.GetFpByIndex(role.getCar().targetFpIndex);
-                            double startX, startY;
-                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, out startX, out startY);
+                            double startX, startY, startZ;
+                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, carPosition.Height, out startX, out startY, out startZ);
                             var targetPosition = Program.dt.GetFpByIndex(victim.StartFPIndex);
-                            double endX, endY;
-                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, out endX, out endY);
+                            double endX, endY, endZ;
+                            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, targetPosition.Height, out endX, out endY, out endZ);
 
                             AmbushPrepareNotify an = new AmbushPrepareNotify()
                             {
@@ -356,8 +360,10 @@ namespace HouseManager4_0.RoomMainF
                                 On = On,
                                 StartX = Convert.ToInt32(endX * 256),
                                 StartY = Convert.ToInt32(endY * 256),
+                                StartZ = Convert.ToInt32(endZ * 256),
                                 EndX = Convert.ToInt32(startX * 256),
-                                EndY = Convert.ToInt32(startY * 256)
+                                EndY = Convert.ToInt32(startY * 256),
+                                EndZ = Convert.ToInt32(startZ * 256)
                             };
 
                             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(an);

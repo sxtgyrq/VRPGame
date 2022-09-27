@@ -184,11 +184,24 @@ namespace WsOfWebClient
     {
         public string msg { get; set; }
         public string signOfAddrBussiness { get; set; }
-        public string signOfAddrReward { get; set; } 
+        public string signOfAddrReward { get; set; }
     }
     public class AllStockAddr : RewardSet
     {
         public string bAddr { get; set; }
     }
+    public class RewardInfomation : CommonClass.Command
+    {
+        public int Page { get; set; }
+    }
+    public class RewardApplyInDB : CommonClass.databaseModel.traderewardapply
+    {
+        public int satoshiShouldGet { get; set; }
+        public string percentStr { get; set; }
+    }
+    public class RewardApply : CommonClass.ModelTranstraction.RewardApply
+    {
 
+    }
+   
 }

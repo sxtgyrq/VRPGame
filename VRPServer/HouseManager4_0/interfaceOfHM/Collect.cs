@@ -7,6 +7,6 @@ namespace HouseManager4_0.interfaceOfHM
 {
     interface Collect
     {
-        string updateCollect(SetCollect sc);
+        string updateCollect(SetCollect sc, GetRandomPos grp);
     }
 }

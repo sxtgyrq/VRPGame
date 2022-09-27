@@ -39,9 +39,9 @@ namespace HouseManager4_0
             }
             else
             {
-                //Consol.WriteLine($"请market输入IP");
+                Console.WriteLine($"请market输入IP");
                 this.IP = Console.ReadLine();
-                //Consol.WriteLine("请market输入端口");
+                Console.WriteLine("请market输入端口");
                 this.port = int.Parse(Console.ReadLine());
                 var text = $"{this.IP}:{this.port}";
                 File.WriteAllText($"{rootPath}\\config\\MarketIP.txt", text);

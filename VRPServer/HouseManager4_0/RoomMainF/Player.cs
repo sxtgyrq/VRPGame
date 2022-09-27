@@ -62,7 +62,7 @@ namespace HouseManager4_0.RoomMainF
         }
 
 
-        public string AddPlayer(PlayerAdd_V2 addItem)
+        public string AddPlayer(PlayerAdd_V2 addItem, interfaceOfHM.Car cf, GetRandomPos gp)
         {
             bool success;
 
@@ -101,6 +101,7 @@ namespace HouseManager4_0.RoomMainF
                     // BaseInfomation.rm.AddPlayer
                     var newPlayer = new Player()
                     {
+                        rm = this,
                         Key = addItem.Key,
                         FromUrl = addItem.FromUrl,
                         WebSocketID = addItem.WebSocketID,
@@ -170,12 +171,12 @@ namespace HouseManager4_0.RoomMainF
                         positionInStation = this.rm.Next(0, 5)
                     };
                     this._Players.Add(addItem.Key, newPlayer);
-                    this._Players[addItem.Key].initializeCar(this);
+                    this._Players[addItem.Key].initializeCar(this, cf);
                     this._Players[addItem.Key].initializeOthers();
                     // this._Players[addItem.Key].SysRemovePlayerByKeyF = BaseInfomation.rm.SysRemovePlayerByKey;
                     //System.Random rm = new System.Random(DateTime.Now.GetHashCode());
 
-                    int fpIndex = this.GetRandomPosition(false); // this.rm.Next(0, Program.dt.GetFpCount());
+                    int fpIndex = this.GetRandomPosition(false, gp); // this.rm.Next(0, Program.dt.GetFpCount());
 
                     // this._FpOwner.Add(fpIndex, addItem.Key);
                     this._Players[addItem.Key].StartFPIndex = fpIndex;
@@ -198,7 +199,7 @@ namespace HouseManager4_0.RoomMainF
                     this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
                     ((Player)this._Players[addItem.Key]).DrawObj3DModelF = this.DrawObj3DModelF;
 
-                    this._Players[addItem.Key].addUsedRoad(Program.dt.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
+                    this._Players[addItem.Key].addUsedRoad(gp.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
 
                     //   this._Players[addItem.Key].brokenParameterT1RecordChanged = this.brokenParameterT1RecordChanged;
                     //  this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
@@ -208,7 +209,7 @@ namespace HouseManager4_0.RoomMainF
                     newPlayer.beforeBroke = this.BeforePlayerBroken;
                     // newPlayer.driverSelected = this.driverSelected;
                     ConfigMagic(newPlayer);
-                    ((Player)this._Players[addItem.Key]).direciton = getComplex(Program.dt.GetFpByIndex(fpIndex));
+                    ((Player)this._Players[addItem.Key]).direciton = getComplex(gp.GetFpByIndex(fpIndex));
                     //  newPlayer.
                     ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
                     //((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
@@ -261,9 +262,9 @@ namespace HouseManager4_0.RoomMainF
         }
         public System.Numerics.Complex getComplex(FastonPosition fastonPosition)
         {
-            double x1, y1, x2, y2;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.Longitude, fastonPosition.Latitde, out x1, out y1);
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.positionLongitudeOnRoad, fastonPosition.positionLatitudeOnRoad, out x2, out y2);
+            double x1, y1, z1, x2, y2, z2;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.Longitude, fastonPosition.Latitde, fastonPosition.Height, out x1, out y1, out z1);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.positionLongitudeOnRoad, fastonPosition.positionLatitudeOnRoad, fastonPosition.Height, out x2, out y2, out z2);
             // throw new NotImplementedException();
             var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
             System.Numerics.Complex c;
@@ -275,9 +276,9 @@ namespace HouseManager4_0.RoomMainF
         }
         internal bool isZero(Node.direction direction)
         {
-            double x1, y1, x2, y2;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.start.BDlongitude, direction.start.BDlatitude, out x1, out y1);
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.end.BDlongitude, direction.end.BDlatitude, out x2, out y2);
+            double x1, y1, z1, x2, y2, z2;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.start.BDlongitude, direction.start.BDlatitude, direction.start.BDheight, out x1, out y1, out z1);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.end.BDlongitude, direction.end.BDlatitude, direction.end.BDheight, out x2, out y2, out z2);
             var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
             if (l > 1e-8)
                 return false;
@@ -286,9 +287,9 @@ namespace HouseManager4_0.RoomMainF
         }
         public System.Numerics.Complex getComplex(Node.direction direction)
         {
-            double x1, y1, x2, y2;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.start.BDlongitude, direction.start.BDlatitude, out x1, out y1);
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.end.BDlongitude, direction.end.BDlatitude, out x2, out y2);
+            double x1, y1, z1, x2, y2, z2;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.start.BDlongitude, direction.start.BDlatitude, direction.start.BDheight, out x1, out y1, out z1);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(direction.end.BDlongitude, direction.end.BDlatitude, direction.end.BDheight, out x2, out y2, out z2);
             // throw new NotImplementedException();
             var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
             System.Numerics.Complex c;

@@ -15,7 +15,7 @@ namespace ConsoleTestAPP
         }
         static void Main(string[] args)
         {
-
+            ModelScaleCal.Test();
 
             // BitCoin.Sign.verify_message
             // Task.Run(() => TestYrqObj());

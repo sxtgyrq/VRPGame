@@ -7,6 +7,7 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Car
     {
+        
         public void SendStateOfCar(Player player, HouseManager4_0.Car car, ref List<string> notifyMsg)
         {
             var carIndexStr = car.IndexString;

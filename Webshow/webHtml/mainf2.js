@@ -123,8 +123,8 @@ var objMain =
     {
         drawLineOfFpToRoad: function (fp, group, color, lineName) {
             {
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
                 var lineGeometry = new THREE.Geometry();
                 lineGeometry.vertices.push(start);
                 lineGeometry.vertices.push(end);
@@ -136,19 +136,21 @@ var objMain =
         },
         lookAtPosition: function (fp) {
 
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
 
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
-            var minDistance = objMain.controls.minDistance * 1.1;
+            var minDistance = objMain.controls.minDistance * 5;
             var maxPolarAngle = objMain.controls.maxPolarAngle - Math.PI / 30;
             {
-                var planePosition = new THREE.Vector3(start.x + cc.r * minDistance * Math.sin(maxPolarAngle), start.y + minDistance * Math.cos(maxPolarAngle), start.z + cc.i * minDistance * Math.sin(maxPolarAngle));
+                var planePosition = new THREE.Vector3(start.x + cc.r * minDistance * Math.sin(maxPolarAngle), start.y + minDistance * Math.abs(Math.cos(maxPolarAngle)), start.z + cc.i * minDistance * Math.sin(maxPolarAngle));
                 objMain.camera.position.set(planePosition.x, planePosition.y, planePosition.z);
 
-                objMain.controls.target.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-                objMain.camera.lookAt(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
+                objMain.controls.target.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                objMain.camera.lookAt(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                objMain.renderer.render(objMain.scene, objMain.camera);
+                objMain.labelRenderer.render(objMain.scene, objMain.camera);
             }
         },
         lookAtPosition2: function () {
@@ -173,8 +175,8 @@ var objMain =
             if (isSelf == undefined) {
                 isSelf = true;
             }
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde))
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde))
+            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
 
@@ -192,8 +194,8 @@ var objMain =
             //for (var i = 0; i < positons.length; i++)
             {
                 var i = postionInStation;
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, 0, start.z + positons[i].i * percentOfPosition);
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetZbyHeight(fp.Height), start.z + positons[i].i * percentOfPosition);
                 var lineGeometry = new THREE.Geometry();
                 lineGeometry.vertices.push(start);
                 lineGeometry.vertices.push(end);
@@ -214,7 +216,7 @@ var objMain =
                     model = objMain.cars['carO'].clone();
                 }
                 model.name = 'car' + '_' + key;
-                model.position.set(end.x, 0, end.z);
+                model.position.set(end.x, end.y, end.z);
                 model.scale.set(0.002, 0.002, 0.002);
                 model.rotateY(-positons[i].toAngle());
                 model.userData = { objectType: 'car', parent: key, };
@@ -430,7 +432,7 @@ var objMain =
                 // model.scale.set(0.002, 0.002, 0.002);
                 //model.rotateY(-positons[i].toAngle());
                 //model.userData = { objectType: 'car', parent: key, index: names[i] };
-                model.position.set(MercatorGetXbyLongitude(objMain.CollectPosition[collectIndex].Fp.Longitude), 0, -MercatorGetYbyLatitude(objMain.CollectPosition[collectIndex].Fp.Latitde));
+                model.position.set(MercatorGetXbyLongitude(objMain.CollectPosition[collectIndex].Fp.Longitude), MercatorGetZbyHeight(objMain.CollectPosition[collectIndex].Fp.Height), -MercatorGetYbyLatitude(objMain.CollectPosition[collectIndex].Fp.Latitde));
                 model.name = objName;
                 model.userData.collectPosition = objMain.CollectPosition[collectIndex];
                 objMain.collectGroup.add(model);
@@ -526,9 +528,9 @@ var objMain =
         },
         drawDiamondCollected: function () {
             var fp = objMain.basePoint;
-            var key = objMain.indexKey;
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde))
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+            var key = objMain.indexKey;//objMain.basePoint
+            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetXbyLongitude(fp.Height), -MercatorGetYbyLatitude(fp.Latitde))
+            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetXbyLongitude(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
 
@@ -545,8 +547,8 @@ var objMain =
             //   console.log('positons', positons);
             var percentOfPosition = 0.5;
             for (var i = 0; i < positons.length; i++) {
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, 0, start.z + positons[i].i * percentOfPosition);
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetXbyLongitude(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetXbyLongitude(fp.Height), start.z + positons[i].i * percentOfPosition);
                 //var lineGeometry = new THREE.Geometry();
                 //lineGeometry.vertices.push(start);
                 //lineGeometry.vertices.push(end);
@@ -905,12 +907,18 @@ var objMain =
                             }; break;
                         case 'LookForBuildings':
                             {
-                                //set3DTransactionHtml();
-
                                 if (objMain.state == 'OnLine') {
                                     objMain.state = objMain.receivedState;
                                     setTransactionHtml.change();
                                     operatePanel.refresh();
+                                }
+                            }; break;
+                        case 'QueryReward':
+                            {
+                                //if (objMain.state == 'OnLine')
+                                {
+                                    objMain.state = objMain.receivedState;
+                                    objMain.ws.send(JSON.stringify({ 'c': 'RewardInfomation', 'Page': 0 }));
                                 }
                             }; break;
                     }
@@ -1406,17 +1414,31 @@ var objMain =
                 {
                     // MapData.meshPoints.push(received_obj.meshPoints);
                     var basePoint = received_obj.basePoint;
-                    for (var i = 0; i < received_obj.meshPoints.length; i += 8) {
+                    for (var i = 0; i < received_obj.meshPoints.length; i += 12) {
                         var itemData = [
                             (received_obj.meshPoints[i + 0] + basePoint[0]) / 1000000,
                             (received_obj.meshPoints[i + 1] + basePoint[1]) / 1000000,
-                            (received_obj.meshPoints[i + 2] + basePoint[0]) / 1000000,
-                            (received_obj.meshPoints[i + 3] + basePoint[1]) / 1000000,
-                            (received_obj.meshPoints[i + 4] + basePoint[0]) / 1000000,
-                            (received_obj.meshPoints[i + 5] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 2] + basePoint[2]) / 1000000,
+                            (received_obj.meshPoints[i + 3] + basePoint[0]) / 1000000,
+                            (received_obj.meshPoints[i + 4] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 5] + basePoint[2]) / 1000000,
                             (received_obj.meshPoints[i + 6] + basePoint[0]) / 1000000,
                             (received_obj.meshPoints[i + 7] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 8] + basePoint[2]) / 1000000,
+                            (received_obj.meshPoints[i + 9] + basePoint[0]) / 1000000,
+                            (received_obj.meshPoints[i + 10] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 11] + basePoint[2]) / 1000000
                         ];
+                        //var itemData = [
+                        //    (received_obj.meshPoints[i + 0] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 1] + basePoint[1]) / 1000000,
+                        //    (received_obj.meshPoints[i + 2] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 3] + basePoint[1]) / 1000000,
+                        //    (received_obj.meshPoints[i + 4] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 5] + basePoint[1]) / 1000000,
+                        //    (received_obj.meshPoints[i + 6] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 7] + basePoint[1]) / 1000000,
+                        //];
                         MapData.meshPoints.push(itemData);
                         // MapData.meshPoints.push(received_obj.meshPoints[i]);
                     }
@@ -1431,12 +1453,12 @@ var objMain =
                         var colors = [];
                         for (var i = 0; i < obj.length; i++) {
                             positions.push(
-                                MercatorGetXbyLongitude(obj[i][0]), 0, -MercatorGetYbyLatitude(obj[i][1]),
-                                MercatorGetXbyLongitude(obj[i][2]), 0, -MercatorGetYbyLatitude(obj[i][3]),
-                                MercatorGetXbyLongitude(obj[i][4]), 0, -MercatorGetYbyLatitude(obj[i][5]),
-                                MercatorGetXbyLongitude(obj[i][4]), 0, -MercatorGetYbyLatitude(obj[i][5]),
-                                MercatorGetXbyLongitude(obj[i][6]), 0, -MercatorGetYbyLatitude(obj[i][7]),
-                                MercatorGetXbyLongitude(obj[i][0]), 0, -MercatorGetYbyLatitude(obj[i][1]),
+                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]), -MercatorGetYbyLatitude(obj[i][1]),
+                                MercatorGetXbyLongitude(obj[i][3]), MercatorGetXbyLongitude(obj[i][5]), -MercatorGetYbyLatitude(obj[i][4]),
+                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]), -MercatorGetYbyLatitude(obj[i][7]),
+                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]), -MercatorGetYbyLatitude(obj[i][7]),
+                                MercatorGetXbyLongitude(obj[i][9]), MercatorGetXbyLongitude(obj[i][11]), -MercatorGetYbyLatitude(obj[i][10]),
+                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]), -MercatorGetYbyLatitude(obj[i][1]),
 
                             );
                         }
@@ -1865,6 +1887,15 @@ var objMain =
                 {
                     reward.showAgreement(received_obj.agreement);
                 }; break;
+            case 'GetRewardInfomationHasNotResult':
+                {
+                    reward.hasNoData(received_obj.title);
+                }; break;
+            case 'GetRewardInfomationHasResult':
+                {
+                    reward.hasData(received_obj.title, received_obj.data, received_obj.list, received_obj.indexNumber);
+                    // alert('有数据');
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -2039,7 +2070,7 @@ function animate() {
                         objMain.collectGroup.children[i].scale.set(scale, scale, scale);
                     }
                     objMain.collectGroup.children[i].rotation.set(-Math.PI / 2, 0, Date.now() % 3000 / 3000 * Math.PI * 2);
-                    objMain.collectGroup.children[i].position.y = 0;
+                    //  objMain.collectGroup.children[i].position.y = 0;
                 }
             }
 
@@ -2051,7 +2082,7 @@ function animate() {
                 if (objMain.playerGroup.children[i].isMesh) {
                     {
                         objMain.playerGroup.children[i].scale.set(0.0015, 0.0015, 0.0015);
-                        objMain.playerGroup.children[i].position.y = 0.1;
+                        // objMain.playerGroup.children[i].position.y = 0.1;
                         stateSet.defend.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
                         stateSet.confusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
                         stateSet.lostPrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
@@ -2075,9 +2106,7 @@ function animate() {
             }
 
             for (var i = 0; i < objMain.columnGroup.children.length; i++) {
-                /*
-                 * 初始化 砖石/人民币的大小
-                 */
+
                 if (objMain.columnGroup.children[i].isMesh) {
                     objMain.columnGroup.children[i].scale.setX(1);
                     objMain.columnGroup.children[i].scale.setZ(1);
@@ -2268,7 +2297,7 @@ function animate() {
 
                                     var object = new THREE.CSS2DObject(element);
                                     var fp = collectPosition.Fp;
-                                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
+                                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
 
                                     objMain.groupOfOperatePanle.add(object);
                                 }
@@ -2358,7 +2387,7 @@ function animate() {
 
                                     var object = new THREE.CSS2DObject(element);
                                     //  var fp = collectPosition.Fp;
-                                    object.position.set(selectObj.position.x, 0, selectObj.position.z);
+                                    object.position.set(selectObj.position.x, selectObj.position.y, selectObj.position.z);
 
                                     objMain.groupOfOperatePanle.add(object);
                                 }
@@ -2547,10 +2576,13 @@ function animate() {
                                             else if (percent < 1) {
                                                 var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
                                                 var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
-
+                                                var z = animateData[i].z0 + percent * (animateData[i].z1 - animateData[i].z0);
+                                                //if (Math.abs(z) > 1e-5) {
+                                                //    console.log('高度', z);
+                                                //}
                                                 // console.log('position', x, y);
                                                 if (objMain.carGroup.getObjectByName(key) != undefined) {
-                                                    objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
+                                                    objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
 
                                                     var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
                                                     if (scale < 0.002) {
@@ -2564,7 +2596,7 @@ function animate() {
                                                         objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
                                                         if (isSelf) {
                                                             if (isAnimation) {
-                                                                objMain.controls.target.set(x, 0, -y);
+                                                                objMain.controls.target.set(x, z, -y);
                                                                 var angle = objMain.controls.getPolarAngle();
                                                                 //if(
                                                                 var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
@@ -2584,8 +2616,8 @@ function animate() {
                                                                 //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
                                                                 //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
 
-                                                                objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                                                                objMain.camera.lookAt(x, 0, -y);
+                                                                objMain.camera.position.set(x + unitX, unitY + z, -y + unitZ);
+                                                                objMain.camera.lookAt(x, z, -y);
                                                             }
                                                             // objMain.controls.maxDistance
                                                         }
@@ -2597,8 +2629,9 @@ function animate() {
                                             else {
                                                 var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
                                                 var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
+                                                var z = animateData[i].z0 + 1 * (animateData[i].z1 - animateData[i].z0);
                                                 if (objMain.carGroup.getObjectByName(key)) {
-                                                    objMain.carGroup.getObjectByName(key).position.set(x, 0, -y);
+                                                    objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
 
                                                     var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
                                                     if (scale < 0.002) {
@@ -2751,7 +2784,12 @@ function animate() {
 
                 //}
             }
-            sceneYUpdate();
+            var deltaY = 0;
+            if (objMain.carGroup.getObjectByName('car_' + objMain.indexKey)) {
+                deltaY = objMain.carGroup.getObjectByName('car_' + objMain.indexKey).position.y;
+            }
+            // var carPosition = 
+            sceneYUpdate(deltaY);
             moneyAbsorb.animate();
             targetShow.animate();
             objMain.animation.animateCameraByCarAndTask();
@@ -2837,9 +2875,10 @@ var buttonClick = function (v) {
                     selectSingleTeamJoinHtmlF.setCarsNameHtmlShow();
                     objMain.ws.send(JSON.stringify({ c: 'GetCarsName' }));
                 }; break;
-            case 'setReward':
+            case 'QueryReward':
                 {
-                    selectSingleTeamJoinHtmlF.setNameHtmlShow();
+                    //selectSingleTeamJoinHtmlF.setNameHtmlShow();
+                    objMain.ws.send(JSON.stringify({ c: 'QueryReward' }));
                 }; break;
             //case 'lookForBuildings':
             //    {
@@ -2851,6 +2890,170 @@ var buttonClick = function (v) {
     }
 
 }
+var QueryReward =
+{
+    draw3D: function () {
+        //var text = "";
+        //text += "  <div>";
+        //text += "            3D界面";
+        //text += "        </div>";
+        //document.getElementById('rootContainer').innerHTML = text;
+        document.getElementById('rootContainer').innerHTML = '';
+
+        //<div id="mainC" class="container" onclick="testTop();">
+        //    <!--<img />-->
+        //    <!--<a href="DAL/MapImage.ashx">DAL/MapImage.ashx</a>-->
+        //    <img src="Pic/11.png" />
+        //</div>
+        var mainC = document.createElement('div');
+        mainC.id = 'mainC';
+
+        mainC.className = 'container_Show';
+        document.getElementById('rootContainer').appendChild(mainC);
+        document.getElementById('rootContainer').style.overflow = 'scroll';
+        objMain.scene = new THREE.Scene();
+        //objMain.scene.background = new THREE.Color(0x7c9dd4);
+        //objMain.scene.fog = new THREE.FogExp2(0x7c9dd4, 0.2);
+
+        var cubeTextureLoader = new THREE.CubeTextureLoader();
+        cubeTextureLoader.setPath('Pic/');
+        //var cubeTexture = cubeTextureLoader.load([
+        //    "xi_r.jpg", "dong_r.jpg",
+        //    "ding_r.jpg", "di_r.jpg",
+        //    "nan_r.jpg", "bei_r.jpg"
+        //]);
+        var cubeTexture = cubeTextureLoader.load([
+            "px.jpg", "nx.jpg",
+            "py.jpg", "ny.jpg",
+            "pz.jpg", "nz.jpg"
+        ]);
+        objMain.scene.background = cubeTexture;
+
+        objMain.renderer = new THREE.WebGLRenderer({ alpha: true });
+        objMain.renderer.setClearColor(0x000000, 0); // the default
+        objMain.renderer.setPixelRatio(window.devicePixelRatio);
+        objMain.renderer.setSize(300, 300);
+        objMain.renderer.domElement.className = 'renderDom_Trans';
+        document.getElementById('mainC').appendChild(objMain.renderer.domElement);
+        //  document.body
+
+        objMain.labelRenderer = new THREE.CSS2DRenderer();
+        objMain.labelRenderer.setSize(300, 300);
+        objMain.labelRenderer.domElement.className = 'labelRenderer_Trans';
+        //objMain.labelRenderer.domElement.style.curs
+        document.getElementById('mainC').appendChild(objMain.labelRenderer.domElement);
+
+        objMain.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 30000);
+        objMain.camera.position.set(4000, 2000, 0);
+        objMain.camera.position.set(MercatorGetXbyLongitude(objMain.centerPosition.lon), 20, -MercatorGetYbyLatitude(objMain.centerPosition.lat));
+
+        objMain.controls = new THREE.OrbitControls(objMain.camera, objMain.labelRenderer.domElement);
+        objMain.controls.center.set(MercatorGetXbyLongitude(objMain.centerPosition.lon), 0, -MercatorGetYbyLatitude(objMain.centerPosition.lat));
+
+        objMain.roadGroup = new THREE.Group();
+        objMain.scene.add(objMain.roadGroup);
+
+        objMain.playerGroup = new THREE.Group();
+        objMain.scene.add(objMain.playerGroup);
+
+        objMain.promoteDiamond = new THREE.Group();
+        objMain.scene.add(objMain.promoteDiamond);
+
+        objMain.columnGroup = new THREE.Group();
+        objMain.scene.add(objMain.columnGroup);
+
+        objMain.carGroup = new THREE.Group();
+        objMain.scene.add(objMain.carGroup);
+
+        objMain.groupOfOperatePanle = new THREE.Group();
+        objMain.scene.add(objMain.groupOfOperatePanle);
+
+        objMain.collectGroup = new THREE.Group();
+        objMain.scene.add(objMain.collectGroup);
+
+        objMain.getOutGroup = new THREE.Group();
+        objMain.scene.add(objMain.getOutGroup);
+
+        objMain.taxGroup = new THREE.Group();
+        objMain.scene.add(objMain.taxGroup);
+
+        objMain.shieldGroup = new THREE.Group();
+        objMain.scene.add(objMain.shieldGroup);
+
+        objMain.confusePrepareGroup = new THREE.Group();
+        objMain.scene.add(objMain.confusePrepareGroup);
+
+        objMain.lostPrepareGroup = new THREE.Group();
+        objMain.scene.add(objMain.lostPrepareGroup);
+
+        objMain.ambushPrepareGroup = new THREE.Group();
+        objMain.scene.add(objMain.ambushPrepareGroup);
+
+        objMain.waterGroup = new THREE.Group();
+        objMain.scene.add(objMain.waterGroup);
+
+        objMain.fireGroup = new THREE.Group();
+        objMain.scene.add(objMain.fireGroup);
+
+        objMain.lightningGroup = new THREE.Group();
+        objMain.scene.add(objMain.lightningGroup);
+
+        objMain.directionGroup = new THREE.Group();
+        objMain.scene.add(objMain.directionGroup);
+
+        objMain.buildingGroup = new THREE.Group();
+        objMain.scene.add(objMain.buildingGroup);
+
+        objMain.clock = new THREE.Clock();
+
+        {
+            objMain.light1 = new THREE.PointLight(0xffffff);
+            objMain.light1.position.set(-100, 300, -100);
+            objMain.light1.intensity = 2;
+            objMain.scene.add(objMain.light1);
+        }
+
+        {
+            //objMain.controls.minDistance = 3;
+            // objMain.controls.maxPolarAngle = Math.PI;
+            objMain.controls.minPolarAngle = Math.PI / 600;
+            objMain.controls.maxPolarAngle = Math.PI / 2 - Math.PI / 36;
+            objMain.controls.minDistance = 2;
+            objMain.controls.maxDistance = 256;
+        }
+
+        objMain.raycaster = new THREE.Raycaster();
+        objMain.raycaster.linePrecision = 0.2;
+
+        objMain.raycasterOfSelector = new THREE.Raycaster();
+        //objMain.raycasterOfSelector.linePrecision = 100;
+
+        objMain.mouse = new THREE.Vector2();
+
+        //objMain.labelRenderer.domElement.addEventListener
+
+        var operateEnd = function (event) {
+            operatePanel.refresh();
+            return;
+        }
+        var operateStart = function (event) {
+            objMain.canSelect = true;
+            objMain.music.change();
+        }
+        objMain.labelRenderer.domElement.addEventListener('mouseup', operateEnd, false);
+        objMain.labelRenderer.domElement.addEventListener('mousedown', operateStart, false);
+
+
+        objMain.labelRenderer.domElement.addEventListener('touchstart', operateStart, false);
+        objMain.labelRenderer.domElement.addEventListener('touchend', operateEnd, false);
+        //scope.domElement.removeEventListener('touchstart', onTouchStart, false);
+        //scope.domElement.removeEventListener('touchend', onTouchEnd, false);
+        //drawCarBtnsFrame();
+        //objNotify.carNotifyShow();
+        window.addEventListener('resize', onWindowResize, false);
+    },
+}
+
 var setTransactionHtml =
 {
     bussinessAddress: '',
@@ -3576,105 +3779,19 @@ var drawPoint = function (color, fp, indexKey) {
     }
 
     var objToShow = new createFlag(color);
-    // return [clothGeometry,]
     object = new THREE.Mesh(objToShow.clothGeometry, objToShow.clothMaterial);
     object.userData['animateDataYrq'] = objToShow;
-    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0.1, -MercatorGetYbyLatitude(fp.Latitde));
+    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0.1 + MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
     object.scale.set(0.0005, 0.0005, 0.0005);
     objMain.playerGroup.add(object);
 
-    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde))
-    var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde))
+    var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
     var cc = new Complex(end.x - start.x, end.z - start.z);
     cc.toOne();
     object.rotateY(-cc.toAngle() + Math.PI / 2);
-    //alert('1');
     object.name = 'flag_' + indexKey;
     return;
-    var initializeCars = function (fp) {
-        var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(objMain.basePoint.Latitde))
-        var end = new THREE.Vector3(MercatorGetXbyLongitude(objMain.basePoint.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(objMain.basePoint.positionLatitudeOnRoad))
-        var cc = new Complex(end.x - start.x, end.z - start.z);
-        cc.toOne();
-
-        var positon1 = cc.multiply(new Complex(-0.309016994, 0.951056516));
-        var positon2 = positon1.multiply(new Complex(0.809016994, 0.587785252));
-        var positon3 = positon2.multiply(new Complex(0.809016994, 0.587785252));
-        var positon4 = positon3.multiply(new Complex(0.809016994, 0.587785252));
-        var positon5 = positon4.multiply(new Complex(0.809016994, 0.587785252));
-
-        var positons = [positon1, positon2, positon3, positon4, positon5];
-
-        var names = ['carA', 'carB', 'carC', 'carD', 'carE'];
-        console.log('positons', positons);
-        var percentOfPosition = 0.25;
-        for (var i = 0; i < positons.length; i++) {
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-            var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, 0, start.z + positons[i].i * percentOfPosition);
-            var lineGeometry = new THREE.Geometry();
-            lineGeometry.vertices.push(start);
-            lineGeometry.vertices.push(end);
-            var lineMaterial = new THREE.LineBasicMaterial({ color: color });
-            var line = new THREE.Line(lineGeometry, lineMaterial);
-            objMain.scene.add(line);
-
-            var model = objMain.cars[names[i]].clone();
-            model.position.set(end.x, 0, end.z);
-            model.scale.set(0.002, 0.002, 0.002);
-            model.rotateY(-positons[i].toAngle());
-            objMain.roadGroup.add(model);
-        }
-        var minDistance = objMain.controls.minDistance * 1.1;
-        var maxPolarAngle = objMain.controls.maxPolarAngle - Math.PI / 30;
-    }
-
-
-
-
-    //  cc.multiply(6);
-
-
-    var positon1 = cc.multiply(new Complex(-0.309016994, 0.951056516));
-    var positon2 = positon1.multiply(new Complex(0.809016994, 0.587785252));
-    var positon3 = positon2.multiply(new Complex(0.809016994, 0.587785252));
-    var positon4 = positon3.multiply(new Complex(0.809016994, 0.587785252));
-    var positon5 = positon4.multiply(new Complex(0.809016994, 0.587785252));
-
-    var positons = [positon1, positon2, positon3, positon4, positon5];
-    var names = ['carA', 'carB', 'carC', 'carD', 'carE'];
-    console.log('positons', positons);
-    var percentOfPosition = 0.25;
-    for (var i = 0; i < positons.length; i++) {
-        var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-        var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, 0, start.z + positons[i].i * percentOfPosition);
-        var lineGeometry = new THREE.Geometry();
-        lineGeometry.vertices.push(start);
-        lineGeometry.vertices.push(end);
-        var lineMaterial = new THREE.LineBasicMaterial({ color: color });
-        var line = new THREE.Line(lineGeometry, lineMaterial);
-        objMain.scene.add(line);
-
-        var model = objMain.cars[names[i]].clone();
-        model.position.set(end.x, 0, end.z);
-        model.scale.set(0.002, 0.002, 0.002);
-        model.rotateY(-positons[i].toAngle());
-        objMain.roadGroup.add(model);
-    }
-    var minDistance = objMain.controls.minDistance * 1.1;
-    var maxPolarAngle = objMain.controls.maxPolarAngle - Math.PI / 30;
-    //var kValue = planeLength
-    {
-        var planePosition = new THREE.Vector3(start.x + cc.r * minDistance * Math.sin(maxPolarAngle), start.y + minDistance * Math.cos(maxPolarAngle), start.z + cc.i * minDistance * Math.sin(maxPolarAngle));
-        objMain.camera.position.set(planePosition.x, planePosition.y, planePosition.z);
-
-        objMain.controls.target.set(objMain.basePoint.MacatuoX, 0, -objMain.basePoint.MacatuoY);
-        objMain.camera.lookAt(objMain.basePoint.MacatuoX, 0, -objMain.basePoint.MacatuoY);
-
-        // var polarAngle = objMain.controls.getPolarAngle();
-        //   objMain.camera.position.set(objMain.basePoint.MacatuoX, 10, -objMain.basePoint.MacatuoY - Math.tan(Math.PI / 6) * 10);
-
-        objMain.camera.lookAt(objMain.basePoint.MacatuoX, 0, -objMain.basePoint.MacatuoY);
-    }
 }
 
 
@@ -5306,7 +5423,7 @@ var DiamondModel =
     }
 };
 
-var sceneYUpdate = function () {
+var sceneYUpdate = function (deltaY) {
     var v1 = new THREE.Vector3().subVectors(objMain.controls.target, objMain.camera.position);
     if (v1.length() > 0) {
         v1.setLength(1);
@@ -5328,13 +5445,15 @@ var sceneYUpdate = function () {
                     calY = 25;
                 else if (calY < -25)
                     calY = -25;
-                objMain.scene.position.y = calY;
+                objMain.scene.position.y = calY - deltaY;
                 //  objMain.scene.
                 return calY;
             }
         }
     }
 }
+
+
 //////////
 /*
  * 手柄类，此游戏只支持单手柄操作。

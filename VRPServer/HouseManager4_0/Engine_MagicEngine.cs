@@ -22,7 +22,7 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c)
+        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c, GetRandomPos grp)
         {
             if (c.c == "MagicSkill")
             //  if (car.ability.leftVolume > 0)
@@ -305,7 +305,7 @@ namespace HouseManager4_0
             IsNotGroupMate,
         }
 
-        public bool conditionsOk(Command c, out string reason)
+        public bool conditionsOk(Command c, GetRandomPos grp, out string reason)
         {
             if (c.c == "MagicSkill")
             {
@@ -373,7 +373,7 @@ namespace HouseManager4_0
 
 
 
-        public commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out MileResultReason mrr)
+        public commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason mrr)
         {
             if (c.c == "MagicSkill")
             {
@@ -390,15 +390,15 @@ namespace HouseManager4_0
                             target = ms.target,
                             targetOwner = ms.targetOwner
                         };
-                        return that.attackE.randomWhenConfused(player, boss, car, sa, ref notifyMsg, out mrr);
+                        return that.attackE.randomWhenConfused(player, boss, car, sa, grp, ref notifyMsg, out mrr);
                     }
                     else
                     {
-                        return magic(player, car, ms, ref notifyMsg, out mrr);
+                        return magic(player, car, ms, grp, ref notifyMsg, out mrr);
                     }
                 }
                 else
-                    return magic(player, car, ms, ref notifyMsg, out mrr);
+                    return magic(player, car, ms, grp, ref notifyMsg, out mrr);
             }
             else
             {
@@ -406,7 +406,7 @@ namespace HouseManager4_0
             }
         }
 
-        private commandWithTime.ReturningOjb magic(RoleInGame player, Car car, MagicSkill ms, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb magic(RoleInGame player, Car car, MagicSkill ms, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             if (player.confuseRecord.IsBeingControlled())
             {
@@ -450,15 +450,15 @@ namespace HouseManager4_0
                         };
                     case SkillEnum.Speed:
                         {
-                            return improveSpeedMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                            return improveSpeedMagic(player, car, ms, skill, grp, ref notifyMsg, out Mrr);
                         };
                     case SkillEnum.Attack:
                         {
-                            return improveAttackMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                            return improveAttackMagic(player, car, ms, skill, grp, ref notifyMsg, out Mrr);
                         };
                     case SkillEnum.Defense:
                         {
-                            return improveDefenseMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                            return improveDefenseMagic(player, car, ms, skill, grp, ref notifyMsg, out Mrr);
                         };
                     default:
                         {
@@ -566,7 +566,7 @@ namespace HouseManager4_0
         }
 
 
-        private commandWithTime.ReturningOjb improveDefenseMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb improveDefenseMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             DefenceObj dfo = new DefenceObj(ms, (int startT, Car car, MagicSkill ms2, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
             {
@@ -585,10 +585,10 @@ namespace HouseManager4_0
                 //    beneficiary = ms.targetOwner
                 //}, this);
             });
-            return this.contact(player, car, dfo, ref notifyMsg, out Mrr);
+            return this.contact(player, car, dfo, grp, ref notifyMsg, out Mrr);
         }
 
-        private commandWithTime.ReturningOjb improveAttackMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb improveAttackMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             AttackObj ao = new AttackObj(ms, (int startT, Car car, MagicSkill ms1, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
             {
@@ -608,7 +608,7 @@ namespace HouseManager4_0
                 //    beneficiary = ms.targetOwner
                 //}, this);
             });
-            return this.contact(player, car, ao, ref notifyMsg, out Mrr);
+            return this.contact(player, car, ao, grp, ref notifyMsg, out Mrr);
         }
         public class AttackObj : interfaceOfHM.ContactInterface
         {
@@ -727,7 +727,7 @@ namespace HouseManager4_0
         }
 
 
-        private commandWithTime.ReturningOjb improveSpeedMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb improveSpeedMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             //  this.StartArriavalThread(startT, 1, player, car, ms2, goMile, goPath, ro);
             SpeedObj so = new SpeedObj(ms, (int startT, Car car, MagicSkill ms2, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
@@ -737,7 +737,7 @@ namespace HouseManager4_0
                 this.sendMsg(notifyMsg);
                 this.StartArriavalThread(startArriavalThreadCommand.speedSet, startT, 0, player, car, ms2, goMile, goPath, ro);
             });
-            return this.contact(player, car, so, ref notifyMsg, out Mrr);
+            return this.contact(player, car, so, grp, ref notifyMsg, out Mrr);
         }
 
         private commandWithTime.ReturningOjb ambushMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
@@ -818,7 +818,7 @@ namespace HouseManager4_0
             {
                 var victim = that._Players[ms.targetOwner];
                 OssModel.FastonPosition fpResult;
-                var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, victim, out fpResult);
+                var distanceIsEnoughToStart = that.theNearestToPlayerIsCarNotMoney(player, car, victim, Program.dt, out fpResult);
                 if (distanceIsEnoughToStart)
                 {
                     if (car.state == CarState.waitOnRoad)
@@ -1013,13 +1013,13 @@ namespace HouseManager4_0
         /// <param name="victim"></param>
         /// <param name="at"></param>
         /// <param name="harmValue"></param>
-        internal void AmbushSelf(RoleInGame victim, attackMagicTool at, ref long harmValue)
+        internal void AmbushSelf(RoleInGame victim, attackMagicTool at, ref long harmValue, GetRandomPos gp)
         {
-            harmValue += victim.confuseRecord.AmbushSelf(victim, that, at);
+            harmValue += victim.confuseRecord.AmbushSelf(victim, that, at, gp);
         }
-        internal string updateMagic(MagicSkill ms)
+        internal string updateMagic(MagicSkill ms, GetRandomPos grp)
         {
-            return this.updateAction(this, ms, ms.Key);
+            return this.updateAction(this, ms, grp, ms.Key);
         }
         public delegate void SpeedMagicChanged(RoleInGame role, ref List<string> notifyMsgs);
         public delegate void AttackMagicChanged(RoleInGame role, ref List<string> notifyMsgs);

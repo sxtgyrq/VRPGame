@@ -117,8 +117,8 @@ var objMain =
     {
         drawLineOfFpToRoad: function (fp, group, color, lineName) {
             {
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), 0, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
                 var lineGeometry = new THREE.Geometry();
                 lineGeometry.vertices.push(start);
                 lineGeometry.vertices.push(end);

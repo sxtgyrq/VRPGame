@@ -9,8 +9,4 @@
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\HouseManager\HouseManager.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -65,14 +65,14 @@ namespace BitCoin
             }
         }
 
-        public static string SignMessage()
+        public static string SignMessage(string privateKey, string msg, string addr)
         {
             //Consol.WriteLine("请输入要签名的信息(utf-8)");
-            var msg = Console.ReadLine();
+            // var msg = Console.ReadLine();
             //Consol.WriteLine("请输入要私钥");
             //   output($"拖入您的Base58编码的37位或38位的私钥的路径，用此私钥进行验证.即校验.txt");
 
-            var privateKey = Console.ReadLine();
+            //var privateKey = Console.ReadLine();
             System.Numerics.BigInteger privateBigInteger;
             if (PrivateKeyF.Check(privateKey, out privateBigInteger)) { }
             else
@@ -122,9 +122,9 @@ namespace BitCoin
                 sequence[0] = Convert.ToByte(nV);
                 var sig = Convert.ToBase64String(sequence);
                 //Consol.WriteLine(sig);
-                var calAddredd = verify_message(sig, msg, compressed ? 1 : 0);
+                var checkOK = checkSign(sig, msg, addr);
                 // return sig;
-                if (calAddredd == address)
+                if (checkOK)
                 {
                     return sig;
                 }

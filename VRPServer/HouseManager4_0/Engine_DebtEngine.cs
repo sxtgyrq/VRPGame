@@ -275,7 +275,7 @@ namespace HouseManager4_0
                                 }
                                 if (victim.playerType == RoleInGame.PlayerType.NPC)
                                 {
-                                    ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg);
+                                    ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg, Program.rm, Program.dt);
                                 }
                             }
                             else

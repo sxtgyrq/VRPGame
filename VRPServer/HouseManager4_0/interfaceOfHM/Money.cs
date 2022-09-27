@@ -8,7 +8,7 @@ namespace HouseManager4_0.interfaceOfHM
     {
         void SetMoneyCanSave(HouseManager4_0.Player player, ref List<string> notifyMsg);
         void MoneyChanged(HouseManager4_0.Player player, long money, ref List<string> notifyMsg);
-        void LookFor();
-        void SetLookForMoney();
+        void LookFor(GetRandomPos gp);
+        void SetLookForMoney(GetRandomPos gp);
     }
 }

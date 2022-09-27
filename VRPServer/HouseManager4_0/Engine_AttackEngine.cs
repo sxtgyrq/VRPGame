@@ -16,17 +16,17 @@ namespace HouseManager4_0
         {
             this.roomMain = roomMain;
         }
-        internal string updateAttack(SetAttack sa)
+        internal string updateAttack(SetAttack sa, GetRandomPos grp)
         {
-            return this.updateAction(this, sa, sa.Key);
+            return this.updateAction(this, sa, grp, sa.Key);
         }
 
-        public RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out MileResultReason mrr)
+        public RoomMainF.RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason mrr)
         {
             if (c.c == "SetAttack")
             {
                 var sa = (SetAttack)c;
-                return attack(player, car, sa, ref notifyMsg, out mrr);
+                return attack(player, car, sa, grp, ref notifyMsg, out mrr);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace HouseManager4_0
             }
         }
 
-        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c)
+        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c, GetRandomPos grp)
         {
             if (c.c == "SetAttack")
                 if (car.ability.leftBusiness > 0)
@@ -112,7 +112,7 @@ namespace HouseManager4_0
                 return false;
             }
         }
-        public bool conditionsOk(Command c, out string reason)
+        public bool conditionsOk(Command c, GetRandomPos grp, out string reason)
         {
             if (c.c == "SetAttack")
             {
@@ -298,7 +298,7 @@ namespace HouseManager4_0
         /// <param name="notifyMsg"></param>
         /// <param name="victimState"></param>
         /// <param name="reason"></param>
-        RoomMainF.RoomMain.commandWithTime.ReturningOjb attack(RoleInGame player, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
+        RoomMainF.RoomMain.commandWithTime.ReturningOjb attack(RoleInGame player, Car car, SetAttack sa, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             AttackObj ao = new AttackObj(sa,
                 (int startT, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
@@ -310,10 +310,10 @@ namespace HouseManager4_0
                     this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro);
                 }
               );
-            return this.contact(player, car, ao, ref notifyMsg, out Mrr);
+            return this.contact(player, car, ao, grp, ref notifyMsg, out Mrr);
         }
 
-        internal commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, ref List<string> notifyMsg, out MileResultReason Mrr)
+        internal commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, SetAttack sa, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             AttackObj ao = new AttackObj(sa,
               (int startT, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro) =>
@@ -325,7 +325,7 @@ namespace HouseManager4_0
                   this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro);
               }
             );
-            return this.randomWhenConfused(player, boss, car, ao, ref notifyMsg, out Mrr);
+            return this.randomWhenConfused(player, boss, car, ao, grp, ref notifyMsg, out Mrr);
         }
         private void SetAttackArrivalThread(int startT, int step, RoleInGame player, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro)
         {

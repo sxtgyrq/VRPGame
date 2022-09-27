@@ -13,7 +13,7 @@ namespace HouseManager4_0.RoomMainF
 
 
 
-        public RoomMain()
+        public RoomMain(GetRandomPos gp)
         {
             this.PlayerLock = new object();
             this._collectPosition = new Dictionary<int, int>();
@@ -47,7 +47,7 @@ namespace HouseManager4_0.RoomMainF
                 //    this._FpOwner = new Dictionary<int, string>();
                 //this._PlayerFp = new Dictionary<string, int>();
             }
-            LookFor();
+            LookFor(gp);
             this.recordOfPromote = new Dictionary<string, List<DateTime>>()
             {
                 {  "mile" ,new List<DateTime>()},

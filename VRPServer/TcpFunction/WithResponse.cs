@@ -42,21 +42,21 @@ namespace TcpFunction
                     await ns.WriteAsync(sendData, 0, sendData.Length);
 
                     var length2 = Common.ReceiveLength(ns);
-                    await Common.SendLength(length2, ns); 
+                    await Common.SendLength(length2, ns);
                     byte[] bytes = Common.ByteReader(length2, ns);
-                    result = Encoding.UTF8.GetString(bytes, 0, bytes.Length); 
+                    result = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
                     ns.Close(6000);
                 }
                 tc.Close();
             }
-            var endTime = DateTime.Now; 
+            var endTime = DateTime.Now;
             return result;
         }
 
 
 
 
-        public delegate Task<string> DealWith(string notifyJson);
+        public delegate Task<string> DealWith(string notifyJson, int tcpPort);
         public static async void ListenIpAndPort(string hostIP, int tcpPort, DealWith dealWith)
         {
             Int32 port = tcpPort;
@@ -65,17 +65,19 @@ namespace TcpFunction
             server.Start();
             while (true)
             {
-             //   Console.Write("Waiting for a connection... ");
+                //   Console.Write("Waiting for a connection... ");
 
                 string notifyJson;
                 TcpClient client = server.AcceptTcpClient();
-                { 
-                    NetworkStream ns = client.GetStream();
+                {
+                    using (NetworkStream ns = client.GetStream())
+                    {
 
-                    notifyJson = await GetMsg01(client, ns);
-                    var outPut = await dealWith(notifyJson);
-                    await GetMsg02(client, ns, outPut);
-                    ns.Close(6000);
+                        notifyJson = await GetMsg01(client, ns);
+                        var outPut = await dealWith(notifyJson, tcpPort);
+                        await GetMsg02(client, ns, outPut);
+                        ns.Close(6000);
+                    }
                 }
                 client.Close();
             }
@@ -242,6 +244,7 @@ namespace TcpFunction
         }
         public static int ReceiveLength(NetworkStream ns)
         {
+
             byte[] bytes = new byte[4];
             bytes = ByteReader(4, ns);
             var length = bytes[0] * 256 * 256 * 256 + bytes[1] * 256 * 256 + bytes[2] * 256 + bytes[3] * 1;

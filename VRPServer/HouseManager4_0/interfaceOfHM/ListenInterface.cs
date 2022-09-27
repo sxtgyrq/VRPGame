@@ -13,7 +13,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="addItem"></param>
         /// <returns></returns>
-        string AddPlayer(PlayerAdd_V2 addItem);
+        string AddPlayer(PlayerAdd_V2 addItem, interfaceOfHM.Car cf, GetRandomPos gp);
 
         /// <summary>
         /// 实际功能是初始化！
@@ -27,7 +27,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="sp"></param>
         /// <returns></returns>
-        string updatePromote(SetPromote sp);
+        string updatePromote(SetPromote sp, GetRandomPos grp);
 
         /// <summary>
         /// 提升能力
@@ -48,14 +48,14 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="sc"></param>
         /// <returns></returns>
-        string updateCollect(SetCollect sc);
+        string updateCollect(SetCollect sc, GetRandomPos grp);
 
         /// <summary>
         /// 攻击
         /// </summary>
         /// <param name="sa"></param>
         /// <returns></returns>
-        string updateAttack(SetAttack sa);
+        string updateAttack(SetAttack sa, GetRandomPos grp);
 
 
 
@@ -64,7 +64,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="otr"></param>
         /// <returns></returns>
-        string OrderToReturn(OrderToReturn otr);
+        string OrderToReturn(OrderToReturn otr, GetRandomPos grp);
 
         /// <summary>
         /// 保存金钱
@@ -103,7 +103,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// <param name="dm"></param>
         void SendMsg(DialogMsg dm);
         void SelectDriver(SetSelectDriver dm);
-        string updateMagic(MagicSkill ms);
+        string updateMagic(MagicSkill ms, GetRandomPos grp);
         string updateView(View v);
         string CheckCarStateF(CheckCarState ccs);
         void SystemBradcast(SystemBradcast sb);
@@ -150,7 +150,11 @@ namespace HouseManager4_0.interfaceOfHM
         string TradeIndex(ModelTranstraction.TradeIndex tc);
         string GetRewardFromBuildingF(GetRewardFromBuildingM m);
         string GetAllBuiisnessAddr();
-       // string GetAllStockAddr(AllStockAddr ss);
+        // string GetAllStockAddr(AllStockAddr ss);
+        string GetRewardInfomationByStartDate(ModelTranstraction.RewardInfomation ri);
+        string GetRewardApplyInfomationByStartDate(ModelTranstraction.RewardInfomation ri);
+        string RewardApplyF(ModelTranstraction.RewardApply rA);
+        string AwardsGive(ModelTranstraction.AwardsGivingPass aG);
     }
 
     interface Resistance

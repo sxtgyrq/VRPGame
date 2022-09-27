@@ -110,7 +110,7 @@ namespace MarketConsoleApp
 
         internal void startStatictis()
         {
-            (new Thread(() => this.StaticAllSever())).Start(); 
+            (new Thread(() => this.StaticAllSever())).Start();
         }
         private void StaticAllSever()
         {
@@ -329,7 +329,7 @@ namespace MarketConsoleApp
             // throw new NotImplementedException();
         }
 
-        private async Task<string> DealWith(string notifyJson)
+        private async Task<string> DealWith(string notifyJson, int tcpPort)
         {
             //  Console.WriteLine($"DealWith-Msg-{notifyJson}");
             CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);

@@ -9,15 +9,15 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain
     {
-        public string OrderToReturn(OrderToReturn otr)
+        public string OrderToReturn(OrderToReturn otr, GetRandomPos grp)
         {
-            return this.retutnE.OrderToReturn(otr);
+            return this.retutnE.OrderToReturn(otr, grp);
         }
 
         /// <summary>
         /// 调用此方法，说明角色已出局！
         /// </summary>
-        internal void SetReturn()
+        internal void SetReturn(GetRandomPos grp)
         {
             List<string> notifyMsg = new List<string>();
             lock (this.PlayerLock)
@@ -41,7 +41,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             c = "OrderToReturnBySystem",
                             Key = keysNeedToSetReturn[i]
-                        });
+                        }, grp);
                     }
                     else if (this._Players[keysNeedToSetReturn[i]].getCar().state == CarState.selecting)
                     {

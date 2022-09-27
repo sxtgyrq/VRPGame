@@ -24,7 +24,7 @@ namespace HouseManager4_0
             "柳宗元"
         };
 
-        internal void ControlNPC()
+        internal void ControlNPC(GetRandomPos grp)
         {
             var notifyMsgs = new List<string>();
             // that.ControlNPC();
@@ -50,14 +50,14 @@ namespace HouseManager4_0
             for (int i = 0; i < keys.Count; i++)
             {
                 var npc = (NPC)that._Players[keys[i]];
-                this.ControlNPCItem(npc, ref notifyMsgs);
+                this.ControlNPCItem(npc, grp, ref notifyMsgs);
                 //   ControlNPC(npc);
             }
             this.sendMsg(notifyMsgs);
             ///throw new NotImplementedException();
         }
 
-        private void ControlNPCItem(NPC npc, ref List<string> notifyMsgs)
+        private void ControlNPCItem(NPC npc, GetRandomPos grp, ref List<string> notifyMsgs)
         {
             if (npc.attackTag.aType == NPC.AttackTag.AttackType.ambush)
             {
@@ -81,7 +81,7 @@ namespace HouseManager4_0
                         Target = npc.attackTag.Target
                     };
                     npc.attackTag = tag;//初始化自动包。
-                    this.counterAttack(npc, ref notifyMsgs);
+                    this.counterAttack(npc, ref notifyMsgs, Program.dt);
 
 
                 }
@@ -102,7 +102,7 @@ namespace HouseManager4_0
                             Target = npc.attackTag.Target
                         };
                         npc.attackTag = tag;//初始化自动包。
-                        this.counterAttack(npc, ref notifyMsgs);
+                        this.counterAttack(npc, ref notifyMsgs, Program.dt);
                     }
                     else
                     {
@@ -113,18 +113,18 @@ namespace HouseManager4_0
                 }
                 else
                 {
-                    returnF(npc.Key);
+                    returnF(npc.Key, grp);
                 }
             }
         }
-        void returnF(string key)
+        void returnF(string key, GetRandomPos grp)
         {
             CommonClass.OrderToReturn otr = new CommonClass.OrderToReturn()
             {
                 c = "OrderToReturn",
                 Key = key
             };
-            this.startNewCommandThread(200, otr, this);
+            this.startNewCommandThread(200, otr, this, grp);
         }
         internal void ClearNPC()
         {
@@ -200,8 +200,9 @@ namespace HouseManager4_0
         {
             this.roomMain = roomMain;
         }
-        public void AddNPC()
+        public void AddNPC(interfaceOfHM.Car cf, GetRandomPos gp)
         {
+            //int level, interfaceOfHM.Car cf, GetRandomPos gp
             lock (that.PlayerLock)
             {
                 /*
@@ -235,7 +236,7 @@ namespace HouseManager4_0
                 {
                     for (var i = 0; i < levels.Count; i++)
                     {
-                        var key = AddNpcPlayer(levels[i]);
+                        var key = AddNpcPlayer(levels[i], cf, gp);
                         GetNPCPosition(key);
                     }
                 }
@@ -271,7 +272,7 @@ namespace HouseManager4_0
         }
 
         const string AddSuffix = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        internal string AddNpcPlayer(int level)
+        public string AddNpcPlayer(int level, interfaceOfHM.Car cf, GetRandomPos gp)
         {
 
             string key = CommonClass.Random.GetMD5HashFromStr("ss" + DateTime.Now.ToString());
@@ -312,6 +313,7 @@ namespace HouseManager4_0
 
                     var npc = new NPC()
                     {
+                        rm = that,
                         Key = key,
                         PlayerName = NPCName,
 
@@ -373,12 +375,12 @@ namespace HouseManager4_0
                     // BaseInfomation.rm.AddPlayer
 
                     that._Players.Add(key, npc);
-                    that._Players[key].initializeCar(that);
+                    that._Players[key].initializeCar(that, cf);
                     that._Players[key].initializeOthers();
                     // this._Players[addItem.Key].SysRemovePlayerByKeyF = BaseInfomation.rm.SysRemovePlayerByKey;
                     //System.Random rm = new System.Random(DateTime.Now.GetHashCode());
 
-                    int fpIndex = that.GetRandomPosition(false); // this.rm.Next(0, Program.dt.GetFpCount());
+                    int fpIndex = that.GetRandomPosition(false, gp); // this.rm.Next(0, Program.dt.GetFpCount());
 
                     // this._FpOwner.Add(fpIndex, addItem.Key);
                     that._Players[key].StartFPIndex = fpIndex;
@@ -431,12 +433,13 @@ namespace HouseManager4_0
             //  throw new NotImplementedException();
         }
 
-        private void BeingMolestedM(NPC npc, ref List<string> notifyMsg)
+        //NPC npc, ref List<string> notifyMsgs
+        private void BeingMolestedM(NPC npc, ref List<string> notifyMsg, GetRandomPos grp)
         {
-            counterAttack(npc, ref notifyMsg);
+            counterAttack(npc, ref notifyMsg, grp);
         }
-
-        private void afterBroke(NPC npc, ref List<string> notifyMsgs)
+        //NPC npc, ref List<string> notifyMsgs
+        public void afterBroke(NPC npc, ref List<string> notifyMsgs, GetRandomPos grp)
         {
             //   throw new NotImplementedException();
             //  if(this.)
@@ -484,7 +487,7 @@ namespace HouseManager4_0
                 if (item.Value.playerType == RoleInGame.PlayerType.NPC)
                 {
                     var fpTo = Program.dt.GetFpByIndex(item.Value.StartFPIndex);
-                    var distance = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, fpTo.Latitde, fpTo.Longitude);
+                    var distance = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
                     if (distance < minDistance)
                     {
                         nearestNPC = (NPC)item.Value;
@@ -525,14 +528,15 @@ namespace HouseManager4_0
 
         }
 
-        private void afterReturnedM(NPC npc, ref List<string> notifyMsgs)
+        //NPC npc, ref List<string> notifyMsgs
+        private void afterReturnedM(NPC npc, ref List<string> notifyMsgs, GetRandomPos grp)
         {
-            this.counterAttack(npc, ref notifyMsgs);
+            this.counterAttack(npc, ref notifyMsgs, grp);
         }
 
-        private void afterWaitedM(NPC npc, ref List<string> notifyMsgs)
+        private void afterWaitedM(NPC npc, ref List<string> notifyMsgs, GetRandomPos grp)
         {
-            if (waitedFunctionMWithChanllenger(npc, ref notifyMsgs, npc.challenger)) { }
+            if (waitedFunctionMWithChanllenger(npc, ref notifyMsgs, npc.challenger, grp)) { }
             //    else if (waitedFunctionM(npc, ref notifyMsgs, npc.molester)) { }
         }
 
@@ -544,10 +548,10 @@ namespace HouseManager4_0
         /// <param name="operateKye"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        bool waitedFunctionMWithChanllenger(NPC npc2, ref List<string> notifyMsgs, string operateKye)
+        bool waitedFunctionMWithChanllenger(NPC npc2, ref List<string> notifyMsgs, string operateKye, GetRandomPos grp)
         {
             if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
-                that.GetMaxHarmInfomation(npc2);
+                that.GetMaxHarmInfomation(npc2, grp);
             bool doNext;
             if (!string.IsNullOrEmpty(operateKye))
             {
@@ -558,7 +562,7 @@ namespace HouseManager4_0
                         var operatePlayer = that._Players[npc2.attackTag.Target];
                         if (operatePlayer.Bust)
                         {
-                            this.CollectNearSelf(npc2);
+                            this.CollectNearSelf(npc2, grp);
                         }
                         else
                         {
@@ -569,7 +573,7 @@ namespace HouseManager4_0
                                     case NPC.AttackTag.AttackType.attack:
                                         {
                                             Model.FastonPosition fp;
-                                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, grp, out fp))
                                             {
                                                 var sa = new CommonClass.SetAttack()
                                                 {
@@ -578,11 +582,11 @@ namespace HouseManager4_0
                                                     target = operatePlayer.StartFPIndex,
                                                     targetOwner = operatePlayer.Key,
                                                 };
-                                                this.startNewCommandThread(200, sa, this);
+                                                this.startNewCommandThread(200, sa, this, grp);
                                             }
                                             else
                                             {
-                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                                CollectFp(npc2, fp, ref notifyMsgs, grp);
                                             }
                                         }; break;
                                     case NPC.AttackTag.AttackType.fire:
@@ -591,7 +595,7 @@ namespace HouseManager4_0
                                             if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
                                             {
                                                 var fp = npc2.attackTag.fpPass;
-                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                                CollectFp(npc2, fp, ref notifyMsgs, grp);
                                             }
                                             else if (npc2.getCar().state == Car.CarState.waitOnRoad)
                                             {
@@ -608,7 +612,7 @@ namespace HouseManager4_0
                                                         target = role.StartFPIndex,
                                                         targetOwner = roleKey
                                                     };
-                                                    this.startNewCommandThread(200, ms, this);
+                                                    this.startNewCommandThread(200, ms, this, grp);
                                                 }
                                                 else
                                                 {
@@ -620,7 +624,7 @@ namespace HouseManager4_0
                                                         c = "OrderToReturn",
                                                         Key = npc2.Key
                                                     };
-                                                    this.startNewCommandThread(200, otr, this);
+                                                    this.startNewCommandThread(200, otr, this, grp);
                                                 }
 
                                             }
@@ -634,7 +638,7 @@ namespace HouseManager4_0
                                             if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
                                             {
                                                 var fp = npc2.attackTag.fpPass;
-                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                                CollectFp(npc2, fp, ref notifyMsgs, grp);
                                             }
                                             else if (npc2.getCar().state == Car.CarState.waitOnRoad)
                                             {
@@ -651,7 +655,7 @@ namespace HouseManager4_0
                                                         target = role.StartFPIndex,
                                                         targetOwner = roleKey
                                                     };
-                                                    this.startNewCommandThread(200, ms, this);
+                                                    this.startNewCommandThread(200, ms, this, grp);
                                                 }
                                                 else
                                                 {
@@ -663,7 +667,7 @@ namespace HouseManager4_0
                                                         c = "OrderToReturn",
                                                         Key = npc2.Key
                                                     };
-                                                    this.startNewCommandThread(200, otr, this);
+                                                    this.startNewCommandThread(200, otr, this, grp);
                                                 }
 
                                             }
@@ -680,12 +684,12 @@ namespace HouseManager4_0
                                             if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
                                             {
                                                 var fp = npc2.attackTag.fpPass;
-                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                                CollectFp(npc2, fp, ref notifyMsgs, grp);
                                             }
                                             else if (npc2.getCar().state == Car.CarState.waitOnRoad)
                                             {
                                                 Model.FastonPosition fp;
-                                                if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                                if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, Program.dt, out fp))
                                                 {
                                                     var roleKey = npc2.attackTag.Target;
                                                     if (that._Players.ContainsKey(roleKey))
@@ -699,7 +703,7 @@ namespace HouseManager4_0
                                                             target = role.StartFPIndex,
                                                             targetOwner = roleKey
                                                         };
-                                                        this.startNewCommandThread(200, ms, this);
+                                                        this.startNewCommandThread(200, ms, this, grp);
                                                     }
                                                     else
                                                     {
@@ -708,12 +712,12 @@ namespace HouseManager4_0
                                                             c = "OrderToReturn",
                                                             Key = npc2.Key
                                                         };
-                                                        this.startNewCommandThread(200, otr, this);
+                                                        this.startNewCommandThread(200, otr, this, grp);
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    CollectFp(npc2, fp, ref notifyMsgs);
+                                                    CollectFp(npc2, fp, ref notifyMsgs, grp);
                                                 }
                                             }
                                             else
@@ -727,12 +731,12 @@ namespace HouseManager4_0
                                             if (npc2.getCar().state == Car.CarState.waitAtBaseStation)
                                             {
                                                 var fp = npc2.attackTag.fpPass;
-                                                CollectFp(npc2, fp, ref notifyMsgs);
+                                                CollectFp(npc2, fp, ref notifyMsgs, grp);
                                             }
                                             else if (npc2.getCar().state == Car.CarState.waitOnRoad)
                                             {
                                                 Model.FastonPosition fp;
-                                                if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                                                if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, Program.dt, out fp))
                                                 {
                                                     var roleKey = npc2.attackTag.Target;
                                                     if (that._Players.ContainsKey(roleKey))
@@ -746,7 +750,7 @@ namespace HouseManager4_0
                                                             target = role.StartFPIndex,
                                                             targetOwner = roleKey
                                                         };
-                                                        this.startNewCommandThread(200, ms, this);
+                                                        this.startNewCommandThread(200, ms, this, grp);
                                                     }
                                                     else
                                                     {
@@ -755,12 +759,12 @@ namespace HouseManager4_0
                                                             c = "OrderToReturn",
                                                             Key = npc2.Key
                                                         };
-                                                        this.startNewCommandThread(200, otr, this);
+                                                        this.startNewCommandThread(200, otr, this, grp);
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    CollectFp(npc2, fp, ref notifyMsgs);
+                                                    CollectFp(npc2, fp, ref notifyMsgs, grp);
                                                 }
                                             }
                                             else
@@ -778,7 +782,7 @@ namespace HouseManager4_0
                             }
                             else
                             {
-                                this.CollectNearSelf(npc2);
+                                this.CollectNearSelf(npc2, grp);
                             }
                         }
                     }
@@ -790,7 +794,7 @@ namespace HouseManager4_0
                 }
                 else
                 {
-                    this.CollectNearSelf(npc2);
+                    this.CollectNearSelf(npc2, grp);
                 }
                 doNext = false;
             }
@@ -800,7 +804,7 @@ namespace HouseManager4_0
             }
             return doNext;
         }
-        bool waitedFunctionM(NPC npc2, ref List<string> notifyMsgs, string operateKye)
+        bool waitedFunctionM(NPC npc2, ref List<string> notifyMsgs, string operateKye, GetRandomPos grp)
         {
             bool doNext;
             if (!string.IsNullOrEmpty(operateKye))
@@ -817,7 +821,7 @@ namespace HouseManager4_0
                         if (this.moneyIsEnoughToAttack(npc2))
                         {
                             Model.FastonPosition fp;
-                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, out fp))
+                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, Program.dt, out fp))
                             {
                                 var sa = new CommonClass.SetAttack()
                                 {
@@ -826,17 +830,17 @@ namespace HouseManager4_0
                                     target = operatePlayer.StartFPIndex,
                                     targetOwner = operatePlayer.Key,
                                 };
-                                this.startNewCommandThread(200, sa, this);
+                                this.startNewCommandThread(200, sa, this, grp);
                                 //that.attackE.updateAttack();
                             }
                             else
                             {
-                                CollectFp(npc2, fp, ref notifyMsgs);
+                                CollectFp(npc2, fp, ref notifyMsgs, grp);
                             }
                         }
                         else
                         {
-                            this.CollectNearSelf(npc2);
+                            this.CollectNearSelf(npc2, grp);
                         }
                         // CollectNearSelf(npc);
                     }
@@ -858,12 +862,12 @@ namespace HouseManager4_0
         {
             return npc.Money >= npc.getCar().ability.Business * 5;
         }
-        private void CollectFp(NPC npc, Model.FastonPosition fp, ref List<string> notifyMsgs)
+        private void CollectFp(NPC npc, Model.FastonPosition fp, ref List<string> notifyMsgs, GetRandomPos grp)
         {
             var collectIndex = -1;
             foreach (var item in that._collectPosition)
             {
-                if (Program.dt.GetFpByIndex(item.Value).FastenPositionID == fp.FastenPositionID)
+                if (grp.GetFpByIndex(item.Value).FastenPositionID == fp.FastenPositionID)
                 {
                     collectIndex = item.Key;
                 }
@@ -878,7 +882,7 @@ namespace HouseManager4_0
                     fastenpositionID = fp.FastenPositionID,
                     Key = npc.Key
                 };
-                this.startNewCommandThread(200, sc, this);
+                this.startNewCommandThread(200, sc, this, grp);
             }
         }
 
@@ -886,8 +890,9 @@ namespace HouseManager4_0
         {
             that.GetNPCPosition(key);
         }
-        public void NPCBeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsg)
+        public void NPCBeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsg, interfaceOfHM.Car cf, GetRandomPos gp)
         {
+            //int level, interfaceOfHM.Car cf, GetRandomPos gp
             //lock()
             if (that._Players.ContainsKey(keyOfAttacker))
             {
@@ -926,18 +931,18 @@ namespace HouseManager4_0
                                     case 0:
                                         {
                                             that.driverM.SetAsDevil(npc, ref notifyMsg);
-                                            counterAttack(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg, gp);
                                         }; break;
                                     case 1:
                                         {
                                             that.driverM.SetAsImmortal(npc, ref notifyMsg);
-                                            counterAttack(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg, gp);
                                         }; break;
                                 }
                             }
                             else if (npc.Level == 3)
                             {
-                                var addNpcKey = this.AddNpcPlayer(npc.Level);
+                                var addNpcKey = this.AddNpcPlayer(npc.Level, cf, gp);
                                 this.GetNPCPosition(addNpcKey);
                                 var addNpc = (NPC)that._Players[addNpcKey];
                                 ///
@@ -948,18 +953,18 @@ namespace HouseManager4_0
                                     case 0:
                                         {
                                             that.driverM.SetAsDevil(npc, ref notifyMsg);
-                                            counterAttack(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg, gp);
 
                                             that.driverM.SetAsImmortal(addNpc, ref notifyMsg);
-                                            counterAttack(addNpc, ref notifyMsg);
+                                            counterAttack(addNpc, ref notifyMsg, gp);
                                         }; break;
                                     case 1:
                                         {
                                             that.driverM.SetAsImmortal(npc, ref notifyMsg);
-                                            counterAttack(npc, ref notifyMsg);
+                                            counterAttack(npc, ref notifyMsg, gp);
 
                                             that.driverM.SetAsDevil(addNpc, ref notifyMsg);
-                                            counterAttack(addNpc, ref notifyMsg);
+                                            counterAttack(addNpc, ref notifyMsg, gp);
                                         }; break;
                                 }
                                 // throw new Exception("");
@@ -982,7 +987,7 @@ namespace HouseManager4_0
                                 for (var i = 0; i < 2; i++)
                                 {
                                     int indexPosition;
-                                    var addNpcKey = this.AddNpcPlayer(npc.Level);
+                                    var addNpcKey = this.AddNpcPlayer(npc.Level, cf, gp);
                                     this.GetNPCPosition(addNpcKey);
                                     var addNpc = (NPC)that._Players[addNpcKey];
                                     addNpc.SetTheLargestHolder(npc, ref notifyMsg);
@@ -1008,7 +1013,7 @@ namespace HouseManager4_0
                                     {
                                         that.driverM.SetAsPeople(roles[i], ref notifyMsg);
                                     }
-                                    counterAttack(roles[i], ref notifyMsg);
+                                    counterAttack(roles[i], ref notifyMsg, gp);
                                 }
                             }
                             else if (npc.Level > 4)
@@ -1033,7 +1038,7 @@ namespace HouseManager4_0
                                 for (int i = 0; i < npc.Level - 2; i++)
                                 {
                                     int indexPosition;
-                                    var addNpcKey = this.AddNpcPlayer(npc.Level);
+                                    var addNpcKey = this.AddNpcPlayer(npc.Level, cf, gp);
                                     this.GetNPCPosition(addNpcKey);
                                     var addNpc = (NPC)that._Players[addNpcKey];
                                     addNpc.SetTheLargestHolder(npc, ref notifyMsg);
@@ -1078,7 +1083,7 @@ namespace HouseManager4_0
                                                 }; break;
                                         }
                                     }
-                                    counterAttack(roles[i], ref notifyMsg);
+                                    counterAttack(roles[i], ref notifyMsg, gp);
                                 }
                             }
                         }
@@ -1095,14 +1100,14 @@ namespace HouseManager4_0
             // throw new NotImplementedException();
         }
 
-        internal void counterAttack(NPC npc, ref List<string> notifyMsg)
+        internal void counterAttack(NPC npc, ref List<string> notifyMsg, GetRandomPos grp)
         {
-            if (waitedFunctionMWithChanllenger(npc, ref notifyMsg, npc.challenger)) { }
+            if (waitedFunctionMWithChanllenger(npc, ref notifyMsg, npc.challenger, grp)) { }
             // else if (waitedFunctionM(npc, ref notifyMsg, npc.molester)) { }
         }
         void dealWithChallenger(NPC npc_Operate, ref List<string> notifyMsg, string operateKey)
         {
-            that.GetMaxHarmInfomation(npc_Operate);
+            that.GetMaxHarmInfomation(npc_Operate, Program.dt);
             //bool next;
             //if (!string.IsNullOrEmpty(operateKey))
             //{
@@ -1135,7 +1140,7 @@ namespace HouseManager4_0
 
 
 
-        private void CollectNearSelf(NPC npc)
+        private void CollectNearSelf(NPC npc, GetRandomPos grp)
         {
             var minLength = double.MaxValue;
             var collectIndex = -1;
@@ -1157,7 +1162,7 @@ namespace HouseManager4_0
             foreach (var item in that._collectPosition)
             {
                 var collectPosition = Program.dt.GetFpByIndex(item.Value);
-                var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(carPosition.Latitde, carPosition.Longitude, collectPosition.Latitde, collectPosition.Longitude);
+                var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(carPosition.Latitde, carPosition.Longitude, carPosition.Height, collectPosition.Latitde, collectPosition.Longitude, collectPosition.Height);
                 if (length < minLength)
                 {
                     minLength = length;
@@ -1173,30 +1178,30 @@ namespace HouseManager4_0
                 fastenpositionID = fastenPositionID,
                 Key = npc.Key
             };
-            this.startNewCommandThread(100, sc, this);
+            this.startNewCommandThread(100, sc, this, grp);
         }
 
-        public void newThreadDo(CommonClass.Command c)
+        public void newThreadDo(CommonClass.Command c, GetRandomPos grp)
         {
             if (c.c == "SetCollect")
             {
                 var sc = (CommonClass.SetCollect)c;
-                that.collectE.updateCollect(sc);
+                that.collectE.updateCollect(sc, grp);
             }
             else if (c.c == "SetAttack")
             {
                 var sa = (CommonClass.SetAttack)c;
-                that.attackE.updateAttack(sa);
+                that.attackE.updateAttack(sa, grp);
             }
             else if (c.c == "MagicSkill")
             {
                 var ms = (CommonClass.MagicSkill)c;
-                that.magicE.updateMagic(ms);
+                that.magicE.updateMagic(ms, grp);
             }
             else if (c.c == "OrderToReturn")
             {
                 var otr = (CommonClass.OrderToReturn)c;
-                that.retutnE.OrderToReturn(otr);
+                that.retutnE.OrderToReturn(otr, grp);
             }
         }
 

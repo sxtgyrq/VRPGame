@@ -21,8 +21,8 @@ namespace HouseManager4_0.RoomMainF
                 positions.Add(modelsNeedToShow[i].y);
                 positions.Add(modelsNeedToShow[i].z);
             }
-            double x, y;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out x, out y);
+            double x, y, z;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, fp.Height, out x, out y, out z);
             GoodsSelectionNotify tn = new GoodsSelectionNotify()
             {
                 c = "GoodsSelectionNotify",
@@ -32,7 +32,7 @@ namespace HouseManager4_0.RoomMainF
                 selections = selections.ToArray(),
                 positions = positions.ToArray()
             };
-            var json=Newtonsoft.Json.JsonConvert.SerializeObject(tn);
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(tn);
             notifyMsg.Add(url);
             notifyMsg.Add(json);
         }

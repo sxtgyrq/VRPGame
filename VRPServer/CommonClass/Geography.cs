@@ -21,7 +21,7 @@ namespace CommonClass
             /// <param name="lat2">第二位置的纬度</param>
             /// <param name="lng2">第二位置的经度</param>
             /// <returns></returns>
-            public static double GetDistance(double lat1, double lng1, double lat2, double lng2)
+            public static double GetDistance(double lat1, double lng1, double h1, double lat2, double lng2, double h2)
             {
                 double radLat1 = rad(lat1);
                 double radLat2 = rad(lat2);
@@ -31,6 +31,7 @@ namespace CommonClass
                 double s = 2 * Math.Asin(Math.Sqrt(Math.Pow(Math.Sin(a / 2), 2) +
                  Math.Cos(radLat1) * Math.Cos(radLat2) * Math.Pow(Math.Sin(b / 2), 2)));
                 s = s * EARTH_RADIUS;
+                return Math.Sqrt(s * s + (h2 - h1) * (h2 - h1));
                 return s;
             }
         }
@@ -38,6 +39,7 @@ namespace CommonClass
         public class calculatBaideMercatorIndex
         {
             static double LongitudeK = 18.25621546434640;
+            private const double EARTH_RADIUS = 6371393;
 
             static double MercatorGetXbyLongitude(double Longitude)
             {
@@ -57,10 +59,11 @@ namespace CommonClass
                 return (Math.Log10(1.0 / Math.Cos(r_lagitudu) + Math.Tan(r_lagitudu))
                     + Math.Log10((1 - LatitudeE * Math.Sin(r_lagitudu)) / (1 + LatitudeE * Math.Sin(r_lagitudu))) * LatitudeE / 2) * Math.Pow(2, (Zoom - 19)) * LatitudeKContent;
             }
-            public static void getBaiduPicIndex(double longitude, double latitude, out double x, out double y)
+            public static void getBaiduPicIndex(double longitude, double latitude, double height, out double x, out double y, out double z)
             {
                 x = MercatorGetXbyLongitude(longitude);
                 y = MercatorGetYbyLatitude(latitude);
+                z = MercatorGetXbyLongitude(height * 360 / EARTH_RADIUS / (Math.PI * 2));
             }
 
             public static double getBaiduPositionLatWithAccuracy(double MercatorY, double accuracy)

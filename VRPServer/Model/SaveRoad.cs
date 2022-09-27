@@ -6,10 +6,23 @@ namespace Model
 {
     public class SaveRoad
     {
+
+        public interface rInfo
+        {
+            int CarInOpposeDirection { get; }
+            double endLongitude { get; }
+            double startLongitude { get; }
+            double endLatitude { get; }
+            double startLatitude { get; }
+            int RoadOrder { get; }
+            int MaxSpeed { get; }
+            int startHeight { get; }
+            int endHeight { get; }
+        }
         /// <summary>
         /// 此类必须依据协议走
         /// </summary>
-        public class RoadInfo
+        public class RoadInfo : rInfo
         {
 
             public string VersionNumber { get; set; }
@@ -19,6 +32,9 @@ namespace Model
             public double startLatitude { get; set; }
             public double endLongitude { get; set; }
             public double endLatitude { get; set; }
+
+            public int startHeight { get; set; }
+            public int endHeight { get; set; }
 
             public int CarInDirection { get; set; }
             /// <summary>
@@ -58,7 +74,7 @@ namespace Model
             public int RoadOrder2 { get; set; }
             public double Percent1 { get; set; }
             public double Percent2 { get; set; }
-
+          //  public double BDHeight { get; set; }
         }
 
         public class FastenPositionCalculate

@@ -149,9 +149,9 @@ namespace HouseManager4_0.RoomMainF
             NearestIsMoneyWhenPromote,
             NearestIsMoneyWhenAttack
         }
-        public string updateCollect(SetCollect sc)
+        public string updateCollect(SetCollect sc, GetRandomPos grp)
         {
-            return this.collectE.updateCollect(sc);
+            return this.collectE.updateCollect(sc, grp);
         }
 
 
@@ -162,7 +162,7 @@ namespace HouseManager4_0.RoomMainF
         /// </summary>
         /// <param name="target"></param>
         /// <returns>返回的值为0至37的排序</returns>
-        internal List<int> getCollectPositionsByDistance(FastonPosition target)
+        internal List<int> getCollectPositionsByDistance(FastonPosition target, GetRandomPos grp)
         {
             List<int> positions = new List<int>();
             for (int i = 0; i < 38; i++)
@@ -171,7 +171,7 @@ namespace HouseManager4_0.RoomMainF
                 //var collectP = Program.dt.GetFpByIndex(this._collectPosition[i]);
                 //positions.Add(collectP);
             }
-            positions = (from item in positions orderby CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, Program.dt.GetFpByIndex(this._collectPosition[item]).Latitde, Program.dt.GetFpByIndex(this._collectPosition[item]).Longitude) select item).ToList();
+            positions = (from item in positions orderby CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude,target.Height, grp.GetFpByIndex(this._collectPosition[item]).Latitde, grp.GetFpByIndex(this._collectPosition[item]).Longitude, grp.GetFpByIndex(this._collectPosition[item]).Height) select item).ToList();
             return positions;
         }
 

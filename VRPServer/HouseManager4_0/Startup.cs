@@ -9,8 +9,15 @@ namespace HouseManager4_0
     {
         public static string sendMsg(string controllerUrl, string json)
         {
-            var r = Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
-            return r.Result;
+            if (string.IsNullOrEmpty(controllerUrl))
+            {
+                return "";
+            }
+            else
+            {
+                var r = Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
+                return r.Result;
+            }
         }
     }
 }

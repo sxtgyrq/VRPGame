@@ -14,6 +14,7 @@ namespace CommonClass
             public int anotherRoadOrder { get; set; }
             public double longitude { get; set; }
             public double latitude { get; set; }
+            public double height { get; set; }
         }
         public class DrawRoad : Command
         {

@@ -148,7 +148,8 @@ namespace AllPathGenerator
                             if (k < count)
                                 File.AppendAllText("indexRecord.txt", $"{dataIndex},{position},{length},");
                             else
-                                //Consol.WriteLine($"不记录：{i}-{j}-{k}");
+                            { }
+                            //Consol.WriteLine($"不记录：{i}-{j}-{k}");
                             //Consol.WriteLine($"记录：{dataIndex},{position},{length},");
                         }
 

@@ -26,6 +26,7 @@ namespace WsOfWebClient
         OnLine,
         WaitingToStart,
         WaitingToGetTeam,
-        LookForBuildings
+        LookForBuildings,
+        QueryReward
     }
 }

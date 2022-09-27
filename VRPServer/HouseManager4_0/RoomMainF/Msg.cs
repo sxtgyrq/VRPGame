@@ -22,7 +22,7 @@ namespace HouseManager4_0.RoomMainF
                             {
                                 if (this._Players[dm.To].playerType == RoleInGame.PlayerType.player)
                                 {
-                                    this.attachE.DealWithMsg(dm);
+                                    this.attachE.DealWithMsg(dm, Program.dt);
                                     //notifyMsg.Add(((Player)this._Players[dm.Key]).FromUrl);
                                     //dm.WebSocketID = ((Player)this._Players[dm.Key]).WebSocketID;
                                     //dm.Msg = "不可以拜NPC为老大！";

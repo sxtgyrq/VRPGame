@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CommonClass.ModelTranstraction;
+using System.Linq;
 
 namespace WsOfWebClient
 {
@@ -1027,6 +1028,316 @@ namespace WsOfWebClient
             return respon;
         }
 
+        internal static async Task GetRewardInfomation(WebSocket webSocket, RewardInfomation gra)
+        {
+            var date = DateTime.Now;
+            if (gra.Page > 52)
+            {
+                gra.Page = 52;
+            }
+            else if (gra.Page < -52)
+            {
+                gra.Page = -52;
+            }
+            date = date.AddDays(gra.Page * 7);
+            while (date.DayOfWeek != DayOfWeek.Monday)
+            {
+                date = date.AddDays(-1);
+            }
+            var objGet = await exitPageF(date.ToString("yyyyMMdd"));
 
+            if (objGet == null)
+            {
+                var passObj = new
+                {
+                    c = "GetRewardInfomationHasNotResult",
+                    title = $"{date.ToString("yyyyMMdd")}期"
+                };
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+
+            }
+            else
+            {
+                var passObj = await getResultObj(objGet, date);
+                if (passObj != null)
+                {
+                    var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                    var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                //int indexNumber = 0;
+                //indexNumber = await GetIndexOfTrade(objGet.bussinessAddr, objGet.tradeAddress);
+                //List<CommonClass.databaseModel.traderewardapply> list;
+                //{
+                //    var grn = new CommonClass.ModelTranstraction.RewardInfomation()
+                //    {
+                //        c = "RewardApplyInfomation",
+                //        startDate = int.Parse(date.ToString("yyyyMMdd"))
+                //    };
+                //    var index = rm.Next(0, roomUrls.Count);
+                //    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+                //    Console.WriteLine(msg);
+                //    var respon = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                //    Console.WriteLine(respon);
+                //    list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CommonClass.databaseModel.traderewardapply>>(respon);
+                //}
+                //int sumStock = 0;
+                //{
+                //    for (int i = 0; i < list.Count; i++)
+                //    {
+                //        sumStock += list[i].applyLevel;
+                //    }
+
+                //}
+                //if (sumStock <= objGet.passCoin)
+                //{
+                //    var satoshiPerStock = objGet.passCoin / sumStock;
+                //    var remainder = objGet.passCoin % sumStock;
+                //    var orderR = (from item in list
+                //                  orderby item.applyLevel descending
+                //                  select item).ToList();
+                //    list = orderR;
+                //    List<RewardApplyInDB> raList = new List<RewardApplyInDB>();
+                //    for (int i = 0; i < list.Count; i++)
+                //    {
+                //        int satoshiShouldGet = list[i].applyLevel * satoshiPerStock;
+                //        if (remainder > list[i].applyLevel)
+                //        {
+                //            satoshiShouldGet += list[i].applyLevel;
+                //            remainder -= list[i].applyLevel;
+                //        }
+                //        else if (remainder > 0)
+                //        {
+                //            satoshiShouldGet += remainder;
+                //            remainder = 0;
+                //        }
+                //        int percent = (satoshiShouldGet * 10000 / objGet.passCoin);
+                //        var percentStr = $"{percent / 100}.{(percent % 100).ToString("D2")}%";
+                //        raList.Add(new RewardApplyInDB()
+                //        {
+                //            applyAddr = list[i].applyAddr,
+                //            applyLevel = list[i].applyLevel,
+                //            applySign = list[i].applySign,
+                //            rankIndex = list[i].rankIndex,
+                //            startDate = list[i].startDate,
+                //            satoshiShouldGet = satoshiShouldGet,
+                //            percentStr = percentStr,
+                //        });
+                //    }
+
+                //    var passObj = new
+                //    {
+                //        c = "GetRewardInfomationHasResult",
+                //        title = $"{date.ToString("yyyyMMdd")}期",
+                //        data = objGet,
+                //        list = raList,
+                //        indexNumber = indexNumber
+                //    };
+                //    var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                //    var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                //    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                //}
+            }
+        }
+
+        static async Task<RewardInfoHasResultObj> getResultObj(tradereward objGet, DateTime date)
+        {
+            int indexNumber = 0;
+            indexNumber = await GetIndexOfTrade(objGet.bussinessAddr, objGet.tradeAddress);
+            List<CommonClass.databaseModel.traderewardapply> list;
+            {
+                var grn = new CommonClass.ModelTranstraction.RewardInfomation()
+                {
+                    c = "RewardApplyInfomation",
+                    startDate = int.Parse(date.ToString("yyyyMMdd"))
+                };
+                var index = rm.Next(0, roomUrls.Count);
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+                Console.WriteLine(msg);
+                var respon = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                Console.WriteLine(respon);
+                list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CommonClass.databaseModel.traderewardapply>>(respon);
+            }
+            int sumStock = 0;
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    sumStock += list[i].applyLevel;
+                }
+
+            }
+            if (sumStock <= objGet.passCoin)
+            {
+                var satoshiPerStock = objGet.passCoin / sumStock;
+                var remainder = objGet.passCoin % sumStock;
+                var orderR = (from item in list
+                              orderby item.applyLevel descending
+                              select item).ToList();
+                list = orderR;
+                List<RewardApplyInDB> raList = new List<RewardApplyInDB>();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    int satoshiShouldGet = list[i].applyLevel * satoshiPerStock;
+                    if (remainder > list[i].applyLevel)
+                    {
+                        satoshiShouldGet += list[i].applyLevel;
+                        remainder -= list[i].applyLevel;
+                    }
+                    else if (remainder > 0)
+                    {
+                        satoshiShouldGet += remainder;
+                        remainder = 0;
+                    }
+                    int percent = (satoshiShouldGet * 10000 / objGet.passCoin);
+                    var percentStr = $"{percent / 100}.{(percent % 100).ToString("D2")}%";
+                    raList.Add(new RewardApplyInDB()
+                    {
+                        applyAddr = list[i].applyAddr,
+                        applyLevel = list[i].applyLevel,
+                        applySign = list[i].applySign,
+                        rankIndex = list[i].rankIndex,
+                        startDate = list[i].startDate,
+                        satoshiShouldGet = satoshiShouldGet,
+                        percentStr = percentStr,
+                    });
+                }
+
+                var passObj = new RewardInfoHasResultObj()
+                {
+                    c = "GetRewardInfomationHasResult",
+                    title = $"{date.ToString("yyyyMMdd")}期",
+                    data = objGet,
+                    list = raList,
+                    indexNumber = indexNumber
+                };
+                return passObj;
+                //var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
+                //var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                //await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        class RewardInfoHasResultObj : CommonClass.Command
+        {
+            public string title { get; set; }
+            public tradereward data { get; set; }
+            public List<RewardApplyInDB> list { get; set; }
+            public int indexNumber { get; set; }
+        }
+        internal static async Task GiveAward(WebSocket webSocket, AwardsGiving ag)
+        {
+            var objGet = await exitPageF(ag.time);
+            if (objGet == null) { }
+            else
+            {
+                var startInt = objGet.startDate;
+                var dt = new DateTime(startInt / 10000, (startInt / 100) % 100, startInt % 100);
+                var r = await getResultObj(objGet, dt);
+                if (r == null)
+                { }
+                else
+                {
+                    List<string> msgsToTransfer = new List<string>();
+                    bool IsRight = true;
+                    List<string> msgs = new List<string>();
+                    List<int> ranks = new List<int>();
+                    List<string> applyAddr = new List<string>();
+
+                    if (r.list.Count == ag.list.Count)
+                        for (int i = 0; i < r.list.Count; i++)
+                        {
+
+                            var msg = $"{r.indexNumber + i}@{objGet.tradeAddress}@{objGet.bussinessAddr}->{r.list[i].applyAddr}:{ r.list[i].satoshiShouldGet}Satoshi";
+                            var signature = ag.list[i];
+                            if (BitCoin.Sign.checkSign(signature, msg, objGet.tradeAddress))
+                            { }
+                            else { IsRight = false; }
+                            msgs.Add(msg);
+                            ranks.Add(r.list[i].rankIndex);
+                            applyAddr.Add(r.list[i].applyAddr);
+                        }
+                    if (IsRight)
+                    {
+                        AwardsGivingPass awardsGivingPass = new AwardsGivingPass()
+                        {
+                            c = "AwardsGivingPass",
+                            list = ag.list,
+                            time = ag.time,
+                            msgs = msgs,
+                            ranks = ranks,
+                            applyAddr = applyAddr
+                        };
+                        var index = rm.Next(0, roomUrls.Count);
+                        var msg = Newtonsoft.Json.JsonConvert.SerializeObject(awardsGivingPass);
+                        var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    }
+                }
+            }
+            //  var passObj = await getResultObj(objGet, date);
+            // throw new NotImplementedException();
+        }
+        internal static async Task RewardApply(WebSocket webSocket, RewardApply rA)
+        {
+            var date = DateTime.Now;
+            while (date.DayOfWeek != DayOfWeek.Monday)
+            {
+                date = date.AddDays(-1);
+            }
+            var dateStr = date.ToString("yyyyMMdd");
+            if (dateStr == rA.msgNeedToSign)
+            {
+                if (BitCoin.Sign.checkSign(rA.signature, rA.msgNeedToSign, rA.addr))
+                {
+                    var index = rm.Next(0, roomUrls.Count);
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(rA);
+                    var msgRequested = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    if (!string.IsNullOrEmpty(msgRequested))
+                    {
+                        var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardApply.Result>(msgRequested);
+                        Console.WriteLine(msgRequested);
+                        if (requestObj.success) { }
+                        else { }
+                    }
+                }
+            }
+            else { }
+            //if(rA.msgNeedToSign)
+
+            //var grn = new CommonClass.ModelTranstraction.RewardInfomation()
+            //{
+            //    c = "RewardInfomation",
+            //    startDate = Convert.ToInt32(v)
+            //};
+            //var index = rm.Next(0, roomUrls.Count);
+            //var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+            //var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            //if (string.IsNullOrEmpty(json))
+            //{
+            //    return null;
+            //}
+            //return Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.databaseModel.tradereward>(json);
+
+        }
+        private async static Task<CommonClass.databaseModel.tradereward> exitPageF(string v)
+        {
+            var grn = new CommonClass.ModelTranstraction.RewardInfomation()
+            {
+                c = "RewardInfomation",
+                startDate = Convert.ToInt32(v)
+            };
+            var index = rm.Next(0, roomUrls.Count);
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
+            var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.databaseModel.tradereward>(json);
+        }
     }
 }

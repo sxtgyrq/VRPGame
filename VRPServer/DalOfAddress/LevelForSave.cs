@@ -52,9 +52,50 @@ namespace DalOfAddress
             }
         }
 
-
-        public static CommonClass.databaseModel.LevelForSave Update(string address, string timeStr, int level)
+        internal static int GetLevel(MySqlTransaction tran, MySqlConnection con, string address)
         {
+            var getItem = Get(con, tran, address);
+            if (getItem == null)
+            {
+                return 1;
+            }
+            else
+            {
+                return getItem.Level;
+            }
+        }
+        public static int GetLevel(string address)
+        {
+            int r;
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    r = GetLevel(tran, con, address);
+                }
+            }
+            return r;
+        }
+        public enum UpdateResultInDB
+        {
+            HasDataButUpdateError,
+            Success,
+            InsertError,
+            LevelIsLow,
+            WrongTimeStr,
+            LevelHasUsedForRewad
+        }
+        public static CommonClass.databaseModel.LevelForSave Update(string address, string timeStr, int level, out UpdateResultInDB remarkInTran)
+        {
+            /*
+             * 此方法的逻辑 
+             *      
+             *                hasData有数据                        无数据
+             * timeStr 空     timeStr赋值，更新，等级取最大值     赋值，插入timeStr，更新
+             * timeStr 有值   timeStr 作为条件进行更新            等级已经被使用 
+             */
+
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
                 con.Open();
@@ -75,8 +116,9 @@ namespace DalOfAddress
                             if (string.IsNullOrEmpty(timeStr))
                             {
                                 int rows;
+                                timeStr = DateTime.Now.ToString("yyyyMMddHHmmssffff");
                                 {
-                                    timeStr = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+
                                     string sQL = @"UPDATE levelforsave SET TimeStampStr=@TimeStampStr WHERE BtcAddr=@BtcAddr";
 
                                     using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
@@ -89,32 +131,44 @@ namespace DalOfAddress
                                 if (rows == 1)
                                 {
                                     var Item = Get(con, tran, address);
-                                    while (Item.Level < level)
+                                    if (Item.TimeStampStr != timeStr)
                                     {
-                                        string sQL = @"UPDATE levelforsave SET `Level`=@lev WHERE BtcAddr=@BtcAddr AND TimeStampStr=@TimeStampStr ";
-
-                                        using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
-                                        {
-                                            command.Parameters.AddWithValue("@lev", level);
-                                            command.Parameters.AddWithValue("@BtcAddr", address);
-                                            command.Parameters.AddWithValue("@TimeStampStr", timeStr);
-                                            rows = command.ExecuteNonQuery();
-                                        }
-                                        Item = Get(con, tran, address);
-                                    }
-                                    if (rows == 1)
-                                    {
-                                        tran.Commit();
-                                        return Item;
+                                        remarkInTran = UpdateResultInDB.HasDataButUpdateError;
+                                        tran.Rollback();
+                                        return null;
                                     }
                                     else
                                     {
-                                        tran.Rollback();
-                                        return null;
+                                        while (Item.Level < level)
+                                        {
+                                            string sQL = @"UPDATE levelforsave SET `Level`=@lev WHERE BtcAddr=@BtcAddr AND TimeStampStr=@TimeStampStr ";
+
+                                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                            {
+                                                command.Parameters.AddWithValue("@lev", level);
+                                                command.Parameters.AddWithValue("@BtcAddr", address);
+                                                command.Parameters.AddWithValue("@TimeStampStr", timeStr);
+                                                rows = command.ExecuteNonQuery();
+                                            }
+                                            Item = Get(con, tran, address);
+                                        }
+                                        if (rows == 1)
+                                        {
+                                            remarkInTran = UpdateResultInDB.Success;
+                                            tran.Commit();
+                                            return Item;
+                                        }
+                                        else
+                                        {
+                                            remarkInTran = UpdateResultInDB.HasDataButUpdateError;
+                                            tran.Rollback();
+                                            return null;
+                                        }
                                     }
                                 }
                                 else
                                 {
+                                    remarkInTran = UpdateResultInDB.HasDataButUpdateError;
                                     tran.Rollback();
                                     return null;
                                 }
@@ -137,10 +191,12 @@ namespace DalOfAddress
                                 {
                                     var getItem = Get(con, tran, address);
                                     tran.Commit();
+                                    remarkInTran = UpdateResultInDB.Success;
                                     return getItem;
                                 }
                                 else
                                 {
+                                    remarkInTran = UpdateResultInDB.WrongTimeStr;
                                     tran.Rollback();
                                     return null;
                                 }
@@ -148,33 +204,43 @@ namespace DalOfAddress
                         }
                         else
                         {
-                            if (level >= 2)
-                            {
-                                int row = 0;
-                                timeStr = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-                                string sQL = @"INSERT INTO levelforsave (BtcAddr,TimeStampStr,`Level`) VALUES (@BtcAddr,@TimeStampStr,@Leveel);";
-                                using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            if (string.IsNullOrEmpty(timeStr))
+                                if (level >= 2)
                                 {
-                                    command.Parameters.AddWithValue("@BtcAddr", address);
-                                    command.Parameters.AddWithValue("@TimeStampStr", timeStr);
-                                    command.Parameters.AddWithValue("@Leveel", level);
-
-                                    row = command.ExecuteNonQuery();
-                                }
-                                if (row == 1)
-                                {
-                                    var Item = Get(con, tran, address);
-                                    tran.Commit();
-                                    return Item;
+                                    int row = 0;
+                                    timeStr = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                                    string sQL = @"INSERT INTO levelforsave (BtcAddr,TimeStampStr,`Level`) VALUES (@BtcAddr,@TimeStampStr,@Leveel);";
+                                    using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                    {
+                                        command.Parameters.AddWithValue("@BtcAddr", address);
+                                        command.Parameters.AddWithValue("@TimeStampStr", timeStr);
+                                        command.Parameters.AddWithValue("@Leveel", level); 
+                                        row = command.ExecuteNonQuery();
+                                    }
+                                    if (row == 1)
+                                    {
+                                        var Item = Get(con, tran, address);
+                                        tran.Commit();
+                                        remarkInTran = UpdateResultInDB.Success;
+                                        return Item;
+                                    }
+                                    else
+                                    {
+                                        remarkInTran = UpdateResultInDB.InsertError;
+                                        tran.Rollback();
+                                        return null;
+                                    }
                                 }
                                 else
                                 {
+                                    remarkInTran = UpdateResultInDB.LevelIsLow;
                                     tran.Rollback();
                                     return null;
                                 }
-                            }
                             else
                             {
+                                tran.Rollback();
+                                remarkInTran = UpdateResultInDB.LevelHasUsedForRewad;
                                 return null;
                             }
                         }
@@ -188,6 +254,54 @@ namespace DalOfAddress
                 }
             }
             //throw new NotImplementedException();
+        }
+
+        internal static int RemoveLevelWithAddr(MySqlConnection con, MySqlTransaction tran, string applyAddr, int levle)
+        {
+            int row;
+            var sQL = $"DELETE FROM levelforsave  WHERE BtcAddr=@BtcAddr AND `Level`={levle}";
+            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+            {
+                command.Parameters.AddWithValue("@BtcAddr", applyAddr);
+                row = command.ExecuteNonQuery();
+            };
+            return row;
+        }
+
+        /// <summary>
+        /// 此方法，在测试时使用
+        /// </summary>
+        /// <param name="address"></param>
+        public static void Del(string address)
+        {
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+                        int rows;
+                        {
+                            string sQL = @"DELETE FROM levelforsave WHERE BtcAddr=@BtcAddr;";
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                command.Parameters.AddWithValue("@BtcAddr", address);
+                                rows = command.ExecuteNonQuery();
+                            }
+                        }
+                        if (rows == 1)
+                        {
+                            tran.Commit();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                        throw new Exception("Del错误");
+                    }
+                }
+            }
         }
     }
 }

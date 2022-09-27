@@ -58,7 +58,7 @@ namespace CommonClass
         }
         public class AllBuiisnessAddr : Command
         {
-        } 
+        }
         public class TradeCoin : Command
         {
             public int tradeIndex { get; set; }
@@ -91,6 +91,38 @@ namespace CommonClass
             public string msg { get; set; }
             public int afterWeek { get; set; }
 
+        }
+
+        public class RewardInfomation : Command
+        {
+            public int startDate { get; set; }
+        }
+
+        public class RewardApply : CommonClass.Command
+        {
+            public string addr { get; set; }
+            public string msgNeedToSign { get; set; }
+            public string signature { get; set; }
+
+            public class Result 
+            {
+                public bool success { get; set; }
+                public string msg { get; set; }
+            }
+
+        }
+        public class AwardsGivingPass : CommonClass.Command
+        {
+            public string time { get; set; }
+            public List<string> list { get; set; }
+            public List<string> msgs { get; set; }
+            public List<int> ranks { get; set; }
+            public List<string> applyAddr { get; set; }
+        }
+        public class AwardsGiving : CommonClass.Command
+        {
+            public string time { get; set; }
+            public List<string> list { get; set; }
         }
     }
 }

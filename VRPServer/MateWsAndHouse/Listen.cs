@@ -12,7 +12,7 @@ namespace MateWsAndHouse
             var dealWith = new TcpFunction.WithResponse.DealWith(DealWith);
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
-        private static async Task<string> DealWith(string notifyJson)
+        private static async Task<string> DealWith(string notifyJson, int tcpPort)
         {
             //Consol.WriteLine($"notify receive:{notifyJson}");
             //File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
@@ -105,10 +105,10 @@ namespace MateWsAndHouse
                                     var url = t.member[i].FromUrl;
                                     var msg = await sendMsg(url, json);
                                     Console.WriteLine(msg);
-                                    
+
                                     hash += msg.GetHashCode();
                                 }
-                                t.IsBegun = true; 
+                                t.IsBegun = true;
                                 outPut = $"ok{hash}";
                             }
                         }; break;

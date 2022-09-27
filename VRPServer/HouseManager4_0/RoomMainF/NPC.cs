@@ -13,9 +13,9 @@ namespace HouseManager4_0.RoomMainF
         {
             //throw new NotImplementedException();
             //   AddNPC();
-            this.NPCM.AddNPC();
+            this.NPCM.AddNPC(Program.rm, Program.dt);
             this.NPCM.ClearNPC();
-            this.NPCM.ControlNPC();
+            this.NPCM.ControlNPC(Program.dt);
         }
 
 
@@ -51,7 +51,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             if (item.Value.TheLargestHolderKey == npc.Key)
                             {
-                               // npc.TheLargestHolderKeyChanged(item.Key, item.Value.TheLargestHolderKey, item.Key, ref notifyMsgs);
+                                // npc.TheLargestHolderKeyChanged(item.Key, item.Value.TheLargestHolderKey, item.Key, ref notifyMsgs);
                             }
                         }
                         success = true;

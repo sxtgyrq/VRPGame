@@ -13,7 +13,7 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c)
+        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c, GetRandomPos grp)
         {
             if (c.c == "DialogMsg")
             {
@@ -40,7 +40,7 @@ namespace HouseManager4_0
             //  throw new NotImplementedException();
         }
 
-        public bool conditionsOk(Command c, out string reason)
+        public bool conditionsOk(Command c, GetRandomPos grp, out string reason)
         {
             if (c.c == "DialogMsg")
             {
@@ -79,7 +79,7 @@ namespace HouseManager4_0
             // throw new NotImplementedException();
         }
 
-        public RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out RoomMain.MileResultReason mrr)
+        public RoomMain.commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out RoomMain.MileResultReason mrr)
         {
             //notifyMsg.Add(((Player)this._Players[dm.Key]).FromUrl);
             //dm.WebSocketID = ((Player)this._Players[dm.Key]).WebSocketID;
@@ -202,9 +202,9 @@ namespace HouseManager4_0
 
         }
 
-        internal void DealWithMsg(DialogMsg dm)
+        internal void DealWithMsg(DialogMsg dm, GetRandomPos grp)
         {
-            this.updateAction(this, dm, dm.Key);
+            this.updateAction(this, dm, grp, dm.Key);
             //  throw new NotImplementedException();
         }
     }

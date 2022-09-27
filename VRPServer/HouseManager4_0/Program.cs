@@ -14,6 +14,7 @@ namespace HouseManager4_0
             Console.WriteLine(@"
 --------- readConnectInfomation 
 --------- calMercator
+--------- sign
 --------- 
 ");
             var commandInput = Console.ReadLine();
@@ -34,6 +35,10 @@ namespace HouseManager4_0
                         OtherFunction.calMercator();
                         return;
                     };
+                case "sign":
+                    {
+                        OtherFunction.sign();
+                    }; break;
 
             }
 
@@ -54,7 +59,7 @@ namespace HouseManager4_0
             Program.dt.LoadModel();
             Program.dt.LoadCrossBackground();
 
-            Program.rm = new RoomMainF.RoomMain();
+            Program.rm = new RoomMainF.RoomMain(Program.dt);
 
             {
                 var ip = "127.0.0.1";
@@ -89,7 +94,7 @@ namespace HouseManager4_0
                 Thread startMonitorTcpServer = new Thread(() => Listen.IpAndPortMonitor(ip, 30000 - tcpPort));
                 startMonitorTcpServer.Start();
 
-                Thread th = new Thread(() => PlayersSysOperate());
+                Thread th = new Thread(() => PlayersSysOperate(Program.dt));
                 th.Start();
                 //int tcpServerPort = 30000 - websocketPort;
                 //ConnectInfo.HostIP = ip;
@@ -105,12 +110,12 @@ namespace HouseManager4_0
             }
         }
 
-        private static void PlayersSysOperate()
+        private static void PlayersSysOperate(GetRandomPos grp)
         {
             while (true)
             {
                 ;
-                Program.rm.SetReturn();
+                Program.rm.SetReturn(grp);
                 Program.rm.ClearPlayers();
                 Program.rm.SetNPC();
                 Thread.Sleep(30 * 1000);

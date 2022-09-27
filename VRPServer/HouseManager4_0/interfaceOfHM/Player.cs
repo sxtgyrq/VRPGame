@@ -7,7 +7,7 @@ namespace HouseManager4_0.interfaceOfHM
 {
     interface Player
     {
-        string AddPlayer(PlayerAdd_V2 addItem);
+        string AddPlayer(PlayerAdd_V2 addItem, interfaceOfHM.Car cf, GetRandomPos gp);
         string UpdatePlayer(PlayerCheck checkItem);
     }
 }

@@ -19,9 +19,9 @@ namespace HouseManager4_0.RoomMainF
         /// <param name="player"></param>
         /// <param name="notifyMsgs"></param>
         /// <returns></returns>
-        List<OssModel.MapGo.nyrqPosition> GetAFromB_Path(int from, int to, RoleInGame player, ref List<string> notifyMsgs)
+        List<OssModel.MapGo.nyrqPosition> GetAFromB_Path(int from, int to, RoleInGame player, GetRandomPos grp, ref List<string> notifyMsgs)
         {
-            var path = Program.dt.GetAFromB(from, to);
+            var path = grp.GetAFromB(from, to);
             for (var i = 0; i < path.Count; i++)
             {
                 player.addUsedRoad(path[i].roadCode, ref notifyMsgs);
@@ -45,9 +45,12 @@ namespace HouseManager4_0.RoomMainF
                 {
                     public double longitude { get; set; }
                     public double latitude { get; set; }
+                    public double height { get; set; }
                     public string crossKey { get; set; }
 
                     public string postionCrossKey { get { return $"{longitude.ToString("F5")},{latitude.ToString("F5")}"; } }
+
+
                 }
                 /// <summary>
                 /// 供选择的矢量，这里的start是矢量的起点，并不是选择的起点。end为矢量的终点。
@@ -70,14 +73,14 @@ namespace HouseManager4_0.RoomMainF
             public int calType { get; set; }
         }
 
-        public Node GetAFromB_v2(int from, int to, RoleInGame player, ref List<string> notifyMsgs)
+        public Node GetAFromB_v2(int from, int to, RoleInGame player, GetRandomPos grp, ref List<string> notifyMsgs)
         {
             //from = 209;
             //to = 444;
             // throw new Exception("");
             int cursor = 0;//光标所在位置
 
-            var path = this.GetAFromB_Path(from, to, player, ref notifyMsgs);
+            var path = this.GetAFromB_Path(from, to, player, grp, ref notifyMsgs);
 
 
             //for (int i = 0; i < path.Count; i++)
@@ -102,7 +105,7 @@ namespace HouseManager4_0.RoomMainF
                             /*
                              * 第一个点
                              */
-                            var firstRoad = Program.dt.GetItemRoadInfo(path[0]);
+                            var firstRoad = grp.GetItemRoadInfo(path[0]);
                             if (firstRoad.CarInOpposeDirection == 1)
                             {
                                 var right = new Node.direction()
@@ -118,7 +121,7 @@ namespace HouseManager4_0.RoomMainF
                                     end = path[indexOfPath],
                                 };
                                 List<Node.direction> selections;
-                                if (FoundCross(wrong, path[indexOfPath]))
+                                if (FoundCross(wrong, path[indexOfPath], grp))
                                 {
                                     selections = new List<Node.direction>()
                                     {
@@ -141,6 +144,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = path[indexOfPath].BDlongitude,
                                         latitude = path[indexOfPath].BDlatitude,
+                                        height = path[indexOfPath].BDheight,
                                         crossKey = null
                                     }
                                 });
@@ -168,6 +172,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = path[indexOfPath].BDlongitude,
                                         latitude = path[indexOfPath].BDlatitude,
+                                        height = path[indexOfPath].BDheight,
                                         crossKey = null
                                     }
                                 });
@@ -178,8 +183,8 @@ namespace HouseManager4_0.RoomMainF
                         else
                         {
 
-                            var current = Program.dt.GetItemRoadInfo(path[indexOfPath]);
-                            var next = Program.dt.GetItemRoadInfo(path[indexOfPath + 1]);
+                            var current = grp.GetItemRoadInfo(path[indexOfPath]);
+                            var next = grp.GetItemRoadInfo(path[indexOfPath + 1]);
                             var position = lastPoint.copy();
                             if (current.RoadCode == next.RoadCode)
                             {
@@ -267,6 +272,11 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         cursor = indexOfPath + 1;//将光标指向下一个位置。在一个线段内的第二个cross，不会执行上面的循环
                                     }
+                                    double height = calCross[indexOfCalCross].calType == 1 ?
+                                        calCross[indexOfCalCross].cross.Percent1 * (grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode1, calCross[indexOfCalCross].cross.RoadOrder1).endHeight - grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode1, calCross[indexOfCalCross].cross.RoadOrder1).startHeight) + grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode1, calCross[indexOfCalCross].cross.RoadOrder1).startHeight :
+                                        calCross[indexOfCalCross].cross.Percent2 * (grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode2, calCross[indexOfCalCross].cross.RoadOrder2).endHeight - grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode2, calCross[indexOfCalCross].cross.RoadOrder2).startHeight) + grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode2, calCross[indexOfCalCross].cross.RoadOrder2).startHeight;
+
+
                                     var newLast = new MapGo.nyrqPosition
                                     (
                                     calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.RoadCode1 : calCross[indexOfCalCross].cross.RoadCode2,
@@ -274,6 +284,7 @@ namespace HouseManager4_0.RoomMainF
                                     calCross[indexOfCalCross].calType == 1 ? calCross[indexOfCalCross].cross.Percent1 : calCross[indexOfCalCross].cross.Percent2,
                                     calCross[indexOfCalCross].cross.BDLongitude,
                                     calCross[indexOfCalCross].cross.BDLatitude,
+                                    height,
                                     lastPoint.maxSpeed);
                                     pathItem.Add(newLast);
                                     lastPoint = newLast.copy();
@@ -281,6 +292,7 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         longitude = calCross[indexOfCalCross].cross.BDLongitude,
                                         latitude = calCross[indexOfCalCross].cross.BDLatitude,
+                                        height = height,
                                         crossKey = getID(calCross[indexOfCalCross].cross)
                                     };
                                     var selections = new List<Node.direction>();
@@ -291,7 +303,7 @@ namespace HouseManager4_0.RoomMainF
                                             end = path[indexOfPath + 1],
                                             right = true
                                         };
-                                        if (FoundCross(directionCreate, path[indexOfPath]))
+                                        if (FoundCross(directionCreate, path[indexOfPath], grp))
                                         {
                                             selections.Add(directionCreate);
                                         }
@@ -300,7 +312,7 @@ namespace HouseManager4_0.RoomMainF
                                     string otherRoadCode;
                                     int otherRoadOrder;
                                     double otherPencent;
-                                    double otherLon, otherLat;
+                                    double otherLon, otherLat, otherHeight;
                                     otherLon = calCross[indexOfCalCross].cross.BDLongitude;
                                     otherLat = calCross[indexOfCalCross].cross.BDLatitude;
                                     if (calCross[indexOfCalCross].calType == 1)
@@ -308,35 +320,39 @@ namespace HouseManager4_0.RoomMainF
                                         otherRoadCode = calCross[indexOfCalCross].cross.RoadCode2;
                                         otherRoadOrder = calCross[indexOfCalCross].cross.RoadOrder2;
                                         otherPencent = calCross[indexOfCalCross].cross.Percent2;
+                                        otherHeight = calCross[indexOfCalCross].cross.Percent2 * (grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode2, calCross[indexOfCalCross].cross.RoadOrder2).endHeight - grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode2, calCross[indexOfCalCross].cross.RoadOrder2).startHeight) + grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode2, calCross[indexOfCalCross].cross.RoadOrder2).startHeight;
+
                                     }
                                     else
                                     {
                                         otherRoadCode = calCross[indexOfCalCross].cross.RoadCode1;
                                         otherRoadOrder = calCross[indexOfCalCross].cross.RoadOrder1;
                                         otherPencent = calCross[indexOfCalCross].cross.Percent1;
+                                        otherHeight = calCross[indexOfCalCross].cross.Percent1 * (grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode1, calCross[indexOfCalCross].cross.RoadOrder1).endHeight - grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode1, calCross[indexOfCalCross].cross.RoadOrder1).startHeight) + grp.GetItemRoadInfo(calCross[indexOfCalCross].cross.RoadCode1, calCross[indexOfCalCross].cross.RoadOrder1).startHeight;
+
                                     }
-                                    var otherRoad = Program.dt.GetItemRoadInfo(otherRoadCode, otherRoadOrder);
+                                    var otherRoad = grp.GetItemRoadInfo(otherRoadCode, otherRoadOrder);
                                     {
                                         var directionCreate = new Node.direction()
                                         {
-                                            start = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 0, otherRoad.startLongitude, otherRoad.startLatitude, otherRoad.MaxSpeed),
-                                            end = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 1, otherRoad.endLongitude, otherRoad.endLatitude, otherRoad.MaxSpeed),
+                                            start = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 0, otherRoad.startLongitude, otherRoad.startLatitude, otherRoad.startHeight, otherRoad.MaxSpeed),
+                                            end = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 1, otherRoad.endLongitude, otherRoad.endLatitude, otherRoad.endHeight, otherRoad.MaxSpeed),
                                             right = false
                                         };
-                                        var otherPosition = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, otherPencent, otherLon, otherLat, otherRoad.MaxSpeed);
-                                        if (FoundCross(directionCreate, otherPosition))
+                                        var otherPosition = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, otherPencent, otherLon, otherLat, otherHeight, otherRoad.MaxSpeed);
+                                        if (FoundCross(directionCreate, otherPosition, grp))
                                             selections.Add(directionCreate);
                                     }
                                     if (otherRoad.CarInOpposeDirection == 1)
                                     {
                                         var directionCreate = new Node.direction()
                                         {
-                                            end = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 0, otherRoad.startLongitude, otherRoad.startLatitude, otherRoad.MaxSpeed),
-                                            start = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 1, otherRoad.endLongitude, otherRoad.endLatitude, otherRoad.MaxSpeed),
+                                            end = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 0, otherRoad.startLongitude, otherRoad.startLatitude, otherRoad.startHeight, otherRoad.MaxSpeed),
+                                            start = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, 1, otherRoad.endLongitude, otherRoad.endLatitude, otherRoad.endHeight, otherRoad.MaxSpeed),
                                             right = false
                                         };
-                                        var otherPosition = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, otherPencent, otherLon, otherLat, otherRoad.MaxSpeed);
-                                        if (FoundCross(directionCreate, otherPosition))
+                                        var otherPosition = new MapGo.nyrqPosition(otherRoad.RoadCode, otherRoad.RoadOrder, otherPencent, otherLon, otherLat, otherHeight, otherRoad.MaxSpeed);
+                                        if (FoundCross(directionCreate, otherPosition, grp))
                                             selections.Add(directionCreate);
                                     }
                                     node.path.Add(new Node.pathItem()
@@ -368,6 +384,7 @@ namespace HouseManager4_0.RoomMainF
                                 {
                                     longitude = path[indexOfPath].BDlongitude,
                                     latitude = path[indexOfPath].BDlatitude,
+                                    height = path[indexOfPath].BDheight,
                                     crossKey = getID(current, next)
                                 };
                                 selections.Add(new Node.direction()
@@ -384,7 +401,7 @@ namespace HouseManager4_0.RoomMainF
                                         end = path[indexOfPath + 1],
                                         right = false
                                     };
-                                    if (FoundCross(direction, path[indexOfPath + 1]))
+                                    if (FoundCross(direction, path[indexOfPath + 1], grp))
                                     {
                                         selections.Add(direction);
                                     }
@@ -396,7 +413,7 @@ namespace HouseManager4_0.RoomMainF
                                         end = path[indexOfPath],
                                         right = false
                                     };
-                                    if (FoundCross(direction, path[indexOfPath]))
+                                    if (FoundCross(direction, path[indexOfPath], grp))
                                     {
                                         selections.Add(direction);
                                     }
@@ -432,6 +449,7 @@ namespace HouseManager4_0.RoomMainF
                         {
                             longitude = path[path.Count - 1].BDlongitude,
                             latitude = path[path.Count - 1].BDlatitude,
+                            height = path[path.Count - 1].BDheight,
                             crossKey = null
                         }
                     });
@@ -502,7 +520,7 @@ namespace HouseManager4_0.RoomMainF
             }
             return crossKey;
         }
-        private bool FoundCross(Node.direction wrong, MapGo.nyrqPosition startPosition)
+        private bool FoundCross(Node.direction wrong, MapGo.nyrqPosition startPosition, GetRandomPos grp)
         {
             var roadCode = startPosition.roadCode;
             var roadOrder = startPosition.roadOrder + 0;
@@ -515,20 +533,20 @@ namespace HouseManager4_0.RoomMainF
             {
                 ascendingValue = 1;
                 //  endPosition=new MapGo.nyrqPosition(roadCode,roadOrder,1)
-                var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder);
-                firstEndPosition = new MapGo.nyrqPosition(roadCode, roadOrder, 1, current.endLongitude, current.endLatitude, current.MaxSpeed);
+                var current = grp.GetItemRoadInfo(roadCode, roadOrder);
+                firstEndPosition = new MapGo.nyrqPosition(roadCode, roadOrder, 1, current.endLongitude, current.endLatitude, current.endHeight, current.MaxSpeed);
             }
             else
             {
                 ascendingValue = -1;
-                var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder);
-                firstEndPosition = new MapGo.nyrqPosition(roadCode, roadOrder, 0, current.startLongitude, current.startLatitude, current.MaxSpeed);
+                var current = grp.GetItemRoadInfo(roadCode, roadOrder);
+                firstEndPosition = new MapGo.nyrqPosition(roadCode, roadOrder, 0, current.startLongitude, current.startLatitude, current.startHeight, current.MaxSpeed);
             }
             //  if (wrong.end.roadOrder + wrong.end.percent > wrong.start.roadOrder + wrong.start.percent)
             {
                 {
                     //var start=
-                    var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder);
+                    var current = grp.GetItemRoadInfo(roadCode, roadOrder);
                     var findCrosses1 = findCrossesF(current.Cross1,
                                            current,
                                            startPosition, firstEndPosition, ascendingValue,
@@ -576,7 +594,7 @@ namespace HouseManager4_0.RoomMainF
                 while (true)
                 {
                     bool existed;
-                    var current = Program.dt.GetItemRoadInfo(roadCode, roadOrder, out existed);
+                    var current = grp.GetItemRoadInfo(roadCode, roadOrder, out existed);
                     if (existed)
                     {
                         if (current.Cross1.Length + current.Cross2.Length > 0)
@@ -975,10 +993,16 @@ namespace HouseManager4_0.RoomMainF
         private List<SaveRoad.DictCross> findCrossesF(SaveRoad.DictCross[] cross, SaveRoad.RoadInfo current, MapGo.nyrqPosition p1, MapGo.nyrqPosition p2, double ascendingValue, getRoadCodeParameter codeF, getRoadOrderParameter orderF, getPercentParameter percentF)
         {
             var findCrosses = (from item in cross
-                               where item.CrossState == 1
+                               where (item.CrossState == 1
                                && codeF(item) == current.RoadCode
                                && (orderF(item) + percentF(item)) * ascendingValue > (p1.roadOrder + p1.percent) * ascendingValue
-                              && (orderF(item) + percentF(item)) * ascendingValue < (p2.roadOrder + p2.percent) * ascendingValue
+                              && (orderF(item) + percentF(item)) * ascendingValue < (p2.roadOrder + p2.percent) * ascendingValue)
+                              ||
+                              (false
+#warning 这里要更改
+                              //item.CrossState == 2 &&//item.RoadCode1>item.RoadCode2
+                              )
+
                                orderby (orderF(item) + percentF(item)) * ascendingValue ascending
                                select item).ToList();
             return findCrosses;
@@ -992,7 +1016,7 @@ namespace HouseManager4_0.RoomMainF
                 var path = goPath.path[j].path;
                 for (var i = 1; i < path.Count; i++)
                 {
-                    sumMiles += CommonClass.Geography.getLengthOfTwoPoint.GetDistance(path[i].BDlatitude, path[i].BDlongitude, path[i - 1].BDlatitude, path[i - 1].BDlongitude);
+                    sumMiles += CommonClass.Geography.getLengthOfTwoPoint.GetDistance(path[i].BDlatitude, path[i].BDlongitude, path[i].BDheight, path[i - 1].BDlatitude, path[i - 1].BDlongitude, path[i - 1].BDheight);
                 }
             }
             return Convert.ToInt32(sumMiles) / 1000;
@@ -1005,14 +1029,14 @@ namespace HouseManager4_0.RoomMainF
         /// <param name="car">carA？-carE</param>
         /// <param name="startTInput">时间</param>
         /// <returns></returns>
-        public List<int> getStartPositon(Model.FastonPosition fp, int positionInStation, ref int startTInput, out Data.PathStartPoint2 startPosition, bool speedImproved)
+        public List<int> getStartPositon(Model.FastonPosition fp, int positionInStation, ref int startTInput, out Data.PathStartPoint3 startPosition, bool speedImproved)
         {
-            double startX, startY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, out startX, out startY);
+            double startX, startY, startZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, fp.Height, out startX, out startY, out startZ);
             int startT0;// startT1;
 
-            double endX, endY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out endX, out endY);
+            double endX, endY, endZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, fp.Height, out endX, out endY, out endZ);
             int endT0;// endT1;
 
             //这里要考虑前台坐标系（左手坐标系）。
@@ -1058,20 +1082,22 @@ namespace HouseManager4_0.RoomMainF
             double carPositionX = startX + position.Real * percentOfPosition;
             double carPositionY = startY - position.Imaginary * percentOfPosition;
 
-            startPosition = new Data.PathStartPoint2()
+            startPosition = new Data.PathStartPoint3()
             {
                 x = Convert.ToInt32(carPositionX * 256),
-                y = Convert.ToInt32(carPositionY * 256)
+                y = Convert.ToInt32(carPositionY * 256),
+                z = Convert.ToInt32(startZ * 256)
             };
 
             List<int> animateResult = new List<int>();
             startT0 = startTInput;
             endT0 = startT0 + this.magicE.shotTime(500, speedImproved);
             startTInput += this.magicE.shotTime(500, speedImproved);
-            var animate1 = new Data.PathResult3()
+            var animate1 = new Data.PathResult4()
             {
                 x = Convert.ToInt32(-(position.Real * percentOfPosition) * 256),
                 y = Convert.ToInt32(position.Imaginary * percentOfPosition * 256),
+                z = 0,
                 t = endT0 - startT0
             };
             //var animate1 = new Data.PathResult()
@@ -1087,6 +1113,7 @@ namespace HouseManager4_0.RoomMainF
             {
                 animateResult.Add(animate1.x);
                 animateResult.Add(animate1.y);
+                animateResult.Add(animate1.z);
                 animateResult.Add(animate1.t);
             }
             // animateResult.Add(animate1);
@@ -1095,7 +1122,7 @@ namespace HouseManager4_0.RoomMainF
              */
             //  var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
             int interview;
-            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000;
+            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad, fp.Height) / 10 * 1000;
             if (calInterview < 1e-8)
             {
                 interview = 0;
@@ -1109,14 +1136,15 @@ namespace HouseManager4_0.RoomMainF
                 interview = Convert.ToInt32(calInterview + 1);
 
             }
-            interview = Program.rm.magicE.shotTime(interview, speedImproved);
+            interview = this.magicE.shotTime(interview, speedImproved);
 
             startTInput += interview;
 
-            var animate2 = new Data.PathResult3()
+            var animate2 = new Data.PathResult4()
             {
                 x = Convert.ToInt32((endX - startX) * 256),
                 y = Convert.ToInt32((endY - startY) * 256),
+                z = Convert.ToInt32((endZ - startZ) * 256),
                 t = interview
             };
             //var animate2 = new Data.PathResult()
@@ -1132,6 +1160,7 @@ namespace HouseManager4_0.RoomMainF
             {
                 animateResult.Add(animate2.x);
                 animateResult.Add(animate2.y);
+                animateResult.Add(animate2.z);
                 animateResult.Add(animate2.t);
             }
             //  animateResult.Add(animate2);
@@ -1144,27 +1173,28 @@ namespace HouseManager4_0.RoomMainF
             return new Complex(cc.Real / m, cc.Imaginary / m);
         }
 
-        internal void getStartPositionByFp(out Data.PathStartPoint2 startPosition, MapGo.nyrqPosition position)
+        internal void getStartPositionByFp(out Data.PathStartPoint3 startPosition, MapGo.nyrqPosition position)
         {
-            double startX, startY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(position.BDlongitude, position.BDlatitude, out startX, out startY);
-            startPosition = new Data.PathStartPoint2()
+            double startX, startY, startZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(position.BDlongitude, position.BDlatitude, position.BDheight, out startX, out startY, out startZ);
+            startPosition = new Data.PathStartPoint3()
             {
                 x = Convert.ToInt32(startX * 256),
-                y = Convert.ToInt32(startY * 256)
+                y = Convert.ToInt32(startY * 256),
+                z = Convert.ToInt32(startZ * 256)
             };
         }
-        [Obsolete]
-        void getStartPositionByFp(out Data.PathStartPoint2 startPosition, FastonPosition fastonPosition)
-        {
-            double startX, startY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.positionLongitudeOnRoad, fastonPosition.positionLatitudeOnRoad, out startX, out startY);
-            startPosition = new Data.PathStartPoint2()
-            {
-                x = Convert.ToInt32(startX * 256),
-                y = Convert.ToInt32(startY * 256)
-            };
-        }
+        //[Obsolete]
+        //void getStartPositionByFp(out Data.PathStartPoint2 startPosition, FastonPosition fastonPosition)
+        //{
+        //    double startX, startY;
+        //    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fastonPosition.positionLongitudeOnRoad, fastonPosition.positionLatitudeOnRoad, out startX, out startY);
+        //    startPosition = new Data.PathStartPoint2()
+        //    {
+        //        x = Convert.ToInt32(startX * 256),
+        //        y = Convert.ToInt32(startY * 256)
+        //    };
+        //}
         //public void getStartPositionByGoPath(out Data.PathStartPoint2 startPosition, List<Model.MapGo.nyrqPosition> goPath)
         //{
         //    var firstPosition = goPath.First();
@@ -1176,17 +1206,18 @@ namespace HouseManager4_0.RoomMainF
         //        y = Convert.ToInt32(startY * 256)
         //    };
         //}
-        internal void getStartPositionByGoPath(out Data.PathStartPoint2 startPosition, Node.pathItem pathItem)
+        internal void getStartPositionByGoPath(out Data.PathStartPoint3 startPosition, Node.pathItem pathItem)
         {
-            double startX, startY;
+            double startX, startY, startZ;
             if (pathItem.path.Count > 0)
-                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(pathItem.path[0].BDlongitude, pathItem.path[0].BDlatitude, out startX, out startY);
+                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(pathItem.path[0].BDlongitude, pathItem.path[0].BDlatitude, pathItem.path[0].BDheight, out startX, out startY, out startZ);
             else
-                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(pathItem.position.BDlongitude, pathItem.position.BDlatitude, out startX, out startY);
-            startPosition = new Data.PathStartPoint2()
+                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(pathItem.position.BDlongitude, pathItem.position.BDlatitude, pathItem.position.BDheight, out startX, out startY, out startZ);
+            startPosition = new Data.PathStartPoint3()
             {
                 x = Convert.ToInt32(startX * 256),
-                y = Convert.ToInt32(startY * 256)
+                y = Convert.ToInt32(startY * 256),
+                z = Convert.ToInt32(startZ * 256)
             };
         }
 
@@ -1196,12 +1227,12 @@ namespace HouseManager4_0.RoomMainF
             {
                 initPosition = initPosition % 5;
             }
-            double endX, endY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, out endX, out endY);
+            double endX, endY, endZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, fp.Height, out endX, out endY, out endZ);
             int startT1;
 
-            double startX, startY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, out startX, out startY);
+            double startX, startY, startZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.positionLongitudeOnRoad, fp.positionLatitudeOnRoad, fp.Height, out startX, out startY, out startZ);
             int endT1;
 
             //这里要考虑前台坐标系（左手坐标系）。
@@ -1257,7 +1288,7 @@ namespace HouseManager4_0.RoomMainF
              */
             // var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
             int interview;
-            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000;
+            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad, fp.Height) / 10 * 1000;
             if (calInterview < 1e-8)
             {
                 interview = 0;
@@ -1276,10 +1307,11 @@ namespace HouseManager4_0.RoomMainF
             startT1 = startTInput;
             endT1 = startT1 + interview;
             startTInput += interview;
-            var animate2 = new Data.PathResult3()
+            var animate2 = new Data.PathResult4()
             {
                 x = Convert.ToInt32((endX - startX) * 256),
                 y = Convert.ToInt32((endY - startY) * 256),
+                z = Convert.ToInt32((endZ - startZ) * 256),
                 t = interview
             };
             //var animate2 = new Data.PathResult()
@@ -1296,6 +1328,7 @@ namespace HouseManager4_0.RoomMainF
             {
                 animateResult.Add(animate2.x);
                 animateResult.Add(animate2.y);
+                animateResult.Add(animate2.z);
                 animateResult.Add(animate2.t);
             }
 
@@ -1303,10 +1336,11 @@ namespace HouseManager4_0.RoomMainF
             //    endT0 = startT0 + 500;
             startTInput += this.magicE.shotTime(500, speedImproved);
 
-            var animate1 = new Data.PathResult3()
+            var animate1 = new Data.PathResult4()
             {
                 x = Convert.ToInt32((carPositionX - endX) * 256),
                 y = Convert.ToInt32((carPositionY - endY) * 256),
+                z = 0,
                 t = this.magicE.shotTime(500, speedImproved)
             };
             //var animate1 = new Data.PathResult()
@@ -1323,6 +1357,7 @@ namespace HouseManager4_0.RoomMainF
             {
                 animateResult.Add(animate1.x);
                 animateResult.Add(animate1.y);
+                animateResult.Add(animate1.z);
                 animateResult.Add(animate1.t);
             }
 
@@ -1353,11 +1388,11 @@ namespace HouseManager4_0.RoomMainF
             List<double> direction = new List<double>();
             for (var i = 0; i < selections.Count; i++)
             {
-                double x1, y1, x2, y2;
+                double x1, y1, z1, x2, y2, z2;
                 var start = selections[i].start;
-                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(start.BDlongitude, start.BDlatitude, out x1, out y1);
+                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(start.BDlongitude, start.BDlatitude, start.BDheight, out x1, out y1, out z1);
                 var end = selections[i].end;
-                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(end.BDlongitude, end.BDlatitude, out x2, out y2);
+                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(end.BDlongitude, end.BDlatitude, end.BDheight, out x2, out y2, out z2);
 
                 var l = Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
                 if (l > 1e-8)
@@ -1373,8 +1408,8 @@ namespace HouseManager4_0.RoomMainF
                 }
 
             }
-            double positionX, positionY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(selectionCenter.longitude, selectionCenter.latitude, out positionX, out positionY);
+            double positionX, positionY, positionZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(selectionCenter.longitude, selectionCenter.latitude, selectionCenter.height, out positionX, out positionY, out positionZ);
             var obj = new ShowDirectionOperator
             {
                 c = "ShowDirectionOperator",

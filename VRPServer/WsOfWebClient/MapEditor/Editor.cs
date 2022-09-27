@@ -262,8 +262,8 @@ namespace WsOfWebClient.MapEditor
 
         private static async Task SetView(Position firstRoad, WebSocket webSocket)
         {
-            double MacatuoX, MacatuoY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(firstRoad.longitude, firstRoad.latitude, out MacatuoX, out MacatuoY);
+            double MacatuoX, MacatuoY, MacatuoZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(firstRoad.longitude, firstRoad.latitude,firstRoad.height, out MacatuoX, out MacatuoY,out MacatuoZ);
             CommonClass.ViewSearch sn = new CommonClass.ViewSearch()
             {
                 c = "ViewSearch",

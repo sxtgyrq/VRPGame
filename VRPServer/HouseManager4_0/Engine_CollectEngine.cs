@@ -15,13 +15,13 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c)
+        public bool carAbilitConditionsOk(RoleInGame player, Car car, Command c, GetRandomPos grp)
         {
             if (c.c == "SetCollect")
                 if (car.ability.leftVolume > 0)
                 {
                     SetCollect sc = (SetCollect)c;
-                    if (Program.dt.GetFpByIndex(that._collectPosition[sc.collectIndex]).FastenPositionID == sc.fastenpositionID)
+                    if (grp.GetFpByIndex(that._collectPosition[sc.collectIndex]).FastenPositionID == sc.fastenpositionID)
                     {
                         return true;
                     }
@@ -41,7 +41,7 @@ namespace HouseManager4_0
             }
         }
 
-        public bool conditionsOk(Command c, out string reason)
+        public bool conditionsOk(Command c, GetRandomPos grp, out string reason)
         {
             if (c.c == "SetCollect")
             {
@@ -71,7 +71,7 @@ namespace HouseManager4_0
                     reason = "";
                     return false;
                 }
-                else if (Program.dt.GetFpByIndex(that._collectPosition[sc.collectIndex]).FastenPositionID != sc.fastenpositionID)
+                else if (grp.GetFpByIndex(that._collectPosition[sc.collectIndex]).FastenPositionID != sc.fastenpositionID)
                 {
                     reason = "";
                     return false;
@@ -95,12 +95,12 @@ namespace HouseManager4_0
                 this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
         }
 
-        public commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, ref List<string> notifyMsg, out MileResultReason mrr)
+        public commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason mrr)
         {
             if (c.c == "SetCollect")
             {
                 var sc = (SetCollect)c;
-                return this.collect(player, car, sc, ref notifyMsg, out mrr);
+                return this.collect(player, car, sc, grp, ref notifyMsg, out mrr);
             }
             else
             {
@@ -108,12 +108,12 @@ namespace HouseManager4_0
             }
         }
 
-        internal string updateCollect(SetCollect sc)
+        internal string updateCollect(SetCollect sc, GetRandomPos grp)
         {
-            return this.updateAction(this, sc, sc.Key);
+            return this.updateAction(this, sc, grp, sc.Key);
         }
 
-        RoomMainF.RoomMain.commandWithTime.ReturningOjb collect(RoleInGame player, Car car, SetCollect sc, ref List<string> notifyMsg, out MileResultReason Mrr)
+        RoomMainF.RoomMain.commandWithTime.ReturningOjb collect(RoleInGame player, Car car, SetCollect sc, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             if (player.confuseRecord.IsBeingControlled())
             {
@@ -122,12 +122,12 @@ namespace HouseManager4_0
                     Model.FastonPosition target;
                     if (car.state == CarState.waitOnRoad)
                     {
-                        target = Program.dt.GetFpByIndex(car.targetFpIndex);
+                        target = grp.GetFpByIndex(car.targetFpIndex);
 
                     }
                     else if (car.state == CarState.waitAtBaseStation)
                     {
-                        target = Program.dt.GetFpByIndex(player.StartFPIndex);
+                        target = grp.GetFpByIndex(player.StartFPIndex);
 
                         // that.magicE.TakeHalfMoneyWhenIsControlled(player, car, ref notifyMsg);
                     }
@@ -135,17 +135,17 @@ namespace HouseManager4_0
                     {
                         throw new Exception("");
                     }
-                    var positions = that.getCollectPositionsByDistance(target);
+                    var positions = that.getCollectPositionsByDistance(target, Program.dt);
                     if (sc.collectIndex == positions[0] || sc.collectIndex == positions[1])
                     {
 
                     }
                     else
                     {
-                        var position0 = Program.dt.GetFpByIndex(that._collectPosition[positions[0]]);
-                        var position1 = Program.dt.GetFpByIndex(that._collectPosition[positions[1]]);
-                        var distance0 = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, position0.Latitde, position0.Longitude);
-                        var distance1 = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, position1.Latitde, position1.Longitude);
+                        var position0 = grp.GetFpByIndex(that._collectPosition[positions[0]]);
+                        var position1 = grp.GetFpByIndex(that._collectPosition[positions[1]]);
+                        var distance0 = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, target.Height, position0.Latitde, position0.Longitude, position0.Height);
+                        var distance1 = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, target.Height, position1.Latitde, position1.Longitude, position1.Height);
                         if (distance0 < distance1)
                         {
                             this.WebNotify(player, $"您处于迷失状态，未能到达远方！只能先到附近的[{position0.FastenPositionName}]执行收集任务！");
@@ -157,7 +157,7 @@ namespace HouseManager4_0
                                 cType = "findWork",
                                 Key = sc.Key
                             };
-                            return collect(player, car, newSc, ref notifyMsg, out Mrr);
+                            return collect(player, car, newSc, grp, ref notifyMsg, out Mrr);
                         }
                         else
                         {
@@ -170,7 +170,7 @@ namespace HouseManager4_0
                                 cType = "findWork",
                                 Key = sc.Key
                             };
-                            return collect(player, car, newSc, ref notifyMsg, out Mrr);
+                            return collect(player, car, newSc, grp, ref notifyMsg, out Mrr);
                         }
                     }
                     //var target = Program.dt.GetFpByIndex(victim.StartFPIndex);
@@ -185,7 +185,7 @@ namespace HouseManager4_0
             RoleInGame boss;
             if (player.HasTheBoss(roomMain._Players, out boss))
             {
-                return collectPassBossAddress(player, boss, car, sc, ref notifyMsg, out Mrr);
+                return collectPassBossAddress(player, boss, car, sc, grp, ref notifyMsg, out Mrr);
                 //return promotePassBossAddress(player, boss, car, sp, ref notifyMsg, out reason);
             }
             else
@@ -194,21 +194,21 @@ namespace HouseManager4_0
                 {
                     var from = this.GetFromWhenUpdateCollect(that._Players[sc.Key], sc.cType, car);
                     var to = getCollectPositionTo(sc.collectIndex);//  this.promoteMilePosition;
-                    var fp1 = Program.dt.GetFpByIndex(from);
-                    var fp2 = Program.dt.GetFpByIndex(to);
-                    var fbBase = Program.dt.GetFpByIndex(player.StartFPIndex);
+                    var fp1 = grp.GetFpByIndex(from);
+                    var fp2 = grp.GetFpByIndex(to);
+                    var fbBase = grp.GetFpByIndex(player.StartFPIndex);
                     //var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
                     //var goPath = Program.dt.GetAFromB(from, to);
-                    var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
+                    var goPath = that.GetAFromB_v2(from, to, player, grp, ref notifyMsg);
 
                     //var returnPath = Program.dt.GetAFromB(to, player.StartFPIndex);
-                    var returnPath = that.GetAFromB_v2(to, player.StartFPIndex, player, ref notifyMsg);
+                    var returnPath = that.GetAFromB_v2(to, player.StartFPIndex, player, grp, ref notifyMsg);
                     var goMile = that.GetMile(goPath);
                     var returnMile = that.GetMile(returnPath);
                     if (car.ability.leftMile >= goMile + returnMile || IsNPCsFirstCollect(player))
                     {
                         int startT;
-                        this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
+                        this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
                         var ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
                         //  Thread th=new Thread() { }
                         car.setState(player, ref notifyMsg, CarState.working);
@@ -298,7 +298,7 @@ namespace HouseManager4_0
                         this.sendMsg(notifyMsg);
                         StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
                     };
-                    this.loop(p,step,startT,player,goPath);
+                    this.loop(p, step, startT, player, goPath);
                     //if (step == 0)
                     //{
                     //    this.ThreadSleep(startT + 50);
@@ -476,7 +476,7 @@ namespace HouseManager4_0
             }
             if (key != -1)
             {
-                that._collectPosition[key] = that.GetRandomPosition(true);
+                that._collectPosition[key] = that.GetRandomPosition(true, Program.dt);
             }
             // return 0;
         }
@@ -558,7 +558,7 @@ namespace HouseManager4_0
             else
                 throw new Exception("parameter is wrong!");
         }
-        public commandWithTime.ReturningOjb collectPassBossAddress(RoleInGame player, RoleInGame boss, Car car, SetCollect sc, ref List<string> notifyMsg, out MileResultReason mrr)
+        public commandWithTime.ReturningOjb collectPassBossAddress(RoleInGame player, RoleInGame boss, Car car, SetCollect sc, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason mrr)
         {
             if (car.ability.leftVolume > 0)
             {
@@ -570,9 +570,9 @@ namespace HouseManager4_0
                 var fbBase = Program.dt.GetFpByIndex(player.StartFPIndex);
                 //var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
                 //var goPath = Program.dt.GetAFromB(from, to);
-                var goPath = that.GetAFromB_v2(from, to, player, ref notifyMsg);
-                var returnToBossPath = that.GetAFromB_v2(to, boss.StartFPIndex, player, ref notifyMsg);
-                var returnToSelfPath = that.GetAFromB_v2(boss.StartFPIndex, player.StartFPIndex, player, ref notifyMsg);
+                var goPath = that.GetAFromB_v2(from, to, player, grp, ref notifyMsg);
+                var returnToBossPath = that.GetAFromB_v2(to, boss.StartFPIndex, player, grp, ref notifyMsg);
+                var returnToSelfPath = that.GetAFromB_v2(boss.StartFPIndex, player.StartFPIndex, player, grp, ref notifyMsg);
                 var goMile = that.GetMile(goPath);
                 var returnToBossMile = that.GetMile(returnToBossPath);
                 var returnToSelfMile = that.GetMile(returnToSelfPath);
@@ -581,7 +581,7 @@ namespace HouseManager4_0
                 {
                     that.magicE.TakeHalfMoneyWhenIsControlled(player, car, ref notifyMsg);
                     int startT;
-                    this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, ref notifyMsg, out startT);
+                    this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
                     var ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
                     car.setState(player, ref notifyMsg, CarState.working);
                     StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);

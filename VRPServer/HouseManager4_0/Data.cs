@@ -8,6 +8,160 @@ using static CommonClass.PathCal;
 using OssModel = Model;
 namespace HouseManager4_0
 {
+
+    public interface GetRandomPos
+    {
+        //GetFpCount
+        public int GetFpCount();
+        public OssModel.FastonPosition GetFpByIndex(int indexValule);
+        public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end);
+        public OssModel.SaveRoad.RoadInfo GetItemRoadInfo(OssModel.MapGo.nyrqPosition nyrqPosition);
+        public OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder);
+        public OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder, out bool existed);
+        public void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved, RoomMainF.RoomMain rmain);
+    }
+
+    public partial class Data : GetRandomPos
+    {
+        public int GetFpCount()
+        {
+            return this._allFp.Count;
+        }
+
+        public OssModel.FastonPosition GetFpByIndex(int indexValule)
+        {
+
+            if (indexValule >= this._allFp.Count || indexValule < 0)
+            {
+                return null;
+            }
+            var fp = this._allFp[indexValule];
+            return fp;
+        }
+
+        public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
+        {
+            return this.pathCal.GetAFromB(start, end);
+        }
+        public OssModel.SaveRoad.RoadInfo GetItemRoadInfo(OssModel.MapGo.nyrqPosition nyrqPosition)
+        {
+            return this._road[nyrqPosition.roadCode][nyrqPosition.roadOrder];
+        }
+        public OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder)
+        {
+            return this._road[roadCode][roadOrder];
+        }
+        public OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder, out bool existed)
+        {
+            if (this._road.ContainsKey(roadCode))
+            {
+                if (this._road[roadCode].ContainsKey(roadOrder))
+                {
+                    existed = true;
+                    return this._road[roadCode][roadOrder];
+                }
+                else
+                {
+                    existed = false;
+                    return null;
+                }
+            }
+            else
+            {
+                existed = false;
+                return null;
+            }
+
+        }
+        public void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved, RoomMainF.RoomMain rmain)
+        {
+            for (var i = 0; i < dataResult.Count; i++)
+            {
+                if (i == 0)
+                {
+                    //var startX = result.Last().x1;
+                    //var startY = result.Last().y1;
+                    double startX, startY, startZ;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(position.BDlongitude, position.BDlatitude, position.BDheight, out startX, out startY, out startZ);
+
+                    //var length=
+
+                    double endX, endY, endZ;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDheight, out endX, out endY, out endZ);
+                    //  var interview =
+                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(position.BDlatitude, position.BDlongitude, position.BDheight, dataResult[i].BDlatitude, dataResult[i].BDlongitude, dataResult[i].BDheight) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+
+                    interview = rmain.magicE.shotTime(interview, speedImproved);
+
+                    if (result.Count == 0)
+                    {
+                        var animate0 = new PathResult4()
+                        {
+                            t = startT,
+                            x = 0,
+                            y = 0,
+                            z = 0
+                        };
+                        {
+                            result.Add(animate0.x);
+                            result.Add(animate0.y);
+                            result.Add(animate0.z);
+                            result.Add(animate0.t);
+                        }
+                        // result.Add(animate0);
+                    }
+                    var animate1 = new PathResult4()
+                    {
+                        t = interview,
+                        x = Convert.ToInt32((endX - startX) * 256),
+                        y = Convert.ToInt32((endY - startY) * 256),
+                        z = Convert.ToInt32((endZ - startZ) * 256),
+                    };
+                    if (animate1.x != 0 || animate1.y != 0)  // if (animate1.t != 0)
+                    {
+                        result.Add(animate1.x);
+                        result.Add(animate1.y);
+                        result.Add(animate1.z);
+                        result.Add(animate1.t);
+                    }
+                    startT += interview;
+                }
+                else if (dataResult[i].roadCode == dataResult[i - 1].roadCode)
+                {
+
+                    double startX, startY, startZ;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i - 1].BDlongitude, dataResult[i - 1].BDlatitude, dataResult[i - 1].BDheight, out startX, out startY, out startZ);
+
+                    double endX, endY, endZ;
+                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDheight, out endX, out endY, out endZ);
+
+                    // var length = CommonClass.Geography.getLengthOfTwoPoint.
+                    //  var interview =
+                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i - 1].BDheight, dataResult[i].BDlatitude, dataResult[i].BDlongitude, dataResult[i].BDheight) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+
+                    interview = rmain.magicE.shotTime(interview, speedImproved);
+
+                    var animate1 = new Data.PathResult4()
+                    {
+                        x = Convert.ToInt32((endX - startX) * 256),
+                        y = Convert.ToInt32((endY - startY) * 256),
+                        z = Convert.ToInt32((endZ - startZ) * 256),
+                        t = interview
+                    };
+                    startT += interview;
+                    //if (animate1.t != 0)
+                    if (animate1.x != 0 || animate1.y != 0)
+                    {
+                        result.Add(animate1.x);
+                        result.Add(animate1.y);
+                        result.Add(animate1.z);
+                        result.Add(animate1.t);
+                    }
+                    // result.Add(animate1);
+                }
+            }
+        }
+    }
     public partial class Data
     {
 
@@ -31,7 +185,7 @@ namespace HouseManager4_0
                 this.dataDictionary = dataDictionary_;
             }
 
-            internal void cal()
+            internal void cal(bool unitTest)
             {
                 this.calMaterial = new List<CalModel_V2>();
                 for (int indexOfFP = 0; indexOfFP < countFpCount; indexOfFP++)
@@ -161,7 +315,11 @@ namespace HouseManager4_0
                 var conten2 = File.ReadAllText($"{ this.dataDictionary}resultommm22x.txt");
                 this.allDirect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(conten2);
                 Console.WriteLine($"加载的数据{ this.fpDirect.Count},{this.allDirect.Count}{"\r\n"}任意键继续");
-                Console.ReadLine();
+                if (unitTest) { }
+                else
+                {
+                    Console.ReadLine();
+                }
             }
 
             internal List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
@@ -218,19 +376,20 @@ namespace HouseManager4_0
                     var io = pathCal[i];
                     var lon = this.road[io.RoadCode][io.RoadOrder].startLongitude + (this.road[io.RoadCode][io.RoadOrder].endLongitude - this.road[io.RoadCode][io.RoadOrder].startLongitude) * io.Percent;
                     var lat = this.road[io.RoadCode][io.RoadOrder].startLatitude + (this.road[io.RoadCode][io.RoadOrder].endLatitude - this.road[io.RoadCode][io.RoadOrder].startLatitude) * io.Percent;
+                    var height = this.road[io.RoadCode][io.RoadOrder].startHeight + (this.road[io.RoadCode][io.RoadOrder].endHeight - this.road[io.RoadCode][io.RoadOrder].startHeight) * io.Percent;
                     var maxSpeed = this.road[io.RoadCode][io.RoadOrder].MaxSpeed;
-                    result.Add(new OssModel.MapGo.nyrqPosition(io.RoadCode, io.RoadOrder, io.Percent, lon, lat, maxSpeed));
+                    result.Add(new OssModel.MapGo.nyrqPosition(io.RoadCode, io.RoadOrder, io.Percent, lon, lat, height, maxSpeed));
                 }
                 return result;
             }
 
             enum Direction { Up, Down, Null }
-            class UsefulInfoMation
-            {
-                public string roadCode;
-                public int roadOrder;
-                public Direction direction;
-            }
+            //class UsefulInfoMation
+            //{
+            //    public string roadCode;
+            //    public int roadOrder;
+            //    public Direction direction;
+            //}
             private void addMidUsefulInfo(ref List<OssModel.MapGo.nyrqPosition> result)
             {
                 string roadCode;
@@ -240,27 +399,29 @@ namespace HouseManager4_0
                 while (findIndexWhichNeedToFix(ref result, out indexFound, out roadCode, out roadOrder, out direction))
                 {
                     {
-                        double percent, lon, lat;
+                        double percent, lon, lat, height;
                         if (direction == Direction.Up)
                         {
                             percent = 0;
                             lon = this.road[roadCode][roadOrder].startLongitude;
                             lat = this.road[roadCode][roadOrder].startLatitude;
+                            height = this.road[roadCode][roadOrder].startHeight;
                         }
                         else if (direction == Direction.Down)
                         {
                             percent = 1;
                             lon = this.road[roadCode][roadOrder].endLongitude;
                             lat = this.road[roadCode][roadOrder].endLatitude;
+                            height = this.road[roadCode][roadOrder].endHeight;
                         }
                         else
                         {
                             throw new Exception("");
                         }
-                        result.Insert(indexFound, new OssModel.MapGo.nyrqPosition(roadCode, roadOrder, percent, lon, lat, this.road[roadCode][roadOrder].MaxSpeed));
+                        result.Insert(indexFound, new OssModel.MapGo.nyrqPosition(roadCode, roadOrder, percent, lon, lat, height, this.road[roadCode][roadOrder].MaxSpeed));
                     }
                     {
-                        double percent, lon, lat;
+                        double percent, lon, lat, height;
                         // int roadOrder;
                         if (direction == Direction.Up)
                         {
@@ -268,6 +429,7 @@ namespace HouseManager4_0
                             percent = 1;
                             lon = this.road[roadCode][roadOrder].endLongitude;
                             lat = this.road[roadCode][roadOrder].endLatitude;
+                            height = this.road[roadCode][roadOrder].endHeight;
                         }
                         else if (direction == Direction.Down)
                         {
@@ -275,12 +437,13 @@ namespace HouseManager4_0
                             percent = 0;
                             lon = this.road[roadCode][roadOrder].startLongitude;
                             lat = this.road[roadCode][roadOrder].startLatitude;
+                            height = this.road[roadCode][roadOrder].startHeight;
                         }
                         else
                         {
                             throw new Exception("");
                         }
-                        result.Insert(indexFound, new OssModel.MapGo.nyrqPosition(roadCode, roadOrder, percent, lon, lat, this.road[roadCode][roadOrder].MaxSpeed));
+                        result.Insert(indexFound, new OssModel.MapGo.nyrqPosition(roadCode, roadOrder, percent, lon, lat, height, this.road[roadCode][roadOrder].MaxSpeed));
                     }
                 }
                 // throw new NotImplementedException();
@@ -388,7 +551,12 @@ namespace HouseManager4_0
         }
 
         PathCal pathCal;
+
         public void LoadRoad()
+        {
+            this.LoadRoad(Program.boundary, false);
+        }
+        public void LoadRoad(Geometry.GetBoundryF f, bool unitTest)
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
             //Consol.WriteLine($"path:{rootPath}");
@@ -405,46 +573,18 @@ namespace HouseManager4_0
 
             this._road = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>>>(json);
 
-            this._allFp = GetAllFp(fpDictionary);
+            this._allFp = GetAllFp(fpDictionary, f);
 
             //Consol.WriteLine($"{this._road.Count}_{this._allFp.Count}");
 
             this.pathCal = new PathCal(this, fpDictionary);
-            this.pathCal.cal();
+            this.pathCal.cal(unitTest);
         }
 
 
-        internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(OssModel.MapGo.nyrqPosition nyrqPosition)
-        {
-            return this._road[nyrqPosition.roadCode][nyrqPosition.roadOrder];
-        }
-        internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder)
-        {
-            return this._road[roadCode][roadOrder];
-        }
-        internal OssModel.SaveRoad.RoadInfo GetItemRoadInfo(string roadCode, int roadOrder, out bool existed)
-        {
-            if (this._road.ContainsKey(roadCode))
-            {
-                if (this._road[roadCode].ContainsKey(roadOrder))
-                {
-                    existed = true;
-                    return this._road[roadCode][roadOrder];
-                }
-                else
-                {
-                    existed = false;
-                    return null;
-                }
-            }
-            else
-            {
-                existed = false;
-                return null;
-            }
 
-        }
-        static List<OssModel.FastonPosition> GetAllFp(string fpDictionary)
+
+        static List<OssModel.FastonPosition> GetAllFp(string fpDictionary, Geometry.GetBoundryF f)
         {
             //  throw new Exception("");
             ////var fpConfig = Config.map.getFastonPositionConfigInfo(city, false);
@@ -454,7 +594,7 @@ namespace HouseManager4_0
             {
                 var json = File.ReadAllText($"{fpDictionary}fpindex\\fp_{index }.txt");
                 var item = Newtonsoft.Json.JsonConvert.DeserializeObject<OssModel.FastonPosition>(json);
-                item.region = Program.boundary.GetBoundry(item.Longitude, item.Latitde);
+                item.region = f.GetBoundry(item.Longitude, item.Latitde);
                 // if(string.ins)
                 Console.WriteLine($"{item.FastenPositionName}-{item.region}");
                 result.Add(item);
@@ -477,16 +617,6 @@ namespace HouseManager4_0
 
 
 
-        public OssModel.FastonPosition GetFpByIndex(int indexValule)
-        {
-
-            if (indexValule >= this._allFp.Count || indexValule < 0)
-            {
-                return null;
-            }
-            var fp = this._allFp[indexValule];
-            return fp;
-        }
 
         public int getCarInOpposeDirection(string roadCode)
         {
@@ -494,10 +624,7 @@ namespace HouseManager4_0
             return -1;
         }
 
-        internal int GetFpCount()
-        {
-            return this._allFp.Count;
-        }
+
 
 
 
@@ -521,10 +648,7 @@ namespace HouseManager4_0
             //}
         }
         // static string PathDataAll = "";
-        public List<OssModel.MapGo.nyrqPosition> GetAFromB(int start, int end)
-        {
-            return this.pathCal.GetAFromB(start, end);
-        }
+
 
         private static byte[] Decompress(byte[] data, int comPressLength)
         {
@@ -618,7 +742,7 @@ namespace HouseManager4_0
         //    //    }
         //    //}
         //}
-        public class PathStartPoint2
+        public class PathStartPoint3
         {
             /// <summary>
             /// 要采用变换后的坐标 19级坐标×256
@@ -628,8 +752,12 @@ namespace HouseManager4_0
             /// 要采用变换后的坐标 19级坐标×256
             /// </summary>
             public int y { get; set; }
+            /// <summary>
+            /// 要采用变换后的坐标 19级坐标×256
+            /// </summary>
+            public int z { get; set; }
         }
-        public class PathResult3
+        public class PathResult4
         {
             /// <summary>
             /// 单位是10e-6°（经纬度）
@@ -639,6 +767,8 @@ namespace HouseManager4_0
             /// 单位是10e-6°（经纬度）
             /// </summary>
             public int y { get; set; }
+
+            public int z { get; set; }
             public int t { get; set; }
 
             //public int a1 { get; set; }//angle
@@ -664,201 +794,120 @@ namespace HouseManager4_0
         //    public int t1 { get; set; }
         //}
 
-        /// <summary>
-        /// 获取路径
-        /// </summary>
-        /// <param name="dataResult">路径</param>
-        /// <param name="fpLast">起始点</param>
-        /// <param name="speed">速度</param>
-        /// <param name="result">ref path的结果。</param>
-        /// <param name="startT">ref 时间结果</param>
-        void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
-        {
-            for (var i = 0; i < dataResult.Count; i++)
-            {
-                if (i == 0)
-                {
-                    //var startX = result.Last().x1;
-                    //var startY = result.Last().y1;
-                    double startX, startY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fpLast.positionLongitudeOnRoad, fpLast.positionLatitudeOnRoad, out startX, out startY);
+        ///// <summary>
+        ///// 获取路径
+        ///// </summary>
+        ///// <param name="dataResult">路径</param>
+        ///// <param name="fpLast">起始点</param>
+        ///// <param name="speed">速度</param>
+        ///// <param name="result">ref path的结果。</param>
+        ///// <param name="startT">ref 时间结果</param>
+        //void GetAFromBPoint_(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
+        //{
+        //    for (var i = 0; i < dataResult.Count; i++)
+        //    {
+        //        if (i == 0)
+        //        {
+        //            //var startX = result.Last().x1;
+        //            //var startY = result.Last().y1;
+        //            double startX, startY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fpLast.positionLongitudeOnRoad, fpLast.positionLatitudeOnRoad, out startX, out startY);
 
-                    //var length=
+        //            //var length=
 
-                    double endX, endY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
-                    //  var interview =
-                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fpLast.positionLatitudeOnRoad, fpLast.positionLongitudeOnRoad, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+        //            double endX, endY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
+        //            //  var interview =
+        //            var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fpLast.positionLatitudeOnRoad, fpLast.positionLongitudeOnRoad, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
 
-                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
+        //            interview = Program.rm.magicE.shotTime(interview, speedImproved);
 
-                    if (result.Count == 0)
-                    {
-                        var animate0 = new PathResult3()
-                        {
-                            t = startT,
-                            x = 0,
-                            y = 0
-                        };
-                        // if (animate0.t != 0)
-                        {
-                            result.Add(animate0.x);
-                            result.Add(animate0.y);
-                            result.Add(animate0.t);
-                        }
-                        // result.Add(animate0);
-                    }
-                    var animate1 = new PathResult3()
-                    {
-                        t = interview,
-                        x = Convert.ToInt32((endX - startX) * 256),
-                        y = Convert.ToInt32((endY - startY) * 256),
-                    };
-                    if (animate1.x != 0 || animate1.y != 0)  //  if (animate1.t != 0)
-                    {
-                        result.Add(animate1.x);
-                        result.Add(animate1.y);
-                        result.Add(animate1.t);
-                    }
-                    //result.Add(animate1);
-                    //var animate1 = new Data.PathResult()
-                    //{
-                    //    t0 = startT + 0,
-                    //    x0 = startX,
-                    //    y0 = startY,
-                    //    t1 = startT + interview,
-                    //    x1 = endX,
-                    //    y1 = endY
-                    //};
-                    startT += interview;
-                    // result.Add(animate1);
-                }
-                else if (dataResult[i].roadCode == dataResult[i - 1].roadCode)
-                {
+        //            if (result.Count == 0)
+        //            {
+        //                var animate0 = new PathResult3()
+        //                {
+        //                    t = startT,
+        //                    x = 0,
+        //                    y = 0
+        //                };
+        //                // if (animate0.t != 0)
+        //                {
+        //                    result.Add(animate0.x);
+        //                    result.Add(animate0.y);
+        //                    result.Add(animate0.t);
+        //                }
+        //                // result.Add(animate0);
+        //            }
+        //            var animate1 = new PathResult3()
+        //            {
+        //                t = interview,
+        //                x = Convert.ToInt32((endX - startX) * 256),
+        //                y = Convert.ToInt32((endY - startY) * 256),
+        //            };
+        //            if (animate1.x != 0 || animate1.y != 0)  //  if (animate1.t != 0)
+        //            {
+        //                result.Add(animate1.x);
+        //                result.Add(animate1.y);
+        //                result.Add(animate1.t);
+        //            }
+        //            //result.Add(animate1);
+        //            //var animate1 = new Data.PathResult()
+        //            //{
+        //            //    t0 = startT + 0,
+        //            //    x0 = startX,
+        //            //    y0 = startY,
+        //            //    t1 = startT + interview,
+        //            //    x1 = endX,
+        //            //    y1 = endY
+        //            //};
+        //            startT += interview;
+        //            // result.Add(animate1);
+        //        }
+        //        else if (dataResult[i].roadCode == dataResult[i - 1].roadCode)
+        //        {
 
-                    double startX, startY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i - 1].BDlongitude, dataResult[i - 1].BDlatitude, out startX, out startY);
+        //            double startX, startY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i - 1].BDlongitude, dataResult[i - 1].BDlatitude, out startX, out startY);
 
-                    double endX, endY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
+        //            double endX, endY;
+        //            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
 
-                    // var length = CommonClass.Geography.getLengthOfTwoPoint.
-                    //  var interview =
-                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
+        //            // var length = CommonClass.Geography.getLengthOfTwoPoint.
+        //            //  var interview =
+        //            var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
 
-                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
+        //            interview = Program.rm.magicE.shotTime(interview, speedImproved);
 
-                    var animate1 = new Data.PathResult3()
-                    {
-                        x = Convert.ToInt32((endX - startX) * 256),
-                        y = Convert.ToInt32((endY - startY) * 256),
-                        t = interview
-                    };
-                    //var animate1 = new Data.PathResult()
-                    //{
-                    //    t0 = startT + 0,
-                    //    x0 = startX,
-                    //    y0 = startY,
-                    //    t1 = startT + interview,
-                    //    x1 = endX,
-                    //    y1 = endY
-                    //};
-                    startT += interview;
-                    if (animate1.x != 0 || animate1.y != 0)//if (animate1.t != 0)
-                    {
-                        result.Add(animate1.x);
-                        result.Add(animate1.y);
-                        result.Add(animate1.t);
-                    }
-                    // result.Add(animate1);
-                }
-            }
-        }
+        //            var animate1 = new Data.PathResult3()
+        //            {
+        //                x = Convert.ToInt32((endX - startX) * 256),
+        //                y = Convert.ToInt32((endY - startY) * 256),
+        //                t = interview
+        //            };
+        //            //var animate1 = new Data.PathResult()
+        //            //{
+        //            //    t0 = startT + 0,
+        //            //    x0 = startX,
+        //            //    y0 = startY,
+        //            //    t1 = startT + interview,
+        //            //    x1 = endX,
+        //            //    y1 = endY
+        //            //};
+        //            startT += interview;
+        //            if (animate1.x != 0 || animate1.y != 0)//if (animate1.t != 0)
+        //            {
+        //                result.Add(animate1.x);
+        //                result.Add(animate1.y);
+        //                result.Add(animate1.t);
+        //            }
+        //            // result.Add(animate1);
+        //        }
+        //    }
+        //}
 
 
 
-        internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.MapGo.nyrqPosition position, int speed, ref List<int> result, ref int startT, bool speedImproved)
-        {
-            for (var i = 0; i < dataResult.Count; i++)
-            {
-                if (i == 0)
-                {
-                    //var startX = result.Last().x1;
-                    //var startY = result.Last().y1;
-                    double startX, startY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(position.BDlongitude, position.BDlatitude, out startX, out startY);
 
-                    //var length=
-
-                    double endX, endY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
-                    //  var interview =
-                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(position.BDlatitude, position.BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
-
-                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
-
-                    if (result.Count == 0)
-                    {
-                        var animate0 = new PathResult3()
-                        {
-                            t = startT,
-                            x = 0,
-                            y = 0
-                        };
-                        {
-                            result.Add(animate0.x);
-                            result.Add(animate0.y);
-                            result.Add(animate0.t);
-                        }
-                        // result.Add(animate0);
-                    }
-                    var animate1 = new PathResult3()
-                    {
-                        t = interview,
-                        x = Convert.ToInt32((endX - startX) * 256),
-                        y = Convert.ToInt32((endY - startY) * 256),
-                    };
-                    if (animate1.x != 0 || animate1.y != 0)  // if (animate1.t != 0)
-                    {
-                        result.Add(animate1.x);
-                        result.Add(animate1.y);
-                        result.Add(animate1.t);
-                    }
-                    startT += interview;
-                }
-                else if (dataResult[i].roadCode == dataResult[i - 1].roadCode)
-                {
-
-                    double startX, startY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i - 1].BDlongitude, dataResult[i - 1].BDlatitude, out startX, out startY);
-
-                    double endX, endY;
-                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(dataResult[i].BDlongitude, dataResult[i].BDlatitude, out endX, out endY);
-
-                    // var length = CommonClass.Geography.getLengthOfTwoPoint.
-                    //  var interview =
-                    var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(dataResult[i - 1].BDlatitude, dataResult[i - 1].BDlongitude, dataResult[i].BDlatitude, dataResult[i].BDlongitude) / dataResult[i].maxSpeed * 3.6 / 20 * 1000 * 50 / speed);
-
-                    interview = Program.rm.magicE.shotTime(interview, speedImproved);
-
-                    var animate1 = new Data.PathResult3()
-                    {
-                        x = Convert.ToInt32((endX - startX) * 256),
-                        y = Convert.ToInt32((endY - startY) * 256),
-                        t = interview
-                    };
-                    startT += interview;
-                    //if (animate1.t != 0)
-                    if (animate1.x != 0 || animate1.y != 0)
-                    {
-                        result.Add(animate1.x);
-                        result.Add(animate1.y);
-                        result.Add(animate1.t);
-                    }
-                    // result.Add(animate1);
-                }
-            }
-        }
         //internal void GetAFromBPoint(List<OssModel.MapGo.nyrqPosition> dataResult, OssModel.FastonPosition fpLast, int speed, ref List<int> result, ref int startT, bool speedImproved)
         //{
         //    for (var i = 0; i < dataResult.Count; i++)
@@ -962,40 +1011,40 @@ namespace HouseManager4_0
         //    }
         //}
 
-        public void getAll(out List<double[]> meshPoints, out List<object> listOfCrosses)
-        {
-            Dictionary<string, bool> Cs = new Dictionary<string, bool>();
-            listOfCrosses = new List<object>();
-            Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> result;
+        //public void getAll(out List<double[]> meshPoints, out List<object> listOfCrosses)
+        //{
+        //    Dictionary<string, bool> Cs = new Dictionary<string, bool>();
+        //    listOfCrosses = new List<object>();
+        //    Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> result;
 
-            Program.dt.GetData(out result);
-            meshPoints = new List<double[]>();
-            //        //   List<int> colors = new List<int>();
-            foreach (var item in result)
-            {
-                foreach (var itemj in item.Value)
-                {
-                    var value = itemj.Value;
-                    var ps = getRoadRectangle(value, item.Value);
-                    meshPoints.Add(ps);
+        //    Program.dt.GetData(out result);
+        //    meshPoints = new List<double[]>();
+        //    //        //   List<int> colors = new List<int>();
+        //    foreach (var item in result)
+        //    {
+        //        foreach (var itemj in item.Value)
+        //        {
+        //            var value = itemj.Value;
+        //            var ps = getRoadRectangle(value, item.Value);
+        //            meshPoints.Add(ps);
 
 
-                    for (var i = 0; i < value.Cross1.Length; i++)
-                    {
-                        var cross = value.Cross1[i];
-                        var key = cross.RoadCode1.CompareTo(cross.RoadCode2) > 0 ?
-                            $"{cross.RoadCode1}_{cross.RoadOrder1}_{cross.RoadCode2}_{cross.RoadOrder2}" :
-                            $"{cross.RoadCode2}_{cross.RoadOrder2}_{cross.RoadCode1}_{cross.RoadOrder1}";
-                        if (Cs.ContainsKey(key)) { }
-                        else
-                        {
-                            Cs.Add(key, false);
-                            listOfCrosses.Add(new { lon = cross.BDLongitude, lat = cross.BDLatitude, state = cross.CrossState });
-                        }
-                    }
-                }
-            }
-        }
+        //            for (var i = 0; i < value.Cross1.Length; i++)
+        //            {
+        //                var cross = value.Cross1[i];
+        //                var key = cross.RoadCode1.CompareTo(cross.RoadCode2) > 0 ?
+        //                    $"{cross.RoadCode1}_{cross.RoadOrder1}_{cross.RoadCode2}_{cross.RoadOrder2}" :
+        //                    $"{cross.RoadCode2}_{cross.RoadOrder2}_{cross.RoadCode1}_{cross.RoadOrder1}";
+        //                if (Cs.ContainsKey(key)) { }
+        //                else
+        //                {
+        //                    Cs.Add(key, false);
+        //                    listOfCrosses.Add(new { lon = cross.BDLongitude, lat = cross.BDLatitude, state = cross.CrossState });
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         internal void getSingle(string roadCode, out List<int> meshPoints, out List<int> basePoint)
         {
@@ -1008,79 +1057,74 @@ namespace HouseManager4_0
             basePoint = new List<int>(2)
             {
                 int.MaxValue,
-                  int.MaxValue,
+                int.MaxValue,
+                int.MaxValue
             };
             //        //   List<int> colors = new List<int>();
             //  foreach (var item in result)
             {
+                Dictionary<int, OssModel.SaveRoad.rInfo> roads = new Dictionary<int, OssModel.SaveRoad.rInfo>();
+                foreach (var itemj in result[roadCode])
+                {
+                    roads.Add(itemj.Key, itemj.Value);
+                }
+
                 foreach (var itemj in result[roadCode])
                 {
 #warning 这里优化时，要将getRoadRectangle计算移到前台！
                     var value = itemj.Value;
-                    var ps = getRoadRectangle(value, result[roadCode]);
+                    var ps = getRoadRectangle(value, roads);
                     for (var i = 0; i < ps.Length; i++)
                     {
                         var calValue = Convert.ToInt32(ps[i] * 1000000);
-                        basePoint[i % 2] = Math.Min(calValue, basePoint[i % 2]);
+                        basePoint[i % 3] = Math.Min(calValue, basePoint[i % 3]);
                         meshPoints.Add(calValue);
                     }
-                    //  meshPoints.Add(ps);
-                    //for (var i = 0; i < value.Cross1.Length; i++)
-                    //{
-                    //    var cross = value.Cross1[i];
-                    //    var key = cross.RoadCode1.CompareTo(cross.RoadCode2) > 0 ?
-                    //        $"{cross.RoadCode1}_{cross.RoadOrder1}_{cross.RoadCode2}_{cross.RoadOrder2}" :
-                    //        $"{cross.RoadCode2}_{cross.RoadOrder2}_{cross.RoadCode1}_{cross.RoadOrder1}";
-                    //    if (Cs.ContainsKey(key)) { }
-                    //    else
-                    //    {
-                    //        Cs.Add(key, false);
-                    //        listOfCrosses.Add(new { lon = cross.BDLongitude, lat = cross.BDLatitude, state = cross.CrossState });
-                    //    }
-                    //}
                 }
             }
             {
                 for (var i = 0; i < meshPoints.Count; i++)
                 {
-                    meshPoints[i] = meshPoints[i] - basePoint[i % 2];
+                    meshPoints[i] = meshPoints[i] - basePoint[i % 3];
                 }
             }
         }
-
-        const double roadZoomValue = 0.0000003;
-        private static double[] getRoadRectangle(OssModel.SaveRoad.RoadInfo value, Dictionary<int, OssModel.SaveRoad.RoadInfo> result)
+        const double heightVitualToFact = 8.99266134E-6;
+        private static double[] getRoadRectangle(OssModel.SaveRoad.rInfo info, Dictionary<int, OssModel.SaveRoad.rInfo> result)
         {
             double KofPointStretchFirstAndSecond = 1;
             double KofPointStretchThirdAndFourth = 1;
-            if (value.CarInOpposeDirection == 0)
+            if (info.CarInOpposeDirection == 0)
             {
                 KofPointStretchFirstAndSecond = 1.5;
                 KofPointStretchThirdAndFourth = 0.1;
             }
 
             double[] point1, point2, point3, point4;
-            var vec = new double[] { value.endLongitude - value.startLongitude, value.endLatitude - value.startLatitude };
+            var vec = new double[] { info.endLongitude - info.startLongitude, info.endLatitude - info.startLatitude };
             vec = setToOne(vec);
             System.Numerics.Complex c = new System.Numerics.Complex(vec[0], vec[1]);
-            if (!result.ContainsKey(value.RoadOrder - 1))
+            if (!result.ContainsKey(info.RoadOrder - 1))
             {
                 var c2 = new System.Numerics.Complex(0, 1);
                 var c3 = c * c2;
 
                 point1 = new double[] {
-                    value.startLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
-                    value.startLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond
+                    info.startLongitude + c3.Real * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                    info.startLatitude + c3.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                    info.startHeight*heightVitualToFact
                     };
                 var c5 = c / c2;
                 point2 = new double[] {
-                    value.startLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
-                    value.startLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond  };
+                    info.startLongitude + c5.Real * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                    info.startLatitude + c5.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond ,
+                    info.startHeight*heightVitualToFact
+                };
 
             }
             else
             {
-                var valueP = result[value.RoadOrder - 1];//previows
+                var valueP = result[info.RoadOrder - 1];//previows
                 var vecP = new double[] { valueP.endLongitude - valueP.startLongitude, valueP.endLatitude - valueP.startLatitude };
                 vecP = setToOne(vecP);
                 System.Numerics.Complex cP = new System.Numerics.Complex(-vecP[0], -vecP[1]);
@@ -1091,12 +1135,16 @@ namespace HouseManager4_0
                         var c2 = new System.Numerics.Complex(0, 1);
                         var c3 = c * c2;
                         point1 = new double[] {
-                    value.startLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
-                    value.startLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond  };
+                            info.startLongitude + c3.Real * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                            info.startLatitude + c3.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                            info.startHeight*heightVitualToFact
+                        };
                         var c5 = c / c2;
                         point2 = new double[] {
-                    value.startLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
-                    value.startLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond };
+                            info.startLongitude + c5.Real * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                            info.startLatitude + c5.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                            info.startHeight * heightVitualToFact
+                        };
                     }
                     else
                     {
@@ -1106,37 +1154,44 @@ namespace HouseManager4_0
                         {
                             var vecDivOperate = s / k * setToOne(vecDiv2);
                             point1 = new double[] {
-                    value.startLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
-                    value.startLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue  *KofPointStretchFirstAndSecond };
+                                info.startLongitude + vecDivOperate.Real * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                                info.startLatitude + vecDivOperate.Imaginary * info.MaxSpeed * roadZoomValue  *KofPointStretchFirstAndSecond,
+                                info.startHeight* heightVitualToFact
+                            };
                         }
                         {
                             var vecDiv2_opp_diretion = -1 * (vecDiv2);
                             var vecDivOperate = s / k * setToOne(vecDiv2_opp_diretion);
                             point2 = new double[] {
-                            value.startLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
-                            value.startLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue *KofPointStretchFirstAndSecond };
+                            info.startLongitude + vecDivOperate.Real * info.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+                            info.startLatitude + vecDivOperate.Imaginary * info.MaxSpeed * roadZoomValue *KofPointStretchFirstAndSecond,
+                            info.startHeight* heightVitualToFact
+                            };
+
                         }
                     }
                 }
             }
             c = new System.Numerics.Complex(-vec[0], -vec[1]);
-            if (!result.ContainsKey(value.RoadOrder + 1))
+            if (!result.ContainsKey(info.RoadOrder + 1))
             {
                 var c2 = new System.Numerics.Complex(0, 1);
                 var c3 = c * c2;
                 point3 = new double[] {
-                    value.endLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
-                    value.endLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth
+                    info.endLongitude + c3.Real * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endLatitude + c3.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endHeight* heightVitualToFact
                 };
                 var c5 = c / c2;
                 point4 = new double[] {
-                    value.endLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
-                    value.endLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth
+                    info.endLongitude + c5.Real * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endLatitude + c5.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endHeight* heightVitualToFact
                 };
             }
             else
             {
-                var valueN = result[value.RoadOrder + 1];//next
+                var valueN = result[info.RoadOrder + 1];//next
                 var vecN = new double[] {
                     valueN.endLongitude - valueN.startLongitude,
                     valueN.endLatitude - valueN.startLatitude
@@ -1149,12 +1204,16 @@ namespace HouseManager4_0
                     var c2 = new System.Numerics.Complex(0, 1);
                     var c3 = c * c2;
                     point3 = new double[] {
-                    value.endLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
-                    value.endLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue  *KofPointStretchThirdAndFourth};
+                    info.endLongitude + c3.Real * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endLatitude + c3.Imaginary * info.MaxSpeed * roadZoomValue  *KofPointStretchThirdAndFourth,
+                    info.endHeight* heightVitualToFact
+                    };
                     var c5 = c / c2;
                     point4 = new double[] {
-                    value.endLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
-                    value.endLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth };
+                    info.endLongitude + c5.Real * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endLatitude + c5.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                    info.endHeight* heightVitualToFact
+                    };
                 }
                 else
                 {
@@ -1164,15 +1223,19 @@ namespace HouseManager4_0
 
                         var vecDivOperate = s / k * setToOne(vecDiv2);
                         point3 = new double[] {
-                            value.endLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
-                            value.endLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth  };
+                            info.endLongitude + vecDivOperate.Real * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                            info.endLatitude + vecDivOperate.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth ,
+                            info.endHeight* heightVitualToFact
+                        };
                     }
                     {
                         var vecDiv2_opp_diretion = -1 * vecDiv2;
                         var vecDivOperate = s / k * setToOne(vecDiv2_opp_diretion);
                         point4 = new double[] {
-                            value.endLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
-                            value.endLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth  };
+                            info.endLongitude + vecDivOperate.Real * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                            info.endLatitude + vecDivOperate.Imaginary * info.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+                            info.endHeight* heightVitualToFact
+                        };
                     }
                 }
 
@@ -1180,12 +1243,151 @@ namespace HouseManager4_0
             }
             return new double[]
             {
-              Math.Round(  point1[0],7),Math.Round(point1[1],7),
-             Math.Round(   point2[0],7),Math.Round(point2[1],7),
-             Math.Round(   point3[0],7),Math.Round(point3[1],7),
-             Math.Round(   point4[0],7),Math.Round(point4[1],7)
+                Math.Round(point1[0],7),Math.Round(point1[1],7),Math.Round(point1[2],7),
+                Math.Round(point2[0],7),Math.Round(point2[1],7),Math.Round(point2[2],7),
+                Math.Round(point3[0],7),Math.Round(point3[1],7),Math.Round(point3[2],7),
+                Math.Round(point4[0],7),Math.Round(point4[1],7),Math.Round(point4[2],7)
             };
         }
+
+        const double roadZoomValue = 0.0000003;
+        //private static double[] getRoadRectangle(OssModel.SaveRoad.RoadInfo value, Dictionary<int, OssModel.SaveRoad.RoadInfo> result)
+        //{
+        //    double KofPointStretchFirstAndSecond = 1;
+        //    double KofPointStretchThirdAndFourth = 1;
+        //    if (value.CarInOpposeDirection == 0)
+        //    {
+        //        KofPointStretchFirstAndSecond = 1.5;
+        //        KofPointStretchThirdAndFourth = 0.1;
+        //    }
+
+        //    double[] point1, point2, point3, point4;
+        //    var vec = new double[] { value.endLongitude - value.startLongitude, value.endLatitude - value.startLatitude };
+        //    vec = setToOne(vec);
+        //    System.Numerics.Complex c = new System.Numerics.Complex(vec[0], vec[1]);
+        //    if (!result.ContainsKey(value.RoadOrder - 1))
+        //    {
+        //        var c2 = new System.Numerics.Complex(0, 1);
+        //        var c3 = c * c2;
+
+        //        point1 = new double[] {
+        //            value.startLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+        //            value.startLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond
+        //            };
+        //        var c5 = c / c2;
+        //        point2 = new double[] {
+        //            value.startLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+        //            value.startLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond  };
+
+        //    }
+        //    else
+        //    {
+        //        var valueP = result[value.RoadOrder - 1];//previows
+        //        var vecP = new double[] { valueP.endLongitude - valueP.startLongitude, valueP.endLatitude - valueP.startLatitude };
+        //        vecP = setToOne(vecP);
+        //        System.Numerics.Complex cP = new System.Numerics.Complex(-vecP[0], -vecP[1]);
+        //        var vecDiv2 = c + cP;
+        //        {
+        //            if (Math.Abs((vecDiv2 / c).Imaginary) < 1e-6)
+        //            {
+        //                var c2 = new System.Numerics.Complex(0, 1);
+        //                var c3 = c * c2;
+        //                point1 = new double[] {
+        //            value.startLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+        //            value.startLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond  };
+        //                var c5 = c / c2;
+        //                point2 = new double[] {
+        //            value.startLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+        //            value.startLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond };
+        //            }
+        //            else
+        //            {
+        //                var k = 1 / (vecDiv2 / c).Imaginary;
+        //                var s = Math.Sqrt(k * k + 1 / k / k);
+
+        //                {
+        //                    var vecDivOperate = s / k * setToOne(vecDiv2);
+        //                    point1 = new double[] {
+        //            value.startLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+        //            value.startLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue  *KofPointStretchFirstAndSecond };
+        //                }
+        //                {
+        //                    var vecDiv2_opp_diretion = -1 * (vecDiv2);
+        //                    var vecDivOperate = s / k * setToOne(vecDiv2_opp_diretion);
+        //                    point2 = new double[] {
+        //                    value.startLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchFirstAndSecond,
+        //                    value.startLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue *KofPointStretchFirstAndSecond };
+        //                }
+        //            }
+        //        }
+        //    }
+        //    c = new System.Numerics.Complex(-vec[0], -vec[1]);
+        //    if (!result.ContainsKey(value.RoadOrder + 1))
+        //    {
+        //        var c2 = new System.Numerics.Complex(0, 1);
+        //        var c3 = c * c2;
+        //        point3 = new double[] {
+        //            value.endLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+        //            value.endLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth
+        //        };
+        //        var c5 = c / c2;
+        //        point4 = new double[] {
+        //            value.endLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+        //            value.endLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth
+        //        };
+        //    }
+        //    else
+        //    {
+        //        var valueN = result[value.RoadOrder + 1];//next
+        //        var vecN = new double[] {
+        //            valueN.endLongitude - valueN.startLongitude,
+        //            valueN.endLatitude - valueN.startLatitude
+        //        };
+        //        vecN = setToOne(vecN);
+        //        System.Numerics.Complex cP = new System.Numerics.Complex(vecN[0], vecN[1]);
+        //        var vecDiv2 = c + cP;
+        //        if (Math.Abs((vecDiv2 / c).Imaginary) < 1e-6)
+        //        {
+        //            var c2 = new System.Numerics.Complex(0, 1);
+        //            var c3 = c * c2;
+        //            point3 = new double[] {
+        //            value.endLongitude + c3.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+        //            value.endLatitude + c3.Imaginary * value.MaxSpeed * roadZoomValue  *KofPointStretchThirdAndFourth};
+        //            var c5 = c / c2;
+        //            point4 = new double[] {
+        //            value.endLongitude + c5.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+        //            value.endLatitude + c5.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth };
+        //        }
+        //        else
+        //        {
+        //            var k = 1 / (vecDiv2 / c).Imaginary;
+        //            var s = Math.Sqrt(k * k + 1 / k / k);
+        //            {
+
+        //                var vecDivOperate = s / k * setToOne(vecDiv2);
+        //                point3 = new double[] {
+        //                    value.endLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+        //                    value.endLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth  };
+        //            }
+        //            {
+        //                var vecDiv2_opp_diretion = -1 * vecDiv2;
+        //                var vecDivOperate = s / k * setToOne(vecDiv2_opp_diretion);
+        //                point4 = new double[] {
+        //                    value.endLongitude + vecDivOperate.Real * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth,
+        //                    value.endLatitude + vecDivOperate.Imaginary * value.MaxSpeed * roadZoomValue*KofPointStretchThirdAndFourth  };
+        //            }
+        //        }
+
+
+        //    }
+        //    return new double[]
+        //    {
+        //      Math.Round(  point1[0],7),Math.Round(point1[1],7),
+        //     Math.Round(   point2[0],7),Math.Round(point2[1],7),
+        //     Math.Round(   point3[0],7),Math.Round(point3[1],7),
+        //     Math.Round(   point4[0],7),Math.Round(point4[1],7)
+        //    };
+        //}
 
         private static System.Numerics.Complex setToOne(System.Numerics.Complex vecRes)
         {
@@ -1277,5 +1479,10 @@ namespace HouseManager4_0
                 });
             }
         }
+    }
+
+    interface calRandom
+    {
+
     }
 }

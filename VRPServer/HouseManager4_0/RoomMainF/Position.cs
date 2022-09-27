@@ -7,20 +7,24 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Position
     {
-        public int GetRandomPosition(bool withWeight)
+        //public int GetRandomPosition(bool withWeight) 
+        //{
+        //    return GetRandomPosition(withWeight, Program.dt);
+        //}
+        public int GetRandomPosition(bool withWeight, GetRandomPos gp)
         {
             int index;
             do
             {
-                index = rm.Next(0, Program.dt.GetFpCount());
+                index = rm.Next(0, gp.GetFpCount());
                 if (withWeight)
-                    if (Program.dt.GetFpByIndex(index).Weight + 1 < rm.Next(100))
+                    if (gp.GetFpByIndex(index).Weight + 1 < rm.Next(100))
                     {
                         continue;
                     }
             }
             while (this.FpIsUsing(index));
-            
+
             return index;
         }
 

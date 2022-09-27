@@ -13,8 +13,8 @@ namespace HouseManager4_0
             var content = Console.ReadLine();
             var lon = double.Parse(content.Split(',')[0]);
             var lat = double.Parse(content.Split(',')[1]);
-            double x, y;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(lon, lat, out x, out y);
+            double x, y, z;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(lon, lat, 0 ,out x, out y, out z);
             //Consol.WriteLine($"x:{x},y:{y}");
             //Consol.WriteLine($"E退出，任意键继续");
             if (Console.ReadLine().ToUpper() == "E")
@@ -36,6 +36,49 @@ namespace HouseManager4_0
             var result = CommonClass.AES.AesDecrypt(content, secretValue);
             Console.WriteLine($"{result}");
             Console.ReadLine();
+        }
+
+        class ObjInput
+        {
+            public string addr { get; set; }
+            public string time { get; set; }
+            public List<string> list { get; set; }
+        }
+        class ObjOutput
+        {
+            public string c { get; set; }
+            public string time { get; set; }
+            public List<string> list { get; set; }
+        }
+        internal static void sign()
+        {
+            Console.WriteLine("拖入密钥地址");
+            var path = Console.ReadLine();
+            var privateKey = File.ReadAllText(path);
+
+            Console.WriteLine("拖入要加密内容");
+            path = Console.ReadLine();
+            var content = File.ReadAllText(path);
+            var oI = Newtonsoft.Json.JsonConvert.DeserializeObject<ObjInput>(content);
+            ObjOutput oo = new ObjOutput()
+            {
+                c = "AwardsGiving",
+                time = oI.time,
+                list = new List<string>()
+            };
+            for (int i = 0; i < oI.list.Count; i++)
+            {
+                var msg = oI.list[i];
+                char[] splitOp = { '@', '-', '>', ':' };
+                StringSplitOptions options = StringSplitOptions.RemoveEmptyEntries;
+                var addr = msg.Split(splitOp, options)[1];
+                var sign = BitCoin.Sign.SignMessage(privateKey, msg, addr);
+                oo.list.Add(sign);
+            }
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(oo));
+            //BitCoin.Sign.SignMessage()
+            // var jsonObj = "";
+            //  throw new NotImplementedException();
         }
 
         //        [Obsolete]

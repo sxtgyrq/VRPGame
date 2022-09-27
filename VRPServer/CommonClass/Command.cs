@@ -150,8 +150,10 @@ namespace CommonClass
         public bool On { get; set; }
         public int StartX { get; set; }
         public int StartY { get; set; }
+        public int StartZ { get; set; }
         public int EndX { get; set; }
         public int EndY { get; set; }
+        public int EndZ { get; set; }
     }
     public class LostPrepareNotify : CommandNotify
     {
@@ -159,8 +161,10 @@ namespace CommonClass
         public bool On { get; set; }
         public int StartX { get; set; }
         public int StartY { get; set; }
+        public int StartZ { get; set; }
         public int EndX { get; set; }
         public int EndY { get; set; }
+        public int EndZ { get; set; }
     }
     public class AmbushPrepareNotify : CommandNotify
     {
@@ -168,8 +172,10 @@ namespace CommonClass
         public bool On { get; set; }
         public int StartX { get; set; }
         public int StartY { get; set; }
+        public int StartZ { get; set; }
         public int EndX { get; set; }
         public int EndY { get; set; }
+        public int EndZ { get; set; }
     }
     public class ControlPrepareNotify : CommandNotify
     {

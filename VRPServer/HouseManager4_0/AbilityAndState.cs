@@ -392,13 +392,14 @@ namespace HouseManager4_0
                 var selfValue = this.Data["mile"].Count * 7 + 350;
                 if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                 {
-                    if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                   // this.role.rm
+                    if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                     {
-                        if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                        if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
                         {
-                            if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                            if (!this.role.rm._Players[role.TheLargestHolderKey].Bust)
                             {
-                                return Math.Max(selfValue, Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["mile"].Count * 7 + 350);
+                                return Math.Max(selfValue, this.role.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["mile"].Count * 7 + 350);
                             }
                         }
                     }
@@ -464,13 +465,13 @@ namespace HouseManager4_0
                     var selfValue = driver.improveBusiness((this.Data["business"].Count * 500 + 10000));
                     if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                     {
-                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                         {
-                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
                             {
-                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                if (!this.role.rm._Players[role.TheLargestHolderKey].Bust)
                                 {
-                                    var bossValue = driver.improveBusiness(Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["business"].Count * 500 + 10000);
+                                    var bossValue = driver.improveBusiness(this.role.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["business"].Count * 500 + 10000);
                                     return Math.Max(selfValue, bossValue);
                                 }
                             }
@@ -492,13 +493,13 @@ namespace HouseManager4_0
                     var selfValue = this.Data["volume"].Count * 500 + 10000;
                     if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                     {
-                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                         {
-                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
                             {
-                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                if (!this.role.rm._Players[role.TheLargestHolderKey].Bust)
                                 {
-                                    var bossValue = Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["volume"].Count * 500 + 10000;
+                                    var bossValue = this.role.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["volume"].Count * 500 + 10000;
                                     return Math.Max(selfValue, bossValue);
                                 }
                             }
@@ -511,11 +512,11 @@ namespace HouseManager4_0
                     var selfValue = driver.improveVolume((this.Data["volume"].Count * 500 + 10000));
                     if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                     {
-                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                        if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                         {
-                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
                             {
-                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                if (!this.role.rm._Players[role.TheLargestHolderKey].Bust)
                                 {
                                     var bossValue = driver.improveVolume(Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["volume"].Count * 500 + 10000);
                                     return Math.Max(selfValue, bossValue);
@@ -582,13 +583,14 @@ namespace HouseManager4_0
                     var selfValue = driver.improveSpeed(this.Data["speed"].Count * 2 + 50);
                     if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                     {
-                        if (Program.rm._Players.ContainsKey(role.TheLargestHolderKey))
+                       // this.role.rm
+                        if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                         {
-                            if (Program.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
+                            if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
                             {
-                                if (!Program.rm._Players[role.TheLargestHolderKey].Bust)
+                                if (!this.role.rm._Players[role.TheLargestHolderKey].Bust)
                                 {
-                                    var bossValue = driver.improveSpeed(Program.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["speed"].Count * 2 + 50);
+                                    var bossValue = driver.improveSpeed(this.role.rm._Players[role.TheLargestHolderKey].getCar().ability.Data["speed"].Count * 2 + 50);
                                     return Math.Max(selfValue, bossValue);
                                 }
                             }

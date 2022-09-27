@@ -67,23 +67,35 @@ namespace DalOfAddress
                 {
                     try
                     {
-                        int itemCount;
+                        bool indexIsRight;
                         {
-                            var sql = $"SELECT COUNT(*) FROM tradereward WHERE StartDate={startDate}";
-                            using (MySqlCommand command = new MySqlCommand(sql, con, tran))
+                            string sQL = "SELECT COUNT(*) FROM traderecord WHERE bussinessAddr=@bussinessAddr AND addrFrom=@addrFrom";
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
                             {
-                                itemCount = Convert.ToInt32(command.ExecuteScalar());
+                                command.Parameters.AddWithValue("@bussinessAddr", bussinessAddr);
+                                command.Parameters.AddWithValue("@addrFrom", tradeAddress);
+                                indexIsRight = tradeIndex == Convert.ToInt32(command.ExecuteScalar());
                             }
+                        }
+                        if (indexIsRight)
+                        {
+                            int itemCount;
+                            {
+                                var sql = $"SELECT COUNT(*) FROM tradereward WHERE StartDate={startDate}";
+                                using (MySqlCommand command = new MySqlCommand(sql, con, tran))
+                                {
+                                    itemCount = Convert.ToInt32(command.ExecuteScalar());
+                                }
 
-                        }
-                        if (itemCount > 0)
-                        {
-                            tran.Rollback();
-                            return $"{startDate}已经再数据库中拥有数据了！";
-                        }
-                        else
-                        {
-                            string mysql = @"INSERT INTO tradereward(
+                            }
+                            if (itemCount > 0)
+                            {
+                                tran.Rollback();
+                                return $"{startDate}已经再数据库中拥有数据了！";
+                            }
+                            else
+                            {
+                                string mysql = @"INSERT INTO tradereward(
 startDate,
 tradeIndex,
 tradeAddress,
@@ -94,23 +106,29 @@ signOfBussinessAddr,
 orderMessage,
 waitingForAddition) VALUES (@startDate,@tradeIndex,@tradeAddress,@bussinessAddr,@passCoin,@signOfTradeAddress,@signOfBussinessAddr,@orderMessage,1);";
 
-                            string sQL = mysql;
-                            // long moneycount;
-                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
-                            {
-                                command.Parameters.AddWithValue("@startDate", startDate);
-                                command.Parameters.AddWithValue("@tradeIndex", tradeIndex);
-                                command.Parameters.AddWithValue("@tradeAddress", tradeAddress);
-                                command.Parameters.AddWithValue("@bussinessAddr", bussinessAddr);
-                                command.Parameters.AddWithValue("@passCoin", passCoin);
-                                command.Parameters.AddWithValue("@signOfTradeAddress", signOfTradeAddress);
-                                command.Parameters.AddWithValue("@signOfBussinessAddr", signOfBussinessAddr);
-                                command.Parameters.AddWithValue("@orderMessage", orderMessage);
-                                command.ExecuteNonQuery();
+                                string sQL = mysql;
+                                // long moneycount;
+                                using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                                {
+                                    command.Parameters.AddWithValue("@startDate", startDate);
+                                    command.Parameters.AddWithValue("@tradeIndex", tradeIndex);
+                                    command.Parameters.AddWithValue("@tradeAddress", tradeAddress);
+                                    command.Parameters.AddWithValue("@bussinessAddr", bussinessAddr);
+                                    command.Parameters.AddWithValue("@passCoin", passCoin);
+                                    command.Parameters.AddWithValue("@signOfTradeAddress", signOfTradeAddress);
+                                    command.Parameters.AddWithValue("@signOfBussinessAddr", signOfBussinessAddr);
+                                    command.Parameters.AddWithValue("@orderMessage", orderMessage);
+                                    command.ExecuteNonQuery();
+                                }
+                                tran.Commit();
+                                return $"{startDate}录入数据成功！";
                             }
-                            tran.Commit();
-                            return $"{startDate}录入数据成功！";
                         }
+                        else
+                        {
+                            return "序号错误";
+                        }
+
 
                     }
                     catch (Exception e)
@@ -120,6 +138,38 @@ waitingForAddition) VALUES (@startDate,@tradeIndex,@tradeAddress,@bussinessAddr,
                     }
                 }
             }
+        }
+
+        public static CommonClass.databaseModel.tradereward GetByStartDate(int startDate)
+        {
+            CommonClass.databaseModel.tradereward tw;
+            var sQL = $"SELECT startDate,tradeIndex,tradeAddress,bussinessAddr,passCoin,waitingForAddition,signOfTradeAddress,signOfBussinessAddr,orderMessage FROM  tradereward WHERE startDate={startDate};";
+
+            using (var r = MySqlHelper.ExecuteReader(Connection.ConnectionStr, sQL))
+            {
+                if (r.Read())
+                {
+                    tw = new CommonClass.databaseModel.tradereward()
+                    {
+                        bussinessAddr = Convert.ToString(r["bussinessAddr"]).Trim(),
+                        orderMessage = Convert.ToString(r["orderMessage"]).Trim(),
+                        passCoin = Convert.ToInt32(r["passCoin"]),
+                        signOfBussinessAddr = Convert.ToString(r["signOfBussinessAddr"]).Trim(),
+                        signOfTradeAddress = Convert.ToString(r["signOfTradeAddress"]).Trim(),
+                        startDate = Convert.ToInt32(r["startDate"]),
+                        tradeAddress = Convert.ToString(r["tradeAddress"]).Trim(),
+                        tradeIndex = Convert.ToInt32(r["tradeIndex"]),
+                        waitingForAddition = Convert.ToInt32(r["waitingForAddition"]),
+
+                    };
+                }
+                else
+                {
+                    tw = null;
+                }
+            }
+            return tw;
+            //  throw new NotImplementedException();
         }
     }
 }

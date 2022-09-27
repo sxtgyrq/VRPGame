@@ -10,7 +10,7 @@ namespace HouseManager4_0
 {
     public abstract class RoleInGame : interfaceOfHM.GetFPIndex
     {
-
+        public RoomMain rm;
 
         public delegate void ShowLevelOfPlayer(Player player, int level, ref List<string> notifyMsg);
         public ShowLevelOfPlayer ShowLevelOfPlayerF = null;
@@ -23,14 +23,14 @@ namespace HouseManager4_0
 
         public class LevelObj : CommonClass.databaseModel.LevelForSave
         {
-            public bool InsertToSave { get; internal set; }
+            // public bool InsertToSave { get; internal set; }
 
             public LevelObj()
             {
                 this.BtcAddr = "";
                 this.Level = 1;
                 this.TimeStampStr = "";
-                this.InsertToSave = true;
+                //   this.InsertToSave = true;
             }
 
             internal void SetLevel(int newLevel)
@@ -38,14 +38,27 @@ namespace HouseManager4_0
                 this.Level = newLevel;
             }
 
+            /// <summary>
+            /// 地址只能使用一次
+            /// </summary>
+            /// <param name="btcAddr"></param>
             internal void SetAddr(string btcAddr)
             {
-                this.BtcAddr = btcAddr;
+                if (this.BtcAddr == "")
+                    this.BtcAddr = btcAddr;
             }
 
             internal void SetTimeStamp(string timeStr)
             {
-                this.TimeStampStr = timeStr;
+                /*
+                 * 此处用正则表达式限制，是为了启动一下作用
+                 * this.TimeStampStr赋值后，不可能在改回空字符串。
+                 * this.TimeStampStr 在空字符串时，代表未同步。
+                 * this.TimeStampStr 非空字符串是，代表等级数据是聪数据库获取。
+                 */
+                var regex = new System.Text.RegularExpressions.Regex("^[0-9]{18}$");
+                if (regex.IsMatch(timeStr))
+                    this.TimeStampStr = timeStr;
             }
         }
         public LevelObj levelObj
@@ -105,7 +118,7 @@ namespace HouseManager4_0
         /// 玩家初始携带金额，单位分。
         /// </summary>
         const long intializedMoney = 50000;
-        internal void initializeCar(interfaceOfHM.CarAndRoomInterface roomMain)
+        internal void initializeCar(interfaceOfHM.CarAndRoomInterface roomMain, interfaceOfHM.Car cafF)
         {
             this._Car = new Car(this);
             //{
@@ -114,7 +127,7 @@ namespace HouseManager4_0
 
             //};
             var notifyMsg = new List<string>();
-            this._Car.SendStateAndPurpose = Program.rm.SendStateOfCar;
+            this._Car.SendStateAndPurpose = cafF.SendStateOfCar;
             this._Car.setState(this, ref notifyMsg, Car.CarState.waitAtBaseStation);
             //this._Car.SendPurposeOfCar = RoomMainF.RoomMain.SendPurposeOfCar;
 
@@ -244,9 +257,9 @@ namespace HouseManager4_0
                 {
 
                 }
-                else if (Program.rm._Players.ContainsKey(_theLargestHolderKey))
+                else if (this.rm._Players.ContainsKey(_theLargestHolderKey))
                 {
-                    var boss = Program.rm._Players[_theLargestHolderKey];
+                    var boss = this.rm._Players[_theLargestHolderKey];
                     if (boss.playerType == PlayerType.NPC)
                     {
 
@@ -929,8 +942,8 @@ namespace HouseManager4_0
     }
     public class NPC : RoleInGame
     {
-
-        public delegate void BeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsgs);
+        //string keyOfAttacker, NPC npc, ref List<string> notifyMsg, interfaceOfHM.Car cf
+        public delegate void BeingAttacked(string keyOfAttacker, NPC npc, ref List<string> notifyMsg, interfaceOfHM.Car cf, GetRandomPos gp);
         public BeingAttacked BeingAttackedM;
 
         internal void CopyChanlleger(string challenger_)
@@ -944,9 +957,10 @@ namespace HouseManager4_0
         /// </summary>
         public string challenger { get { return this._challenger; } }
 
-        public void BeingAttackedF(string keyOfAttacker, ref List<string> notifyMsgs)
+        public void BeingAttackedF(string keyOfAttacker, ref List<string> notifyMsgs, interfaceOfHM.Car cf, GetRandomPos gp)
         {
-            this.BeingAttackedM(keyOfAttacker, this, ref notifyMsgs);
+            //string keyOfAttacker, NPC npc, ref List<string> notifyMsg, interfaceOfHM.Car cf, 
+            this.BeingAttackedM(keyOfAttacker, this, ref notifyMsgs, cf, gp);
         }
 
         internal void setChallenger(string key, ref List<string> notifyMsg)
@@ -955,8 +969,8 @@ namespace HouseManager4_0
             this._molester = "";
         }
 
-
-        public delegate void NPCOperateF(NPC npc, ref List<string> notifyMsgs);
+        //NPC npc, ref List<string> notifyMsgs
+        public delegate void NPCOperateF(NPC npc, ref List<string> notifyMsgs, GetRandomPos grp);
         public NPCOperateF afterWaitedM;
         /// <summary>
         ///  NPC的状态为CarState.waitOnRoad时，对NPC发布命令。
@@ -964,7 +978,7 @@ namespace HouseManager4_0
         /// <param name="notifyMsgs"></param>
         public void dealWithWaitedNPC(ref List<string> notifyMsgs)
         {
-            this.afterWaitedM(this, ref notifyMsgs);
+            this.afterWaitedM(this, ref notifyMsgs, Program.dt);
             //throw new NotImplementedException();
         }
 
@@ -975,14 +989,14 @@ namespace HouseManager4_0
             //else
             if (!string.IsNullOrEmpty(this.challenger))
             {
-                this.afterReturnedM(this, ref notifyMsg);
+                this.afterReturnedM(this, ref notifyMsg, Program.dt);
             }
         }
 
         public NPCOperateF afterBroke;
         public void afterBrokeM(ref List<string> notifyMsg)
         {
-            this.afterBroke(this, ref notifyMsg);
+            this.afterBroke(this, ref notifyMsg, Program.dt);
         }
 
         string _molester = "";
@@ -1026,7 +1040,7 @@ namespace HouseManager4_0
                 if (string.IsNullOrEmpty(this._challenger) && string.IsNullOrEmpty(this._molester))
                 {
                     this._molester = keyOfMolester;
-                    this.BeingMolestedM(this, ref notifyMsgs);
+                    this.BeingMolestedM(this, ref notifyMsgs, Program.dt);
                     return true;
                 }
             return false;

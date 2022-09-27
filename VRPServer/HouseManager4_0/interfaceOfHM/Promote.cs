@@ -6,6 +6,6 @@ namespace HouseManager4_0.interfaceOfHM
 {
     interface Promote
     {
-        void SetLookForPromote();
+        void SetLookForPromote(GetRandomPos gp);
     }
 }

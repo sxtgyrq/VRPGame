@@ -5,7 +5,12 @@ using System.Text;
 
 namespace Geometry
 {
-    public class Boundary
+
+    public interface GetBoundryF
+    {
+        public string GetBoundry(double longitude, double latitde);
+    }
+    public class Boundary : GetBoundryF
     {
         long zoom = 1000000;
         public Boundary()
@@ -22,6 +27,10 @@ namespace Geometry
             public long y { get; set; }
         }
         public void load()
+        {
+            load(false);
+        }
+        public void load(bool unitTest)
         {
 
             /*
@@ -66,7 +75,11 @@ namespace Geometry
                 //Console.WriteLine(dt.boundaries[0]);
             }
             Console.WriteLine("边界数据加载结束，按任意键继续");
-            Console.ReadLine();
+            if (unitTest) { }
+            else
+            {
+                Console.ReadLine();
+            }
         }
 
         public string GetBoundry(double longitude, double latitde)
@@ -142,7 +155,7 @@ namespace Geometry
             }
         }
 
-        
+
 
         Dictionary<string, List<List<Position>>> BoundaryDetail { get; set; }
     }
