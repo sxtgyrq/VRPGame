@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace WsOfWebClient
 {
+
     public partial class Room
     {
         public const string ImgPath = "img";
@@ -55,6 +56,7 @@ namespace WsOfWebClient
             }
         }
 
-        
     }
+
+   
 }

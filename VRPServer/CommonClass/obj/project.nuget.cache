@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "IHw/lsK0N6Q4Nj4Sz0SczH/VOr7ORnYlTGCaFrHoW5b+ksvDP3WefQeeBdsxK0cUcxTzXoReIRzVT9QZe+TxRA==",
+  "dgSpecHash": "htIPKpt1Xb+2YfOs+RuMR+6yPYIfxcldSQBy7iA5+UIsgRH9VrEGUWAmEGYCU5fJx7RbQyvyq0ZnUeHS3zcgYg==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.22\\microsoft.netcore.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.22\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.22\\microsoft.aspnetcore.app.runtime.win-x64.3.1.22.nupkg.sha512"
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.31\\microsoft.netcore.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.31\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.31\\microsoft.aspnetcore.app.runtime.win-x64.3.1.31.nupkg.sha512"
   ],
   "logs": []
 }

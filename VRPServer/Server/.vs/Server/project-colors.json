@@ -145,7 +145,17 @@
       "ProjectGuid": "f091d8fc-9348-4c50-ba2e-d1276ab25081",
       "DisplayName": "BitCoinTrasfer",
       "ColorIndex": 11
+    },
+    "6cc13b6d-06ae-4d0b-94b9-494127a62d63": {
+      "ProjectGuid": "6cc13b6d-06ae-4d0b-94b9-494127a62d63",
+      "DisplayName": "CityRunServerRouteApp",
+      "ColorIndex": 12
+    },
+    "3d88488e-1258-48bc-8f15-4ffbbcc5df00": {
+      "ProjectGuid": "3d88488e-1258-48bc-8f15-4ffbbcc5df00",
+      "DisplayName": "ConsoleBitcoinChainApp",
+      "ColorIndex": 13
     }
   },
-  "NextColorIndex": 12
+  "NextColorIndex": 14
 }

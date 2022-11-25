@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CommonClass.ModelTranstraction;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WsOfWebClient
 {
@@ -329,67 +330,81 @@ namespace WsOfWebClient
 
         internal static async Task ModelTransSignF(State s, WebSocket webSocket, ModelTransSign mts)
         {
-            var parameter = mts.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parameter.Length == 5)
+            try
             {
-                if (BitCoin.Sign.checkSign(mts.sign, mts.msg, parameter[1]))
+                var parameter = mts.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                //  var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{ga.tranNum * 100000000}Satoshi";
+                var regex = new Regex("^[0-9]{1,8}@[A-HJ-NP-Za-km-z1-9]{1,50}@[A-HJ-NP-Za-km-z1-9]{1,50}->[A-HJ-NP-Za-km-z1-9]{1,50}:[0-9]{1,13}Satoshi$");
+                if (regex.IsMatch(mts.msg))
                 {
-                    var tradeIndex = int.Parse(parameter[0]);
-                    var addrFrom = parameter[1];
-                    var addrBussiness = parameter[2];
-                    var addrTo = parameter[3];
-
-                    var passCoinStr = parameter[4];
-                    if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
+                    if (parameter.Length == 5)
                     {
-                        var trDetail = await getValueOfAddr(addrBussiness);
-
-                        var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
-                        if (passCoin > 0)
+                        if (BitCoin.Sign.checkSign(mts.sign, mts.msg, parameter[1]))
                         {
-                            if (trDetail.ContainsKey(addrFrom))
+                            var tradeIndex = int.Parse(parameter[0]);
+                            var addrFrom = parameter[1];
+                            var addrBussiness = parameter[2];
+                            var addrTo = parameter[3];
+
+                            var passCoinStr = parameter[4];
+                            if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
                             {
-                                if (trDetail[addrFrom] >= passCoin)
+                                var trDetail = await getValueOfAddr(addrBussiness);
+                                var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                                if (passCoin > 0)
                                 {
-                                    var tc = new TradeCoin()
+                                    if (trDetail.ContainsKey(addrFrom))
                                     {
-                                        tradeIndex = tradeIndex,
-                                        addrBussiness = addrBussiness,
-                                        addrFrom = addrFrom,
-                                        addrTo = addrTo,
-                                        c = "TradeCoin",
-                                        msg = mts.msg,
-                                        passCoin = passCoin,
-                                        sign = mts.sign,
-                                    };
-                                    var index = rm.Next(0, roomUrls.Count);
-                                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
-                                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
-                                    if (string.IsNullOrEmpty(info))
-                                    {
-                                        var ok = await clearInfomation(webSocket);
-                                        if (ok)
-                                            s = await getTradeDetail(s, webSocket, addrBussiness);
+                                        if (trDetail[addrFrom] >= passCoin)
+                                        {
+                                            var tc = new TradeCoin()
+                                            {
+                                                tradeIndex = tradeIndex,
+                                                addrBussiness = addrBussiness,
+                                                addrFrom = addrFrom,
+                                                addrTo = addrTo,
+                                                c = "TradeCoin",
+                                                msg = mts.msg,
+                                                passCoin = passCoin,
+                                                sign = mts.sign,
+                                            };
+                                            var index = rm.Next(0, roomUrls.Count);
+                                            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
+                                            var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                                            var resultObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TradeCoin.Result>(info);
+                                            await NotifyMsg(webSocket, resultObj.msg);
+
+                                            if (resultObj.success)
+                                            {
+                                                var ok = await clearInfomation(webSocket);
+                                                if (ok)
+                                                    s = await getTradeDetail(s, webSocket, addrBussiness);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var notifyMsg = $"{addrFrom}没有足够的余额。";
+                                            await NotifyMsg(webSocket, notifyMsg);
+                                        }
                                     }
                                     else
                                     {
-                                        await NotifyMsg(webSocket, info);
+                                        var notifyMsg = $"{addrFrom}没有足够的余额。";
+                                        await NotifyMsg(webSocket, notifyMsg);
                                     }
                                 }
-                                else
-                                {
-                                    var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                    await NotifyMsg(webSocket, notifyMsg);
-                                }
                             }
-                            else
-                            {
-                                var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                await NotifyMsg(webSocket, notifyMsg);
-                            }
+                        }
+                        else
+                        {
+                            await NotifyMsg(webSocket, "无效的签名!");
                         }
                     }
                 }
+            }
+            catch
+            {
+                await NotifyMsg(webSocket, "交易失败!");
             }
         }
 
@@ -452,15 +467,10 @@ namespace WsOfWebClient
                                                 var index = rm.Next(0, roomUrls.Count);
                                                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
                                                 var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
-                                                if (string.IsNullOrEmpty(info))
+
+                                                var resultObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TradeSetAsReward.Result>(info);
                                                 {
-                                                    var ok = await clearInfomation(webSocket);
-                                                    if (ok)
-                                                        s = await getTradeDetail(s, webSocket, addrBussiness);
-                                                }
-                                                else
-                                                {
-                                                    await NotifyMsg(webSocket, info);
+                                                    await NotifyMsg(webSocket, resultObj.msg);
                                                 }
                                             }
                                             else
@@ -653,19 +663,20 @@ namespace WsOfWebClient
         }
         internal static async Task RewardPublicSignF(State s, WebSocket webSocket, RewardPublicSign rewardPub)
         {
-            var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
-            var firstIndex = rewardPub.msg.IndexOf('@');
-            var secondIndex = rewardPub.msg.IndexOf('@', firstIndex + 1);
-            if (secondIndex > firstIndex)
+            //var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+            //var firstIndex = rewardPub.msg.IndexOf('@');
+            //var secondIndex = rewardPub.msg.IndexOf('@', firstIndex + 1);
+            //if (secondIndex > firstIndex)
+            //{
+            //}
+            //else
+            //{
+            //    return;
+            //}
+            var regex = new Regex("^[0-9]{1,8}@[A-HJ-NP-Za-km-z1-9]{1,50}@[A-HJ-NP-Za-km-z1-9]{1,50}->SetAsReward:[0-9]{1,13}Satoshi$");
+            if (regex.IsMatch(rewardPub.msg))
             {
-            }
-            else
-            {
-                return;
-            }
-
-            if (parameter.Length == 5)
-            {
+                var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
                 if (BitCoin.Sign.checkSign(rewardPub.signOfAddrReward, rewardPub.msg, parameter[1]))
                 {
                     if (BitCoin.Sign.checkSign(rewardPub.signOfAddrBussiness, rewardPub.msg, parameter[2]))
@@ -949,8 +960,8 @@ namespace WsOfWebClient
 
         internal async static Task<Dictionary<string, long>> getValueOfAddr(string addr)
         {
-            BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
-            var tradeDetail = await t.GetTradeInfomationFromChain();
+            // BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
+            var tradeDetail = await ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr);
 
             List<string> list;
             {
@@ -964,53 +975,8 @@ namespace WsOfWebClient
                 var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
             }
-            {
-                for (int i = 0; i < list.Count; i += 2)
-                {
-                    //Consol.WriteLine(list[i]);
-                    var mtsMsg = list[i];
-                    var parameter = mtsMsg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parameter.Length == 5)
-                    {
-                        var sign = list[i + 1];
-                        {
-                            var tradeIndex = int.Parse(parameter[0]);
-                            var addrFrom = parameter[1];
-                            var addrBussiness = parameter[2];
-                            var addrTo = parameter[3];
-
-                            var passCoinStr = parameter[4];
-                            if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
-                            {
-                                var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
-
-                                if (tradeDetail.ContainsKey(addrFrom))
-                                {
-                                    if (tradeDetail[addrFrom] >= passCoin)
-                                    {
-                                        tradeDetail[addrFrom] -= passCoin;
-                                        if (tradeDetail.ContainsKey(addrTo))
-                                        {
-                                            tradeDetail[addrTo] += passCoin;
-                                        }
-                                        else
-                                        {
-                                            tradeDetail.Add(addrTo, passCoin);
-                                        }
-                                    }
-                                }
-
-                            }
-
-
-                        }
-                    }
-                }
-
-
-
-            }
-            return tradeDetail;
+            var r = ConsoleBitcoinChainApp.GetData.SetTrade(ref tradeDetail, list);
+            return r;
         }
 
         internal static async Task<string> GetResistanceF(State s, GetResistance gr)
@@ -1168,7 +1134,20 @@ namespace WsOfWebClient
                 }
 
             }
-            if (sumStock <= objGet.passCoin)
+            if (sumStock == 0)
+            {
+                List<RewardApplyInDB> raList = new List<RewardApplyInDB>();
+                var passObj = new RewardInfoHasResultObj()
+                {
+                    c = "GetRewardInfomationHasResult",
+                    title = $"{date.ToString("yyyyMMdd")}期",
+                    data = objGet,
+                    list = raList,
+                    indexNumber = indexNumber
+                };
+                return passObj;
+            }
+            else if (sumStock <= objGet.passCoin)
             {
                 var satoshiPerStock = objGet.passCoin / sumStock;
                 var remainder = objGet.passCoin % sumStock;
@@ -1281,6 +1260,109 @@ namespace WsOfWebClient
             //  var passObj = await getResultObj(objGet, date);
             // throw new NotImplementedException();
         }
+
+        internal static async Task<bool> BindWordInfoF(IntroState iState, WebSocket webSocket, CommonClass.ModelTranstraction.BindWordInfo bwi)
+        {
+            if (bwi.verifyCodeValue != null && iState.randomValue.Trim().ToLower() == bwi.verifyCodeValue.Trim().ToLower())
+            {
+                bwi.bindWordSign = bwi.bindWordSign.Trim();
+                bwi.bindWordMsg = bwi.bindWordMsg.Trim();
+                bwi.bindWordAddr = bwi.bindWordAddr.Trim();
+                System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("^[\u4e00-\u9fa5]{2,10}$");
+                if (reg.IsMatch(bwi.bindWordMsg))
+                {
+                    if (BitCoin.Sign.checkSign(bwi.bindWordSign, bwi.bindWordMsg, bwi.bindWordAddr))
+                    {
+                        var index = rm.Next(0, roomUrls.Count);
+                        var msg = Newtonsoft.Json.JsonConvert.SerializeObject(bwi);
+                        var msgRequested = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                        if (!string.IsNullOrEmpty(msgRequested))
+                        {
+                            var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.BindWordInfo.Result>(msgRequested);
+                            if (requestObj.success)
+                            {
+                                await NotifyMsg(webSocket, $"绑定成功！{requestObj.msg}");
+                            }
+                            else
+                            {
+                                await NotifyMsg(webSocket, $"绑定失败！{requestObj.msg}");
+                            }
+                        }
+                        else
+                        {
+                            await NotifyMsg(webSocket, "程序异常！");
+                        }
+                        iState.randomCharacterCount = 4;
+                        iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                        await Room.setRandomPic(iState, webSocket);
+                    }
+                    else
+                    {
+                        iState.randomCharacterCount++;
+                        iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                        await Room.setRandomPic(iState, webSocket);
+                        await NotifyMsg(webSocket, "绑定词，您的签名错误，绑定失败！");
+                    }
+                }
+                else
+                {
+                    iState.randomCharacterCount++;
+                    iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                    await Room.setRandomPic(iState, webSocket);
+                    await NotifyMsg(webSocket, "绑定词，须由2-10个汉字组成！");
+                }
+                return true;
+            }
+            else
+            {
+                iState.randomCharacterCount++;
+                iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                await Room.setRandomPic(iState, webSocket);
+                await NotifyMsg(webSocket, "验证码输入错误");
+                return false;
+            }
+        }
+
+
+        internal static async Task<bool> LookForBindInfoF(IntroState iState, WebSocket webSocket, CommonClass.ModelTranstraction.LookForBindInfo lbi)
+        {
+            if (lbi.verifyCodeValue != null && iState.randomValue.Trim().ToLower() == lbi.verifyCodeValue.Trim().ToLower())
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                lbi.infomation = lbi.infomation.Trim();
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(lbi);
+                var msgRequested = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                if (!string.IsNullOrEmpty(msgRequested))
+                {
+                    var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.LookForBindInfo.Result>(msgRequested);
+                    if (requestObj.success)
+                    {
+                        await NotifyMsg(webSocket, $"{requestObj.msg}");
+                    }
+                    else
+                    {
+                        await NotifyMsg(webSocket, $"没有查询到绑定关系");
+                    }
+                }
+                else
+                {
+                    await NotifyMsg(webSocket, "程序异常！");
+                }
+                iState.randomCharacterCount = 4;
+                iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                await Room.setRandomPic(iState, webSocket);
+                return true;
+            }
+            else
+            {
+                iState.randomCharacterCount++;
+                iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                await Room.setRandomPic(iState, webSocket);
+                await NotifyMsg(webSocket, "验证码输入错误");
+                return false;
+            }
+        }
+
         internal static async Task RewardApply(WebSocket webSocket, RewardApply rA)
         {
             var date = DateTime.Now;
@@ -1299,13 +1381,28 @@ namespace WsOfWebClient
                     if (!string.IsNullOrEmpty(msgRequested))
                     {
                         var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardApply.Result>(msgRequested);
-                        Console.WriteLine(msgRequested);
-                        if (requestObj.success) { }
-                        else { }
+                        //  Console.WriteLine(msgRequested);
+                        if (requestObj.success)
+                        {
+                            await NotifyMsg(webSocket, requestObj.msg);
+                        }
+                        else
+                        {
+                            await NotifyMsg(webSocket, requestObj.msg);
+                        }
                     }
+                    else
+                        await NotifyMsg(webSocket, "系统错误");
+                }
+                else
+                {
+                    await NotifyMsg(webSocket, "错误的签名");
                 }
             }
-            else { }
+            else
+            {
+                await NotifyMsg(webSocket, $"现在只能申请{date.ToString("yyyyMMdd")}期奖励。");
+            }
             //if(rA.msgNeedToSign)
 
             //var grn = new CommonClass.ModelTranstraction.RewardInfomation()

@@ -178,19 +178,24 @@ namespace MarketConsoleApp
                             var item = allItem[i];
                             var detail = DalOfAddress.detailmodel.GetByID(item.modelID);
                             bussinessAddress = detail.bussinessAddress;
+                            if (string.IsNullOrEmpty(bussinessAddress))
+                            {
+                                continue;
+                            }
                             //detail.bussinessAddress;
-                            BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(detail.bussinessAddress);
-                            //  Task.Run < Dictionary<string, long>(() => t.GetTradeInfomationFromChain());
-                            var result = Task.Run<Dictionary<string, long>>(() => t.GetTradeInfomationFromChain());
+                            var dicResult = await ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(detail.bussinessAddress);
+                            //BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(detail.bussinessAddress);
+                            ////  Task.Run < Dictionary<string, long>(() => t.GetTradeInfomationFromChain());
+                            //var result = Task.Run<Dictionary<string, long>>(() => t.GetTradeInfomationFromChain());
                             lock (ModelInputLock)
                             {
                                 if (ModelInputSatoshi.ContainsKey(item.modelID))
                                 {
-                                    ModelInputSatoshi[item.modelID] = result.Result;
+                                    ModelInputSatoshi[item.modelID] = dicResult;
                                 }
                                 else
                                 {
-                                    ModelInputSatoshi.Add(item.modelID, result.Result);
+                                    ModelInputSatoshi.Add(item.modelID, dicResult);
                                 }
                                 tradeDetail = ModelInputSatoshi[item.modelID];
                             }

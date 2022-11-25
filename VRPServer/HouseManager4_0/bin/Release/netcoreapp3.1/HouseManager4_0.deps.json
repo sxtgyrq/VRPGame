@@ -11,6 +11,7 @@
           "BitCoin": "1.0.0",
           "CityRunFunction": "1.0.0",
           "CommonClass": "1.0.0",
+          "ConsoleBitcoinChainApp": "1.0.0",
           "DalOfAddress": "1.0.0",
           "Geometry": "1.0.0",
           "LogClass": "1.0.0",
@@ -180,6 +181,19 @@
           }
         }
       },
+      "Microsoft.Extensions.Logging.Abstractions/1.0.0": {
+        "dependencies": {
+          "System.Collections": "4.3.0",
+          "System.Collections.Concurrent": "4.3.0",
+          "System.Diagnostics.Debug": "4.3.0",
+          "System.Globalization": "4.3.0",
+          "System.Linq": "4.3.0",
+          "System.Reflection": "4.3.0",
+          "System.Resources.ResourceManager": "4.3.0",
+          "System.Runtime.Extensions": "4.3.0",
+          "System.Runtime.InteropServices": "4.3.0"
+        }
+      },
       "Microsoft.Extensions.Primitives/3.1.3": {
         "runtime": {
           "lib/netcoreapp3.1/Microsoft.Extensions.Primitives.dll": {
@@ -227,6 +241,18 @@
           "lib/netstandard2.1/Zstandard.Net.dll": {
             "assemblyVersion": "1.1.7.0",
             "fileVersion": "1.1.7.0"
+          }
+        }
+      },
+      "NBitcoin/7.0.10": {
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+          "Newtonsoft.Json": "12.0.2"
+        },
+        "runtime": {
+          "lib/netstandard2.1/NBitcoin.dll": {
+            "assemblyVersion": "7.0.10.0",
+            "fileVersion": "7.0.10.0"
           }
         }
       },
@@ -1106,6 +1132,7 @@
       "BitCoin/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "3.1.3",
+          "NBitcoin": "7.0.10",
           "RIPEMD": "4.3.0"
         },
         "runtime": {
@@ -1123,6 +1150,16 @@
         },
         "runtime": {
           "CommonClass.dll": {}
+        }
+      },
+      "ConsoleBitcoinChainApp/1.0.0": {
+        "dependencies": {
+          "BitCoin": "1.0.0",
+          "DalOfAddress": "1.0.0",
+          "TcpFunction": "1.0.0"
+        },
+        "runtime": {
+          "ConsoleBitcoinChainApp.dll": {}
         }
       },
       "DalOfAddress/1.0.0": {
@@ -1274,6 +1311,13 @@
       "path": "microsoft.extensions.filesystemglobbing/3.1.3",
       "hashPath": "microsoft.extensions.filesystemglobbing.3.1.3.nupkg.sha512"
     },
+    "Microsoft.Extensions.Logging.Abstractions/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wHT6oY50q36mAXBRKtFaB7u07WxKC5u2M8fi3PqHOOnHyUo9gD0u1TlCNR8UObHQxKMYwqlgI8TLcErpt29n8A==",
+      "path": "microsoft.extensions.logging.abstractions/1.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.1.0.0.nupkg.sha512"
+    },
     "Microsoft.Extensions.Primitives/3.1.3": {
       "type": "package",
       "serviceable": true,
@@ -1315,6 +1359,13 @@
       "sha512": "sha512-5UPKd+OX5aSR8fTTfWzAifYg8YKOWMVX39bkdGbI3/SB3khdE13DZVMrk6CzjXvo2BjXic9emf2lwgvJTVWnyg==",
       "path": "mysql.data/8.0.23",
       "hashPath": "mysql.data.8.0.23.nupkg.sha512"
+    },
+    "NBitcoin/7.0.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-O6cfz8wkpZY9o7g2LwTP9Scka74d1pCb83fejdIuCe1w3CB+BlxJp7bhKyzfYt48KyguCu2RiOJlWCb4q2B08Q==",
+      "path": "nbitcoin/7.0.10",
+      "hashPath": "nbitcoin.7.0.10.nupkg.sha512"
     },
     "NETStandard.Library/1.6.1": {
       "type": "package",
@@ -1978,6 +2029,11 @@
       "sha512": ""
     },
     "CommonClass/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ConsoleBitcoinChainApp/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

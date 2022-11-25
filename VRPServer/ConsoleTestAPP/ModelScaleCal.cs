@@ -10,13 +10,13 @@ namespace ConsoleTestAPP
         {
             var d = CityRunFunction.Geography.getLengthOfTwoPoint.GetDistance(32, 112, 33, 113);
             //CityRunFunction.Geography.
-            double startX, startY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(112, 32, out startX, out startY);
+            double startX, startY, startZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(112, 32, 0, out startX, out startY, out startZ);
 
             //var length=
 
-            double endX, endY;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(113, 33, out endX, out endY);
+            double endX, endY, endZ;
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(113, 33, 0, out endX, out endY, out startZ);
 
             var vitualLength = Math.Sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY));
             var result = vitualLength / d;

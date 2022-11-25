@@ -26,22 +26,11 @@ namespace HouseManager4_0
                     if (player.modelHasShowed.ContainsKey(cloesdMaterial[i].modelID)) { }
                     else
                     {
-                        // var player = (Player)this;
                         if (Program.dt.material.ContainsKey(cloesdMaterial[i].amodel))
                         {
-                            //if (player.aModelHasShowed.ContainsKey(cloesdMaterial[i].amodel))
-                            //{
-                            //    var m2 = cloesdMaterial[i];
-                            //    player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m2.rotatey, true, "", "", "", ref notifyMsgs);
-
-                            //}
-                            //else
-                            {
-                                // player.aModelHasShowed.Add(cloesdMaterial[i].amodel, true);
-                                var m1 = Program.dt.material[cloesdMaterial[i].amodel];
-                                var m2 = cloesdMaterial[i];
-                                player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
-                            }
+                            var m1 = Program.dt.material[cloesdMaterial[i].amodel];
+                            var m2 = cloesdMaterial[i];
+                            player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
                         }
                         else
                         { }
@@ -49,7 +38,6 @@ namespace HouseManager4_0
                     }
                 }
             }
-
         }
 
         internal string GetRewardFromBuildingF(GetRewardFromBuildingM m)
@@ -74,164 +62,179 @@ namespace HouseManager4_0
                             if (role.playerType == RoleInGame.PlayerType.player)
                             {
                                 var player = (Player)role;
-                                var car = that._Players[m.Key].getCar();
-                                switch (car.state)
+                                if (player.canGetReward)
                                 {
-                                    case CarState.waitOnRoad:
-                                        {
-                                            var models = that.goodsM.GetConnectionModels(player.getCar().targetFpIndex);
-                                            if (models.Count(item => item.modelID == m.selectObjName) > 0)
+                                    var car = that._Players[m.Key].getCar();
+                                    switch (car.state)
+                                    {
+                                        case CarState.waitOnRoad:
                                             {
-                                                var hash = (m.Key + m.selectObjName).GetHashCode();
-                                                var newRm = new System.Random(hash);
-                                                hash = newRm.Next(5);
-                                                int defendLevel = 1;
-                                                string rewardLittleReason;
-                                                if (string.IsNullOrEmpty(player.BTCAddress))
+                                                var models = that.goodsM.GetConnectionModels(player.getCar().targetFpIndex);
+                                                if (models.Count(item => item.modelID == m.selectObjName) > 0)
                                                 {
-                                                    rewardLittleReason = ",你还没有登录，登录可获取更多加成。";
-                                                    defendLevel = 1;
-                                                }
-                                                else if (Program.dt.modelsStocks.ContainsKey(m.selectObjName))
-                                                {
-                                                    if (Program.dt.modelsStocks[m.selectObjName].stocks.ContainsKey(player.BTCAddress))
+
+                                                    var hash = (m.Key + m.selectObjName).GetHashCode();
+                                                    var newRm = new System.Random(hash);
+                                                    hash = newRm.Next(5);
+                                                    int defendLevel = 1;
+                                                    string rewardLittleReason;
+                                                    if (string.IsNullOrEmpty(player.BTCAddress))
                                                     {
-                                                        defendLevel = 3;
-                                                        var sum = Program.dt.modelsStocks[m.selectObjName].stocks.Sum(item => item.Value);
-                                                        sum = Math.Min(sum, 1000000);
-                                                        var itemV = Program.dt.modelsStocks[m.selectObjName].stocks[player.BTCAddress];
-                                                        for (var i = 0; i < 5; i++)
+                                                        rewardLittleReason = ",你还没有登录，登录可获取更多加成。";
+                                                        defendLevel = 1;
+                                                    }
+                                                    else if (Program.dt.modelsStocks.ContainsKey(m.selectObjName))
+                                                    {
+                                                        if (Program.dt.modelsStocks[m.selectObjName].stocks.ContainsKey(player.BTCAddress))
                                                         {
-                                                            if (sum * Program.rm.rm.Next(100) < itemV * 100)
+
+                                                            defendLevel = 3;
+                                                            var sum = Program.dt.modelsStocks[m.selectObjName].stocks.Sum(item => item.Value);
+                                                            sum = Math.Min(sum, 1000000);
+                                                            var itemV = Program.dt.modelsStocks[m.selectObjName].stocks[player.BTCAddress];
+                                                            for (var i = 0; i < 5; i++)
                                                             {
-                                                                defendLevel++;
+                                                                if (sum * Program.rm.rm.Next(100) < itemV * 100)
+                                                                {
+                                                                    defendLevel++;
+                                                                }
                                                             }
+                                                            rewardLittleReason = "";
                                                         }
-                                                        rewardLittleReason = "";
+                                                        else
+                                                        {
+                                                            rewardLittleReason = ",你在此处还没有股份，成为股东获取更多加成！";
+                                                            defendLevel = 2;
+                                                        }
                                                     }
                                                     else
                                                     {
                                                         rewardLittleReason = ",你在此处还没有股份，成为股东获取更多加成！";
                                                         defendLevel = 2;
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    rewardLittleReason = ",你在此处还没有股份，成为股东获取更多加成！";
-                                                    defendLevel = 2;
-                                                }
-                                                {
-
-
-
-                                                    if (hash < 1)
                                                     {
-                                                        if (player.buildingReward.ContainsKey(hash)) { }
-                                                        else
+
+
+
+                                                        if (hash < 1)
                                                         {
-                                                            return "";
-                                                        }
-                                                        player.buildingReward[hash] += defendLevel;
-                                                        switch (hash)
-                                                        {
-                                                            case 0:
-                                                                {
-                                                                    this.WebNotify(player, $"招募力+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                }; break;
-                                                        }
-                                                    }
-                                                    else if (hash < 5)
-                                                    {
-                                                        if (player.buildingReward.ContainsKey(hash)) { }
-                                                        else
-                                                        {
-                                                            return "";
-                                                        }
-                                                        if (player.getCar().ability.driver == null)
-                                                        {
-                                                            this.WebNotify(player, "你还没有选司机，没有获得任何奖励");
-                                                        }
-                                                        else
-                                                        {
-                                                            player.buildingReward[hash] += defendLevel;
-                                                            switch (player.getCar().ability.driver.race)
+                                                            if (player.buildingReward.ContainsKey(hash)) { }
+                                                            else
                                                             {
-                                                                case CommonClass.driversource.Race.immortal:
+                                                                return "";
+                                                            }
+                                                            player.buildingReward[hash] += defendLevel;
+                                                            switch (hash)
+                                                            {
+                                                                case 0:
                                                                     {
-                                                                        switch (hash)
-                                                                        {
-                                                                            case 1:
-                                                                                {
-                                                                                    this.WebNotify(player, $"法术狂暴+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 2:
-                                                                                {
-                                                                                    this.WebNotify(player, $"忽视抗雷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 3:
-                                                                                {
-                                                                                    this.WebNotify(player, $"忽视抗火几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 4:
-                                                                                {
-                                                                                    this.WebNotify(player, $"忽视抗水几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                        };
-                                                                    }; break;
-                                                                case CommonClass.driversource.Race.people:
-                                                                    {
-                                                                        switch (hash)
-                                                                        {
-                                                                            case 1:
-                                                                                {
-                                                                                    this.WebNotify(player, $"故技重施+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 2:
-                                                                                {
-                                                                                    this.WebNotify(player, $"忽视抗混几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 3:
-                                                                                {
-                                                                                    this.WebNotify(player, $"忽视抗迷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 4:
-                                                                                {
-                                                                                    this.WebNotify(player, $"忽视潜伏几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                        };
-                                                                    }; break;
-                                                                case CommonClass.driversource.Race.devil:
-                                                                    {
-                                                                        switch (hash)
-                                                                        {
-                                                                            case 1:
-                                                                                {
-                                                                                    this.WebNotify(player, $"力争上游+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 2:
-                                                                                {
-                                                                                    this.WebNotify(player, $"加速强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 3:
-                                                                                {
-                                                                                    this.WebNotify(player, $"加防强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                            case 4:
-                                                                                {
-                                                                                    this.WebNotify(player, $"强化冲撞几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                }; break;
-                                                                        };
+                                                                        this.WebNotify(player, $"招募力+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                     }; break;
                                                             }
                                                         }
+                                                        else if (hash < 5)
+                                                        {
+                                                            if (player.buildingReward.ContainsKey(hash)) { }
+                                                            else
+                                                            {
+                                                                return "";
+                                                            }
+                                                            if (player.getCar().ability.driver == null)
+                                                            {
+                                                                this.WebNotify(player, "你还没有选司机，没有获得任何奖励");
+                                                            }
+                                                            else
+                                                            {
+                                                                player.buildingReward[hash] += defendLevel;
+                                                                switch (player.getCar().ability.driver.race)
+                                                                {
+                                                                    case CommonClass.driversource.Race.immortal:
+                                                                        {
+                                                                            switch (hash)
+                                                                            {
+                                                                                case 1:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"法术狂暴+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 2:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"忽视抗雷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 3:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"忽视抗火几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 4:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"忽视抗水几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                            };
+                                                                        }; break;
+                                                                    case CommonClass.driversource.Race.people:
+                                                                        {
+                                                                            switch (hash)
+                                                                            {
+                                                                                case 1:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"故技重施+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 2:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"忽视抗混几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 3:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"忽视抗迷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 4:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"忽视潜伏几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                            };
+                                                                        }; break;
+                                                                    case CommonClass.driversource.Race.devil:
+                                                                        {
+                                                                            switch (hash)
+                                                                            {
+                                                                                case 1:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"力争上游+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 2:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"加速强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 3:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"加防强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                                case 4:
+                                                                                    {
+                                                                                        this.WebNotify(player, $"强化冲撞几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                    }; break;
+                                                                            };
+                                                                        }; break;
+                                                                }
+                                                            }
+                                                        }
                                                     }
+                                                    player.canGetReward = false;
                                                 }
-                                            }
-                                        }; break;
-                                    default:
-                                        {
-                                            WebNotify(player, "当前状态，求福不顶用！");
-                                        }; break;
+                                                else 
+                                                {
+                                                    WebNotify(player, "离得太远了！");
+                                                }
+                                            }; break;
+                                        default:
+                                            {
+                                                WebNotify(player, "当前状态，求福不顶用！");
+                                            }; break;
+                                    }
+                                    player.canGetReward = false;
+                                }
+                                else
+                                {
+                                    this.WebNotify(player, "在一个地点不能重复祈福");
                                 }
                             }
                             //  MeetWithNPC(sa); 

@@ -61,6 +61,7 @@ namespace WsOfWebClient.MapEditor
                         "1NyrqneGRxTpCohjJdwKruM88JyARB2Ljr",
                         "1NyrqNVai7uCP4CwZoDfQVAJ6EbdgaG6bg"
                     };
+                    //string administrator
                     for (var i = 0; i < administratorAddress.Count; i++)
                     {
                         var add = administratorAddress[i];
@@ -314,7 +315,41 @@ namespace WsOfWebClient.MapEditor
                                                     {
                                                         await mm.GetUnLockedModelID(webSocket, rm, "");
                                                     }; break;
+                                                case "LookForHeight":
+                                                    {
+                                                        LookForHeight lfh = Newtonsoft.Json.JsonConvert.DeserializeObject<LookForHeight>(returnResult.result);
+                                                        await mm.GetHeight(webSocket, lfh, rm);
+                                                    }; break;
                                             }
+                                        }; break;
+                                }
+                                switch (c.c)
+                                {
+                                    case "addChargingWithWord":
+                                        {
+                                            List<string> administratorOfFinace = new List<string>()
+                                            {
+                                                "1NyrqneGRxTpCohjJdwKruM88JyARB2Ljr",
+                                                "1NyrqNVai7uCP4CwZoDfQVAJ6EbdgaG6bg"
+                                            };
+                                            if (administratorOfFinace.Contains(address))
+                                            {
+                                                CommonClass.Finance.Charging cObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.Charging>(returnResult.result);
+                                                await mm.ChargingSend(webSocket, rm, cObj, address);
+                                                await mm.ChargingRefresh(webSocket, rm);
+                                            }
+                                        }; break;
+                                    case "chargingRefresh":
+                                        {
+                                            await mm.ChargingRefresh(webSocket, rm);
+                                        }; break;
+                                    case "chargingNextPage":
+                                        {
+                                            await mm.ChargingNextPage(webSocket, rm);
+                                        }; break;
+                                    case "chargingPreviousPage":
+                                        {
+                                            await mm.ChargingPreviousPage(webSocket, rm);
                                         }; break;
                                 }
 

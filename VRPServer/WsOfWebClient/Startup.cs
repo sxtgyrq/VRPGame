@@ -277,6 +277,11 @@ namespace WsOfWebClient
             {
                 //byte[] buffer = new byte[size];
                 //var buffer = new ArraySegment<byte>(new byte[8192]);
+                IntroState iState = new IntroState()
+                {
+                    randomCharacterCount = 4,
+                    randomValue = ""
+                };
                 State s = new State();
                 ConnectInfo.webSocketID++;
                 s.WebsocketID = ConnectInfo.webSocketID;
@@ -754,7 +759,39 @@ namespace WsOfWebClient
                                     CommonClass.ModelTranstraction.AwardsGiving ag = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.AwardsGiving>(returnResult.result);
                                     await Room.GiveAward(webSocket, ag);
                                 }; break;
+                            case "Guid":
+                                {
+                                    if (s.Ls == LoginState.selectSingleTeamJoin)
+                                    {
+                                        iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
+                                        await Room.setRandomPic(iState, webSocket);
+                                        s = await Room.setState(s, webSocket, LoginState.Guid);
 
+                                    }
+                                }; break;
+                            case "QueryGuid":
+                                {
+                                    if (s.Ls == LoginState.Guid)
+                                    {
+                                        s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                    }
+                                }; break;
+                            case "BindWordInfo":
+                                {
+                                    if (s.Ls == LoginState.Guid)
+                                    {
+                                        CommonClass.ModelTranstraction.BindWordInfo bwi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.BindWordInfo>(returnResult.result);
+                                        await Room.BindWordInfoF(iState, webSocket, bwi);
+                                    }
+                                }; break;
+                            case "LookForBindInfo": 
+                                {
+                                    if (s.Ls == LoginState.Guid)
+                                    {
+                                        CommonClass.ModelTranstraction.LookForBindInfo lbi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.LookForBindInfo>(returnResult.result);
+                                        await Room.LookForBindInfoF(iState, webSocket, lbi);
+                                    }
+                                };break;
                         }
                     }
                     catch (Exception e)

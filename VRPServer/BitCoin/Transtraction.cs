@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 
 using System.Net;
+//using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BitCoin
@@ -30,19 +32,38 @@ namespace BitCoin
             //    //Consol.WriteLine(data);
             //    return data;
             //}
-
-            public async Task<Dictionary<string, long>> GetTradeInfomationFromChain()
+            public class WebCS : WebClient
             {
+                //重写超时时间
+                protected override WebRequest GetWebRequest(Uri address)
+                {
+                    HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                    request.Timeout = 1000 * 120;//单位为毫秒
+                    request.ReadWriteTimeout = 1000 * 120;//
+                    return request;
+                }
+            }
+            //public async Task<Dictionary<string, long>> GetTradeInfomationFromChainFromServer()
+            //{
 
+            //}
+            public async Task<Dictionary<string, long>> GetTradeInfomationFromChain_v2()
+            {
+                //var socketsHttpHandler = new SocketsHttpHandler()
+                //{
+                //    //建立TCP连接时的超时时间,默认不限制
+                //    ConnectTimeout = Timeout.InfiniteTimeSpan,
+                //    //等待服务返回statusCode=100的超时时间,默认1秒
+                //    Expect100ContinueTimeout = TimeSpan.FromSeconds(120),
+                //};
                 //https://blockchain.info/q/getblockcount
                 int current_block_count;
                 {
                     var url = "https://blockchain.info/q/getblockcount";
-                    using (WebClient web1 = new WebClient())
+                    using (WebCS web1 = new WebCS())
                     {
                         current_block_count = Convert.ToInt32(Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url)));
                     }
-                    //Consol.WriteLine($"current_block_count:{current_block_count}");
                 }
                 StringBuilder detailOfTrade = new StringBuilder();
                 Dictionary<string, bool> record = new Dictionary<string, bool>();
@@ -60,13 +81,15 @@ namespace BitCoin
                         {
                             try
                             {
-                                using (WebClient web1 = new WebClient())
+                                using (WebCS web1 = new WebCS())
                                 {
-                                    // ((HttpWebRequest)web1).ReadWriteTimeout
-                                    var dataGet = await web1.DownloadDataTaskAsync(url);
                                     data = Encoding.UTF8.GetString(await web1.DownloadDataTaskAsync(url));
                                 }
-                                //Consol.WriteLine(data);
+                                //using (var client = new HttpClient(socketsHttpHandler))
+                                //{
+                                //    data = await client.GetStringAsync(url);
+                                //}
+                                //  Console.WriteLine(data);
                                 break;
                             }
                             catch (Exception e)

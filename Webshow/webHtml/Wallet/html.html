@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>签名器</title>
+    <script src="script.js"></script>
+</head>
+<body style="width:100%;height:100%;overflow-x:hidden;overflow-y:scroll;">
+
+    <div style="border-bottom:1px dotted grey;padding-bottom:0.5em;">
+        <div><h3>消息</h3></div>
+        <div>
+            <textarea id="msgNeedTosign" style="min-width: 28em;"></textarea>
+        </div>
+        <div> <button id="pasteMsgBtn" onclick="readStr('msgNeedTosign');">粘贴</button></div>
+    </div>
+    <div style="border-bottom: 1px dotted grey; padding-bottom: 0.5em;">
+        <div><h3>私钥</h3></div>
+        <div>
+            <!--<textarea id="privateKey" ></textarea>-->
+            <input id="privateKey" type="text" style="min-width: 28em; height: 3em; word-wrap: break-word; word-break: break-all;" placeholder="私钥" />
+
+
+        </div>
+        <div>
+            <textarea id="privateKeyShow" style="min-width: 28em; background-color: lightgrey;" readonly></textarea>
+        </div>
+
+        <div style="min-width:28em;"> p2wpkhp2sh  <input type="checkbox" id="p2wpkhp2sh" /> <button id="btnShowOrHide" onclick="showOrHide();" style="margin-left:2em;">显示</button></div>
+        <button style="min-width: 28em; height: 3em;margin-top:0.6em;" onclick="signMsg();">签名</button>
+    </div>
+
+    <div style="border-bottom: 1px dotted grey; padding-bottom: 0.5em; ">
+        <div onclick="copyStr('publicKeyShow','地址')"><h4>地址</h4></div>
+        <div>
+            <textarea id="publicKeyShow" style="min-width: 28em; background-color:lightgrey;" readonly></textarea>
+        </div>
+    </div>
+
+    <div style="border-bottom: 1px dotted grey; padding-bottom: 3em; ">
+        <div onclick="copyStr('resultOfSign','签名')"><h4>签名</h4></div>
+        <div>
+            <textarea id="resultOfSign" readonly style="min-width: 28em; background-color: lightgrey;"></textarea>
+        </div>
+
+    </div>
+
+    <div>
+        <div>随机私钥</div>
+        <div>
+
+            <button onclick="randomGenerate();">生成</button>
+        </div>
+
+    </div>
+    <script>
+        showOrHide();
+        initialize();
+    </script>
+    <!--<script src="mainf.js"></script>-->
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "jeSJW+Qh97nxnAqJJd42ikxVwnVanT7eMABaVCn8tsB418U5djrsyRbNlwkZHJqIuumjLLs1q58VRnlMU2QdCA==",
+  "dgSpecHash": "QBwhcFKs/iuAJ3+A83Vzz9xzL3cGWCHgFcnYGtrrm46Qd88AbWaOO+coJs8X6pxfuSFn6IkeSEaWxawFyLVRUQ==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\MarketConsoleApp\\MarketConsoleApp.csproj",
   "expectedPackageFiles": [
@@ -138,9 +138,9 @@
     "C:\\Users\\sxtgy\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.22\\microsoft.netcore.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.22\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.22\\microsoft.aspnetcore.app.runtime.win-x64.3.1.22.nupkg.sha512"
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.31\\microsoft.netcore.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.31\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.31\\microsoft.aspnetcore.app.runtime.win-x64.3.1.31.nupkg.sha512"
   ],
   "logs": []
 }

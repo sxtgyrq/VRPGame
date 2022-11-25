@@ -10,6 +10,7 @@ F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CityRunFunction\o
 E:\Project\VRPGame\VRPServer\CityRunFunction\bin\Release\netcoreapp3.1\CityRunFunction.deps.json
 E:\Project\VRPGame\VRPServer\CityRunFunction\bin\Release\netcoreapp3.1\CityRunFunction.dll
 E:\Project\VRPGame\VRPServer\CityRunFunction\bin\Release\netcoreapp3.1\CityRunFunction.pdb
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Release\netcoreapp3.1\CityRunFunction.csproj.AssemblyReference.cache
 E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Release\netcoreapp3.1\CityRunFunction.GeneratedMSBuildEditorConfig.editorconfig
 E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Release\netcoreapp3.1\CityRunFunction.AssemblyInfoInputs.cache
 E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Release\netcoreapp3.1\CityRunFunction.AssemblyInfo.cs

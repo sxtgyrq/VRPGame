@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body style="width:100%;height:100%;overflow:hidden;">
+    <div id="rootContainer" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left">打赏</h1>
+            <p style="text-align:left;">
+
+                &emsp;&emsp;一，你要有一个地址，如<span style="background-color:aqua;color:forestgreen;">356irRFazab63B3m95oyiYeR5SDKJRFa99</span>。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;二，地址<span style="background-color:aqua;color:forestgreen;">356irRFazab63B3m95oyiYeR5SDKJRFa99</span>在游戏里，有5000以上的余额。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;三，你掌握地址<span style="background-color:aqua;color:forestgreen;">356irRFazab63B3m95oyiYeR5SDKJRFa99</span>的私钥。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;四，你选择一个你能熟记的二到十字的汉语短语如“<span style="background-color:aqua;color:forestgreen;">欢迎来到我的游戏</span>”作为绑定词。
+            </p>
+            <p style="text-align:left;word-break:break-all;word-wrap:anywhere;">
+                &emsp;&emsp;五，用你的私钥，对“<span style="background-color:aqua;color:forestgreen;">欢迎来到我的游戏</span>”进行签名，得到结果：<span style="background-color:aqua;color:forestgreen;">IDsBRU37kmlF+NAEJZEUz12bxI2ter02Ga5jQNI6SqYbeekPBaYZuMr03C+xZQzrHtfCSCAHvzrHf8j1kOYE3mQ=</span>。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;六，将地址、绑定词、签名发送，待条件无误，即完成绑定。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;七，绑定成功后。你可以依靠绑定词进行<a href="javascript:void(null);" onclick="alert('微信打赏码');">微信打赏码</a>或<a href="javascript:void(null);" onclick="alert('支付宝转账');">支付宝转账</a>。
+            </p>
+        </div>
+        <div style=" width:100%;">
+            <table style=" width:100%;">
+                <tr>
+                    <th style="width:4em;"><label>地址</label> </th>
+                    <td> <textarea style="min-width:20em;" id="bindWordAddr">356irRFazab63B3m95oyiYeR5SDKJRFa99</textarea></td>
+                </tr>
+                <tr>
+                    <th><label>绑定词</label> </th>
+                    <td> <textarea style="min-width: 20em;" id="bindWordMsg">欢迎来到我的游戏</textarea></td>
+                </tr>
+                <tr>
+                    <th><label>签名</label> </th>
+                    <td> <textarea style="min-width: 20em;" id="bindWordSign">IDsBRU37kmlF+NAEJZEUz12bxI2ter02Ga5jQNI6SqYbeekPBaYZuMr03C+xZQzrHtfCSCAHvzrHf8j1kOYE3mQ=</textarea></td>
+                </tr>
+                <tr>
+                    <th><label>验证码</label> </th>
+                    <td>
+                        <textarea style="min-width: 4em;" id="verifyCodeValue"></textarea>
+                        <img id="verifyCodeImg" />
+                    </td>
+                </tr>
+                <tr> 
+                    <td  colspan="2">
+                       <div style="text-align:center;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div>
+                            <button onclick="backToMainPageFromGuid()" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;
+        background-color:aqua;
+        ">
+                                发送
+                            </button>
+                            <button onclick="backToMainPageFromGuid()" style="width: 5em; height: 3em; margin-top: 1em; background-color:transparent;">
+                                清空
+                            </button>
+                            <button onclick="backToMainPageFromGuid()" style="width: 5em; height: 3em; margin-top: 1em; background-color: red;">
+                                签名
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div style="text-align:center;">
+            <button onclick="backToMainPageFromGuid()" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>
+
+
+    <!--<script src="mainf.js"></script>-->
+</body>
+</html>

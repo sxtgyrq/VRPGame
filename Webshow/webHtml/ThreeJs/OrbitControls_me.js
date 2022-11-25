@@ -1368,6 +1368,7 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                             }
                             if (buttonIndex == 8) {
+                                //BACK key
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
@@ -1379,6 +1380,7 @@ THREE.OrbitControls = function (object, domElement) {
                                 }
                             }
                             else if (buttonIndex == 9) {
+                                // START key
                                 if (document.getElementById('confirmAlert').style.zIndex == '10') {
                                     document.getElementById('confirmAlert').style.zIndex = '-10';
                                 }
@@ -1394,10 +1396,17 @@ THREE.OrbitControls = function (object, domElement) {
                                 switch (objMain.gamePadState) {
                                     case 'shop':
                                         {
-                                            if (myGamepad.buttons[6].pressed) {
+                                            if (myGamepad.buttons[6].pressed && !myGamepad.buttons[7].pressed) {
                                                 var lengthOfCC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 50;
                                                 if (objMain.buildingGroup.children.length > 0) {
                                                     objMain.buildingGroup.children[0].position.y += lengthOfCC;
+                                                }
+                                            }
+                                            else if (myGamepad.buttons[7].pressed && !myGamepad.buttons[6].pressed) {
+                                                if (objMain.buildingGroup.children.length > 0) {
+                                                    var xValue = objMain.buildingGroup.children[0].position.x;
+                                                    var yValue = -objMain.buildingGroup.children[0].position.z;
+                                                    keyFunction(function () { objMain.ws.send(JSON.stringify({ c: 'LookForHeight', MercatorX: xValue, MercatorY: yValue })) }, buttonIndex);
                                                 }
                                             }
                                             else {

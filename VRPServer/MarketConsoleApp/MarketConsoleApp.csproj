@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BitCoin\BitCoin.csproj" />
+    <ProjectReference Include="..\ConsoleBitcoinChainApp\ConsoleBitcoinChainApp.csproj" />
     <ProjectReference Include="..\DalOfAddress\DalOfAddress.csproj" />
     <ProjectReference Include="..\TcpFunction\TcpFunction.csproj" />
   </ItemGroup>

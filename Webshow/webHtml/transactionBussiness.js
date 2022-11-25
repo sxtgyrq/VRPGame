@@ -20,7 +20,25 @@ var transactionBussiness = function () {
         divAddr.style.wordWrap = 'anywhere';
         divAddr.style.wordBreak = 'break-all';
         //word-break: break-all;
-        divAddr.innerText = address;
+        //  divAddr.innerText = address;
+        var aEle = document.createElement('a');
+        aEle.innerText = address;
+        aEle.id = 'buildingInfoBtcAddr' + address;
+        // aEle.onclick = ;
+        setTimeout(function () {
+            document.getElementById('buildingInfoBtcAddr' + address).addEventListener('click', function (e) {
+                if (document.getElementById('addrFrom').value == '') {
+                    document.getElementById('addrFrom').value = this.innerText;
+                }
+                else if (document.getElementById('addrTo').value == '') {
+                    document.getElementById('addrTo').value = this.innerText;
+                }
+            })
+        }, 10);
+        //  setTimeout(function () { transactionBussiness().stockItemClick('buildingInfoBtcAddr' + address); }, 200)
+        aEle.href = "javascript:void(null);";
+
+        divAddr.appendChild(aEle);
         container_Editor.appendChild(divAddr);
 
 
@@ -67,7 +85,16 @@ var transactionBussiness = function () {
 
         document.getElementById('rootContainer').appendChild(container_Editor);
 
-
+        //setTimeout(function () {
+        //    document.getElementById('buildingInfoPanleBtcAddr').addEventListener('click', function (e) {
+        //        if (document.getElementById('addrFrom').value == '') {
+        //            document.getElementById('addrFrom').value = this.innerText;
+        //        }
+        //        else if (document.getElementById('addrTo').value == '') {
+        //            document.getElementById('addrTo').value = this.innerText;
+        //        }
+        //    });
+        //}, 100);
 
         //<div style="text-align:center;">
         //    <img src="Pic/test/a5aab08a44db9be028a9f0b83a340fbd.png" />
@@ -91,6 +118,7 @@ var transactionBussiness = function () {
                 </div>
                 <div>
                     <input type="button" value="生成协议"  onclick="setTransactionHtml.generateAgreement();" />
+                    <input type="button" value="在线签名"  onclick="transactionBussiness().signOnLine();" />
                 </div>
                 <div>
                     <label>协议</label>
@@ -101,7 +129,7 @@ var transactionBussiness = function () {
                     <textarea id="signText" style="width: calc(100% - 20px);" rows="10"></textarea>
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <input type="button" value="转让" onclick="setTransactionHtml.transSign();" />
+                    <input type="button" value="转让" onclick="setTransactionHtml.transSign();" /> 
                 </div>
             </div>
 `;
@@ -110,8 +138,13 @@ var transactionBussiness = function () {
         var container_Editor = document.getElementById('transtractionEditor');
         container_Editor.appendChild(div);
     };
-    this.showErrMsg = function () {
+    this.showErrMsg = function (msg) {
+        if (document.getElementById('agreementErrMsg') == null) {
 
+        }
+        else {
+            document.getElementById('agreementErrMsg').innerText = msg;
+        }
     };
     this.drawStockTable = function () {
         var html = `<table id="stockTable" border="1" style="margin-bottom:20px;margin-top:20px;border:solid 1px #0a481c;"><thead><tr><th colspan="3">股份</th></tr></thead></table>`;
@@ -124,7 +157,7 @@ var transactionBussiness = function () {
     };
     this.addStockItem = function (addr, value, percent) {
         var html2 = `<tr>
-                    <td style="word-wrap:anywhere;word-break:break-all;border:solid 1px #0a481c;">${addr}</td>
+                    <td style="word-wrap:anywhere;word-break:break-all;border:solid 1px #0a481c;"><a id="stockItemBtn${addr}" href="javascript:void(null);" onclick="transactionBussiness().stockItemClick('stockItemBtn${addr}');">${addr}</a></td>
                     <td style="border:solid 1px #0a481c;vertical-align:middle;">${value}</td>
                     <td style="border:solid 1px #0a481c;vertical-align:middle;">${percent}</td>
                 </tr>`;
@@ -132,6 +165,15 @@ var transactionBussiness = function () {
         tr.innerHTML = html2;
         var parent = document.getElementById('stockTable');
         parent.appendChild(tr);
+    };
+    this.stockItemClick = function (id) {
+        var operateObj = document.getElementById(id);
+        if (document.getElementById('addrFrom').value == '') {
+            document.getElementById('addrFrom').value = operateObj.innerText;
+        }
+        else if (document.getElementById('addrTo').value == '') {
+            document.getElementById('addrTo').value = operateObj.innerText;
+        }
     };
     this.drawTradeTable = function () {
         var html = ` <table id="tradeTable" border="1" style="margin-bottom:20px;border:solid black 1px;"><thead><tr><th colspan="2">转让过程</th></tr></thead></table>`;
@@ -258,6 +300,19 @@ var transactionBussiness = function () {
         clearTable('tradeTable');
         clearTable('originalTable');
     };
+    this.signOnLine = function () {
+        PrivateSignPanelObj.show(
+            function () {
+                return document.getElementById('agreementText').value != '';
+            },
+            function () {
+                $.notify('协议为空', 'info');
+            }, function (addr, sign) {
+                document.getElementById('addrFrom').value = addr;
+                document.getElementById('signText').value = sign;
+            },
+            document.getElementById('agreementText').value)
+    }
     return this;
 }
 

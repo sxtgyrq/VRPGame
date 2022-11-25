@@ -52,11 +52,11 @@ namespace HouseManager4_0
         }
         internal static void sign()
         {
-            Console.WriteLine("拖入密钥地址");
+            Console.WriteLine("拖入密钥地址文件路径");
             var path = Console.ReadLine();
             var privateKey = File.ReadAllText(path);
 
-            Console.WriteLine("拖入要加密内容");
+            Console.WriteLine("拖入要加密内容路径");
             path = Console.ReadLine();
             var content = File.ReadAllText(path);
             var oI = Newtonsoft.Json.JsonConvert.DeserializeObject<ObjInput>(content);

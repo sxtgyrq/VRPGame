@@ -136,79 +136,84 @@ namespace BitCoin
 
         public static bool checkSign(string signature, string message, string address)
         {
-            byte[] sig;
+            try
             {
-                sig = Convert.FromBase64String(signature);
-            }
-
-            if (sig.Length != 65)
-                return false;
-
-            // extract r,s from signature
-            var r = Bytes32.ConvetToBigInteger(sig.Skip(1).Take(32).ToArray());
-            var s = Bytes32.ConvetToBigInteger(sig.Skip(33).Take(32).ToArray());
-            // var s = BigInteger.fromByteArrayUnsigned(sig.slice(33, 33 + 32));
-
-            // get recid
-            var compressed = false;
-            var nV = Convert.ToInt32(sig[0]);
-            if (nV < 27 || nV >= 35)
-                return false;
-            if (nV >= 31)
-            {
-                compressed = true;
-                nV -= 4;
-            }
-            var recid = new BigInteger(nV - 27);
-
-            //var ecparams = getSECCurveByName("secp256k1");
-            //var curve = ecparams.getCurve();
-            //var a = curve.getA().toBigInteger();
-            //var b = curve.getB().toBigInteger();
-            //var p = curve.getQ();
-            //var G = ecparams.getG();
-            //var order = ecparams.getN();
-
-            //var x = r.add(order.multiply(recid.divide(BigInteger.valueOf(2))));
-            var x = recid / 2 * Secp256k1.q + r;
-
-            //Calculate.getMulValue(,recid / 2);
-            // var alpha = x.multiply(x).multiply(x).add(a.multiply(x)).add(b).mod(p);
-            var alpha = (x * x * x + Secp256k1.a * x + Secp256k1.b) % Secp256k1.p;
-            //var beta = alpha.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
-            var beta = BigInteger.ModPow(alpha, (Secp256k1.p + 1) / 4, Secp256k1.p);//Calculate.Pow((Secp256k1.p + 1) / 4, alpha);
-            var y = (beta - recid).IsEven ? beta : (Secp256k1.p - beta);
-            //var y = beta.subtract(recid).isEven() ? beta : p.subtract(beta);
-
-            //   var R = new ECPointFp(curve, curve.fromBigInteger(x), curve.fromBigInteger(y));
-            // var e = BigInteger.fromByteArrayUnsigned(msg_digest(message));
-            var e = Bytes32.ConvetToBigInteger(msg_digest(message));
-            //    var minus_e = BigInteger.Negate(e)+ % Secp256k1.q;
-            var minus_e = ((Secp256k1.q - e) % Secp256k1.q + Secp256k1.q) % Secp256k1.q;
-            var inv_r = Inverse.ex_gcd(r, Secp256k1.q);////BigInteger.mo r.modInverse(order);
-            //var Q = (R.multiply(s).add(G.multiply(minus_e))).multiply(inv_r);
-            bool isZero;
-            var Q__ = Calculate.pointPlus(Calculate.getMulValue(s, new BigInteger[] { x, y }),
-                Calculate.getPublicByPrivate(minus_e), out isZero);
-            if (isZero)
-            {
-                return false;
-            }
-            else
-            {
-                var Q = Calculate.getMulValue(inv_r, Q__);
-                // var public_key = PublicKeyF.GetAddressOfcompressed(Q);
-                if (compressed)
+                byte[] sig;
                 {
-                    return PublicKeyF.GetAddressOfcompressed(Q) == address || PublicKeyF.GetAddressOfP2SH(Q) == address;
+                    sig = Convert.FromBase64String(signature);
+                }
+
+                if (sig.Length != 65)
+                    return false;
+
+                // extract r,s from signature
+                var r = Bytes32.ConvetToBigInteger(sig.Skip(1).Take(32).ToArray());
+                var s = Bytes32.ConvetToBigInteger(sig.Skip(33).Take(32).ToArray());
+                // var s = BigInteger.fromByteArrayUnsigned(sig.slice(33, 33 + 32));
+
+                // get recid
+                var compressed = false;
+                var nV = Convert.ToInt32(sig[0]);
+                if (nV < 27 || nV >= 35)
+                    return false;
+                if (nV >= 31)
+                {
+                    compressed = true;
+                    nV -= 4;
+                }
+                var recid = new BigInteger(nV - 27);
+
+                //var ecparams = getSECCurveByName("secp256k1");
+                //var curve = ecparams.getCurve();
+                //var a = curve.getA().toBigInteger();
+                //var b = curve.getB().toBigInteger();
+                //var p = curve.getQ();
+                //var G = ecparams.getG();
+                //var order = ecparams.getN();
+
+                //var x = r.add(order.multiply(recid.divide(BigInteger.valueOf(2))));
+                var x = recid / 2 * Secp256k1.q + r;
+
+                //Calculate.getMulValue(,recid / 2);
+                // var alpha = x.multiply(x).multiply(x).add(a.multiply(x)).add(b).mod(p);
+                var alpha = (x * x * x + Secp256k1.a * x + Secp256k1.b) % Secp256k1.p;
+                //var beta = alpha.modPow(p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)), p);
+                var beta = BigInteger.ModPow(alpha, (Secp256k1.p + 1) / 4, Secp256k1.p);//Calculate.Pow((Secp256k1.p + 1) / 4, alpha);
+                var y = (beta - recid).IsEven ? beta : (Secp256k1.p - beta);
+                //var y = beta.subtract(recid).isEven() ? beta : p.subtract(beta);
+
+                //   var R = new ECPointFp(curve, curve.fromBigInteger(x), curve.fromBigInteger(y));
+                // var e = BigInteger.fromByteArrayUnsigned(msg_digest(message));
+                var e = Bytes32.ConvetToBigInteger(msg_digest(message));
+                //    var minus_e = BigInteger.Negate(e)+ % Secp256k1.q;
+                var minus_e = ((Secp256k1.q - e) % Secp256k1.q + Secp256k1.q) % Secp256k1.q;
+                var inv_r = Inverse.ex_gcd(r, Secp256k1.q);////BigInteger.mo r.modInverse(order);
+                                                           //var Q = (R.multiply(s).add(G.multiply(minus_e))).multiply(inv_r);
+                bool isZero;
+                var Q__ = Calculate.pointPlus(Calculate.getMulValue(s, new BigInteger[] { x, y }),
+                    Calculate.getPublicByPrivate(minus_e), out isZero);
+                if (isZero)
+                {
+                    return false;
                 }
                 else
                 {
-                    var unCompressedAdress = PublicKeyF.GetAddressOfUncompressed(Q);
-                    //Consol.WriteLine($"uncompressed adress:{unCompressedAdress}");
-                    return unCompressedAdress == address;
+                    var Q = Calculate.getMulValue(inv_r, Q__);
+                    // var public_key = PublicKeyF.GetAddressOfcompressed(Q);
+                    if (compressed)
+                    {
+                        return PublicKeyF.GetAddressOfcompressed(Q) == address || PublicKeyF.GetAddressOfP2SH(Q) == address;
+                    }
+                    else
+                    {
+                        var unCompressedAdress = PublicKeyF.GetAddressOfUncompressed(Q);
+                        //Consol.WriteLine($"uncompressed adress:{unCompressedAdress}");
+                        return unCompressedAdress == address;
+                    }
                 }
             }
+            catch { return false; }
+
         }
 
         static byte[] msg_digest(string message)

@@ -10,6 +10,7 @@ F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\Model\obj\Debug\n
 E:\Project\VRPGame\VRPServer\Model\bin\Debug\netcoreapp3.1\Model.deps.json
 E:\Project\VRPGame\VRPServer\Model\bin\Debug\netcoreapp3.1\Model.dll
 E:\Project\VRPGame\VRPServer\Model\bin\Debug\netcoreapp3.1\Model.pdb
+E:\Project\VRPGame\VRPServer\Model\obj\Debug\netcoreapp3.1\Model.csproj.AssemblyReference.cache
 E:\Project\VRPGame\VRPServer\Model\obj\Debug\netcoreapp3.1\Model.GeneratedMSBuildEditorConfig.editorconfig
 E:\Project\VRPGame\VRPServer\Model\obj\Debug\netcoreapp3.1\Model.AssemblyInfoInputs.cache
 E:\Project\VRPGame\VRPServer\Model\obj\Debug\netcoreapp3.1\Model.AssemblyInfo.cs

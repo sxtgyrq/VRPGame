@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "JQpO8PSzAbyq8yqgqW5Xt5QM4INolJQXTf0CuPuYJUFJ8cPjENZ3693aTS8ARMfeaEyIDlvuKGkdrLsjrQGlCw==",
+  "dgSpecHash": "NifOsDL/b4YAQyLytPyApHSppjObmFcS9PzZgruPy5qk6LumVA76GszYfH50ELVMnxfgmbPLHDjptl3nUXJYtQ==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\Geometry\\Geometry.csproj",
   "expectedPackageFiles": [
@@ -8,7 +8,10 @@
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.3\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.3.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
+    "C:\\Users\\sxtgy\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.31\\microsoft.netcore.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.31\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.31\\microsoft.aspnetcore.app.runtime.win-x64.3.1.31.nupkg.sha512"
   ],
   "logs": []
 }

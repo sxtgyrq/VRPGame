@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "3bIs/KZYATM2XShjCkI6IgVGf+3Jb1EuJwAZsYhJ1t9oTwUb0bmRQMnVhgQ8IoKlOEhnq0jzLRUd6QFT1l2xPQ==",
+  "dgSpecHash": "x/79qGD3Xx/gcWQlpg+tO7kVman2yiSSnF7+BpXwgqlrjM1XOySkK70WqVgDwFEjiT4ymFWdYZZliwEUHldzxA==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\TcpFunction\\TcpFunction.csproj",
   "expectedPackageFiles": [
@@ -87,9 +87,9 @@
     "C:\\Users\\sxtgy\\.nuget\\packages\\system.threading.overlapped\\4.3.0\\system.threading.overlapped.4.3.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
     "C:\\Users\\sxtgy\\.nuget\\packages\\system.threading.threadpool\\4.3.0\\system.threading.threadpool.4.3.0.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.22\\microsoft.netcore.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.22\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.22\\microsoft.aspnetcore.app.runtime.win-x64.3.1.22.nupkg.sha512"
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.31\\microsoft.netcore.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.31\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.31.nupkg.sha512",
+    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.31\\microsoft.aspnetcore.app.runtime.win-x64.3.1.31.nupkg.sha512"
   ],
   "logs": []
 }

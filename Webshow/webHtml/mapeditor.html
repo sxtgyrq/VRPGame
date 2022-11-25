@@ -402,25 +402,25 @@
 
     </div>
 
-    <div id="scenseDataInputFrame" style="z-index:999;width:calc(100% - 100px);height:100%;position:absolute;top:0;left:100px;">
+    <div id="rmbChargingDataInputFrame" style="z-index:999;width:calc(100% - 100px);height:100%;position:absolute;top:0;left:100px;">
         <div style="height:2em;left:calc(100% - 100px);">
-            <button id="scenseDataInputFrameEditBtn">最小化</button>
+            <button id="rmbChargingDataInputFrameEditBtn">最小化</button>
             <script>
                 var maxWindow2 = function () {
-                    var el = document.getElementById('scenseDataInputFrame');;
+                    var el = document.getElementById('rmbChargingDataInputFrame');;
                     el.style.height = '100%';
                     el.style.overflow = '';
-                    document.getElementById('scenseDataInputFrameEditBtn').innerText = '最小化';
-                    document.getElementById('scenseDataInputFrameEditBtn').onclick = function () {
+                    document.getElementById('rmbChargingDataInputFrameEditBtn').innerText = '最小化';
+                    document.getElementById('rmbChargingDataInputFrameEditBtn').onclick = function () {
                         minWindow2();
                     }
                 }
                 var minWindow2 = function () {
-                    var el = document.getElementById('scenseDataInputFrame');;
+                    var el = document.getElementById('rmbChargingDataInputFrame');;
                     el.style.height = '2em';
                     el.style.overflow = 'hidden';
-                    document.getElementById('scenseDataInputFrameEditBtn').innerText = '最大化';
-                    document.getElementById('scenseDataInputFrameEditBtn').onclick = function () {
+                    document.getElementById('rmbChargingDataInputFrameEditBtn').innerText = '最大化';
+                    document.getElementById('rmbChargingDataInputFrameEditBtn').onclick = function () {
                         maxWindow2();
                     }
                 }
@@ -428,36 +428,27 @@
             </script>
 
         </div>
-        <div style="background :yellowgreen;">
-            <span>建筑名:</span>
-            <textarea id="modelName" style="width:60%;" rows="1"></textarea>
+        <div>
+            <div><label>支付方式</label></div>
+            <select id="rmbChargingDatalTypes">
+                <option value="alipay">支付宝</option>
+                <option value="wechat" selected>微信打赏</option>
+            </select>
         </div>
-
-        <div id="dropPicPz_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="picList_Pz"></output>
-        <textarea id="jpgBase64Text_Pz" style="width:80%; height:100px;" readonly></textarea>
-
-        <div id="dropPicNz_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="picList_Nz"></output>
-        <textarea id="jpgBase64Text_Nz" style="width:80%; height:100px;" readonly></textarea>
-
-        <div id="dropPicPy_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="picList_Py"></output>
-        <textarea id="jpgBase64Text_Py" style="width:80%; height:100px;" readonly></textarea>
-
-        <div id="dropPicNy_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="picList_Ny"></output>
-        <textarea id="jpgBase64Text_Ny" style="width:80%; height:100px;" readonly></textarea>
-
-        <div id="dropPicPx_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="picList_Px"></output>
-        <textarea id="jpgBase64Text_Px" style="width:80%; height:100px;" readonly></textarea>
-
-        <div id="dropPicNx_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="picList_Nx"></output>
-        <textarea id="jpgBase64Text_Nx" style="width:80%; height:100px;" readonly></textarea>
+        <div>
+            <div><label>绑定词</label></div>
+            <input id="rmbChargingDatalWord" type="text" />
+        </div>
+        <div>
+            <div><label>充值</label></div>
+            <input id="rmbChargingDatalNum" type="number" />元
+        </div>
+        <div>
+            <div><label>时间</label></div>
+            <input id="rmbChargingDatalDateTime" type="datetime-local" step="1" />元
+        </div>
         <!--<div id="dropImg_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-    <output id="imgList"></output>-->
+        <output id="imgList"></output>-->
         <script>
             //var loadText = function (operateID, showID) {
             //    function handleFileSelect(evt) {
@@ -500,73 +491,204 @@
             //    dropObj_zone.addEventListener('dragover', handleDragOver, false);
             //    dropObj_zone.addEventListener('drop', handleFileSelect, false);
             //}
-            var loadImg = function (operateID, showID, dataShowID) {
-                function handleFileSelect(evt) {
-                    evt.stopPropagation();
-                    evt.preventDefault();
+            //var loadImg = function (operateID, showID, dataShowID) {
+            //    function handleFileSelect(evt) {
+            //        evt.stopPropagation();
+            //        evt.preventDefault();
 
-                    var files = evt.dataTransfer.files; // FileList object.
+            //        var files = evt.dataTransfer.files; // FileList object.
 
-                    var reader = new FileReader();
-                    var file = files[0];
-                    console.log('type', file.type);
-                    if (file.type != 'image/jpeg') {
-                        alert('请上传jpg格式的图片');
-                        return;
-                    }
-                    reader.onload = (function (theFile) {
-                        return function (e) {
-                            // Render thumbnail.
-                            console.log('dd', e.target.result);
-                            var span = document.createElement('span');
-                            span.innerHTML = ['<img class="thumb" src="', e.target.result,
-                                '" title="', escape(theFile.name), '"/>'].join('');
-                            document.getElementById(showID).insertBefore(span, null);
-                            document.getElementById(dataShowID).value = e.target.result.split(',')[1];
-                        };
-                    })(file);
-                    reader.readAsDataURL(file);
-                }
+            //        var reader = new FileReader();
+            //        var file = files[0];
+            //        console.log('type', file.type);
+            //        if (file.type != 'image/jpeg') {
+            //            alert('请上传jpg格式的图片');
+            //            return;
+            //        }
+            //        reader.onload = (function (theFile) {
+            //            return function (e) {
+            //                // Render thumbnail.
+            //                console.log('dd', e.target.result);
+            //                var span = document.createElement('span');
+            //                span.innerHTML = ['<img class="thumb" src="', e.target.result,
+            //                    '" title="', escape(theFile.name), '"/>'].join('');
+            //                document.getElementById(showID).insertBefore(span, null);
+            //                document.getElementById(dataShowID).value = e.target.result.split(',')[1];
+            //            };
+            //        })(file);
+            //        reader.readAsDataURL(file);
+            //    }
 
-                function handleDragOver(evt) {
-                    evt.stopPropagation();
-                    evt.preventDefault();
-                    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-                }
+            //    function handleDragOver(evt) {
+            //        evt.stopPropagation();
+            //        evt.preventDefault();
+            //        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+            //    }
 
-                // Setup the dnd listeners.
-                var dropObj_zone = document.getElementById(operateID);
-                dropObj_zone.addEventListener('dragover', handleDragOver, false);
-                dropObj_zone.addEventListener('drop', handleFileSelect, false);
-            }
-            loadImg('dropPicPx_zone', 'picList_Px', 'jpgBase64Text_Px');
+            //    // Setup the dnd listeners.
+            //    var dropObj_zone = document.getElementById(operateID);
+            //    dropObj_zone.addEventListener('dragover', handleDragOver, false);
+            //    dropObj_zone.addEventListener('drop', handleFileSelect, false);
+            //}
+            //loadImg('dropPicPx_zone', 'picList_Px', 'jpgBase64Text_Px');
             /*  loadImg('dropImg_zone', 'imgList');*/
         </script>
 
-        <div style="background :#ffffff64;" id="BTCAddress2"></div>
+
 
         <div>
 
             <!--<div>
-            <input type="range" id="zoomValue" name="points" min="0.1" max="2" step="0.01">
-            <div>1</div>
-        </div>-->
-
-
-            <button>清空</button>
-            <button id="useDataBtn" onclick="useDataF();">引用</button>
+                <input type="range" id="zoomValue" name="points" min="0.1" max="2" step="0.01">
+                <div>1</div>
+            </div>-->
+            <!--<button>清空</button>-->
+            <button id="chargingBtn" onclick="chargingDataF();">充值</button>
             <script>
-                var useDataF = function () {
-                    var obj = document.getElementById('objTextareaValue').value;
-                    var mtl = document.getElementById('mtlTextareaValue').value;
-                    var base64 = document.getElementById('jpgBase64TextareaValue').value;
-                    var modelTypes = document.getElementById('modelTypes').value;
-                    var modelName = document.getElementById('modelName').value;
-                    uploadObj.setValue(obj, mtl, base64, modelTypes, modelName);
+                var chargingDataF = function () {
+                    var type = document.getElementById('rmbChargingDatalTypes').value;
+                    var word = document.getElementById('rmbChargingDatalWord').value;
+                    var num = document.getElementById('rmbChargingDatalNum').value;
+                    var dt = document.getElementById('rmbChargingDatalDateTime').value;
+                    var obj =
+                    {
+                        c: 'addChargingWithWord',
+                        ChargingType: type,
+                        ChargingWord: word,
+                        ChargingNum: num,
+                        ChargingDt: dt,
+                        ChargingAddr: ''
+                    };
+                    objMain.ws.send(JSON.stringify(obj));
+                    clearTable();
+                    //var modelName = document.getElementById('modelName').value;
+                    //uploadObj.setValue(obj, mtl, base64, modelTypes, modelName);
+                }
+                var chargingDataRefreshF = function () {
+                    var obj =
+                    {
+                        c: 'chargingRefresh'
+                    };
+                    objMain.ws.send(JSON.stringify(obj));
+                    clearTable();
+                };
+                var clearTable = function () {
+                    var tt = document.getElementById('chargingTable');
+                    if (tt != null) {
+                        for (var row = 0; row < 10; row++) {
+                            tt.children[0].children[row + 1].children[0].innerText = '';
+                            tt.children[0].children[row + 1].children[1].innerText = '';
+                            tt.children[0].children[row + 1].children[2].innerText = '';
+                            tt.children[0].children[row + 1].children[3].innerText = '';
+                            tt.children[0].children[row + 1].children[4].innerText = '';
+                        }
+                    }
+                }
+                var chargingDataNextPage = function () {
+                    //  objMain.pageIndex += 1;
+                    // clearTable();
+                    var obj =
+                    {
+                        c: 'chargingNextPage'
+                    };
+                    objMain.ws.send(JSON.stringify(obj));
+                    clearTable();
+                }
+                var chargingDataPreviousPage = function () {
+                    var obj =
+                    {
+                        c: 'chargingPreviousPage'
+                    };
+                    objMain.ws.send(JSON.stringify(obj));
+                    clearTable();
                 }
             </script>
         </div>
-
+        <div style="background :black;max-height:calc(50%);overflow-y:scroll;color:antiquewhite;">
+            <button id="chargingRefreshBtn" onclick="chargingDataRefreshF();">刷新</button>
+            <table id="chargingTable" class="tableOfReward">
+                <tr>
+                    <th>时间</th>
+                    <th>绑定词</th>
+                    <th>地址</th>
+                    <th>方式</th>
+                    <th>金额</th>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+            </table>
+            <button id="chargingRefreshBtn" onclick="chargingDataNextPage();">下一页</button>
+            <label>第<span>&nbsp;&nbsp;&nbsp;</span>页</label>
+            <button id="chargingRefreshBtn" onclick="chargingDataPreviousPage();">上一页</button>
+        </div>
     </div>
 </body>
 </html>

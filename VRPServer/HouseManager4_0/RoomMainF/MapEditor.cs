@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using OssModel = Model;
 
 namespace HouseManager4_0.RoomMainF
@@ -667,41 +668,149 @@ namespace HouseManager4_0.RoomMainF
                 return "";
             }
         }
+
+        public string GetHeightAtPositionF(MapEditor.GetHeightAtPosition gh, Data dt)
+        {
+            Dictionary<string, Dictionary<int, OssModel.SaveRoad.RoadInfo>> road;
+            dt.GetData(out road);
+            double minLength = double.MaxValue;
+            double height = 0;
+            foreach (var roadItem in road)
+            {
+                foreach (var segItem in roadItem.Value)
+                {
+                    {
+                        double x, y, z;
+                        CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(segItem.Value.startLongitude, segItem.Value.startLatitude, 0, out x, out y, out z);
+                        var length = Math.Sqrt((x - gh.MercatorX) * (x - gh.MercatorX) + (y - gh.MercatorY) * (y - gh.MercatorY));
+                        if (length < minLength)
+                        {
+                            minLength = length;
+                            height = segItem.Value.startHeight;
+                        }
+                    }
+                    {
+                        double x, y, z;
+                        CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(segItem.Value.endLongitude, segItem.Value.endLatitude, 0, out x, out y, out z);
+                        var length = Math.Sqrt((x - gh.MercatorX) * (x - gh.MercatorX) + (y - gh.MercatorY) * (y - gh.MercatorY));
+                        if (length < minLength)
+                        {
+                            minLength = length;
+                            height = segItem.Value.endHeight;
+                        }
+                    }
+                }
+            }
+            MapEditor.GetHeightAtPosition.GetHeightAtPositionResult r = new MapEditor.GetHeightAtPosition.GetHeightAtPositionResult()
+            {
+                c = "GetHeightAtPositionResult",
+                height = height
+            };
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+        }
     }
 
     public partial class RoomMain : interfaceOfHM.ModelTranstractionI
     {
-        public string AwardsGive(ModelTranstraction.AwardsGivingPass agp)
+        public string AwardsGive(ModelTranstraction.AwardsGivingPass agp, bool ignoreDataCheck)
         {
             int startDate = int.Parse(agp.time);
             //var dt = new DateTime(startDate / 10000, (startDate / 100) % 100, startDate % 100);
             var now = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
-            if (now - startDate >= 7)
+            if (now - startDate >= 7 || ignoreDataCheck)
             {
                 DalOfAddress.TradeRecord.AddResult r;
                 DalOfAddress.TradeRecord.Add(agp, out r);
                 if (r == DalOfAddress.TradeRecord.AddResult.Success)
                 {
-                    return "颁奖成功";
+                    return Newtonsoft.Json.JsonConvert.SerializeObject
+                        (
+                        new ModelTranstraction.AwardsGivingPass.Result()
+                        {
+                            msg = "颁奖成功",
+                            success = true,
+                        }
+                        );
+                    // return "";
                 }
                 else if (r == DalOfAddress.TradeRecord.AddResult.DataError)
                 {
-                    return "数据错误";
+                    return Newtonsoft.Json.JsonConvert.SerializeObject
+                      (
+                      new ModelTranstraction.AwardsGivingPass.Result()
+                      {
+                          msg = "数据错误",
+                          success = false,
+                      }
+                      );
+                    // return "数据错误";
                 }
                 else if (r == DalOfAddress.TradeRecord.AddResult.HasGiven)
                 {
-                    return $"{startDate}期奖励已颁发！";
+                    return Newtonsoft.Json.JsonConvert.SerializeObject
+                     (
+                     new ModelTranstraction.AwardsGivingPass.Result()
+                     {
+                         msg = $"{startDate}期奖励已颁发！",
+                         success = false,
+                     }
+                     );
+                    // return $"{startDate}期奖励已颁发！";
                 }
                 else if (r == DalOfAddress.TradeRecord.AddResult.HasNoData)
                 {
-                    return "无奖可颁发";
+                    return Newtonsoft.Json.JsonConvert.SerializeObject
+                    (
+                    new ModelTranstraction.AwardsGivingPass.Result()
+                    {
+                        msg = $"无奖可颁发！",
+                        success = false,
+                    }
+                    );
+                    //   return "无奖可颁发";
                 }
-                else return "";
+                else return Newtonsoft.Json.JsonConvert.SerializeObject
+                   (
+                   new ModelTranstraction.AwardsGivingPass.Result()
+                   {
+                       msg = $"未知错误！",
+                       success = false,
+                   }
+                   );
             }
             else
             {
-                return $"{startDate}需在其发布七日后，方可进行颁奖";
+                return Newtonsoft.Json.JsonConvert.SerializeObject
+                   (new ModelTranstraction.AwardsGivingPass.Result()
+                   {
+                       msg = $"{startDate}需在其发布七日后，方可进行颁奖",
+                       success = false,
+                   }
+                );
             }
+        }
+
+        public string BindWordInfoF(ModelTranstraction.BindWordInfo bwi, Data dt)
+        {
+            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("^[\u4e00-\u9fa5]{2,10}$");
+            if (reg.IsMatch(bwi.bindWordMsg))
+                if (BitCoin.Sign.checkSign(bwi.bindWordSign, bwi.bindWordMsg, bwi.bindWordAddr))
+                {
+                    bool success;
+                    string msg = DalOfAddress.BindWordInfo.Add(bwi.bindWordSign, bwi.bindWordMsg, bwi.bindWordAddr, out success);
+                    ModelTranstraction.BindWordInfo.Result r = new ModelTranstraction.BindWordInfo.Result()
+                    {
+                        success = success,
+                        msg = msg
+                    };
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                }
+                else
+                {
+                    return "";
+                }
+            else return "";
+            //throw new NotImplementedException();
         }
 
         public string GetAllBuiisnessAddr()
@@ -803,11 +912,56 @@ namespace HouseManager4_0.RoomMainF
             return Newtonsoft.Json.JsonConvert.SerializeObject(r);
         }
 
-        public string RewardApplyF(ModelTranstraction.RewardApply rA)
+        public string LookForBindInfoF(ModelTranstraction.LookForBindInfo lfbi, Data dt)
+        {
+            Regex reg = new System.Text.RegularExpressions.Regex("^[\u4e00-\u9fa5]{2,10}$");
+            if (reg.IsMatch(lfbi.infomation))
+            {
+                var obj = new ModelTranstraction.LookForBindInfo.Result()
+                {
+                    success = true,
+                    msg = DalOfAddress.BindWordInfo.LookForByWord(lfbi.infomation)
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            }
+            else if (BitCoin.CheckAddress.CheckAddressIsUseful(lfbi.infomation))
+            {
+                var obj = new ModelTranstraction.LookForBindInfo.Result()
+                {
+                    success = true,
+                    msg = DalOfAddress.BindWordInfo.LookForByAddr(lfbi.infomation)
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            }
+            else
+            {
+                var obj = new ModelTranstraction.LookForBindInfo.Result()
+                {
+                    success = false,
+                    msg = ""
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            }
+        }
+
+        public string RewardApplyF(ModelTranstraction.RewardApply rA, bool ignoreDataCheck)
         {
             Regex r = new Regex("^[0-9]{8}$");
-            if (r.IsMatch(rA.msgNeedToSign))
+            var date = DateTime.Now;
+            while (date.DayOfWeek != DayOfWeek.Monday)
             {
+                date = date.AddDays(-1);
+            }
+            var dateStr = date.ToString("yyyyMMdd");
+            if (r.IsMatch(rA.msgNeedToSign) && (dateStr == rA.msgNeedToSign || ignoreDataCheck))
+            {
+                int startDate = int.Parse(rA.msgNeedToSign);
+                //var dt = new DateTime(startDate / 10000, (startDate / 100) % 100, startDate % 100);
+                var now = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
+                if (now - startDate >= 7 || ignoreDataCheck)
+                {
+
+                }
                 if (BitCoin.Sign.checkSign(rA.signature, rA.msgNeedToSign, rA.addr))
                 {
                     int level;
@@ -844,7 +998,7 @@ namespace HouseManager4_0.RoomMainF
                         ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
                         {
                             success = true,
-                            msg = ""
+                            msg = "申请成功"
                         };
                         return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
                     }
@@ -859,26 +1013,117 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
             }
-            return "";
+            {
+                ModelTranstraction.RewardApply.Result rr = new ModelTranstraction.RewardApply.Result()
+                {
+                    success = false,
+                    msg = "错误的签名或错误日期"
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(rr);
+            }
+        }
+
+        static Dictionary<string, long> getValueOfAddr(string addr)
+        {
+            var tradeDetail = Task.Run(() => ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr)).Result;
+            var list = DalOfAddress.TradeRecord.GetAll(addr);
+            var r = ConsoleBitcoinChainApp.GetData.SetTrade(ref tradeDetail, list);
+            return r;
         }
 
         public string TradeCoinF(ModelTranstraction.TradeCoin tc)
         {
+            var parameter = tc.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+            //  var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{ga.tranNum * 100000000}Satoshi";
+            var regex = new Regex("^[0-9]{1,8}@[A-HJ-NP-Za-km-z1-9]{1,50}@[A-HJ-NP-Za-km-z1-9]{1,50}->[A-HJ-NP-Za-km-z1-9]{1,50}:[0-9]{1,13}Satoshi$");
+            if (regex.IsMatch(tc.msg))
+            {
+                if (parameter.Length == 5)
+                {
+                    if (BitCoin.Sign.checkSign(tc.sign, tc.msg, parameter[1]))
+                    {
+                        var tradeIndex = int.Parse(parameter[0]);
+                        var addrFrom = parameter[1];
+                        var addrBussiness = parameter[2];
+                        var addrTo = parameter[3];
+                        var passCoinStr = parameter[4];
+                        if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi" &&
+                            tradeIndex == tc.tradeIndex &&
+                            addrFrom == tc.addrFrom &&
+                            addrTo == tc.addrTo &&
+                            addrBussiness == tc.addrBussiness)
+                        {
 
-            string notifyMsg;
-            DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
-            return notifyMsg;
+                            var trDetail = getValueOfAddr(addrBussiness);
+                            var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                            if (passCoin > 0 && tc.passCoin == passCoin)
+                            {
+                                if (trDetail.ContainsKey(addrFrom))
+                                {
+                                    if (trDetail[addrFrom] >= passCoin)
+                                    {
+                                        string notifyMsg;
+                                        if (tc.addrTo.Trim() != tc.addrBussiness.Trim())
+                                        {
+                                            var r = DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
+                                            var objR = new ModelTranstraction.TradeCoin.Result()
+                                            {
+                                                msg = notifyMsg,
+                                                success = r
+                                            };
+                                            return Newtonsoft.Json.JsonConvert.SerializeObject(objR);
+                                        }
+                                        else
+                                        {
+                                            var r = DalOfAddress.TradeRecord.AddWithBTCExtracted(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
+                                            var objR = new ModelTranstraction.TradeCoin.Result()
+                                            {
+                                                msg = notifyMsg,
+                                                success = r
+                                            };
+                                            return Newtonsoft.Json.JsonConvert.SerializeObject(objR);
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+            }
+            {
+                var objR = new ModelTranstraction.TradeCoin.Result()
+                {
+                    msg = "传输错误，校验数据为无效！",
+                    success = false
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(objR);
+            }
         }
-
         public string TradeIndex(ModelTranstraction.TradeIndex tc)
         {
             var Index = DalOfAddress.TradeRecord.GetCount(tc.addrBussiness, tc.addrFrom);
             return Index.ToString();
         }
 
+        static int GetIndexOfTrade(string addrBussiness, string addrFrom)
+        {
+            var Index = DalOfAddress.TradeRecord.GetCount(addrBussiness, addrFrom);
+            return Index;
+        }
         public string TradeSetAsRewardF(ModelTranstraction.TradeSetAsReward tsar)
         {
-
             string dateStrng;
             var dateTime = DateTime.Now;
             for (int i = 0; i < tsar.afterWeek; i++)
@@ -891,16 +1136,119 @@ namespace HouseManager4_0.RoomMainF
             }
             dateStrng = dateTime.ToString("yyyyMMdd");
             int dataInt = int.Parse(dateStrng);
-            var msg = DalOfAddress.TradeReward.Update(dataInt, tsar.tradeIndex, tsar.addrReward, tsar.addrBussiness, tsar.passCoin, tsar.signOfAddrReward, tsar.signOfaddrBussiness, tsar.msg);
-            //string notifyMsg;
-            //DalOfAddress.TradeRecord.Update(tsar.tradeIndex, tsar.addrFrom, tsar.addrBussiness, tsar.sign, tsar.msg, tsar.passCoin, out notifyMsg);
-            return msg;
+
+            var regex = new Regex("^[0-9]{1,8}@[A-HJ-NP-Za-km-z1-9]{1,50}@[A-HJ-NP-Za-km-z1-9]{1,50}->SetAsReward:[0-9]{1,13}Satoshi$");
+
+            if (regex.IsMatch(tsar.msg))
+            {
+                var parameter = tsar.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                if (BitCoin.Sign.checkSign(tsar.signOfAddrReward, tsar.msg, parameter[1]))
+                {
+                    if (BitCoin.Sign.checkSign(tsar.signOfaddrBussiness, tsar.msg, parameter[2]))
+                    {
+                        var tradeIndex = int.Parse(parameter[0]);
+
+                        var addrFrom = parameter[1];
+                        var addrBussiness = parameter[2];
+                        var addrTo = parameter[3];
+                        if (addrTo == "SetAsReward" &&
+                            tradeIndex == tsar.tradeIndex &&
+                            addrFrom == tsar.addrReward &&
+                            addrBussiness == tsar.addrBussiness
+                            )
+                        {
+                            if (tradeIndex == GetIndexOfTrade(addrBussiness, addrFrom))
+                            {
+                                var passCoinStr = parameter[4];
+
+                                if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
+                                {
+                                    var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
+                                    if (passCoin > 0 && passCoin == tsar.passCoin)
+                                    {
+                                        var trDetail = getValueOfAddr(addrBussiness);
+                                        if (trDetail.ContainsKey(addrFrom))
+                                        {
+                                            if (trDetail[addrFrom] >= passCoin)
+                                            {
+                                                bool success;
+                                                var msg = DalOfAddress.TradeReward.Update(out success, dataInt, tsar.tradeIndex, tsar.addrReward, tsar.addrBussiness, tsar.passCoin, tsar.signOfAddrReward, tsar.signOfaddrBussiness, tsar.msg);
+                                                return Newtonsoft.Json.JsonConvert.SerializeObject(new ModelTranstraction.TradeSetAsReward.Result()
+                                                {
+                                                    msg = msg,
+                                                    success = success
+                                                });
+                                            }
+                                            else
+                                            {
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new ModelTranstraction.TradeSetAsReward.Result()
+            {
+                msg = "数据传输错误",
+                success = false
+            });
         }
 
         public void UpdateModelStock(ModelStock sa)
         {
             Program.dt.LoadStock(sa);
             // throw new NotImplementedException();
+        }
+
+        public string ChargingF(Finance.Charging chargingObj, Data dt)
+        {
+
+            var chargingOrder = DalOfAddress.Charging.AddItem(chargingObj);
+            Finance.Charging.Result r;
+            var bitcoinAddr = DalOfAddress.BindWordInfo.GetAddrByWord(chargingObj.ChargingWord.Trim());
+            if (string.IsNullOrEmpty(bitcoinAddr))
+            {
+                r = new Finance.Charging.Result()
+                {
+                    msg = $"写入成功，但{chargingObj.ChargingWord}没有对应的地址",
+                    success = true,
+                    chargingOrder = chargingOrder
+                };
+            }
+            else
+            {
+                var chargingValue = Convert.ToInt32(chargingObj.ChargingNum * 100m) * 500;
+                DalOfAddress.MoneyAdd.AddMoney(bitcoinAddr, chargingValue);
+
+                r = new Finance.Charging.Result()
+                {
+                    msg = $"写入成功，但{chargingObj.ChargingWord}对应的地址{bitcoinAddr}充值{chargingValue}",
+                    success = true,
+                    chargingOrder = chargingOrder
+                };
+            }
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+        }
+
+        public string ChargingLookForF(Finance.ChargingLookFor condition)
+        {
+            var r = DalOfAddress.Charging.GetItem(condition.chargingOrder);
+            if (r != null)
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            else
+                return "";
+        }
+
+        public string ChargingMax()
+        {
+            return DalOfAddress.Charging.GetMaxIndexNum().ToString();
         }
     }
 }

@@ -139,15 +139,15 @@ namespace CommonClass
             public string nz { get; set; }
         }
         public class SetBackgroundScene_BLL : SetBackgroundScene
-        { 
+        {
             public string firstRoadcode { get; set; }
             public int firstRoadorder { get; set; }
             public string secondRoadcode { get; set; }
-            public int secondRoadorder { get; set; } 
+            public int secondRoadorder { get; set; }
         }
         public class SetBackgroundScene_DAL : SetBackgroundScene
         {
-            public string crossID { get; set; } 
+            public string crossID { get; set; }
         }
         public class GetBackgroundScene : Command
         {
@@ -167,7 +167,16 @@ namespace CommonClass
                 public string nz { get; set; }
             }
         }
+        public class GetHeightAtPosition : Command
+        {
+            public double MercatorX { get; set; }
+            public double MercatorY { get; set; }
 
+            public class GetHeightAtPositionResult : Command
+            {
+                public double height { get; set; }
+            }
+        }
         public class UseBackgroundScene : Command
         {
             public string firstRoadcode { get; set; }
@@ -186,6 +195,50 @@ namespace CommonClass
             //    public string pz { get; set; }
             //    public string nz { get; set; }
             //}
+        }
+    }
+
+    public class Finance
+    {
+        public class Charging : Command
+        {
+            public string ChargingType { get; set; }
+            public string ChargingWord { get; set; }
+            public decimal ChargingNum { get; set; }
+            public string ChargingDt { get; set; }
+            public string ChargingAddr { get; set; }
+            public class Result
+            {
+                public bool success { get; set; }
+                public string msg { get; set; }
+                public int chargingOrder { get; set; }
+            }
+            
+        }
+        public class ChargingLookFor : Command
+        { 
+            public int chargingOrder { get; set; }
+            public class Result
+            {
+                public string bindWordAddr { get; set; }
+                public int chargingOrder { get; set; }
+
+                public string chargingword { get; set; }
+
+                public string chargingDatetime { get; set; }
+
+                public string chargingMoney { get; set; }
+
+                public string chargingType { get; set; }
+
+                public string charginginfo { get; set; }
+
+                public string chargingAddr { get; set; }
+
+                public string chargingIsUsed { get; set; }
+
+            }
+
         }
     }
 }

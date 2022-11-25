@@ -15,7 +15,7 @@ namespace WsOfWebClient.MapEditor
 {
     partial class Editor
     {
-        class ModeManger
+        partial class ModeManger
         {
             public bool addModel { get; set; }
             public ModeManger()
@@ -481,6 +481,9 @@ namespace WsOfWebClient.MapEditor
                     }
                 }
             }
+
+
+
             internal void NextUser(string address)
             {
                 if (this.addModel)
@@ -509,6 +512,9 @@ namespace WsOfWebClient.MapEditor
                 await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 // throw new NotImplementedException();
             }
+
+
+
             internal async Task EditModel(WebSocket webSocket)
             {
                 var sn = new
@@ -685,7 +691,25 @@ namespace WsOfWebClient.MapEditor
                 }
 
             }
+            internal async Task GetHeight(WebSocket webSocket, LookForHeight lfh, Random rm)
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.GetHeightAtPosition()
+                {
+                    c = "GetHeightAtPosition",
+                    MercatorX = lfh.MercatorX,
+                    MercatorY = lfh.MercatorY,
+                });
+                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
+                if (string.IsNullOrEmpty(json)) { }
+                else
+                {
+                    var sendData = Encoding.UTF8.GetBytes(json);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+            }
             internal async Task DownloadModel(WebSocket webSocket, GetModelDetail gmd, Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
@@ -749,5 +773,116 @@ namespace WsOfWebClient.MapEditor
                 }
             }
         }
+
+        partial class ModeManger
+        {
+            int chargingOrder = 100000000;
+            public async Task ChargingSend(WebSocket webSocket, Random rm, CommonClass.Finance.Charging cObj, string addr)
+            {
+                cObj.c = "Charging";
+                cObj.ChargingAddr = addr;
+                var index = rm.Next(0, roomUrls.Count);
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(cObj);
+                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                CommonClass.Finance.Charging.Result r
+                    = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.Charging.Result>(json);
+                this.chargingOrder = r.chargingOrder;
+
+                //this.showItemOfCharging(this.chargingOrder);
+                // await this.ShowMsg(webSocket, r.msg);
+            }
+
+            async Task showItemOfCharging(WebSocket webSocket, int row, int chargingOrder, int index)
+            {
+                CommonClass.Finance.ChargingLookFor condition = new CommonClass.Finance.ChargingLookFor()
+                {
+                    c = "ChargingLookFor",
+                    chargingOrder = chargingOrder
+                };
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(condition);
+                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                if (string.IsNullOrEmpty(json)) { }
+                else
+                {
+                    CommonClass.Finance.ChargingLookFor.Result r =
+                        Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.ChargingLookFor.Result>(json);
+                    var objWeb = new
+                    {
+                        c = "chargingItem",
+                        r = r,
+                        row = row
+                    };
+                    json = Newtonsoft.Json.JsonConvert.SerializeObject(objWeb);
+                    var sendData = Encoding.UTF8.GetBytes(json);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+            }
+
+            Dictionary<int, bool> showItemDic = new Dictionary<int, bool>() { };
+
+            internal async Task ChargingRefresh(WebSocket webSocket, Random rm)
+            {
+                var obj = new { c = "ChargingMax" };
+                var index = rm.Next(0, roomUrls.Count);
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                var countStr = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                this.chargingOrder = Convert.ToInt32(countStr);
+                for (int i = 0; i < 10; i++)
+                {
+                    var indexOfData = chargingOrder - i;
+                    var row = i + 0;
+                    if (indexOfData > 0)
+                    {
+                        await showItemOfCharging(webSocket, row, indexOfData, index);
+                    }
+                }
+            }
+
+            internal async Task ChargingNextPage(WebSocket webSocket, Random rm)
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                this.chargingOrder -= 10;
+                if (this.chargingOrder < 0)
+                {
+                    this.chargingOrder = 10;
+                }
+                for (int i = 0; i < 10; i++)
+                {
+                    var indexOfData = chargingOrder - i;
+                    var row = i + 0;
+                    if (indexOfData > 0)
+                    {
+                        await showItemOfCharging(webSocket, row, indexOfData, index);
+                    }
+                }
+            }
+            internal async Task ChargingPreviousPage(WebSocket webSocket, Random rm)
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                this.chargingOrder += 10;
+                for (int i = 0; i < 10; i++)
+                {
+                    var indexOfData = chargingOrder - i;
+                    var row = i + 0;
+                    if (indexOfData > 0)
+                    {
+                        await showItemOfCharging(webSocket, row, indexOfData, index);
+                    }
+                }
+            }
+        }
+    }
+
+    partial class Editor
+    {
+        public class Finance
+        {
+
+        }
+
+
     }
 }
