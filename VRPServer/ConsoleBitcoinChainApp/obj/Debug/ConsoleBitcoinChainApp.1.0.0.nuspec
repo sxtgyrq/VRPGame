@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>ConsoleBitcoinChainApp</id>
+    <version>1.0.0</version>
+    <authors>ConsoleBitcoinChainApp</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="BitCoin" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="DalOfAddress" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="TcpFunction" version="1.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\Project\VRPGame\VRPServer\ConsoleBitcoinChainApp\bin\Debug\netcoreapp3.1\ConsoleBitcoinChainApp.runtimeconfig.json" target="lib\netcoreapp3.1\ConsoleBitcoinChainApp.runtimeconfig.json" />
+    <file src="E:\Project\VRPGame\VRPServer\ConsoleBitcoinChainApp\bin\Debug\netcoreapp3.1\ConsoleBitcoinChainApp.dll" target="lib\netcoreapp3.1\ConsoleBitcoinChainApp.dll" />
+  </files>
+</package>

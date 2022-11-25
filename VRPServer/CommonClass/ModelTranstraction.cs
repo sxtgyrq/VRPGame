@@ -68,15 +68,11 @@ namespace CommonClass
             public long passCoin { get; set; }
             public string sign { get; set; }
             public string msg { get; set; }
+
             public class Result
             {
-                //public double rotatey { get; set; }
-                //public string amodel { get; set; }
-                //public double x { get; set; }
-                //public double y { get; set; }
-                //public double z { get; set; }
-                //public string bussinessAddress { get; set; }
-                //public string modelID { get; set; }
+                public string msg { get; set; }
+                public bool success { get; set; }
             }
         }
 
@@ -90,6 +86,11 @@ namespace CommonClass
             public string signOfAddrReward { get; set; }
             public string msg { get; set; }
             public int afterWeek { get; set; }
+            public class Result
+            {
+                public bool success { get; set; }
+                public string msg { get; set; }
+            }
 
         }
 
@@ -104,7 +105,7 @@ namespace CommonClass
             public string msgNeedToSign { get; set; }
             public string signature { get; set; }
 
-            public class Result 
+            public class Result
             {
                 public bool success { get; set; }
                 public string msg { get; set; }
@@ -118,11 +119,39 @@ namespace CommonClass
             public List<string> msgs { get; set; }
             public List<int> ranks { get; set; }
             public List<string> applyAddr { get; set; }
+            public class Result
+            {
+                public bool success { get; set; }
+                public string msg { get; set; }
+            }
         }
         public class AwardsGiving : CommonClass.Command
         {
             public string time { get; set; }
             public List<string> list { get; set; }
+        }
+
+        public class BindWordInfo : CommonClass.Command
+        {
+            public string bindWordAddr { get; set; }
+            public string bindWordMsg { get; set; }
+            public string bindWordSign { get; set; }
+            public string verifyCodeValue { get; set; }
+            public class Result
+            {
+                public bool success { get; set; }
+                public string msg { get; set; }
+            }
+        }
+        public class LookForBindInfo : CommonClass.Command
+        {
+            public string infomation { get; set; }
+            public string verifyCodeValue { get; set; }
+            public class Result
+            {
+                public bool success { get; set; }
+                public string msg { get; set; }
+            }
         }
     }
 }

@@ -448,7 +448,15 @@ set b.locked=@locked WHERE b.dmState=1 AND a.amState=1 AND b.modelID=@modelID;";
                             }
                             else
                             {
-                                string sQL = @"UPDATE detailmodel SET bussinessAddress=@bussinessAddress WHERE modelID=@modelID AND (bussinessAddress is NULL OR bussinessAddress='');";
+                                //-- UPDATE detailmodel a,abtractmodels b set a.bussinessAddress='' WHERE a.amodel=b.amID AND b.modelType='direciton'
+                                string sQL = @"
+UPDATE detailmodel a,abtractmodels b 
+SET a.bussinessAddress =@bussinessAddress 
+WHERE
+	a.amodel = b.amID 
+	AND b.modelType = 'building' 
+	AND a.modelID = @modelID
+	AND ( a.bussinessAddress IS NULL OR a.bussinessAddress = '');";
                                 // long moneycount;
                                 using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
                                 {
@@ -666,6 +674,40 @@ WHERE locked=1 AND dmState=1 AND A.modelID='{modelID}';";
             return allmodelPoints;
         }
 
+        public static List<string> GetAllAddr()
+        {
+            List<string> allAddr = new List<string>();
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+                        {
+                            var sQL = "SELECT bussinessAddress FROM detailmodel WHERE locked=1 AND dmState=1;";
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        string addr = Convert.ToString(reader["bussinessAddress"]).Trim();
+                                        if (!string.IsNullOrEmpty(addr)) allAddr.Add(addr);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+            return allAddr;
+        }
+
 
         public static List<string> GetAllBussinessAddr()
         {
@@ -678,13 +720,22 @@ WHERE locked=1 AND dmState=1 AND A.modelID='{modelID}';";
                     try
                     {
                         {
-                            var sQL = "SELECT  bussinessAddress FROM detailmodel WHERE locked=1 AND dmState=1 ORDER BY bussinessAddress ASC;";
+                            var sQL = @"SELECT
+	bussinessAddress 
+FROM
+	detailmodel 
+WHERE
+	locked = 1 
+	AND dmState = 1 
+	AND ( bussinessAddress IS NOT NULL ) 
+ORDER BY
+	bussinessAddress ASC;";
                             using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
                             {
                                 using (var reader = command.ExecuteReader())
                                 {
                                     while (reader.Read())
-                                    { 
+                                    {
                                         result.Add(Convert.ToString(reader["bussinessAddress"]).Trim());
                                     }
                                 }

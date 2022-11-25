@@ -314,6 +314,11 @@ namespace WsOfWebClient.MapEditor
                                                     {
                                                         await mm.GetUnLockedModelID(webSocket, rm, "");
                                                     }; break;
+                                                case "LookForHeight":
+                                                    {
+                                                        LookForHeight lfh = Newtonsoft.Json.JsonConvert.DeserializeObject<LookForHeight>(returnResult.result);
+                                                        await mm.GetHeight(webSocket, lfh, rm);
+                                                    }; break;
                                             }
                                         }; break;
                                 }

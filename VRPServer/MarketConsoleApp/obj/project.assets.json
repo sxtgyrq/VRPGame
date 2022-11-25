@@ -1773,6 +1773,21 @@
           "bin/placeholder/CommonClass.dll": {}
         }
       },
+      "ConsoleBitcoinChainApp/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "BitCoin": "1.0.0",
+          "DalOfAddress": "1.0.0",
+          "TcpFunction": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ConsoleBitcoinChainApp.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ConsoleBitcoinChainApp.dll": {}
+        }
+      },
       "DalOfAddress/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
@@ -6128,6 +6143,11 @@
       "path": "../CommonClass/CommonClass.csproj",
       "msbuildProject": "../CommonClass/CommonClass.csproj"
     },
+    "ConsoleBitcoinChainApp/1.0.0": {
+      "type": "project",
+      "path": "../ConsoleBitcoinChainApp/ConsoleBitcoinChainApp.csproj",
+      "msbuildProject": "../ConsoleBitcoinChainApp/ConsoleBitcoinChainApp.csproj"
+    },
     "DalOfAddress/1.0.0": {
       "type": "project",
       "path": "../DalOfAddress/DalOfAddress.csproj",
@@ -6147,6 +6167,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "BitCoin >= 1.0.0",
+      "ConsoleBitcoinChainApp >= 1.0.0",
       "DalOfAddress >= 1.0.0",
       "Microsoft.AspNetCore.Mvc.NewtonsoftJson >= 3.1.13",
       "TcpFunction >= 1.0.0"
@@ -6181,6 +6202,9 @@
           "projectReferences": {
             "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj": {
               "projectPath": "E:\\Project\\VRPGame\\VRPServer\\BitCoin\\BitCoin.csproj"
+            },
+            "E:\\Project\\VRPGame\\VRPServer\\ConsoleBitcoinChainApp\\ConsoleBitcoinChainApp.csproj": {
+              "projectPath": "E:\\Project\\VRPGame\\VRPServer\\ConsoleBitcoinChainApp\\ConsoleBitcoinChainApp.csproj"
             },
             "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj": {
               "projectPath": "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj"

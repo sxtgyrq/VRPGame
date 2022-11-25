@@ -17,7 +17,15 @@ namespace WsOfWebClient
         public string Key { get; internal set; }
         public string CommandStart { get; internal set; }
 
+
         public int indexOfModelToTranstract = 0;
+
+
+    }
+    public class IntroState
+    {
+        public string randomValue { get; internal set; }
+        public int randomCharacterCount { get; set; }
     }
     public enum LoginState
     {
@@ -27,6 +35,7 @@ namespace WsOfWebClient
         WaitingToStart,
         WaitingToGetTeam,
         LookForBuildings,
-        QueryReward
+        QueryReward,
+        Guid
     }
 }

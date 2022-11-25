@@ -81,15 +81,46 @@ namespace DalOfAddress
             }
         }
 
+        internal static long GetMoney(MySqlConnection con, MySqlTransaction tran, string address)
+        {
+            long moneycount;
+            {
+                string sQL = @"SELECT
+                            	moneyaddress,
+                            	moneycount 
+                            FROM
+                            	addressmoney WHERE moneyaddress=@moneyaddress";
+                // long moneycount;
+                using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                {
+                    command.Parameters.AddWithValue("@moneyaddress", address);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+
+                            moneycount = Convert.ToInt64(reader["moneycount"]);
+                        }
+                        else
+                        {
+                            moneycount = 0;
+                        }
+
+                    }
+                }
+            }
+            return moneycount;
+        }
         public static long GetMoney(string address)
-        { 
+        {
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
                 con.Open();
                 using (MySqlTransaction tran = con.BeginTransaction())
                 {
                     try
-                    { 
+                    {
                         long moneycount;
                         {
                             string sQL = @"SELECT
@@ -113,7 +144,7 @@ namespace DalOfAddress
                                     {
                                         moneycount = 0;
                                     }
-                                    
+
                                 }
                             }
                         }
@@ -130,6 +161,7 @@ namespace DalOfAddress
 
         public static void AddMoney(string address, long money, string openid, DateTime operatetime)
         {
+            return;
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
             {
                 con.Open();

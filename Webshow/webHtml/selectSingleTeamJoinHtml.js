@@ -65,10 +65,11 @@
                     加入
                 </span>
             </div>
-            <div class="animateTextBottom" onclick="buttonClick('help')">
-                <span>要瑞卿的粗糙作品，多多指教</span>
+            <div class="animateTextBottom" onclick="buttonClick('HelpAndGuide')">
+<a style="text-decoration:underline;">您的指教；我的介绍！</a>
             </div>
         </div>`;
+        // <span style="text-decoration:underline;"></span>
 
 //        var html = ` <div>
 //            <div style="width:calc(100% - 22px);height:calc((100% - 80px - 1em)/3);border:solid 1px green;left:10px;top:calc(20px);position:absolute;

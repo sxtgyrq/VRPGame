@@ -108,7 +108,6 @@ namespace HouseManager4_0.interfaceOfHM
         string CheckCarStateF(CheckCarState ccs);
         void SystemBradcast(SystemBradcast sb);
         string Statictis(ServerStatictis ss);
-
     }
 
     interface MapEditor
@@ -135,6 +134,7 @@ namespace HouseManager4_0.interfaceOfHM
         string GetUnLockedModel(CommonClass.MapEditor.GetUnLockedModel gulm);
         void UpdateModelStock(ModelStock sa);
         string GetBG(SetCrossBG ss);
+        string GetHeightAtPositionF(CommonClass.MapEditor.GetHeightAtPosition gh, Data dt);
     }
 
     interface ModelTranstractionI
@@ -153,8 +153,10 @@ namespace HouseManager4_0.interfaceOfHM
         // string GetAllStockAddr(AllStockAddr ss);
         string GetRewardInfomationByStartDate(ModelTranstraction.RewardInfomation ri);
         string GetRewardApplyInfomationByStartDate(ModelTranstraction.RewardInfomation ri);
-        string RewardApplyF(ModelTranstraction.RewardApply rA);
-        string AwardsGive(ModelTranstraction.AwardsGivingPass aG);
+        string RewardApplyF(ModelTranstraction.RewardApply rA, bool ignoreDataCheck);
+        string AwardsGive(ModelTranstraction.AwardsGivingPass aG, bool ignoreDataCheck);
+        string BindWordInfoF(ModelTranstraction.BindWordInfo bwi, Data dt);
+        string LookForBindInfoF(ModelTranstraction.LookForBindInfo lfbi, Data dt);
     }
 
     interface Resistance

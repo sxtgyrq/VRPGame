@@ -1876,6 +1876,21 @@
           "bin/placeholder/CommonClass.dll": {}
         }
       },
+      "ConsoleBitcoinChainApp/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "BitCoin": "1.0.0",
+          "DalOfAddress": "1.0.0",
+          "TcpFunction": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ConsoleBitcoinChainApp.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ConsoleBitcoinChainApp.dll": {}
+        }
+      },
       "DalOfAddress/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
@@ -3943,6 +3958,21 @@
         },
         "runtime": {
           "bin/placeholder/CommonClass.dll": {}
+        }
+      },
+      "ConsoleBitcoinChainApp/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "BitCoin": "1.0.0",
+          "DalOfAddress": "1.0.0",
+          "TcpFunction": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ConsoleBitcoinChainApp.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ConsoleBitcoinChainApp.dll": {}
         }
       },
       "DalOfAddress/1.0.0": {
@@ -9128,6 +9158,11 @@
       "path": "../CommonClass/CommonClass.csproj",
       "msbuildProject": "../CommonClass/CommonClass.csproj"
     },
+    "ConsoleBitcoinChainApp/1.0.0": {
+      "type": "project",
+      "path": "../ConsoleBitcoinChainApp/ConsoleBitcoinChainApp.csproj",
+      "msbuildProject": "../ConsoleBitcoinChainApp/ConsoleBitcoinChainApp.csproj"
+    },
     "DalOfAddress/1.0.0": {
       "type": "project",
       "path": "../DalOfAddress/DalOfAddress.csproj",
@@ -9159,6 +9194,7 @@
       "BitCoin >= 1.0.0",
       "CityRunFunction >= 1.0.0",
       "CommonClass >= 1.0.0",
+      "ConsoleBitcoinChainApp >= 1.0.0",
       "DalOfAddress >= 1.0.0",
       "Geometry >= 1.0.0",
       "LogClass >= 1.0.0",
@@ -9204,6 +9240,9 @@
             },
             "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj": {
               "projectPath": "E:\\Project\\VRPGame\\VRPServer\\CommonClass\\CommonClass.csproj"
+            },
+            "E:\\Project\\VRPGame\\VRPServer\\ConsoleBitcoinChainApp\\ConsoleBitcoinChainApp.csproj": {
+              "projectPath": "E:\\Project\\VRPGame\\VRPServer\\ConsoleBitcoinChainApp\\ConsoleBitcoinChainApp.csproj"
             },
             "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj": {
               "projectPath": "E:\\Project\\VRPGame\\VRPServer\\DalOfAddress\\DalOfAddress.csproj"

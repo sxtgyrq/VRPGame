@@ -16,6 +16,7 @@
     <ProjectReference Include="..\BitCoin\BitCoin.csproj" />
     <ProjectReference Include="..\CityRunFunction\CityRunFunction.csproj" />
     <ProjectReference Include="..\CommonClass\CommonClass.csproj" />
+    <ProjectReference Include="..\ConsoleBitcoinChainApp\ConsoleBitcoinChainApp.csproj" />
     <ProjectReference Include="..\DalOfAddress\DalOfAddress.csproj" />
     <ProjectReference Include="..\Geometry\Geometry.csproj" />
     <ProjectReference Include="..\LogClass\LogClass.csproj" />

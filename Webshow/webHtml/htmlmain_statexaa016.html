@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body style="width:100%;height:100%;overflow:hidden;">
+    <div id="rootContainer" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left">微信扫码支付</h1>
+            <p style="text-align:left;">
+
+                &emsp;&emsp;一，你要有一个地址，如<span style="background-color:aqua;color:forestgreen;">356irRFazab63B3m95oyiYeR5SDKJRFa99</span>。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;二，地址已经与某个绑定词关联。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;三，你掌握地址的私钥。
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;四，用微信扫描。<br />
+                <img style="max-width:calc(80%);margin-left:2em;" src="Pic/gameintro/wechatbindcode3.jpg" />
+            </p>
+            <p style="text-align:left;word-break:break-all;word-wrap:anywhere;">
+                &emsp;&emsp;五，在扫码支付的备注中，务必填写上您的由两至十个汉字组成的绑定词。
+                <img style="max-width:calc(80%);margin-left:2em;" src="Pic/gameintro/wechatbindcode4.jpg" />
+            </p>
+        </div>
+        <div style=" width:100%;">
+            <p style="text-align:left;word-break:break-all;word-wrap:anywhere;">
+                &emsp;&emsp;六，以下对话框用于地址与绑定词之间的绑定。查询内容，可以输入地址或绑定词。
+            </p>
+            <table style=" width:100%;">
+                <tr>
+                    <th style="width:4em;"><label>查询内容</label> </th>
+                    <td> <textarea style="min-width:20em;" id="bindWordAddr">356irRFazab63B3m95oyiYeR5SDKJRFa99</textarea></td>
+                </tr>
+                <tr>
+                    <th><label>验证码</label> </th>
+                    <td>
+                        <textarea style="min-width: 4em;" id="verifyCodeValue"></textarea>
+                        <img id="verifyCodeImg" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div style="text-align:center;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div>
+                            <button onclick="backToMainPageFromGuid()" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;
+        background-color:aqua;
+        ">
+                                查询
+                            </button>
+                            <button onclick="backToMainPageFromGuid()" style="width: 5em; height: 3em; margin-top: 1em; background-color:transparent;">
+                                清空
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div style="text-align:center;">
+            <button onclick="backToMainPageFromGuid()" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>
+
+
+    <!--<script src="mainf.js"></script>-->
+</body>
+</html>

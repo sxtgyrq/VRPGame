@@ -889,23 +889,35 @@ var objMain =
                 {
                     // MapData.meshPoints.push(received_obj.meshPoints);
                     var basePoint = received_obj.basePoint;
-                    for (var i = 0; i < received_obj.meshPoints.length; i += 8) {
+                    for (var i = 0; i < received_obj.meshPoints.length; i += 12) {
                         var itemData = [
                             (received_obj.meshPoints[i + 0] + basePoint[0]) / 1000000,
                             (received_obj.meshPoints[i + 1] + basePoint[1]) / 1000000,
-                            (received_obj.meshPoints[i + 2] + basePoint[0]) / 1000000,
-                            (received_obj.meshPoints[i + 3] + basePoint[1]) / 1000000,
-                            (received_obj.meshPoints[i + 4] + basePoint[0]) / 1000000,
-                            (received_obj.meshPoints[i + 5] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 2] + basePoint[2]) / 1000000,
+                            (received_obj.meshPoints[i + 3] + basePoint[0]) / 1000000,
+                            (received_obj.meshPoints[i + 4] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 5] + basePoint[2]) / 1000000,
                             (received_obj.meshPoints[i + 6] + basePoint[0]) / 1000000,
                             (received_obj.meshPoints[i + 7] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 8] + basePoint[2]) / 1000000,
+                            (received_obj.meshPoints[i + 9] + basePoint[0]) / 1000000,
+                            (received_obj.meshPoints[i + 10] + basePoint[1]) / 1000000,
+                            (received_obj.meshPoints[i + 11] + basePoint[2]) / 1000000
                         ];
+                        //var itemData = [
+                        //    (received_obj.meshPoints[i + 0] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 1] + basePoint[1]) / 1000000,
+                        //    (received_obj.meshPoints[i + 2] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 3] + basePoint[1]) / 1000000,
+                        //    (received_obj.meshPoints[i + 4] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 5] + basePoint[1]) / 1000000,
+                        //    (received_obj.meshPoints[i + 6] + basePoint[0]) / 1000000,
+                        //    (received_obj.meshPoints[i + 7] + basePoint[1]) / 1000000,
+                        //];
                         MapData.meshPoints.push(itemData);
                         // MapData.meshPoints.push(received_obj.meshPoints[i]);
                     }
-                    //for (var i = 0; i < received_obj.meshPoints.length; i++) {
-                    //    MapData.meshPoints.push(received_obj.meshPoints[i]);
-                    //}
+
                     var drawRoadInfomation = function () {
 
                         objMain.mainF.removeF.clearGroup(objMain.roadGroup);
@@ -916,12 +928,12 @@ var objMain =
                         var colors = [];
                         for (var i = 0; i < obj.length; i++) {
                             positions.push(
-                                MercatorGetXbyLongitude(obj[i][0]), 0, -MercatorGetYbyLatitude(obj[i][1]),
-                                MercatorGetXbyLongitude(obj[i][2]), 0, -MercatorGetYbyLatitude(obj[i][3]),
-                                MercatorGetXbyLongitude(obj[i][4]), 0, -MercatorGetYbyLatitude(obj[i][5]),
-                                MercatorGetXbyLongitude(obj[i][4]), 0, -MercatorGetYbyLatitude(obj[i][5]),
-                                MercatorGetXbyLongitude(obj[i][6]), 0, -MercatorGetYbyLatitude(obj[i][7]),
-                                MercatorGetXbyLongitude(obj[i][0]), 0, -MercatorGetYbyLatitude(obj[i][1]),
+                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]), -MercatorGetYbyLatitude(obj[i][1]),
+                                MercatorGetXbyLongitude(obj[i][3]), MercatorGetXbyLongitude(obj[i][5]), -MercatorGetYbyLatitude(obj[i][4]),
+                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]), -MercatorGetYbyLatitude(obj[i][7]),
+                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]), -MercatorGetYbyLatitude(obj[i][7]),
+                                MercatorGetXbyLongitude(obj[i][9]), MercatorGetXbyLongitude(obj[i][11]), -MercatorGetYbyLatitude(obj[i][10]),
+                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]), -MercatorGetYbyLatitude(obj[i][1]),
 
                             );
                         }
@@ -1050,7 +1062,12 @@ var objMain =
                 {
                     setScenseFromData(received_obj.r, received_obj.name);
                 }; break;
-
+            case 'GetHeightAtPositionResult':
+                {
+                    if (objMain.buildingGroup.children.length > 0) {
+                        objMain.buildingGroup.children[0].position.y = MercatorGetZbyHeight(received_obj.height);
+                    }
+                }; break;
         }
     },
 

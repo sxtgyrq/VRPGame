@@ -123,8 +123,8 @@ var objMain =
     {
         drawLineOfFpToRoad: function (fp, group, color, lineName) {
             {
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
                 var lineGeometry = new THREE.Geometry();
                 lineGeometry.vertices.push(start);
                 lineGeometry.vertices.push(end);
@@ -136,8 +136,8 @@ var objMain =
         },
         lookAtPosition: function (fp) {
 
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
 
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
@@ -147,8 +147,8 @@ var objMain =
                 var planePosition = new THREE.Vector3(start.x + cc.r * minDistance * Math.sin(maxPolarAngle), start.y + minDistance * Math.abs(Math.cos(maxPolarAngle)), start.z + cc.i * minDistance * Math.sin(maxPolarAngle));
                 objMain.camera.position.set(planePosition.x, planePosition.y, planePosition.z);
 
-                objMain.controls.target.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
-                objMain.camera.lookAt(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+                objMain.controls.target.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+                objMain.camera.lookAt(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
                 objMain.renderer.render(objMain.scene, objMain.camera);
                 objMain.labelRenderer.render(objMain.scene, objMain.camera);
             }
@@ -175,8 +175,8 @@ var objMain =
             if (isSelf == undefined) {
                 isSelf = true;
             }
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde))
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
+            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
 
@@ -194,8 +194,8 @@ var objMain =
             //for (var i = 0; i < positons.length; i++)
             {
                 var i = postionInStation;
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetZbyHeight(fp.Height), start.z + positons[i].i * percentOfPosition);
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, start.z + positons[i].i * percentOfPosition);
                 var lineGeometry = new THREE.Geometry();
                 lineGeometry.vertices.push(start);
                 lineGeometry.vertices.push(end);
@@ -265,13 +265,13 @@ var objMain =
                 }
             }
         },
-        refreshPromotionDiamondAndPanle: function (received_obj, endF) {
+        refreshPromotionDiamondAndPanle: function (received_obj) {
             //if (received_obj.resultType == objMain.Task.state)
             {
                 /*
                  * 这里进行了Task的状态验证，确保3D资源没有加载前，不会调用此方法
                  */
-                if (objMain.state == "OnLine") {
+                if (objMain.state == "OnLine" || 'LookForBuildings' == objMain.state) {
                     var diamondName = "diamond_" + received_obj.resultType;
                     if (objMain.promoteDiamond.getObjectByName(diamondName) != undefined) {
                         objMain.promoteDiamond.remove(objMain.promoteDiamond.getObjectByName(diamondName));
@@ -311,10 +311,13 @@ var objMain =
                     }
 
                     var diamond = objShow.children[0].clone();// new THREE.Mesh(geometry, material);
-                    diamond.userData.endF = endF;
+                    diamond.userData.Fp = objMain.PromotePositions[received_obj.resultType].Fp;
                     diamond.name = 'diamond' + '_' + received_obj.resultType;
                     diamond.scale.set(0.2, 0.22, 0.2);
-                    diamond.position.set(MercatorGetXbyLongitude(objMain.PromotePositions[received_obj.resultType].Fp.Longitude), 0, -MercatorGetYbyLatitude(objMain.PromotePositions[received_obj.resultType].Fp.Latitde));
+                    diamond.position.set(
+                        MercatorGetXbyLongitude(objMain.PromotePositions[received_obj.resultType].Fp.Longitude),
+                        MercatorGetZbyHeight(objMain.PromotePositions[received_obj.resultType].Fp.Height) * objMain.heightAmplify,
+                        -MercatorGetYbyLatitude(objMain.PromotePositions[received_obj.resultType].Fp.Latitde));
 
                     objMain.promoteDiamond.add(diamond);
                     objMain.mainF.drawLineOfFpToRoad(objMain.PromotePositions[received_obj.resultType].Fp, objMain.promoteDiamond, color, "diamond_" + received_obj.resultType);
@@ -432,7 +435,7 @@ var objMain =
                 // model.scale.set(0.002, 0.002, 0.002);
                 //model.rotateY(-positons[i].toAngle());
                 //model.userData = { objectType: 'car', parent: key, index: names[i] };
-                model.position.set(MercatorGetXbyLongitude(objMain.CollectPosition[collectIndex].Fp.Longitude), MercatorGetZbyHeight(objMain.CollectPosition[collectIndex].Fp.Height), -MercatorGetYbyLatitude(objMain.CollectPosition[collectIndex].Fp.Latitde));
+                model.position.set(MercatorGetXbyLongitude(objMain.CollectPosition[collectIndex].Fp.Longitude), MercatorGetZbyHeight(objMain.CollectPosition[collectIndex].Fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(objMain.CollectPosition[collectIndex].Fp.Latitde));
                 model.name = objName;
                 model.userData.collectPosition = objMain.CollectPosition[collectIndex];
                 objMain.collectGroup.add(model);
@@ -529,8 +532,8 @@ var objMain =
         drawDiamondCollected: function () {
             var fp = objMain.basePoint;
             var key = objMain.indexKey;//objMain.basePoint
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetXbyLongitude(fp.Height), -MercatorGetYbyLatitude(fp.Latitde))
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetXbyLongitude(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
+            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
             var cc = new Complex(end.x - start.x, end.z - start.z);
             cc.toOne();
 
@@ -547,8 +550,8 @@ var objMain =
             //   console.log('positons', positons);
             var percentOfPosition = 0.5;
             for (var i = 0; i < positons.length; i++) {
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetXbyLongitude(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetXbyLongitude(fp.Height), start.z + positons[i].i * percentOfPosition);
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, start.z + positons[i].i * percentOfPosition);
                 //var lineGeometry = new THREE.Geometry();
                 //lineGeometry.vertices.push(start);
                 //lineGeometry.vertices.push(end);
@@ -641,7 +644,7 @@ var objMain =
 
                     var object = new THREE.CSS2DObject(element);
                     var fp = objMain.basePoint;
-                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0, -MercatorGetYbyLatitude(fp.Latitde));
+                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
 
                     objMain.groupOfOperatePanle.add(object);
                 }
@@ -920,6 +923,11 @@ var objMain =
                                     objMain.state = objMain.receivedState;
                                     objMain.ws.send(JSON.stringify({ 'c': 'RewardInfomation', 'Page': 0 }));
                                 }
+                            }; break;
+                        case 'Guid':
+                            {
+                                objMain.state = objMain.receivedState;
+                                GuidObj.gameIntroShow();
                             }; break;
                     }
                 }; break;
@@ -1339,7 +1347,7 @@ var objMain =
                 }; break;
             case 'BradCastCollectInfoDetail':
                 {
-                    console.log('显示', received_obj);
+                    //  console.log('显示', received_obj);
                     //  switch (received_obj.
                     objMain.CollectPosition = received_obj;
                     //objMain.mainF.refreshCollectAndPanle(received_obj.);
@@ -1453,12 +1461,12 @@ var objMain =
                         var colors = [];
                         for (var i = 0; i < obj.length; i++) {
                             positions.push(
-                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]), -MercatorGetYbyLatitude(obj[i][1]),
-                                MercatorGetXbyLongitude(obj[i][3]), MercatorGetXbyLongitude(obj[i][5]), -MercatorGetYbyLatitude(obj[i][4]),
-                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]), -MercatorGetYbyLatitude(obj[i][7]),
-                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]), -MercatorGetYbyLatitude(obj[i][7]),
-                                MercatorGetXbyLongitude(obj[i][9]), MercatorGetXbyLongitude(obj[i][11]), -MercatorGetYbyLatitude(obj[i][10]),
-                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]), -MercatorGetYbyLatitude(obj[i][1]),
+                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]) * objMain.heightAmplify, -MercatorGetYbyLatitude(obj[i][1]),
+                                MercatorGetXbyLongitude(obj[i][3]), MercatorGetXbyLongitude(obj[i][5]) * objMain.heightAmplify, -MercatorGetYbyLatitude(obj[i][4]),
+                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]) * objMain.heightAmplify, -MercatorGetYbyLatitude(obj[i][7]),
+                                MercatorGetXbyLongitude(obj[i][6]), MercatorGetXbyLongitude(obj[i][8]) * objMain.heightAmplify, -MercatorGetYbyLatitude(obj[i][7]),
+                                MercatorGetXbyLongitude(obj[i][9]), MercatorGetXbyLongitude(obj[i][11]) * objMain.heightAmplify, -MercatorGetYbyLatitude(obj[i][10]),
+                                MercatorGetXbyLongitude(obj[i][0]), MercatorGetXbyLongitude(obj[i][2]) * objMain.heightAmplify, -MercatorGetYbyLatitude(obj[i][1]),
 
                             );
                         }
@@ -1833,6 +1841,9 @@ var objMain =
             case 'ShowAgreementMsg':
                 {
                     $.notify(received_obj.msg, 'error');
+                    GuidObj.charging.showNotifyMsg(received_obj.msg);
+                    reward.notifyMsg(received_obj.msg);
+                    transactionBussiness().showErrMsg(received_obj.msg);
                 }; break;
             case 'ShowAllPts':
                 {
@@ -1896,6 +1907,11 @@ var objMain =
                     reward.hasData(received_obj.title, received_obj.data, received_obj.list, received_obj.indexNumber);
                     // alert('有数据');
                 }; break;
+            case 'VerifyCodePic':
+                {
+                    localStorage['nyrqVerifyImg'] = received_obj.base64String;
+                    GuidObj.charging.SetImage(received_obj.base64String);
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -1926,7 +1942,8 @@ var objMain =
         'countPerOperate': 1
     },
     animateObj: null,
-    pingTime: 0
+    pingTime: 0,
+    heightAmplify: 5,
 };
 var startA = function () {
     var connected = false;
@@ -2019,819 +2036,824 @@ function animate() {
         if (objMain.state != objMain.receivedState) {
             objMain.state = objMain.receivedState;
         }
-        if (objMain.state == 'OnLine') {
-
-            var lengthOfCC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-            {
-                if (objMain.camaraAnimateData != null) {
-                    if (objMain.camaraAnimateData.newT.t < Date.now()) {
-                        objMain.camaraAnimateData = null;
-                    }
-                    else {
-                        var percent1 = (Date.now() - objMain.camaraAnimateData.old.t) / 3000 * Math.PI;
-                        var percent2 = (Math.sin(percent1 - Math.PI / 2) + 1) / 2;
-                        var x = objMain.camaraAnimateData.old.x + (objMain.camaraAnimateData.newT.x - objMain.camaraAnimateData.old.x) * percent2;
-                        var y = objMain.camaraAnimateData.old.y + (objMain.camaraAnimateData.newT.y - objMain.camaraAnimateData.old.y) * percent2;
-                        var z = objMain.camaraAnimateData.old.z + (objMain.camaraAnimateData.newT.z - objMain.camaraAnimateData.old.z) * percent2;
-                        objMain.controls.target.set(x, y, z);
-                        var angle = objMain.controls.getPolarAngle();
-                        //if(
-                        var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                        var distance = lengthOfCC;
-                        var unitY = distance * Math.cos(angle);
-                        var unitZX = distance * Math.sin(angle);
-
-                        var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                        var unitX = unitZX * Math.sin(angleOfCamara);
-                        var unitZ = unitZX * Math.cos(angleOfCamara);
-                        //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                        //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                        objMain.camera.position.set(x + unitX, y + unitY, z + unitZ);
-                        objMain.camera.lookAt(x, y, z);
-                    }
-                }
-
-            }
-
-            for (var i = 0; i < objMain.collectGroup.children.length; i++) {
-                /*
-                 * 初始化人民币的大小
-                 */
-
-                if (objMain.collectGroup.children[i].isGroup) {
-                    //if (objMain.Task.state == 'collect') {
-                    //    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 1226;
-                    //    objMain.collectGroup.children[i].scale.set(scale, scale, scale);
-                    //}
-                    //else
-                    {
-                        var scale = 0.006;//; objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 1840;
-                        objMain.collectGroup.children[i].scale.set(scale, scale, scale);
-                    }
-                    objMain.collectGroup.children[i].rotation.set(-Math.PI / 2, 0, Date.now() % 3000 / 3000 * Math.PI * 2);
-                    //  objMain.collectGroup.children[i].position.y = 0;
-                }
-            }
-
-            for (var i = 0; i < objMain.playerGroup.children.length; i++) {
-                /*
-                 * 初始化 旗帜的大小
-                 */
-
-                if (objMain.playerGroup.children[i].isMesh) {
-                    {
-                        objMain.playerGroup.children[i].scale.set(0.0015, 0.0015, 0.0015);
-                        // objMain.playerGroup.children[i].position.y = 0.1;
-                        stateSet.defend.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                        stateSet.confusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                        stateSet.lostPrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                        stateSet.ambusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                        stateSet.water.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                        stateSet.fire.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                        stateSet.lightning.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
-                    }
-                }
-            }
-
-            for (var i = 0; i < objMain.promoteDiamond.children.length; i++) {
-                /*
-                 * 初始化 砖石/人民币的大小
-                 */
-                if (objMain.promoteDiamond.children[i].isMesh) {
-                    objMain.promoteDiamond.children[i].scale.set(0.2, 0.22, 0.2);
-                    objMain.promoteDiamond.children[i].position.y = 0;
-                    // objMain.promoteDiamond.children[i].rotation.y=
-                }
-            }
-
-            for (var i = 0; i < objMain.columnGroup.children.length; i++) {
-
-                if (objMain.columnGroup.children[i].isMesh) {
-                    objMain.columnGroup.children[i].scale.setX(1);
-                    objMain.columnGroup.children[i].scale.setZ(1);
-                }
-            }
-            for (var i = 0; i < objMain.buildingGroup.children.length; i++) {
-                objMain.buildingGroup.children[i].scale.setX(1);
-                objMain.buildingGroup.children[i].scale.setZ(1);
-            }
-            {
-                var lengthOfObjs = objMain.groupOfOperatePanle.children.length;
-                for (var i = lengthOfObjs - 1; i >= 0; i--) {
-                    objMain.groupOfOperatePanle.remove(objMain.groupOfOperatePanle.children[i]);
-                }
-            }
-            if (objMain.canSelect) {
-
-                var objMainTaskstate = '';
-                var scale = 0.01;
-                objMain.raycasterOfSelector.setFromCamera(objMain.selectorPosition, objMain.camera);
-                var selectObj = null;
-                var maxCosA = -1;
+        switch (objMain.state) {
+            case 'OnLine':
                 {
+                    var lengthOfCC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                    var deltaYOfSelectObj = 0;
+
+                    {
+                        if (objMain.camaraAnimateData != null) {
+                            if (objMain.camaraAnimateData.newT.t < Date.now()) {
+                                objMain.camaraAnimateData = null;
+                            }
+                            else {
+                                var percent1 = (Date.now() - objMain.camaraAnimateData.old.t) / 3000 * Math.PI;
+                                var percent2 = (Math.sin(percent1 - Math.PI / 2) + 1) / 2;
+                                var x = objMain.camaraAnimateData.old.x + (objMain.camaraAnimateData.newT.x - objMain.camaraAnimateData.old.x) * percent2;
+                                var y = objMain.camaraAnimateData.old.y + (objMain.camaraAnimateData.newT.y - objMain.camaraAnimateData.old.y) * percent2;
+                                var z = objMain.camaraAnimateData.old.z + (objMain.camaraAnimateData.newT.z - objMain.camaraAnimateData.old.z) * percent2;
+                                objMain.controls.target.set(x, y, z);
+                                var angle = objMain.controls.getPolarAngle();
+                                //if(
+                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                                var distance = lengthOfCC;
+                                var unitY = Math.abs(distance * Math.cos(angle));
+                                var unitZX = distance * Math.sin(angle);
+
+                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                                var unitX = unitZX * Math.sin(angleOfCamara);
+                                var unitZ = unitZX * Math.cos(angleOfCamara);
+                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                                objMain.camera.position.set(x + unitX, y + unitY, z + unitZ);
+                                objMain.camera.lookAt(x, y, z);
+                                console.log('camara', x, y, z, x + unitX, y + unitY, z + unitZ);
+                                deltaYOfSelectObj = y;
+                            }
+                        }
+                    }
+
                     for (var i = 0; i < objMain.collectGroup.children.length; i++) {
+                        /*
+                         * 初始化人民币的大小
+                         */
+
                         if (objMain.collectGroup.children[i].isGroup) {
-                            var position = objMain.collectGroup.children[i].position;
-                            var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
-                            var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
-                            if (cosA > 0.984807753)
-                                if (cosA > maxCosA) {
-                                    maxCosA = cosA;
-                                    objMainTaskstate = 'collect';
-                                    selectObj = objMain.collectGroup.children[i];
-                                    scale = 0.01 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
-                                    scale = Math.max(scale, 0.01);
-                                }
+                            //if (objMain.Task.state == 'collect') {
+                            //    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 1226;
+                            //    objMain.collectGroup.children[i].scale.set(scale, scale, scale);
+                            //}
+                            //else
+                            {
+                                var scale = 0.006;//; objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 1840;
+                                objMain.collectGroup.children[i].scale.set(scale, scale, scale);
+                            }
+                            objMain.collectGroup.children[i].rotation.set(-Math.PI / 2, 0, Date.now() % 3000 / 3000 * Math.PI * 2);
+                            //  objMain.collectGroup.children[i].position.y = 0;
                         }
                     }
 
                     for (var i = 0; i < objMain.playerGroup.children.length; i++) {
+                        /*
+                         * 初始化 旗帜的大小
+                         */
+
                         if (objMain.playerGroup.children[i].isMesh) {
-                            //flag_d59195aa49213765a72fdff81b1e18c6
-                            if (objMain.playerGroup.children[i].name.split('_')[1] == objMain.indexKey) {
-                                var position = objMain.playerGroup.children[i].position;
-                                var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
-                                var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
-                                if (cosA > 0.984807753)
-                                    if (cosA > maxCosA) {
-                                        maxCosA = cosA;
-                                        objMainTaskstate = 'setReturn';
-                                        selectObj = objMain.playerGroup.children[i];
-                                        scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
-                                        scale = Math.max(scale, 0.0015);
-                                    }
-                            }
-                            else {
-                                var position = objMain.playerGroup.children[i].position;
-                                var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
-                                var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
-                                if (cosA > 0.984807753)
-                                    if (cosA > maxCosA) {
-                                        maxCosA = cosA;
-                                        objMainTaskstate = 'attack';
-                                        selectObj = objMain.playerGroup.children[i];
-                                        scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
-                                        scale = Math.max(scale, 0.0015);
-                                    }
+                            {
+                                objMain.playerGroup.children[i].scale.set(0.0015, 0.0015, 0.0015);
+                                // objMain.playerGroup.children[i].position.y = 0.1;
+                                stateSet.defend.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                                stateSet.confusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                                stateSet.lostPrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                                stateSet.ambusePrepare.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                                stateSet.water.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                                stateSet.fire.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
+                                stateSet.lightning.Animate(objMain.playerGroup.children[i].name.split('_')[1]);
                             }
                         }
                     }
 
                     for (var i = 0; i < objMain.promoteDiamond.children.length; i++) {
+                        /*
+                         * 初始化 砖石/人民币的大小
+                         */
                         if (objMain.promoteDiamond.children[i].isMesh) {
-                            {
-                                var position = objMain.promoteDiamond.children[i].position;
-                                var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
-                                var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
-                                if (cosA > 0.984807753)
-                                    if (cosA > maxCosA) {
-                                        maxCosA = cosA;
-                                        selectObj = objMain.promoteDiamond.children[i];
-                                        scale = objMain.mainF.getLength(objMain.camera.position, position) / 20;
-                                        scale = Math.max(scale, 0.2);
-                                        //  scale = Math.min(scale, 2);
-                                        switch (selectObj.name) {
-                                            case 'diamond_mile':
-                                                {
-                                                    objMainTaskstate = 'mile';
-                                                }; break;
-                                            case 'diamond_business':
-                                                {
-                                                    objMainTaskstate = 'business';
-                                                }; break;
-                                            case 'diamond_volume':
-                                                {
-                                                    objMainTaskstate = 'volume';
-                                                }; break;
-                                            case 'diamond_speed':
-                                                {
-                                                    objMainTaskstate = 'speed';
-                                                }; break;
-                                            default: { }; break;
-                                        }
-                                    }
-                            }
+                            objMain.promoteDiamond.children[i].scale.set(0.2, 0.22, 0.2);
+
+                            var fp = objMain.promoteDiamond.children[i].userData.Fp;// 
+                            objMain.promoteDiamond.children[i].position.set(
+                                MercatorGetXbyLongitude(fp.Longitude),
+                                MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify,
+                                -MercatorGetYbyLatitude(fp.Latitde));
+
+                            // objMain.promoteDiamond.children[i].position.y = 0;
+                            // objMain.promoteDiamond.children[i].rotation.y=
                         }
                     }
 
+                    for (var i = 0; i < objMain.columnGroup.children.length; i++) {
+
+                        if (objMain.columnGroup.children[i].isMesh) {
+                            objMain.columnGroup.children[i].scale.setX(1);
+                            objMain.columnGroup.children[i].scale.setZ(1);
+                        }
+                    }
                     for (var i = 0; i < objMain.buildingGroup.children.length; i++) {
-                        if (objMain.buildingGroup.visible) {
-                            var position = objMain.buildingGroup.children[i].position;
-                            var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
-                            var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
-                            if (cosA > 0.984807753)
-                                if (cosA > maxCosA) {
-                                    maxCosA = cosA;
-                                    objMainTaskstate = 'building';
-                                    selectObj = objMain.buildingGroup.children[i];
-                                }
+                        objMain.buildingGroup.children[i].scale.setX(1);
+                        objMain.buildingGroup.children[i].scale.setZ(1);
+                    }
+                    {
+                        var lengthOfObjs = objMain.groupOfOperatePanle.children.length;
+                        for (var i = lengthOfObjs - 1; i >= 0; i--) {
+                            objMain.groupOfOperatePanle.remove(objMain.groupOfOperatePanle.children[i]);
                         }
                     }
+                    if (objMain.canSelect) {
 
-                    if (objMain.carState.car == 'waitAtBaseStation')
-                        for (var i = 0; i < objMain.columnGroup.children.length; i++) {
-                            if (objMain.columnGroup.children[i].isMesh) {
-                                {
-                                    var position = objMain.columnGroup.children[i].position;
+                        var objMainTaskstate = '';
+                        var scale = 0.01;
+                        objMain.raycasterOfSelector.setFromCamera(objMain.selectorPosition, objMain.camera);
+                        var selectObj = null;
+                        var maxCosA = -1;
+                        {
+                            for (var i = 0; i < objMain.collectGroup.children.length; i++) {
+                                if (objMain.collectGroup.children[i].isGroup) {
+                                    var position = objMain.collectGroup.children[i].position;
                                     var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
                                     var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
                                     if (cosA > 0.984807753)
                                         if (cosA > maxCosA) {
                                             maxCosA = cosA;
-                                            // objMainTaskstate = '';
-                                            selectObj = objMain.columnGroup.children[i];
-                                            //scale = 2 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
-                                            //scale = Math.max(scale, 0.2);
+                                            objMainTaskstate = 'collect';
+                                            selectObj = objMain.collectGroup.children[i];
+                                            scale = 0.01 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
+                                            scale = Math.max(scale, 0.01);
+                                        }
+                                }
+                            }
+
+                            for (var i = 0; i < objMain.playerGroup.children.length; i++) {
+                                if (objMain.playerGroup.children[i].isMesh) {
+                                    //flag_d59195aa49213765a72fdff81b1e18c6
+                                    if (objMain.playerGroup.children[i].name.split('_')[1] == objMain.indexKey) {
+                                        var position = objMain.playerGroup.children[i].position;
+                                        var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                                        var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                                        if (cosA > 0.984807753)
+                                            if (cosA > maxCosA) {
+                                                maxCosA = cosA;
+                                                objMainTaskstate = 'setReturn';
+                                                selectObj = objMain.playerGroup.children[i];
+                                                scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
+                                                scale = Math.max(scale, 0.0015);
+                                            }
+                                    }
+                                    else {
+                                        var position = objMain.playerGroup.children[i].position;
+                                        var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                                        var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                                        if (cosA > 0.984807753)
+                                            if (cosA > maxCosA) {
+                                                maxCosA = cosA;
+                                                objMainTaskstate = 'attack';
+                                                selectObj = objMain.playerGroup.children[i];
+                                                scale = 0.0025 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
+                                                scale = Math.max(scale, 0.0015);
+                                            }
+                                    }
+                                }
+                            }
+
+                            for (var i = 0; i < objMain.promoteDiamond.children.length; i++) {
+                                if (objMain.promoteDiamond.children[i].isMesh) {
+                                    {
+                                        var position = objMain.promoteDiamond.children[i].position;
+                                        var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                                        var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                                        if (cosA > 0.984807753)
+                                            if (cosA > maxCosA) {
+                                                maxCosA = cosA;
+                                                selectObj = objMain.promoteDiamond.children[i];
+                                                scale = objMain.mainF.getLength(objMain.camera.position, position) / 20;
+                                                scale = Math.max(scale, 0.2);
+                                                //  scale = Math.min(scale, 2);
+                                                switch (selectObj.name) {
+                                                    case 'diamond_mile':
+                                                        {
+                                                            objMainTaskstate = 'mile';
+                                                        }; break;
+                                                    case 'diamond_business':
+                                                        {
+                                                            objMainTaskstate = 'business';
+                                                        }; break;
+                                                    case 'diamond_volume':
+                                                        {
+                                                            objMainTaskstate = 'volume';
+                                                        }; break;
+                                                    case 'diamond_speed':
+                                                        {
+                                                            objMainTaskstate = 'speed';
+                                                        }; break;
+                                                    default: { }; break;
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+
+                            for (var i = 0; i < objMain.buildingGroup.children.length; i++) {
+                                if (objMain.buildingGroup.visible) {
+                                    var position = objMain.buildingGroup.children[i].position;
+                                    var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                                    var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                                    if (cosA > 0.984807753)
+                                        if (cosA > maxCosA) {
+                                            maxCosA = cosA;
+                                            objMainTaskstate = 'building';
+                                            selectObj = objMain.buildingGroup.children[i];
+                                        }
+                                }
+                            }
+
+                            if (objMain.carState.car == 'waitAtBaseStation')
+                                for (var i = 0; i < objMain.columnGroup.children.length; i++) {
+                                    if (objMain.columnGroup.children[i].isMesh) {
+                                        {
+                                            var position = objMain.columnGroup.children[i].position;
+                                            var d = new THREE.Vector3(position.x - objMain.camera.position.x, position.y - objMain.camera.position.y, position.z - objMain.camera.position.z);
+                                            var cosA = objMain.raycasterOfSelector.ray.direction.dot(d) / d.length() / objMain.raycasterOfSelector.ray.direction.length();
+                                            if (cosA > 0.984807753)
+                                                if (cosA > maxCosA) {
+                                                    maxCosA = cosA;
+                                                    // objMainTaskstate = '';
+                                                    selectObj = objMain.columnGroup.children[i];
+                                                    //scale = 2 * objMain.mainF.getLength(objMain.camera.position, position) / 10;
+                                                    //scale = Math.max(scale, 0.2);
+                                                    switch (selectObj.name) {
+                                                        case 'BatteryMile':
+                                                            {
+                                                                objMainTaskstate = 'ability';
+                                                            }; break;
+                                                        case 'BatteryBusiness':
+                                                            {
+                                                                objMainTaskstate = 'ability';
+                                                            }; break;
+                                                        case 'BatteryVolume':
+                                                            {
+                                                                objMainTaskstate = 'ability';
+                                                            }; break;
+                                                        case 'BatterySpeed':
+                                                            {
+                                                                objMainTaskstate = 'ability';
+                                                            }; break;
+                                                        default: { }; break;
+                                                    }
+                                                }
+                                        }
+                                    }
+                                }
+
+                            objMain.Task.state = objMainTaskstate;
+                            switch (objMain.Task.state) {
+                                case 'collect':
+                                    {
+                                        selectObj.scale.set(scale, scale, scale);
+                                        objMain.selectObj.obj = selectObj;
+                                        objMain.selectObj.type = objMain.Task.state;
+                                        selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 600 / 600 * Math.PI * 2);
+                                        {
+                                            var collectPosition = selectObj.userData.collectPosition;
+                                            var element = document.createElement('div');
+                                            element.style.width = '10em';
+                                            element.style.marginTop = '3em';
+                                            var color = '#ff0000';
+                                            element.style.border = '2px solid ' + color;
+                                            element.style.borderTopLeftRadius = '0.5em';
+                                            element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
+                                            element.style.color = '#1504f6';
+
+                                            var div2 = document.createElement('div');
+                                            div2.style.fontSize = '0.5em';
+
+                                            var b = document.createElement('b');
+                                            b.innerHTML = '到' + collectPosition.Fp.region + '[<span style="color:#05ffba">' + collectPosition.Fp.FastenPositionName + '</span>]回收<span style="color:#05ffba">' + (collectPosition.collectMoney).toFixed(2) + '元</span>现金。';
+                                            div2.appendChild(b);
+
+                                            element.appendChild(div2);
+
+                                            var object = new THREE.CSS2DObject(element);
+                                            var fp = collectPosition.Fp;
+                                            object.position.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+
+                                            objMain.groupOfOperatePanle.add(object);
+                                        }
+                                    }; break;
+                                case 'setReturn':
+                                    {
+                                        selectObj.scale.set(scale, scale, scale);
+                                        objMain.selectObj.obj = selectObj;
+                                        objMain.selectObj.type = objMain.Task.state;
+                                        selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 300 / 300 * Math.PI * 2);
+                                        {
+                                            var element = document.createElement('div');
+                                            element.style.width = '10em';
+                                            element.style.marginTop = '3em';
+                                            var color = '#ff0000';
+                                            element.style.border = '2px solid ' + color;
+                                            element.style.borderTopLeftRadius = '0.5em';
+                                            element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
+                                            element.style.color = '#1504f6';
+
+                                            var div2 = document.createElement('div');
+                                            div2.style.fontSize = '0.5em';
+
+                                            var b = document.createElement('b');
+                                            b.innerHTML = '回到基地->' + objMain.basePoint.FastenPositionName + '(' + objMain.basePoint.Longitude.toFixed(2) + ',' + objMain.basePoint.Latitde.toFixed(2) + ')';
+                                            div2.appendChild(b);
+
+                                            element.appendChild(div2);
+
+                                            var object = new THREE.CSS2DObject(element);
+                                            //  var fp = collectPosition.Fp;
+                                            object.position.set(selectObj.position.x, selectObj.position.y, selectObj.position.z);
+
+                                            objMain.groupOfOperatePanle.add(object);
+                                        }
+                                    }; break;
+                                case 'attack':
+                                    {
+                                        selectObj.scale.set(scale, scale, scale);
+                                        objMain.selectObj.obj = selectObj;
+                                        objMain.selectObj.type = objMain.Task.state;
+                                        selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 300 / 300 * Math.PI * 2);
+                                        {
+                                            var element = document.createElement('div');
+                                            element.style.width = '10em';
+                                            element.style.marginTop = '3em';
+                                            var color = '#ff0000';
+                                            element.style.border = '2px solid ' + color;
+                                            element.style.borderTopLeftRadius = '0.5em';
+                                            element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
+                                            element.style.color = '#1504f6';
+
+                                            var div2 = document.createElement('div');
+                                            div2.style.fontSize = '0.5em';
+
+                                            var b = document.createElement('b');
+
+                                            var customTagIndexKey = selectObj.name.substring(5);
+                                            if (objMain.othersBasePoint[customTagIndexKey] == undefined)
+                                                b.innerHTML = '攻击';
+                                            else {
+                                                if (objMain.othersBasePoint[customTagIndexKey].isNPC) {
+                                                    //b.innerHTML = '[NPC]->到';
+                                                    b.innerHTML = b.innerHTML = '到(' + objMain.othersBasePoint[customTagIndexKey].basePoint.region + ')'
+                                                        + objMain.othersBasePoint[customTagIndexKey].basePoint.FastenPositionName
+                                                        + '(' + objMain.othersBasePoint[customTagIndexKey].basePoint.Longitude.toFixed(2) + ','
+                                                        + objMain.othersBasePoint[customTagIndexKey].basePoint.Latitde.toFixed(2) + ')攻击NPC'
+                                                        + '【' + objMain.othersBasePoint[customTagIndexKey].playerName + '】'
+                                                        + '(' + objMain.othersBasePoint[customTagIndexKey].Level + '级)';
+
+                                                }
+                                                else if (objMain.othersBasePoint[customTagIndexKey].isPlayer) {
+                                                    b.innerHTML = '到(' + objMain.othersBasePoint[customTagIndexKey].basePoint.region + ')'
+                                                        + objMain.othersBasePoint[customTagIndexKey].basePoint.FastenPositionName
+                                                        + '(' + objMain.othersBasePoint[customTagIndexKey].basePoint.Longitude.toFixed(2) + ','
+                                                        + objMain.othersBasePoint[customTagIndexKey].basePoint.Latitde.toFixed(2) + ')攻击玩家'
+                                                        + '【' + objMain.othersBasePoint[customTagIndexKey].playerName + '】'
+                                                        + '(' + objMain.othersBasePoint[customTagIndexKey].Level + '级)';
+                                                }
+                                                else {
+                                                    b.innerHTML = '攻击';
+                                                }
+                                            }
+                                            div2.appendChild(b);
+
+                                            element.appendChild(div2);
+
+                                            var object = new THREE.CSS2DObject(element);
+                                            //  var fp = collectPosition.Fp;
+                                            object.position.set(selectObj.position.x, selectObj.position.y, selectObj.position.z);
+
+                                            objMain.groupOfOperatePanle.add(object);
+                                        }
+                                    }; break;
+                                case 'mile':
+                                case 'business':
+                                case 'volume':
+                                case 'speed':
+                                    {
+                                        objMain.selectObj.obj = selectObj;
+                                        objMain.selectObj.type = objMain.Task.state;
+                                        // objMain.promoteDiamond.getChildByName('diamond_' + objMain.Task.state).scale.set(scale, scale * 1.1, scale);
+                                        //
+
+                                        selectObj.scale.set(scale, scale * 1.1, scale);
+
+                                        var fp = selectObj.userData.Fp;//
+                                        var baseY = MercatorGetZbyHeight(fp.Height);
+                                        selectObj.position.y = baseY + Math.sin(Date.now() % 3000 / 3000 * Math.PI) * scale / 4;
+                                        selectObj.rotation.y = (Date.now() % 8000 / 8000) * Math.PI * 2;
+                                        //objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state }));
+                                    }; break;
+                                case 'ability':
+                                    {
+                                        objMain.selectObj.obj = selectObj;
+                                        objMain.selectObj.type = objMain.Task.state;
+                                        selectObj.scale.setX((Date.now() % 2000 / 2000) + 1);
+                                        selectObj.scale.setZ((Date.now() % 2000 / 2000) + 1);
+
+                                        {
+                                            var element = document.createElement('div');
+                                            element.style.width = '10em';
+                                            element.style.marginTop = '3em';
+                                            var color = '#ff0000';
+                                            element.style.border = '2px solid ' + color;
+                                            element.style.borderTopLeftRadius = '0.5em';
+                                            element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
+                                            element.style.color = '#1504f6';
+
+                                            var div2 = document.createElement('div');
+                                            div2.style.fontSize = '0.5em';
+
+                                            var b = document.createElement('b');
                                             switch (selectObj.name) {
                                                 case 'BatteryMile':
                                                     {
-                                                        objMainTaskstate = 'ability';
+                                                        b.innerHTML = '红宝石市价:' + (objMain.diamondPrice.mile / 100.0).toFixed(2) + "银两。用其提升最大里程。你有"
+                                                            + objMain.PromoteDiamondCount.mile + '块';
+
                                                     }; break;
                                                 case 'BatteryBusiness':
                                                     {
-                                                        objMainTaskstate = 'ability';
+                                                        b.innerHTML = '绿宝石市价:' + (objMain.diamondPrice.business / 100.0).toFixed(2) + "银两。用其提升最大业务能力。你有"
+                                                            + objMain.PromoteDiamondCount.business + '块';
                                                     }; break;
                                                 case 'BatteryVolume':
                                                     {
-                                                        objMainTaskstate = 'ability';
+                                                        b.innerHTML = '蓝宝石市价:' + (objMain.diamondPrice.volume / 100.0).toFixed(2) + "银两。用其提升最大收集能力。你有"
+                                                            + objMain.PromoteDiamondCount.volume + '块';
                                                     }; break;
                                                 case 'BatterySpeed':
                                                     {
-                                                        objMainTaskstate = 'ability';
+                                                        b.innerHTML = '黑宝石市价:' + (objMain.diamondPrice.speed / 100.0).toFixed(2) + "银两。用其提升速度。你有"
+                                                            + objMain.PromoteDiamondCount.speed + '块';
                                                     }; break;
-                                                default: { }; break;
                                             }
+
+                                            div2.appendChild(b);
+
+                                            element.appendChild(div2);
+
+                                            var object = new THREE.CSS2DObject(element);
+                                            //  var fp = collectPosition.Fp;
+                                            object.position.set(selectObj.position.x, selectObj.position.y, selectObj.position.z);
+
+                                            objMain.groupOfOperatePanle.add(object);
                                         }
-                                }
-                            }
-                        }
-
-                    objMain.Task.state = objMainTaskstate;
-                    switch (objMain.Task.state) {
-                        case 'collect':
-                            {
-                                selectObj.scale.set(scale, scale, scale);
-                                objMain.selectObj.obj = selectObj;
-                                objMain.selectObj.type = objMain.Task.state;
-                                selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 600 / 600 * Math.PI * 2);
-                                {
-                                    var collectPosition = selectObj.userData.collectPosition;
-                                    var element = document.createElement('div');
-                                    element.style.width = '10em';
-                                    element.style.marginTop = '3em';
-                                    var color = '#ff0000';
-                                    element.style.border = '2px solid ' + color;
-                                    element.style.borderTopLeftRadius = '0.5em';
-                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
-                                    element.style.color = '#1504f6';
-
-                                    var div2 = document.createElement('div');
-                                    div2.style.fontSize = '0.5em';
-
-                                    var b = document.createElement('b');
-                                    b.innerHTML = '到' + collectPosition.Fp.region + '[<span style="color:#05ffba">' + collectPosition.Fp.FastenPositionName + '</span>]回收<span style="color:#05ffba">' + (collectPosition.collectMoney).toFixed(2) + '元</span>现金。';
-                                    div2.appendChild(b);
-
-                                    element.appendChild(div2);
-
-                                    var object = new THREE.CSS2DObject(element);
-                                    var fp = collectPosition.Fp;
-                                    object.position.set(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
-
-                                    objMain.groupOfOperatePanle.add(object);
-                                }
-                            }; break;
-                        case 'setReturn':
-                            {
-                                selectObj.scale.set(scale, scale, scale);
-                                objMain.selectObj.obj = selectObj;
-                                objMain.selectObj.type = objMain.Task.state;
-                                selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 300 / 300 * Math.PI * 2);
-                                {
-                                    var element = document.createElement('div');
-                                    element.style.width = '10em';
-                                    element.style.marginTop = '3em';
-                                    var color = '#ff0000';
-                                    element.style.border = '2px solid ' + color;
-                                    element.style.borderTopLeftRadius = '0.5em';
-                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
-                                    element.style.color = '#1504f6';
-
-                                    var div2 = document.createElement('div');
-                                    div2.style.fontSize = '0.5em';
-
-                                    var b = document.createElement('b');
-                                    b.innerHTML = '回到基地->' + objMain.basePoint.FastenPositionName + '(' + objMain.basePoint.Longitude.toFixed(2) + ',' + objMain.basePoint.Latitde.toFixed(2) + ')';
-                                    div2.appendChild(b);
-
-                                    element.appendChild(div2);
-
-                                    var object = new THREE.CSS2DObject(element);
-                                    //  var fp = collectPosition.Fp;
-                                    object.position.set(selectObj.position.x, 0, selectObj.position.z);
-
-                                    objMain.groupOfOperatePanle.add(object);
-                                }
-                            }; break;
-                        case 'attack':
-                            {
-                                selectObj.scale.set(scale, scale, scale);
-                                objMain.selectObj.obj = selectObj;
-                                objMain.selectObj.type = objMain.Task.state;
-                                selectObj.rotation.set(-Math.PI / 2, 0, Date.now() % 300 / 300 * Math.PI * 2);
-                                {
-                                    var element = document.createElement('div');
-                                    element.style.width = '10em';
-                                    element.style.marginTop = '3em';
-                                    var color = '#ff0000';
-                                    element.style.border = '2px solid ' + color;
-                                    element.style.borderTopLeftRadius = '0.5em';
-                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
-                                    element.style.color = '#1504f6';
-
-                                    var div2 = document.createElement('div');
-                                    div2.style.fontSize = '0.5em';
-
-                                    var b = document.createElement('b');
-
-                                    var customTagIndexKey = selectObj.name.substring(5);
-                                    if (objMain.othersBasePoint[customTagIndexKey] == undefined)
-                                        b.innerHTML = '攻击';
-                                    else {
-                                        if (objMain.othersBasePoint[customTagIndexKey].isNPC) {
-                                            //b.innerHTML = '[NPC]->到';
-                                            b.innerHTML = b.innerHTML = '到(' + objMain.othersBasePoint[customTagIndexKey].basePoint.region + ')'
-                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.FastenPositionName
-                                                + '(' + objMain.othersBasePoint[customTagIndexKey].basePoint.Longitude.toFixed(2) + ','
-                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.Latitde.toFixed(2) + ')攻击NPC'
-                                                + '【' + objMain.othersBasePoint[customTagIndexKey].playerName + '】'
-                                                + '(' + objMain.othersBasePoint[customTagIndexKey].Level + '级)';
-
-                                        }
-                                        else if (objMain.othersBasePoint[customTagIndexKey].isPlayer) {
-                                            b.innerHTML = '到(' + objMain.othersBasePoint[customTagIndexKey].basePoint.region + ')'
-                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.FastenPositionName
-                                                + '(' + objMain.othersBasePoint[customTagIndexKey].basePoint.Longitude.toFixed(2) + ','
-                                                + objMain.othersBasePoint[customTagIndexKey].basePoint.Latitde.toFixed(2) + ')攻击玩家'
-                                                + '【' + objMain.othersBasePoint[customTagIndexKey].playerName + '】'
-                                                + '(' + objMain.othersBasePoint[customTagIndexKey].Level + '级)';
-                                        }
-                                        else {
-                                            b.innerHTML = '攻击';
-                                        }
-                                    }
-                                    div2.appendChild(b);
-
-                                    element.appendChild(div2);
-
-                                    var object = new THREE.CSS2DObject(element);
-                                    //  var fp = collectPosition.Fp;
-                                    object.position.set(selectObj.position.x, selectObj.position.y, selectObj.position.z);
-
-                                    objMain.groupOfOperatePanle.add(object);
-                                }
-                            }; break;
-                        case 'mile':
-                        case 'business':
-                        case 'volume':
-                        case 'speed':
-                            {
-                                objMain.selectObj.obj = selectObj;
-                                objMain.selectObj.type = objMain.Task.state;
-                                // objMain.promoteDiamond.getChildByName('diamond_' + objMain.Task.state).scale.set(scale, scale * 1.1, scale);
-                                //
-
-                                selectObj.scale.set(scale, scale * 1.1, scale);
-                                selectObj.position.y = Math.sin(Date.now() % 3000 / 3000 * Math.PI) * scale / 4;
-                                selectObj.rotation.y = (Date.now() % 8000 / 8000) * Math.PI * 2;
-                                //objMain.ws.send(JSON.stringify({ 'c': 'Promote', 'pType': objMain.Task.state }));
-                            }; break;
-                        case 'ability':
-                            {
-                                objMain.selectObj.obj = selectObj;
-                                objMain.selectObj.type = objMain.Task.state;
-                                selectObj.scale.setX((Date.now() % 2000 / 2000) + 1);
-                                selectObj.scale.setZ((Date.now() % 2000 / 2000) + 1);
-
-                                {
-                                    var element = document.createElement('div');
-                                    element.style.width = '10em';
-                                    element.style.marginTop = '3em';
-                                    var color = '#ff0000';
-                                    element.style.border = '2px solid ' + color;
-                                    element.style.borderTopLeftRadius = '0.5em';
-                                    element.style.backgroundColor = 'rgba(245, 255, 179, 0.9)';
-                                    element.style.color = '#1504f6';
-
-                                    var div2 = document.createElement('div');
-                                    div2.style.fontSize = '0.5em';
-
-                                    var b = document.createElement('b');
-                                    switch (selectObj.name) {
-                                        case 'BatteryMile':
-                                            {
-                                                b.innerHTML = '红宝石市价:' + (objMain.diamondPrice.mile / 100.0).toFixed(2) + "银两。用其提升最大里程。你有"
-                                                    + objMain.PromoteDiamondCount.mile + '块';
-
-                                            }; break;
-                                        case 'BatteryBusiness':
-                                            {
-                                                b.innerHTML = '绿宝石市价:' + (objMain.diamondPrice.business / 100.0).toFixed(2) + "银两。用其提升最大业务能力。你有"
-                                                    + objMain.PromoteDiamondCount.business + '块';
-                                            }; break;
-                                        case 'BatteryVolume':
-                                            {
-                                                b.innerHTML = '蓝宝石市价:' + (objMain.diamondPrice.volume / 100.0).toFixed(2) + "银两。用其提升最大收集能力。你有"
-                                                    + objMain.PromoteDiamondCount.volume + '块';
-                                            }; break;
-                                        case 'BatterySpeed':
-                                            {
-                                                b.innerHTML = '黑宝石市价:' + (objMain.diamondPrice.speed / 100.0).toFixed(2) + "银两。用其提升速度。你有"
-                                                    + objMain.PromoteDiamondCount.speed + '块';
-                                            }; break;
-                                    }
-
-                                    div2.appendChild(b);
-
-                                    element.appendChild(div2);
-
-                                    var object = new THREE.CSS2DObject(element);
-                                    //  var fp = collectPosition.Fp;
-                                    object.position.set(selectObj.position.x, 0, selectObj.position.z);
-
-                                    objMain.groupOfOperatePanle.add(object);
-                                }
-                            }; break;
-                        case 'building':
-                            {
-                                objMain.selectObj.obj = selectObj;
-                                objMain.selectObj.type = objMain.Task.state;
-                                var inteview = Date.now() % 4000;
-                                if (inteview > 2000) {
-                                    selectObj.scale.setX(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.05 + 1);
-                                    selectObj.scale.setZ(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.05 + 1);
-                                }
-                                else {
-                                    selectObj.scale.setX(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.1 + 1);
-                                    selectObj.scale.setZ(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.1 + 1);
-                                }
-                            }; break;
-                    }
-                }
-            }
-            else {
-                objMain.Task.state = '';
-            }
-            for (var i = 0; i < objMain.playerGroup.children.length; i++) {
-                if (objMain.playerGroup.children[i].isMesh) {
-                    objMain.playerGroup.children[i].userData.animateDataYrq.simulate(Date.now());
-                    objMain.playerGroup.children[i].userData.animateDataYrq.refresh(Date.now());
-                }
-            }
-            for (var i = 0; i < objMain.carGroup.children.length; i++) {
-                /*
-                 * 初始化汽车的大小
-                 */
-                if (objMain.carGroup.children[i].isGroup) {
-                    objMain.carGroup.children[i].scale.set(0.002, 0.002, 0.002);
-                    objMain.carGroup.children[1].name.split('_')[1]
-                    stateSet.speed.Animate(objMain.carGroup.children[i].name.split('_')[1]);
-                    stateSet.attck.Animate(objMain.carGroup.children[i].name.split('_')[1]);
-                    stateSet.confuse.Animate(objMain.carGroup.children[i].name.split('_')[1]);
-                    stateSet.lost.Animate(objMain.carGroup.children[i].name.split('_')[1]);
-                }
-            }
-
-
-
-            //for (var i = 0; i < objMain.playerGroup.children.length; i++) {
-            //    /*
-            //     * 初始化 旗帜的大小
-            //     */
-
-
-            //}
-
-            var lengthOfPAndC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-
-
-            {
-                /*放大选中的汽车*/
-                var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                if (scale < 0.002) {
-                    scale = 0.002;
-                }
-                if (objMain.Task.carSelect != '') {
-                    if (objMain.carGroup.getObjectByName(objMain.Task.carSelect) != undefined) {
-                        objMain.carGroup.getObjectByName(objMain.Task.carSelect).scale.set(scale, scale, scale);
-                    }
-                }
-
-            }
-            {
-                /*放大选中的砖石*/
-                //var scale = 1;//objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 35;
-                //if (scale < 0.2) {
-                //    scale = 0.2;
-                //}
-                //if (objMain.PromoteList.indexOf(objMain.Task.state) >= 0) {
-                //    objMain.promoteDiamond.children[0].scale.set(scale, scale * 1.1, scale);
-                //}
-            }
-            {
-                /*放大选中的RMB*/
-
-            }
-            {
-
-            }
-
-            {
-                for (let key of Object.keys(objMain.carsAnimateData)) {
-                    let animateDataForeach = objMain.carsAnimateData[key];
-                    var previous = animateDataForeach.previous;
-                    var current = animateDataForeach.current;
-                    var isSelf = (key == 'car_' + objMain.indexKey);
-                    var now = Date.now();
-                    var animationF = function (key, obj, now, isSelf) {
-                        var isAnimation = false;
-                        if (isSelf) {
-                            isAnimation = true;
-                        }
-                        for (var j = 0; j < obj.animateData.length; j++) {
-                            if (obj.animateData[j].privateKey >= 0) {
-                                if (obj.animateData[j].initialData != undefined) {
-                                    var initialData = obj.animateData[j].initialData;
-                                    var start = initialData.start;
-                                    var end = initialData.end;
-                                    if (now > start && end > now) {
-                                        var animateData = initialData.animateData;
-                                        for (var i = 0; i < animateData.length; i++) {
-
-                                            var percent = (now - start - animateData[i].t0) / (animateData[i].t1 - animateData[i].t0);
-                                            if (percent < 0) {
-                                                continue;
-                                            }
-                                            else if (percent < 1) {
-                                                var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
-                                                var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
-                                                var z = animateData[i].z0 + percent * (animateData[i].z1 - animateData[i].z0);
-                                                //if (Math.abs(z) > 1e-5) {
-                                                //    console.log('高度', z);
-                                                //}
-                                                // console.log('position', x, y);
-                                                if (objMain.carGroup.getObjectByName(key) != undefined) {
-                                                    objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
-
-                                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                                    if (scale < 0.002) {
-                                                        scale = 0.002;
-                                                    }
-                                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-
-                                                    var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
-                                                    ;
-                                                    if (!complexV.isZero()) {
-                                                        objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
-                                                        if (isSelf) {
-                                                            if (isAnimation) {
-                                                                objMain.controls.target.set(x, z, -y);
-                                                                var angle = objMain.controls.getPolarAngle();
-                                                                //if(
-                                                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                                                                var distance = 32;
-                                                                if (dCal >= 33) {
-                                                                    distance = dCal * 0.99 - 0.01;
-                                                                }
-                                                                else if (dCal <= 31) {
-                                                                    distance = dCal * 1.01 + 0.01;
-                                                                }
-                                                                var unitY = distance * Math.cos(angle);
-                                                                var unitZX = distance * Math.sin(angle);
-
-                                                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                                                                var unitX = unitZX * Math.sin(angleOfCamara);
-                                                                var unitZ = unitZX * Math.cos(angleOfCamara);
-                                                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                                                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                                                                objMain.camera.position.set(x + unitX, unitY + z, -y + unitZ);
-                                                                objMain.camera.lookAt(x, z, -y);
-                                                            }
-                                                            // objMain.controls.maxDistance
-                                                        }
-                                                    }
-
-                                                    break;
-                                                }
+                                    }; break;
+                                case 'building':
+                                    {
+                                        objMain.selectObj.obj = selectObj;
+                                        objMain.selectObj.type = objMain.Task.state;
+                                        if (objMain.selectObj.obj.userData.modelType == 'building') {
+                                            var inteview = Date.now() % 4000;
+                                            if (inteview > 2000) {
+                                                selectObj.scale.setX(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.05 + 1);
+                                                selectObj.scale.setZ(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.05 + 1);
                                             }
                                             else {
-                                                var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
-                                                var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
-                                                var z = animateData[i].z0 + 1 * (animateData[i].z1 - animateData[i].z0);
-                                                if (objMain.carGroup.getObjectByName(key)) {
-                                                    objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
+                                                selectObj.scale.setX(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.1 + 1);
+                                                selectObj.scale.setZ(Math.sin(inteview % 2000 / 2000 * Math.PI * 2) * -0.1 + 1);
+                                            }
+                                        }
+                                    }; break;
+                            }
+                        }
+                    }
+                    else {
+                        objMain.Task.state = '';
+                    }
+                    for (var i = 0; i < objMain.playerGroup.children.length; i++) {
+                        if (objMain.playerGroup.children[i].isMesh) {
+                            objMain.playerGroup.children[i].userData.animateDataYrq.simulate(Date.now());
+                            objMain.playerGroup.children[i].userData.animateDataYrq.refresh(Date.now());
+                        }
+                    }
+                    for (var i = 0; i < objMain.carGroup.children.length; i++) {
+                        /*
+                         * 初始化汽车的大小
+                         */
+                        if (objMain.carGroup.children[i].isGroup) {
+                            objMain.carGroup.children[i].scale.set(0.002, 0.002, 0.002);
+                            objMain.carGroup.children[1].name.split('_')[1]
+                            stateSet.speed.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                            stateSet.attck.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                            stateSet.confuse.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                            stateSet.lost.Animate(objMain.carGroup.children[i].name.split('_')[1]);
+                        }
+                    }
 
-                                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                                    if (scale < 0.002) {
-                                                        scale = 0.002;
+
+
+                    //for (var i = 0; i < objMain.playerGroup.children.length; i++) {
+                    //    /*
+                    //     * 初始化 旗帜的大小
+                    //     */
+
+
+                    //}
+
+                    var lengthOfPAndC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+
+
+                    {
+                        /*放大选中的汽车*/
+                        var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                        if (scale < 0.002) {
+                            scale = 0.002;
+                        }
+                        if (objMain.Task.carSelect != '') {
+                            if (objMain.carGroup.getObjectByName(objMain.Task.carSelect) != undefined) {
+                                objMain.carGroup.getObjectByName(objMain.Task.carSelect).scale.set(scale, scale, scale);
+                            }
+                        }
+
+                    }
+                    {
+                        /*放大选中的砖石*/
+                        //var scale = 1;//objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) / 35;
+                        //if (scale < 0.2) {
+                        //    scale = 0.2;
+                        //}
+                        //if (objMain.PromoteList.indexOf(objMain.Task.state) >= 0) {
+                        //    objMain.promoteDiamond.children[0].scale.set(scale, scale * 1.1, scale);
+                        //}
+                    }
+                    {
+                        /*放大选中的RMB*/
+
+                    }
+                    {
+
+                    }
+                    var selfsCarIsMoving = false;
+                    {
+                        for (let key of Object.keys(objMain.carsAnimateData)) {
+                            let animateDataForeach = objMain.carsAnimateData[key];
+                            var previous = animateDataForeach.previous;
+                            var current = animateDataForeach.current;
+                            var isSelf = (key == 'car_' + objMain.indexKey);
+                            var now = Date.now();
+                            var animationF = function (key, obj, now, isSelf) {
+                                var isAnimation = false;
+                                if (isSelf) {
+
+                                }
+                                for (var j = 0; j < obj.animateData.length; j++) {
+                                    if (obj.animateData[j].privateKey >= 0) {
+                                        if (obj.animateData[j].initialData != undefined) {
+                                            var initialData = obj.animateData[j].initialData;
+                                            var start = initialData.start;
+                                            var end = initialData.end;
+                                            if (now > start && end > now) {
+                                                var animateData = initialData.animateData;
+                                                for (var i = 0; i < animateData.length; i++) {
+
+                                                    var percent = (now - start - animateData[i].t0) / (animateData[i].t1 - animateData[i].t0);
+                                                    if (percent < 0) {
+                                                        continue;
                                                     }
+                                                    else if (percent < 1) {
+                                                        var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
+                                                        var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
+                                                        var z = (animateData[i].z0 + percent * (animateData[i].z1 - animateData[i].z0)) * objMain.heightAmplify;
+                                                        //if (Math.abs(z) > 1e-5) {
+                                                        //    console.log('高度', z);
+                                                        //}
+                                                        // console.log('position', x, y);
+                                                        if (objMain.carGroup.getObjectByName(key) != undefined) {
+                                                            objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
 
-                                                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+                                                            var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                                            if (scale < 0.002) {
+                                                                scale = 0.002;
+                                                            }
+                                                            objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
 
-                                                    var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
-                                                    ;
-                                                    if (!complexV.isZero()) {
-                                                        objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, 0);
+                                                            var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
+                                                            ;
+                                                            if (!complexV.isZero()) {
+                                                                var rotateZ = 0;
+                                                                var complexV2 = new Complex(complexV.mo(), animateData[i].z1 - animateData[i].z0);
+                                                                if (!complexV2.isZero()) {
+                                                                    rotateZ = -complexV2.toAngle();
+                                                                }
+                                                                objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, rotateZ);
+                                                                if (isSelf) {
+                                                                    objMain.controls.target.set(x, z, -y);
+                                                                    var angle = objMain.controls.getPolarAngle();
+                                                                    //if(
+                                                                    var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                                                                    var distance = 32;
+                                                                    if (dCal >= 33) {
+                                                                        distance = dCal * 0.99 - 0.01;
+                                                                    }
+                                                                    else if (dCal <= 31) {
+                                                                        distance = dCal * 1.01 + 0.01;
+                                                                    }
+                                                                    var unitY = distance * Math.cos(angle);
+                                                                    var unitZX = distance * Math.sin(angle);
+
+                                                                    var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                                                                    var unitX = unitZX * Math.sin(angleOfCamara);
+                                                                    var unitZ = unitZX * Math.cos(angleOfCamara);
+                                                                    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                                                                    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                                                                    objMain.camera.position.set(x + unitX, unitY + z, -y + unitZ);
+                                                                    objMain.camera.lookAt(x, z, -y);
+                                                                }
+                                                            }
+                                                            isAnimation = isSelf && true;
+                                                            break;
+                                                        }
+                                                    }
+                                                    else {
+                                                        var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
+                                                        var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
+                                                        var z = (animateData[i].z0 + 1 * (animateData[i].z1 - animateData[i].z0)) * objMain.heightAmplify;;
+                                                        if (objMain.carGroup.getObjectByName(key)) {
+                                                            objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
+
+                                                            var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                                            if (scale < 0.002) {
+                                                                scale = 0.002;
+                                                            }
+
+                                                            objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+
+                                                            var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
+                                                            ;
+                                                            if (!complexV.isZero()) {
+                                                                var rotateZ = 0;
+                                                                var complexV2 = new Complex(complexV.mo(), animateData[i].z1 - animateData[i].z0);
+                                                                if (!complexV2.isZero()) {
+                                                                    rotateZ = -complexV2.toAngle();
+                                                                }
+                                                                objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, rotateZ);
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
+
                                         }
                                     }
-
-                                }
-                            }
-                            else if (objMain.carGroup.getObjectByName(key)) {
-                                var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                if (scale < 0.002) {
-                                    scale = 0.002;
-                                }
-                                objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
-                            }
-                        }
-                        if (obj.animateData.length > 1) {
-                            if (obj.animateData[0].privateKey >= 0 && obj.animateData[1].privateKey < 0) {
-                                var initialData = obj.animateData[0].initialData;
-                                var animateData = initialData.animateData;
-                                if (animateData.length == 0) {
-                                    var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
-                                    if (scale < 0.002) {
-                                        scale = 0.002;
-                                    }
-                                    if (objMain.carGroup.getObjectByName(key))
+                                    else if (objMain.carGroup.getObjectByName(key)) {
+                                        var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                        if (scale < 0.002) {
+                                            scale = 0.002;
+                                        }
                                         objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+                                    }
                                 }
+                                if (obj.animateData.length > 1) {
+                                    if (obj.animateData[0].privateKey >= 0 && obj.animateData[1].privateKey < 0) {
+                                        var initialData = obj.animateData[0].initialData;
+                                        var animateData = initialData.animateData;
+                                        if (animateData.length == 0) {
+                                            var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                            if (scale < 0.002) {
+                                                scale = 0.002;
+                                            }
+                                            if (objMain.carGroup.getObjectByName(key))
+                                                objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+                                        }
+                                    }
+                                }
+                                return isAnimation;
+                            }
+
+                            if (previous != null) {
+                                selfsCarIsMoving = selfsCarIsMoving || animationF(key, previous, now, isSelf);
+                            }
+                            if (current != null) {
+                                selfsCarIsMoving = selfsCarIsMoving || animationF(key, current, now, isSelf);
                             }
                         }
                     }
 
-                    if (previous != null) {
-                        animationF(key, previous, now, isSelf);
-                    }
-                    if (current != null) {
-                        animationF(key, current, now, isSelf);
-                    }
-                }
-            }
+                    if (objMain.carState.car == 'selecting') {
+                        objMain.directionGroup.visible = true;
+                        if (objMain.directionGroup.children.length > 0) {
+                            //var p = objMain.directionGroup.children[0].position;
+                            //var x = p.x;
+                            //var y = -p.z;
+                            //objMain.controls.target.set(x, 0, -y);
+                            //var angle = objMain.controls.getPolarAngle();
+                            ////if(
+                            ////objMain.carStateTimestamp[received_obj.carID] = { 't': Date.now(), 'l': oldLength };
+                            //var oldLength = objMain.carStateTimestamp.car.l;
+                            //var oldTime = objMain.carStateTimestamp.car.t;
+                            //var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                            //var distance = 3;
+                            //var percent = (Date.now() - oldTime) / 2500;
+                            //if (percent > 1) {
+                            //    distance = 3;
+                            //}
+                            //else {
+                            //    distance = oldLength + percent * (3 - oldLength);
+                            //}
+                            //var unitY = distance * Math.cos(angle);
+                            //var unitZX = distance * Math.sin(angle);
 
-            if (objMain.carState.car == 'selecting') {
-                objMain.directionGroup.visible = true;
-                if (objMain.directionGroup.children.length > 0) {
-                    //var p = objMain.directionGroup.children[0].position;
-                    //var x = p.x;
-                    //var y = -p.z;
-                    //objMain.controls.target.set(x, 0, -y);
-                    //var angle = objMain.controls.getPolarAngle();
-                    ////if(
-                    ////objMain.carStateTimestamp[received_obj.carID] = { 't': Date.now(), 'l': oldLength };
-                    //var oldLength = objMain.carStateTimestamp.car.l;
-                    //var oldTime = objMain.carStateTimestamp.car.t;
-                    //var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                    //var distance = 3;
-                    //var percent = (Date.now() - oldTime) / 2500;
-                    //if (percent > 1) {
-                    //    distance = 3;
-                    //}
-                    //else {
-                    //    distance = oldLength + percent * (3 - oldLength);
-                    //}
-                    //var unitY = distance * Math.cos(angle);
-                    //var unitZX = distance * Math.sin(angle);
+                            //var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                            //var unitX = unitZX * Math.sin(angleOfCamara);
+                            //var unitZ = unitZX * Math.cos(angleOfCamara);
+                            //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                            //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
 
-                    //var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                    //var unitX = unitZX * Math.sin(angleOfCamara);
-                    //var unitZ = unitZX * Math.cos(angleOfCamara);
-                    //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                    //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+                            //objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
+                            //objMain.camera.lookAt(x, 0, -y);
+                        }
 
-                    //objMain.camera.position.set(x + unitX, unitY, -y + unitZ);
-                    //objMain.camera.lookAt(x, 0, -y);
-                }
+                        objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;
 
-                objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;
+                        //{
+                        //    var cameraHeight = objMain.camera.position.y;
+                        //    if (cameraHeight > 0) {
+                        //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
+                        //        if (calResult1 > 0) {
+                        //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
+                        //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
+                        //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
+                        //            if (calAngle1 < Math.PI / 2) {
+                        //                var newCalHeight = Math.tan(calAngle1) * calResult1;
+                        //                objMain.scene.position.y = cameraHeight - newCalHeight;
+                        //                //  objMain.controls.target.y = 0;
+                        //                if (objMain.scene.position.y < -3) {
+                        //                    objMain.scene.position.y = -3;
+                        //                }
+                        //            }
+                        //            else objMain.scene.position.y = 0; 
 
-                //{
-                //    var cameraHeight = objMain.camera.position.y;
-                //    if (cameraHeight > 0) {
-                //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
-                //        if (calResult1 > 0) {
-                //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
-                //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
-                //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
-                //            if (calAngle1 < Math.PI / 2) {
-                //                var newCalHeight = Math.tan(calAngle1) * calResult1;
-                //                objMain.scene.position.y = cameraHeight - newCalHeight;
-                //                //  objMain.controls.target.y = 0;
-                //                if (objMain.scene.position.y < -3) {
-                //                    objMain.scene.position.y = -3;
-                //                }
-                //            }
-                //            else objMain.scene.position.y = 0; 
+                        //        }
+                        //        else objMain.scene.position.y = 0; 
+                        //    }
+                        //    else objMain.scene.position.y = 0;
 
-                //        }
-                //        else objMain.scene.position.y = 0; 
-                //    }
-                //    else objMain.scene.position.y = 0;
-
-                //}
-            }
-            else {
-                objMain.directionGroup.visible = false;
-                objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;//Math.PI / 2 - Math.PI / 36;
-
-                {
-
-                    //var lengthOfV = v1.length();
-                    //if (lengthOfV > 0) {
-                    //    v1.setLength(1);
-                    //    var v2 = new THREE.Vector3()
-                    //}
-
-                }
-                //{
-                //    var cameraHeight = objMain.camera.position.y;
-                //    if (cameraHeight > 0) {
-                //        var calResult1 = (lengthOfCC * lengthOfCC - cameraHeight * cameraHeight);
-                //        if (calResult1 > 0) {
-                //            var lengthToCenterOnPanel = Math.sqrt(calResult1);
-                //            var calAngle1 = Math.atan(cameraHeight / lengthToCenterOnPanel);
-                //            calAngle1 = calAngle1 + (0.718 - 0.5) * 35 / 180 * Math.PI;
-                //            if (calAngle1 < Math.PI / 2) {
-                //                var newCalHeight = Math.tan(calAngle1) * calResult1;
-                //                objMain.scene.position.y = cameraHeight - newCalHeight;
-                //                //  objMain.controls.target.y = 0;
-                //                //if (objMain.scene.position.y < -3) {
-                //                //    objMain.scene.position.y = -3;
-                //                //}
-                //            }
-                //            else objMain.scene.position.y = 0;
-
-                //        }
-                //        else objMain.scene.position.y = 0;
-                //    }
-                //    else objMain.scene.position.y = 0;
-
-                //}
-            }
-            var deltaY = 0;
-            if (objMain.carGroup.getObjectByName('car_' + objMain.indexKey)) {
-                deltaY = objMain.carGroup.getObjectByName('car_' + objMain.indexKey).position.y;
-            }
-            // var carPosition = 
-            sceneYUpdate(deltaY);
-            moneyAbsorb.animate();
-            targetShow.animate();
-            objMain.animation.animateCameraByCarAndTask();
-
-            theLagestHoderKey.animate();
-            objMain.renderer.render(objMain.scene, objMain.camera);
-            objMain.labelRenderer.render(objMain.scene, objMain.camera);
-            objMain.light1.position.set(objMain.camera.position.x + 10, objMain.camera.position.y, objMain.camera.position.z + 10);
-            if (objMain.directionGroup.visible) {
-                var minAngle = Math.PI / 20;
-                var selectIndex = -1;
-                for (var i = 1; i < objMain.directionGroup.children.length; i++) {
-                    objMain.directionGroup.children[i].children[0].material = objMain.ModelInput.directionArrow.oldM;
-                    var delta = (objMain.directionGroup.children[i].rotation.y - (objMain.controls.getAzimuthalAngle() + Math.PI / 2) + Math.PI * 2) % (Math.PI * 2);
-                    if (delta < minAngle) {
-                        minAngle = delta;
-                        selectIndex = i;
+                        //}
                     }
                     else {
-                        continue;
+                        objMain.directionGroup.visible = false;
+                        objMain.controls.maxPolarAngle = Math.PI / 2 + Math.PI / 3;//Math.PI / 2 - Math.PI / 36;
                     }
-                }
-                if (selectIndex > 0) {
-                    objMain.directionGroup.children[selectIndex].children[0].material = objMain.ModelInput.directionArrow.newM;
-                }
-            }
 
+                    // var carPosition = 
+                    if (selfsCarIsMoving) {
+                        var deltaYOfCar = 0;
+                        if (objMain.carGroup.getObjectByName('car_' + objMain.indexKey)) {
+                            deltaYOfCar = objMain.carGroup.getObjectByName('car_' + objMain.indexKey).position.y;
+                        }
+                        sceneYUpdate(deltaYOfCar);
+                    }
+                    else if (objMain.camaraAnimateData != null) {
+                        sceneYUpdate(deltaYOfSelectObj);
+                    }
+                    else {
+                        sceneYUpdate(0);
+                    }
+                    moneyAbsorb.animate();
+                    targetShow.animate();
+                    objMain.animation.animateCameraByCarAndTask();
 
+                    theLagestHoderKey.animate();
+                    objMain.renderer.render(objMain.scene, objMain.camera);
+                    objMain.labelRenderer.render(objMain.scene, objMain.camera);
+                    objMain.light1.position.set(objMain.camera.position.x + 10, objMain.camera.position.y, objMain.camera.position.z + 10);
+                    if (objMain.directionGroup.visible) {
+                        var minAngle = Math.PI / 20;
+                        var selectIndex = -1;
+                        for (var i = 1; i < objMain.directionGroup.children.length; i++) {
+                            objMain.directionGroup.children[i].children[0].material = objMain.ModelInput.directionArrow.oldM;
+                            var delta = (objMain.directionGroup.children[i].rotation.y - (objMain.controls.getAzimuthalAngle() + Math.PI / 2) + Math.PI * 2) % (Math.PI * 2);
+                            if (delta < minAngle) {
+                                minAngle = delta;
+                                selectIndex = i;
+                            }
+                            else {
+                                continue;
+                            }
+                        }
+                        if (selectIndex > 0) {
+                            objMain.directionGroup.children[selectIndex].children[0].material = objMain.ModelInput.directionArrow.newM;
+                        }
+                    }
+                }; break;
+            case 'LookForBuildings':
+                {
+                    if (objMain.transtractionData != null) {
+                        objMain.camera.lookAt(objMain.transtractionData.x, objMain.transtractionData.y, objMain.transtractionData.z);
+                        objMain.controls.target.set(objMain.transtractionData.x, objMain.transtractionData.y, objMain.transtractionData.z);
+                    }
+                    objMain.renderer.render(objMain.scene, objMain.camera);
+                    objMain.labelRenderer.render(objMain.scene, objMain.camera);
+                    objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
+
+                }; break;
+            case 'QueryReward': { }; break;
         }
-        else if ('LookForBuildings' == objMain.state) {
-            //if (objMain.transtractionData != null)
-            {
+        //if (objMain.state == 'OnLine') {
 
-                if (objMain.transtractionData != null) {
-                    objMain.camera.lookAt(objMain.transtractionData.x, objMain.transtractionData.y, objMain.transtractionData.z);
-                    objMain.controls.target.set(objMain.transtractionData.x, objMain.transtractionData.y, objMain.transtractionData.z);
-                }
-                objMain.renderer.render(objMain.scene, objMain.camera);
-                objMain.labelRenderer.render(objMain.scene, objMain.camera);
-                objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
-            }
-        }
+
+        //}
+        //else if ('LookForBuildings' == objMain.state) {
+        //    //if (objMain.transtractionData != null)
+
+        //}
 
         if (Date.now() - objMain.pingTime > 100) {
             objMain.pingTime = Date.now();
@@ -2879,6 +2901,10 @@ var buttonClick = function (v) {
                 {
                     //selectSingleTeamJoinHtmlF.setNameHtmlShow();
                     objMain.ws.send(JSON.stringify({ c: 'QueryReward' }));
+                }; break;
+            case 'HelpAndGuide':
+                {
+                    objMain.ws.send(JSON.stringify({ c: 'Guid' }));
                 }; break;
             //case 'lookForBuildings':
             //    {
@@ -3781,12 +3807,12 @@ var drawPoint = function (color, fp, indexKey) {
     var objToShow = new createFlag(color);
     object = new THREE.Mesh(objToShow.clothGeometry, objToShow.clothMaterial);
     object.userData['animateDataYrq'] = objToShow;
-    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0.1 + MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde));
+    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0.1 + MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
     object.scale.set(0.0005, 0.0005, 0.0005);
     objMain.playerGroup.add(object);
 
-    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.Latitde))
-    var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height), -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
+    var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
     var cc = new Complex(end.x - start.x, end.z - start.z);
     cc.toOne();
     object.rotateY(-cc.toAngle() + Math.PI / 2);
@@ -4531,12 +4557,15 @@ var operatePanel =
                             }; break;
                         case 'building':
                             {
-                                //if (objMain.state == 'LookForBuildings') {
-                                //    cancelBuildingDetailF();
-                                //}
-                                //else
-                                if (objMain.state == 'OnLine')
-                                    buildingDetailF();
+                                if (objMain.state == 'OnLine') {
+
+                                    if (objMain.selectObj.obj != null && objMain.selectObj.obj.userData != undefined && objMain.selectObj.obj.userData.modelType == 'building') {
+                                        buildingDetailF();
+                                    }
+                                    else {
+                                        lookUp();
+                                    }
+                                }
                             }; break;
                     }
                 }; break;
@@ -4595,7 +4624,20 @@ var operatePanel =
                                     cancelBuildingDetailF();
                                 }
                                 else if (objMain.state == 'OnLine')
-                                    buildingDetailF();
+
+                                    if (objMain.selectObj.obj == null) {
+                                        lookUp();
+                                    }
+                                    else if (objMain.selectObj.obj.userData) {
+                                        if (objMain.selectObj.obj.userData.modelType == 'building') {
+                                            buildingDetailF();
+                                        }
+                                        else
+                                            lookUp();
+                                    }
+                                    else {
+                                        lookUp();
+                                    }
                             }; break;
                     }
                     if (objMain.state == 'OnLine')
@@ -5112,7 +5154,7 @@ var stateSet =
                         waterCopy.children[i].material.opacity = 0.6;
                     }
                     waterCopy.name = 'water_' + actionRole;
-                    waterCopy.position.set(flag.position.x, 0, flag.position.z);
+                    waterCopy.position.set(flag.position.x, flag.position.y, flag.position.z);
                     waterCopy.scale.set(0.15, 0.5, 0.15);
                     waterCopy.userData = { startT: Date.now() };
                     objMain.waterGroup.add(waterCopy);
@@ -5160,7 +5202,7 @@ var stateSet =
             var flag = objMain.playerGroup.getChildByName('flag_' + targetRoleID);
             if (flag) {
                 //  mesh.position.set(flag.position.x, 0, flag.position.z);
-                particleFireMesh1.position.set(flag.position.x, 0, flag.position.z);
+                particleFireMesh1.position.set(flag.position.x, flag.position.y, flag.position.z);
                 particleFireMesh1.name = 'fire_' + actionRole;
                 particleFireMesh1.userData = { startT: Date.now() };
                 objMain.fireGroup.add(particleFireMesh1);
@@ -5240,7 +5282,7 @@ var stateSet =
 
             let flag = objMain.playerGroup.getObjectByName('flag_' + targetRoleID);
             if (flag) {
-                lightningStrikeMesh.position.set(flag.position.x, 0, flag.position.z);
+                lightningStrikeMesh.position.set(flag.position.x, flag.position.y, flag.position.z);
                 lightningStrikeMesh.userData = { startT: Date.now() };
                 objMain.lightningGroup.add(lightningStrikeMesh);
             }
@@ -5285,16 +5327,15 @@ var DirectionOperator =
         var newDirectionModle = objMain.ModelInput.direction.clone();
         newDirectionModle.rotateX(-Math.PI / 2);
         newDirectionModle.scale.set(0.4, 0.4, 0.4);//(Math.PI / 2);
-        newDirectionModle.position.set(DirectionOperator.data.positionX, -0.1, -DirectionOperator.data.positionY);
+        newDirectionModle.position.set(DirectionOperator.data.positionX, -0.1 + DirectionOperator.data.positionZ * objMain.heightAmplify, -DirectionOperator.data.positionY);
 
         objMain.directionGroup.add(newDirectionModle);
         for (var i = 0; i < DirectionOperator.data.direction.length; i++) {
             var newArrow = objMain.ModelInput.directionArrow.obj.clone();
             newArrow.scale.set(0.03, 0.03, 0.03);//(Math.PI / 2);
-            newArrow.position.set(DirectionOperator.data.positionX, -0.1, -DirectionOperator.data.positionY);
+            newArrow.position.set(DirectionOperator.data.positionX, -0.1 + DirectionOperator.data.positionZ * objMain.heightAmplify, -DirectionOperator.data.positionY);
             newArrow.rotation.y = DirectionOperator.data.direction[i];
             objMain.directionGroup.add(newArrow);
-
         }
     }
 };
@@ -5322,6 +5363,7 @@ var BuildingModelObj =
                             .loadTextOnly(received_obj.objText, function (object) {
                                 var amodel = received_obj.amodel;
                                 objMain.buildingModel[amodel] = object;
+                                object.userData.modelType = received_obj.modelType;
                                 BuildingModelObj.copy(amodel, received_obj);
                             }, function () { }, function () { });
                     });
@@ -5336,8 +5378,9 @@ var BuildingModelObj =
             if (objMain.buildingGroup.getObjectByName(received_obj.modelID) == undefined) {
                 var obj = objMain.buildingModel[amodel].clone();
                 obj.name = received_obj.modelID;
-                obj.position.set(received_obj.x, received_obj.y, received_obj.z);
+                obj.position.set(received_obj.x, received_obj.y * objMain.heightAmplify, received_obj.z);
                 obj.rotation.set(0, received_obj.rotatey, 0, 'XYZ');
+                obj.userData.modelType = received_obj.modelType;
                 objMain.buildingGroup.add(obj);
                 if (objMain.state == 'LookForBuildings') {
                     objMain.mainF.lookAtPosition2();
@@ -5384,8 +5427,8 @@ var drawGoodsSelection =
         objMain.mainF.removeF.clearGroup(objMain.buildingSelectionGroup);
         for (var i = 0; i < received_obj.selections.length; i++) {
             var points = [];
-            points.push(new THREE.Vector3(received_obj.x, 0, received_obj.z));
-            points.push(new THREE.Vector3(received_obj.positions[i * 3], received_obj.positions[i * 3 + 1], received_obj.positions[i * 3 + 2]));
+            points.push(new THREE.Vector3(received_obj.x, received_obj.y * objMain.heightAmplify, received_obj.z));
+            points.push(new THREE.Vector3(received_obj.positions[i * 3], received_obj.positions[i * 3 + 1] * objMain.heightAmplify, received_obj.positions[i * 3 + 2]));
 
             var geometry = new THREE.BufferGeometry().setFromPoints(points);
             var line = new THREE.Line(geometry, drawGoodsSelection.material);

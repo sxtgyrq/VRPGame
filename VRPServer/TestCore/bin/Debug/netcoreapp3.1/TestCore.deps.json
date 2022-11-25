@@ -1370,6 +1370,16 @@
           "CommonClass.dll": {}
         }
       },
+      "ConsoleBitcoinChainApp/1.0.0": {
+        "dependencies": {
+          "BitCoin": "1.0.0",
+          "DalOfAddress": "1.0.0",
+          "TcpFunction": "1.0.0"
+        },
+        "runtime": {
+          "ConsoleBitcoinChainApp.dll": {}
+        }
+      },
       "DalOfAddress/1.0.0": {
         "dependencies": {
           "CommonClass": "1.0.0",
@@ -1392,6 +1402,7 @@
           "BitCoin": "1.0.0",
           "CityRunFunction": "1.0.0",
           "CommonClass": "1.0.0",
+          "ConsoleBitcoinChainApp": "1.0.0",
           "DalOfAddress": "1.0.0",
           "Geometry": "1.0.0",
           "LogClass": "1.0.0",
@@ -2283,6 +2294,11 @@
       "sha512": ""
     },
     "CommonClass/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ConsoleBitcoinChainApp/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

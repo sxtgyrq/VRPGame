@@ -308,6 +308,7 @@ namespace HouseManager4_0
                         }; break;
                     case "TradeSetAsReward":
                         {
+
                             CommonClass.ModelTranstraction.TradeSetAsReward tsar = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.TradeSetAsReward>(notifyJson);
                             outPut = objI.TradeSetAsRewardF(tsar);
                         }; break;
@@ -384,12 +385,30 @@ namespace HouseManager4_0
                     case "RewardApply":
                         {
                             CommonClass.ModelTranstraction.RewardApply rA = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardApply>(notifyJson);
-                            outPut = objI.RewardApplyF(rA);
+                            outPut = objI.RewardApplyF(rA, false);
                         }; break;
                     case "AwardsGivingPass":
                         {
                             CommonClass.ModelTranstraction.AwardsGivingPass aG = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.AwardsGivingPass>(notifyJson);
-                            outPut = objI.AwardsGive(aG);
+                            outPut = objI.AwardsGive(aG, true);
+                        }; break;
+                    case "GetHeightAtPosition":
+                        {
+                            CommonClass.MapEditor.GetHeightAtPosition gh = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.GetHeightAtPosition>(notifyJson);
+                            var result = objI.GetHeightAtPositionF(gh, Program.dt);
+                            outPut = result;
+                        }; break;
+                    case "BindWordInfo":
+                        {
+                            CommonClass.ModelTranstraction.BindWordInfo bwi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.BindWordInfo>(notifyJson);
+                            var result = objI.BindWordInfoF(bwi, Program.dt);
+                            outPut = result;
+                        }; break;
+                    case "LookForBindInfo":
+                        {
+                            CommonClass.ModelTranstraction.LookForBindInfo lfbi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.LookForBindInfo>(notifyJson);
+                            var result = objI.LookForBindInfoF(lfbi, Program.dt);
+                            outPut = result;
                         }; break;
                 }
             }

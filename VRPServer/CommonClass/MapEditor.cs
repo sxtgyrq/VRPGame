@@ -139,15 +139,15 @@ namespace CommonClass
             public string nz { get; set; }
         }
         public class SetBackgroundScene_BLL : SetBackgroundScene
-        { 
+        {
             public string firstRoadcode { get; set; }
             public int firstRoadorder { get; set; }
             public string secondRoadcode { get; set; }
-            public int secondRoadorder { get; set; } 
+            public int secondRoadorder { get; set; }
         }
         public class SetBackgroundScene_DAL : SetBackgroundScene
         {
-            public string crossID { get; set; } 
+            public string crossID { get; set; }
         }
         public class GetBackgroundScene : Command
         {
@@ -167,7 +167,16 @@ namespace CommonClass
                 public string nz { get; set; }
             }
         }
+        public class GetHeightAtPosition : Command
+        {
+            public double MercatorX { get; set; }
+            public double MercatorY { get; set; }
 
+            public class GetHeightAtPositionResult : Command
+            {
+                public double height { get; set; }
+            }
+        }
         public class UseBackgroundScene : Command
         {
             public string firstRoadcode { get; set; }

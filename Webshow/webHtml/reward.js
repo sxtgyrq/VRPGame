@@ -229,7 +229,7 @@
        margin-top: 3.2rem; min-height: 300px; width:80%;left:10%;
        position:relative;overflow-y:scroll;max-height:calc(100% - 6.2rem);">
                 <div style="text-align:center;"><span id="rewardTimeTitle"></span></div>
-
+                <div style="text-align:center;"><span id="rewardTimeMsgToNotify"></span></div>
                 <div style="text-align:center;margin-top:2em;">
                     <button id="useLevelToApplyRewardBtn">申请</button>
                 </div>
@@ -496,6 +496,15 @@
             list: reward.msgsToTransferSshares
         };
         saveTemplateAsFile('msgsNeedToSign' + document.getElementById('rewardMsgNeedToSign').innerText + '.json', obj);
+    },
+    notifyMsg(msg) {
+        if (document.getElementById('rewardTimeMsgToNotify') == null) {
+
+        }
+        else {
+            document.getElementById('rewardTimeMsgToNotify').innerText = msg;
+            document.getElementById('rewardTimeMsgToNotify').style.color = 'green';
+        }
     }
 }
 

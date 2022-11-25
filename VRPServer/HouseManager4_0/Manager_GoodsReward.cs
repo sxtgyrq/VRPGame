@@ -13,6 +13,8 @@ namespace HouseManager4_0
 
         internal void ShowConnectionModels(RoleInGame player, int target, ref List<string> notifyMsg)
         {
+            //if (player.canGetReward)
+
             var models = Program.dt.models;
             //var fp = Program.dt.GetFpByIndex(target);
             Dictionary<string, double> minLength = new Dictionary<string, double>();
@@ -32,18 +34,29 @@ namespace HouseManager4_0
             {
                 var fp = Program.dt.GetFpByIndex(target);
                 List<Data.detailmodel> modelsNeedToShow = new List<Data.detailmodel>();
+                List<Data.detailmodel> modelsNeedToSelect = new List<Data.detailmodel>();
                 {
                     foreach (var model in models)
                     {
                         var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
                         // model.
                         if (length < minLength[model.modelID])
+                        {
                             modelsNeedToShow.Add(model);
+                            if (Program.dt.material[model.amodel].modelType == "building")
+                            {
+                                modelsNeedToSelect.Add(model);
+                            }
+                        }
                     }
                 }
                 Program.rm.modelM.setModels(player, modelsNeedToShow, ref notifyMsg);
-                Program.rm.goodsM.drawSelect(player, fp, modelsNeedToShow, ref notifyMsg);
+                if (player.canGetReward)
+                    Program.rm.goodsM.drawSelect(player, fp, modelsNeedToShow, ref notifyMsg);
+                else
+                    Program.rm.goodsM.drawSelect(player, fp, new List<Data.detailmodel>(), ref notifyMsg);
             }
+
         }
 
         private void drawSelect(RoleInGame role, Model.FastonPosition fp, List<Data.detailmodel> modelsNeedToShow, ref List<string> notifyMsg)
@@ -64,14 +77,17 @@ namespace HouseManager4_0
             Dictionary<string, double> minLength = new Dictionary<string, double>();
             foreach (var model in models)
             {
-                minLength.Add(model.modelID, double.MaxValue);
-                foreach (var fpIndex in that._collectPosition)
+                if (Program.dt.material[model.amodel].modelType.Trim() == "building")
                 {
-                    var fp = Program.dt.GetFpByIndex(fpIndex.Value);
-                    var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
-                    if (length < minLength[model.modelID])
+                    minLength.Add(model.modelID, double.MaxValue);
+                    foreach (var fpIndex in that._collectPosition)
                     {
-                        minLength[model.modelID] = length;
+                        var fp = Program.dt.GetFpByIndex(fpIndex.Value);
+                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
+                        if (length < minLength[model.modelID])
+                        {
+                            minLength[model.modelID] = length;
+                        }
                     }
                 }
             }
@@ -80,10 +96,14 @@ namespace HouseManager4_0
                 {
                     foreach (var model in models)
                     {
-                        var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
-                        // model.
-                        if (length < minLength[model.modelID])
-                            modelsNeedToShow.Add(model);
+                        if (Program.dt.material[model.amodel].modelType.Trim() == "building")
+                        {
+                            var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
+                            // model.
+                            if (length < minLength[model.modelID])
+                                //if(  model.amodel)
+                                modelsNeedToShow.Add(model);
+                        }
                     }
                 }
             }

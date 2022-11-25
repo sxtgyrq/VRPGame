@@ -24,7 +24,7 @@ namespace HouseManager4_0.RoomMainF
             notifyMsg.Add(json);
         }
 
-        public void DrawObj3DModelF(Player player, string modelID, double x, double y, double z, string amodel, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg)
+        public void DrawObj3DModelF(Player player, string modelID, double x, double y, double z, string amodel, string modelType, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg)
         {
             ModelDataShow srpd = new ModelDataShow()
             {
@@ -32,6 +32,7 @@ namespace HouseManager4_0.RoomMainF
                 WebSocketID = player.WebSocketID,
                 modelID = modelID,
                 amodel = amodel,
+                modelType = modelType,
                 existed = existed,
                 imageBase64 = imageBase64,
                 objText = objText,

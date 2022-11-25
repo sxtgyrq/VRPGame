@@ -29,6 +29,11 @@ namespace WsOfWebClient.MapEditor
         {
             public string name { get; set; }
         }
+        class LookForHeight : CommonClass.Command
+        {
+            public double MercatorX { get; set; }
+            public double MercatorY { get; set; }
+        }
         class UseModelObj : CommonClass.Command
         {
             public string name { get; set; }
@@ -263,7 +268,7 @@ namespace WsOfWebClient.MapEditor
         private static async Task SetView(Position firstRoad, WebSocket webSocket)
         {
             double MacatuoX, MacatuoY, MacatuoZ;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(firstRoad.longitude, firstRoad.latitude,firstRoad.height, out MacatuoX, out MacatuoY,out MacatuoZ);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(firstRoad.longitude, firstRoad.latitude, firstRoad.height, out MacatuoX, out MacatuoY, out MacatuoZ);
             CommonClass.ViewSearch sn = new CommonClass.ViewSearch()
             {
                 c = "ViewSearch",

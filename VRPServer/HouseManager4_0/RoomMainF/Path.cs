@@ -1416,7 +1416,8 @@ namespace HouseManager4_0.RoomMainF
                 WebSocketID = player.WebSocketID,
                 direction = direction.ToArray(),
                 positionX = positionX,
-                positionY = positionY
+                positionY = positionY,
+                positionZ = positionZ
             };
             var url = player.FromUrl;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);

@@ -381,6 +381,7 @@ namespace HouseManager4_0
             lock (that.PlayerLock)
             {
                 var player = that._Players[pa.key];
+                player.canGetReward = true;
                 var car = that._Players[pa.key].getCar();
                 if (car.state == CarState.working)
                 {
@@ -451,6 +452,7 @@ namespace HouseManager4_0
             //在这个方法里，会安排NPC进行下一步工作。
             car.setState(role, ref notifyMsg, CarState.waitOnRoad);
             that._Players[pa.key].returningOjb = pa.returningOjb;
+            that._Players[pa.key].canGetReward = true;
 
             if (role.playerType == RoleInGame.PlayerType.player)
             {

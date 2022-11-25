@@ -79,6 +79,7 @@ namespace CommonClass
         public double x { get; set; }
 
         public double z { get; set; }
+        public double y { get; set; }
         public string[] selections { get; set; }
         public double[] positions { get; set; }
     }
@@ -234,6 +235,7 @@ namespace CommonClass
         public string imageBase64 { get; set; }
         public string objText { get; set; }
         public string mtlText { get; set; }
+        public string modelType { get; set; }
     }
 
     public class SupportNotify : CommandNotify
@@ -410,6 +412,7 @@ namespace CommonClass
         public double[] direction { get; set; }
         public double positionX { get; set; }
         public double positionY { get; set; }
+        public double positionZ { get; set; }
     }
     public class BradCastBackground : CommandNotify
     {
@@ -769,5 +772,5 @@ namespace CommonClass
         public int race { get; set; }
     }
 
-   
+
 }

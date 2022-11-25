@@ -481,6 +481,9 @@ namespace WsOfWebClient.MapEditor
                     }
                 }
             }
+
+
+
             internal void NextUser(string address)
             {
                 if (this.addModel)
@@ -685,7 +688,25 @@ namespace WsOfWebClient.MapEditor
                 }
 
             }
+            internal async Task GetHeight(WebSocket webSocket, LookForHeight lfh, Random rm)
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.GetHeightAtPosition()
+                {
+                    c = "GetHeightAtPosition",
+                    MercatorX = lfh.MercatorX,
+                    MercatorY = lfh.MercatorY,
+                });
+                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
+                if (string.IsNullOrEmpty(json)) { }
+                else
+                {
+                    var sendData = Encoding.UTF8.GetBytes(json);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+            }
             internal async Task DownloadModel(WebSocket webSocket, GetModelDetail gmd, Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);

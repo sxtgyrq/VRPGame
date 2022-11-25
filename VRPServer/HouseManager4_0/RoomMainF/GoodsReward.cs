@@ -29,6 +29,7 @@ namespace HouseManager4_0.RoomMainF
                 WebSocketID = player.WebSocketID,
                 x = x,
                 z = -y,
+                y = z,
                 selections = selections.ToArray(),
                 positions = positions.ToArray()
             };

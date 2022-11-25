@@ -761,6 +761,11 @@ namespace HouseManager4_0
         // fireMagicChanged
 
         public Dictionary<int, int> buildingReward { get; set; }
+
+        /// <summary>
+        /// 玩家是否可以祈福！
+        /// </summary>
+        public bool canGetReward { get; internal set; }
     }
     public class Player : RoleInGame, interfaceTag.HasContactInfo
     {
@@ -889,7 +894,7 @@ namespace HouseManager4_0
         public Dictionary<string, bool> modelHasShowed { get; set; }
         //public Dictionary<string, bool> aModelHasShowed { get; set; }
 
-        public delegate void DrawModel(Player player, string modelID, double x, double y, double z, string amodel, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg);
+        public delegate void DrawModel(Player player, string modelID, double x, double y, double z, string amodel, string modelType, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg);
         public DrawModel DrawObj3DModelF { get; set; }
         public string BTCAddress = "";
 
