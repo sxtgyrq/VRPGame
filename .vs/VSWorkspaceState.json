@@ -1,9 +1,11 @@
 {
   "ExpandedNodes": [
     "",
+    "\\VRPServer",
+    "\\VRPServer\\Server",
     "\\Webshow",
     "\\Webshow\\WebApplication1"
   ],
-  "SelectedNode": "\\Webshow\\WebApplication1\\WebApplication1.sln",
+  "SelectedNode": "\\VRPServer\\BitCoinTrasfer",
   "PreviewInSolutionExplorer": false
 }
