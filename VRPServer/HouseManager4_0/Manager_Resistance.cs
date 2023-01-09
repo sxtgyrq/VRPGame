@@ -1,6 +1,7 @@
 ﻿using CommonClass;
 using HouseManager4_0.RoomMainF;
 using System;
+using System.Threading.Tasks;
 
 namespace HouseManager4_0
 {
@@ -73,11 +74,13 @@ namespace HouseManager4_0
                                         Volume = role.getCar().ability.Volume,
                                         Speed = role.getCar().ability.Speed,
                                         OnLineStr = "在线",
-                                        KeyLookfor = r.KeyLookfor
+                                        KeyLookfor = r.KeyLookfor,
+
+                                        // ss=role.confuseRecord.
                                     };
                                     var url = player.FromUrl;
                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
-                                    this.sendMsg(url, sendMsg);
+                                    this.sendSingleMsg(url, sendMsg);
                                 }
                                 else
                                 {
@@ -153,11 +156,16 @@ namespace HouseManager4_0
                                             Volume = role.getCar().ability.Volume,
                                             Speed = role.getCar().ability.Speed,
                                             OnLineStr = OnLineStr,
-                                            KeyLookfor = r.KeyLookfor
+                                            KeyLookfor = r.KeyLookfor,
+                                            //SpeedValue = role.improvementRecord.speedValue,
+                                            //DefenceValue = role.improvementRecord.defenceValue,
+                                            //AttackValue = role.improvementRecord.attackValue,
+                                            //LoseValue = role.confuseRecord.GetLoseValue(),
+                                            //ConfuseValue = role.confuseRecord.GetConfuseValue()
                                         };
                                         var url = player.FromUrl;
                                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
-                                        this.sendMsg(url, sendMsg);
+                                        this.sendSingleMsg(url, sendMsg);
 
                                     }
                                 }
@@ -187,26 +195,32 @@ namespace HouseManager4_0
                                             defensiveOfPhysics = 0,
                                             recruit = 100,
                                             AttackImprove = 0,
-                                            DefenseImprove = 0,
-                                            SpeedImprove = 0,
+                                            DefenseImproveProbability = 0,
+                                            SpeedImproveProbability = 0,
                                             ignoreAmbush = 0,
                                             ignoreLose = 0,
                                             ignoreConfuse = 0,
-                                            ignoreElectic = 0,
-                                            ignoreFire = 0,
-                                            ignoreOfWater = 0,
                                             ignorePhysics = 0,
-                                            magicViolent = 0,
                                             c = "ResistanceDisplay2",
                                             KeyLookfor = r.KeyLookfor,
                                             controlImprove = 0,
                                             WebSocketID = player.WebSocketID,
                                             buildingReward = role.buildingReward,
-                                            race = 0
+                                            race = 0,
+                                            SpeedValue = role.improvementRecord.speedValue,
+                                            DefenceValue = role.improvementRecord.defenceValue,
+                                            AttackValue = role.improvementRecord.attackValue,
+                                            LoseValue = role.confuseRecord.GetLoseValue(),
+                                            ConfuseValue = role.confuseRecord.GetConfuseValue(),
+                                            LostPropertyByDefendMagic = Engine_MagicEngine.LostPropertyByDefendMagic,
+                                            ConfusePropertyByDefendMagic = Engine_MagicEngine.ConfusePropertyByDefendMagic,
+                                            AmbushPropertyByDefendMagic = Engine_MagicEngine.AmbushPropertyByDefendMagic,
+                                            DefenceAttackMagicAdd = Engine_MagicEngine.DefenceAttackMagicAdd,
+                                            DefencePhysicsAdd = Engine_MagicEngine.DefencePhysicsAdd
                                         };
                                         var url = player.FromUrl;
                                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
-                                        this.sendMsg(url, sendMsg);
+                                        this.sendSingleMsg(url, sendMsg);
                                         return;
                                     }
                                     else
@@ -223,29 +237,42 @@ namespace HouseManager4_0
                                                         defensiveOfElectic = driver.defensiveOfElectic,
                                                         defensiveOfFire = driver.defensiveOfFire,
                                                         defensiveOfWater = driver.defensiveOfWater,
-                                                        defensiveOfPhysics = driver.defensiveOfWater,
-                                                        recruit = that.driverM.GetRecruit(role.buildingReward[0]),
-                                                        AttackImprove = that.magicE.GetAttackImprove(role),
-                                                        DefenseImprove = that.magicE.GetDefenseImprove(role),
-                                                        SpeedImprove = that.magicE.GetSpeedImprove(role),
+                                                        defensiveOfPhysics = driver.defensiveOfPhysics,
+                                                        recruit = Manager_Driver.GetRecruit(role),
+                                                        AttackImproveProbability = Engine_MagicEngine.GetAttackImproveProbability(role),
+                                                        AttackImproveValue = Engine_MagicEngine.GetAttackImproveValue(role),
+                                                        DefenseImproveProbability = Engine_MagicEngine.GetDefenseImproveProbability(role),
+                                                        DefenseImproveValue = Engine_MagicEngine.GetDefenseImproveValue(role),
+                                                        SpeedImproveProbability = Engine_MagicEngine.GetSpeedImproveProbability(role),
+                                                        SpeedImproveValue = Engine_MagicEngine.GetSpeedImproveValue(role),
                                                         ignoreAmbush = 0,
                                                         ignoreLose = 0,
                                                         ignoreConfuse = 0,
-                                                        ignoreElectic = 0,
-                                                        ignoreFire = 0,
-                                                        ignoreOfWater = 0,
-                                                        ignorePhysics = that.magicE.GetIgnorePhysics(role),
-                                                        magicViolent = 0,
+                                                        ignorePhysics = Engine_DebtEngine.attackTool.GetIgnorePhysicsProbability(role),
                                                         c = "ResistanceDisplay2",
                                                         KeyLookfor = r.KeyLookfor,
                                                         WebSocketID = player.WebSocketID,
                                                         controlImprove = 0,
                                                         buildingReward = role.buildingReward,
-                                                        race = 1
+                                                        race = 1,
+                                                        SpeedValue = role.improvementRecord.speedValue,
+                                                        DefenceValue = role.improvementRecord.defenceValue,
+                                                        AttackValue = role.improvementRecord.attackValue,
+                                                        LoseValue = role.confuseRecord.GetLoseValue(),
+                                                        ConfuseValue = role.confuseRecord.GetConfuseValue(),
+                                                        ignorePhysicsValue = Engine_DebtEngine.attackTool.GetIgnorePhysicsValue(role),
+                                                        //IgnoreMagicValue = 0,
+                                                        //   IgnoreControlValue = Manager_Model.IgnoreControl,
+                                                        LostPropertyByDefendMagic = Engine_MagicEngine.LostPropertyByDefendMagic,
+                                                        ConfusePropertyByDefendMagic = Engine_MagicEngine.ConfusePropertyByDefendMagic,
+                                                        AmbushPropertyByDefendMagic = Engine_MagicEngine.AmbushPropertyByDefendMagic,
+                                                        DefenceAttackMagicAdd = Engine_MagicEngine.DefenceAttackMagicAdd,
+                                                        DefencePhysicsAdd = Engine_MagicEngine.DefencePhysicsAdd
                                                     };
+                                                    //ignorePhysics
                                                     var url = player.FromUrl;
                                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
-                                                    this.sendMsg(url, sendMsg);
+                                                    this.sendSingleMsg(url, sendMsg);
                                                     return;
                                                 };
                                             case CommonClass.driversource.Race.people:
@@ -258,29 +285,38 @@ namespace HouseManager4_0
                                                         defensiveOfElectic = driver.defensiveOfElectic,
                                                         defensiveOfFire = driver.defensiveOfFire,
                                                         defensiveOfWater = driver.defensiveOfWater,
-                                                        defensiveOfPhysics = driver.defensiveOfWater,
-                                                        recruit = that.driverM.GetRecruit(role.buildingReward[0]),
+                                                        defensiveOfPhysics = driver.defensiveOfPhysics,
+                                                        recruit = Manager_Driver.GetRecruit(role),
                                                         AttackImprove = 0,
-                                                        DefenseImprove = 0,
-                                                        SpeedImprove = 0,
-                                                        ignoreAmbush = that.magicE.GetAmbushImprove(role),
-                                                        ignoreLose = that.magicE.GetLoseIgnore(role),
-                                                        ignoreConfuse = that.magicE.GetConfuseIgnore(role),
-                                                        controlImprove = that.magicE.GetControlImprove(role),
-                                                        ignoreElectic = 0,
-                                                        ignoreFire = 0,
-                                                        ignoreOfWater = 0,
+                                                        DefenseImproveProbability = 0,
+                                                        SpeedImproveProbability = 0,
+                                                        ignoreAmbush = Engine_MagicEngine.GetAmbushIgnore(role),
+                                                        ignoreLose = Engine_MagicEngine.GetLoseIgnore(role),
+                                                        ignoreConfuse = Engine_MagicEngine.GetConfuseIgnore(role),
+                                                        controlImprove = Engine_MagicEngine.GetMagicDoubleProbability(role),
                                                         ignorePhysics = 0,
-                                                        magicViolent = 0,
                                                         c = "ResistanceDisplay2",
                                                         KeyLookfor = r.KeyLookfor,
                                                         buildingReward = role.buildingReward,
                                                         WebSocketID = player.WebSocketID,
-                                                        race = 2
+                                                        race = 2,
+                                                        SpeedValue = role.improvementRecord.speedValue,
+                                                        DefenceValue = role.improvementRecord.defenceValue,
+                                                        AttackValue = role.improvementRecord.attackValue,
+                                                        LoseValue = role.confuseRecord.GetLoseValue(),
+                                                        ConfuseValue = role.confuseRecord.GetConfuseValue(),
+                                                        ignorePhysicsValue = Engine_DebtEngine.attackTool.GetIgnorePhysicsValue(role),
+                                                        //IgnoreMagicValue = 0,
+                                                        //IgnoreControlValue = Manager_Model.IgnoreControl,
+                                                        LostPropertyByDefendMagic = Engine_MagicEngine.LostPropertyByDefendMagic,
+                                                        ConfusePropertyByDefendMagic = Engine_MagicEngine.ConfusePropertyByDefendMagic,
+                                                        AmbushPropertyByDefendMagic = Engine_MagicEngine.AmbushPropertyByDefendMagic,
+                                                        DefenceAttackMagicAdd = Engine_MagicEngine.DefenceAttackMagicAdd,
+                                                        DefencePhysicsAdd = Engine_MagicEngine.DefencePhysicsAdd
                                                     };
                                                     var url = player.FromUrl;
                                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
-                                                    this.sendMsg(url, sendMsg);
+                                                    this.sendSingleMsg(url, sendMsg);
                                                     return;
                                                 };
                                             case CommonClass.driversource.Race.immortal:
@@ -293,29 +329,42 @@ namespace HouseManager4_0
                                                         defensiveOfElectic = driver.defensiveOfElectic,
                                                         defensiveOfFire = driver.defensiveOfFire,
                                                         defensiveOfWater = driver.defensiveOfWater,
-                                                        defensiveOfPhysics = driver.defensiveOfWater,
-                                                        recruit = that.driverM.GetRecruit(role.buildingReward[0]),
+                                                        defensiveOfPhysics = driver.defensiveOfPhysics,
+                                                        recruit = Manager_Driver.GetRecruit(role),
                                                         AttackImprove = 0,
-                                                        DefenseImprove = 0,
-                                                        SpeedImprove = 0,
+                                                        DefenseImproveProbability = 0,
+                                                        SpeedImproveProbability = 0,
                                                         ignoreAmbush = 0,
                                                         ignoreLose = 0,
                                                         ignoreConfuse = 0,
                                                         controlImprove = 0,
-                                                        ignoreElectic = that.magicE.GetIgnoreElectic(role),
-                                                        ignoreFire = that.magicE.GetIgnoreFire(role),
-                                                        ignoreOfWater = that.magicE.GetIgnoreWater(role),
                                                         ignorePhysics = 0,
-                                                        magicViolent = that.magicE.GetMagicViolent(role),
+                                                        magicViolentValue = Engine_MagicEngine.GetAttackMagicImproveValue(role),
+                                                        magicViolentProbability = Engine_MagicEngine.GetAttackImproveProbability(role),
                                                         c = "ResistanceDisplay2",
                                                         KeyLookfor = r.KeyLookfor,
                                                         buildingReward = role.buildingReward,
                                                         WebSocketID = player.WebSocketID,
-                                                        race = 3
+                                                        race = 3,
+                                                        SpeedValue = role.improvementRecord.speedValue,
+                                                        DefenceValue = role.improvementRecord.defenceValue,
+                                                        AttackValue = role.improvementRecord.attackValue,
+                                                        LoseValue = role.confuseRecord.GetLoseValue(),
+                                                        ConfuseValue = role.confuseRecord.GetConfuseValue(),
+                                                        ignorePhysicsValue = Engine_DebtEngine.attackTool.GetIgnorePhysicsValue(role),
+                                                        IgnoreElectricMagicValue = Engine_MagicEngine.attackMagicTool.GetIgnoreElectricMagicValue(role),
+                                                        IgnoreWaterMagicValue = Engine_MagicEngine.attackMagicTool.GetIgnoreWaterMagicValue(role),
+                                                        IgnoreFireMagicValue = Engine_MagicEngine.attackMagicTool.GetIgnoreFireMagicValue(role),
+                                                        // IgnoreControlValue = Manager_Model.IgnoreControl,
+                                                        LostPropertyByDefendMagic = Engine_MagicEngine.LostPropertyByDefendMagic,
+                                                        ConfusePropertyByDefendMagic = Engine_MagicEngine.ConfusePropertyByDefendMagic,
+                                                        AmbushPropertyByDefendMagic = Engine_MagicEngine.AmbushPropertyByDefendMagic,
+                                                        DefenceAttackMagicAdd = Engine_MagicEngine.DefenceAttackMagicAdd,
+                                                        DefencePhysicsAdd = Engine_MagicEngine.DefencePhysicsAdd
                                                     };
                                                     var url = player.FromUrl;
                                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
-                                                    this.sendMsg(url, sendMsg);
+                                                    this.sendSingleMsg(url, sendMsg);
                                                     return;
                                                 };
                                         }
@@ -347,7 +396,7 @@ namespace HouseManager4_0
                 };
                 var url = player.FromUrl;
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                var r = this.sendMsg(url, json);
+                var r = this.sendSingleMsg(url, json);
                 if (r == "on")
                 {
                     return true;

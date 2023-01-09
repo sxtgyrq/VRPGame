@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static HouseManager4_0.Engine;
 
 namespace HouseManager4_0.RoomMainF
 {
@@ -379,6 +380,69 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
+        internal void DrawMagicDoubleLine(double[] lineParameter, ref List<string> notifyMsgs)
+        {
+            //List<string> notifyMsgs = new List<string>();
+            foreach (var role in this._Players)
+            {
+                if (role.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    var player = (Player)role.Value;
+                    var url = player.FromUrl;
+                    ElectricMarkNotify ln = new ElectricMarkNotify()
+                    {
+                        c = "ElectricMarkNotify",
+                        WebSocketID = player.WebSocketID,
+                        lineParameter = lineParameter
+                    };
+                    var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ln);
+                    notifyMsgs.Add(url);
+                    notifyMsgs.Add(sendMsg);
+                }
+            }
+        }
 
+
+        internal void DrawMagicPolyLine(double[] lineParameter, ref List<string> notifyMsgs)
+        {
+            foreach (var role in this._Players)
+            {
+                if (role.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    var player = (Player)role.Value;
+                    var url = player.FromUrl;
+                    WaterMarkNotify ln = new WaterMarkNotify()
+                    {
+                        c = "WaterMarkNotify",
+                        WebSocketID = player.WebSocketID,
+                        lineParameter = lineParameter
+                    };
+                    var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ln);
+                    notifyMsgs.Add(url);
+                    notifyMsgs.Add(sendMsg);
+                }
+            }
+        }
+
+        internal void DrawMagicCircle(double[] lineParameter, ref List<string> notifyMsgs)
+        {
+            foreach (var role in this._Players)
+            {
+                if (role.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    var player = (Player)role.Value;
+                    var url = player.FromUrl;
+                    FireMarkNotify ln = new FireMarkNotify()
+                    {
+                        c = "FireMarkNotify",
+                        WebSocketID = player.WebSocketID,
+                        lineParameter = lineParameter
+                    };
+                    var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ln);
+                    notifyMsgs.Add(url);
+                    notifyMsgs.Add(sendMsg);
+                }
+            }
+        }
     }
 }

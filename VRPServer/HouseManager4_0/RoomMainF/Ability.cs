@@ -71,7 +71,7 @@ namespace HouseManager4_0.RoomMainF
 
             else
             {
-
+                sa.count = 1;
                 List<string> notifyMsg = new List<string>();
                 lock (this.PlayerLock)
                 {
@@ -130,7 +130,10 @@ namespace HouseManager4_0.RoomMainF
 
                                                 player.PromoteDiamondCount[sa.pType] -= sa.count;
                                                 if (player.playerType == RoleInGame.PlayerType.player)
+                                                {
                                                     SendPromoteCountOfPlayer(sa.pType, player.PromoteDiamondCount[sa.pType], (Player)player, ref notifyMsg);
+                                                    this.taskM.UseDiamondSuccess((Player)player);
+                                                }
                                             }
                                         }
                                     }; break;
@@ -143,14 +146,7 @@ namespace HouseManager4_0.RoomMainF
                     }
 
                 }
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    //Consol.WriteLine($"url:{url}");
-
-                    Startup.sendMsg(url, sendMsg);
-                }
+                Startup.sendSeveralMsgs(notifyMsg); 
                 return "ok";
             }
         }
@@ -193,13 +189,7 @@ namespace HouseManager4_0.RoomMainF
                 AbilityChanged2_0(player, car, ref notifyMsg, "mile");
                 AbilityChanged2_0(player, car, ref notifyMsg, "speed");
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                // Console.WriteLine($"url:{url}");
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg); 
         }
     }
 }

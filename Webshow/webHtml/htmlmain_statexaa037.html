@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <style type="text/css">
+        .carRaceLine {
+        }
+
+            .carRaceLine.carLine1MainPage {
+                border-left: 6px solid #ffd800eb;
+                height: 100%;
+                position: absolute;
+                left: 40px;
+                top: 0px;
+                width: 0px;
+            }
+
+            .carRaceLine.carLine2MainPage {
+                border-top: 6px solid #ffd800eb;
+                height: 0px;
+                position: absolute;
+                left: 0;
+                top: 40px;
+                width: 100%;
+            }
+
+            .carRaceLine.carLine3MainPage {
+                border-right: 6px solid #ffd800eb;
+                height: 100%;
+                position: absolute;
+                left: calc(100% - 46px);
+                top: 0px;
+                width: 0px;
+            }
+
+        .animateCarToTop {
+            position: absolute;
+            left: 37px;
+            top: -40px;
+            width: 12px;
+            height: 20px;
+            background-color: #ff0000;
+            animation: moveToTop 2s linear 0s forwards;
+            /*  animation-duration: 0s;*/
+        }
+
+            .animateCarToTop.segmentdelay1 {
+                animation-delay: 0;
+            }
+
+            .animateCarToTop.segmentdelay2 {
+                animation-delay: 2s;
+            }
+
+            .animateCarToTop.segmentdelay3 {
+            }
+
+        @keyframes moveToTop {
+            from {
+                top: calc(100% - 0px);
+            }
+
+            20% {
+                top: calc(80% - 4px);
+            }
+
+            40% {
+                top: calc(60% - 8px);
+            }
+
+            60% {
+                top: calc(40% - 12px);
+            }
+
+            80% {
+                top: calc(20% - 16px);
+            }
+
+            to {
+                top: calc(0% - 20px);
+            }
+        }
+
+        .animateCarToCorner {
+            position: absolute;
+            /* left: 37px;*/
+            top: -40px;
+            width: 12px;
+            height: 20px;
+            background-color: #ff0000;
+            animation: moveThenTurnThenMoveThenTurn 8s linear 0s forwards;
+            animation-delay: 4s;
+        }
+
+        @keyframes moveThenTurnThenMoveThenTurn {
+            from {
+                top: calc(100% - 0px);
+                transform: rotateY(0deg);
+                left: 37px;
+            }
+
+            25% {
+                top: calc(0% + 33px);
+                transform-origin: 50% 50%;
+                transform: rotate(0deg);
+                left: 37px;
+            }
+
+            30% {
+                top: calc(0% + 33px);
+                transform-origin: 50% 50%;
+                transform: rotate(90deg);
+                left: 37px;
+            }
+
+            70% {
+                top: calc(0% + 33px);
+                transform-origin: 50% 50%;
+                transform: rotate(90deg);
+                left: calc(100% - 49px);
+            }
+
+            75% {
+                top: calc(0% + 33px);
+                transform-origin: 50% 50%;
+                transform: rotate(180deg);
+                left: calc(100% - 49px);
+            }
+
+            to {
+                top: calc(100% - 0px);
+                transform-origin: 50% 50%;
+                transform: rotate(180deg);
+                left: calc(100% - 49px);
+            }
+        }
+
+        .animateCarToBottom {
+            position: absolute;
+            left: calc(100% - 49px);
+            top: -20px;
+            width: 12px;
+            height: 20px;
+            background-color: #ff0000;
+            animation: moveToTop 2s linear 0s forwards;
+            animation-direction: reverse;
+            /*  animation-duration: 0s;*/
+        }
+
+            .animateCarToBottom.segmentdelay3 {
+                animation-delay: 12s;
+            }
+
+            .animateCarToBottom.segmentdelay4 {
+                animation-delay: 14s;
+            }
+
+        .animateTextBottom {
+            width: calc(100% - 22px);
+            height: 1em;
+            left: 10px;
+            top: calc((100% - 20px - 1em)/3 * 3);
+            position: absolute;
+            text-align: right;
+            color: green;
+            animation: bottomChangeColor 2s linear 0s forwards;
+            animation-delay: 16s;
+        }
+
+        @keyframes bottomChangeColor {
+            from {
+                color: green;
+            }
+
+            to {
+                color: red;
+            }
+        }
+        /*  .animateCarToBottom.segmentdelay1 {
+                animation-delay: 0;
+            }
+
+            .animateCarToBottom.segmentdelay2 {
+                animation-delay: 2s;
+            }*/
+        .animateOfBlockBtn {
+            animation: changeBtnColorAndBG 2s linear 0s forwards;
+            text-shadow: 0 0.1em 0.1em red;
+            color: wheat;
+            background: wheat;
+            /*  background:#0094ff*/
+        }
+
+            .animateOfBlockBtn.delay1 {
+                animation-delay: 2s;
+            }
+
+            .animateOfBlockBtn.delay2 {
+                animation-delay: 4s;
+            }
+
+            .animateOfBlockBtn.delay3 {
+                animation-delay: 12s;
+            }
+
+            .animateOfBlockBtn.delay4 {
+                animation-delay: 14s;
+            }
+
+            .animateOfBlockBtn.delay5 {
+                animation-delay: 16s;
+            }
+
+        @keyframes changeBtnColorAndBG {
+
+            from {
+                background: wheat;
+                background-size: 20% 20%;
+                background-image: linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+            }
+
+            to {
+                background: #000022;
+                background-size: 50% 50%;
+                /* background-image: -webkit-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -webkit-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -moz-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -moz-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -moz-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -moz-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -ms-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -ms-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -ms-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -ms-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -o-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -o-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -o-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -o-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);*/
+                background-image: linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+            }
+            /*from {
+                text-shadow: none;
+                color: black;
+                background-color: white;*/
+            /*    background-size: 50px 50px;*/
+            /* font-size: 1em;*/
+            /*}
+
+            to {
+                text-shadow: 0 0.1em 0.1em red;
+                color: wheat;*/
+            /*   font-size: 1.5em;*/
+            /*   background-color: #026873;
+                background-image: -webkit-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -webkit-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -webkit-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -moz-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -moz-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -moz-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -moz-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -ms-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -ms-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -ms-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -ms-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: -o-linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), -o-linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), -o-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), -o-linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);
+                background-image: linear-gradient(0, rgba(255, 255, 255, .07) 50%, transparent 50%), linear-gradient(0, rgba(255, 255, 255, .13) 50%, transparent 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .17) 50%), linear-gradient(0, transparent 50%, rgba(255, 255, 255, .19) 50%);*/
+            /*background-image: linear-gradient(45deg, transparent 20%, black 25%, transparent 25%), linear-gradient(-45deg, transparent 20%, black 25%, transparent 25%), linear-gradient(-45deg, transparent 75%, black 80%, transparent 0), radial-gradient(gray 2px, transparent 0);
+                background-size: 30px 30px, 30px 30px;
+            }*/
+        }
+    </style>
+</head>
+<body style="width:100%;height:100%;overflow:hidden;">
+    <div id="rootContainer" style="width: 100%; height: 100%; overflow: hidden;position:absolute;left:0px;top:0px;">
+        <div style="overflow-y: scroll; width: 80%; height: 80%; max-width: 30em; max-height: calc(100% - 10em); margin-left: auto; margin-right: auto; margin-top: 5em; border: dotted 2px blue; border-top-left-radius: 1em; color: greenyellow; background-color: #722732; opacity: 0.85; background-size: 74px 74px; background-image: repeating-linear-gradient(0deg, #852732, #852732 3.7px, #722732 3.7px, #722732);z-index:9;position:relative;">
+            <div style="float:right;margin-right:3em;">
+                <button style="position: fixed;" onclick="">×</button>
+            </div>
+          
+            <div style="border-bottom: dashed 1px #edcb8b45;margin-bottom: 2em;">
+                <h1 style="font-size:x-large;">标题1</h1>
+                <b style="word-break:break-all;word-wrap:anywhere">内容11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111。</b>
+                <button onclick="">取消</button>
+            </div>
+            <div style="border-bottom:dashed 1px #edcb8b45;margin-bottom:2em;">
+                <h1 style="font-size: x-large;">标题2</h1>
+                <b style="word-break:break-all;word-wrap:anywhere">内容2222222222222222222222222222222222211111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111。</b>
+                <button onclick="">取消</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--<script src="mainf.js"></script>-->
+</body>
+
+</html>

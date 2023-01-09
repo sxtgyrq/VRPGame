@@ -24,7 +24,7 @@ namespace HouseManager4_0.RoomMainF
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(wMsg);
 
-                Startup.sendMsg(url, json);
+                Startup.sendSingleMsg(url, json);
             }
         }
     }

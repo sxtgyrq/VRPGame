@@ -9,7 +9,7 @@ namespace WsOfWebClient.MapEditor
 {
     partial class Editor
     {
-       
+
 
         static int roomIndex = 0;
         private static void DownLoad(IApplicationBuilder app)
@@ -34,7 +34,7 @@ namespace WsOfWebClient.MapEditor
                                 c = "GetAbtractModels",
                                 amID = amID
                             });
-                        var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                        var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                         //Consol.WriteLine(json);
                         var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<abtractmodelsPassData>(json);
 

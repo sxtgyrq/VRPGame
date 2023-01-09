@@ -77,48 +77,52 @@ namespace HouseManager4_0.RoomMainF
                 }
                 else
                 {
-                    success = true;
-
-                    bool hasTheSameName = false;
-                    do
+                    bool roomIsFull;
+                    int fpIndex = this.GetRandomPosition(false, gp, out roomIsFull);
+                    if (!roomIsFull)
                     {
-                        hasTheSameName = false;
-                        foreach (var item in this._Players)
+                        success = true;
+
+                        bool hasTheSameName = false;
+                        do
                         {
-                            if (item.Value.PlayerName == addItem.PlayerName)
+                            hasTheSameName = false;
+                            foreach (var item in this._Players)
                             {
-                                hasTheSameName = true;
-                                break;
+                                if (item.Value.PlayerName == addItem.PlayerName)
+                                {
+                                    hasTheSameName = true;
+                                    break;
+                                }
                             }
-                        }
-                        if (hasTheSameName)
+                            if (hasTheSameName)
+                            {
+                                addItem.PlayerName += AddSuffix[this.rm.Next(0, AddSuffix.Length)];
+                            }
+
+                        } while (hasTheSameName);
+
+                        // BaseInfomation.rm.AddPlayer
+                        var newPlayer = new Player()
                         {
-                            addItem.PlayerName += AddSuffix[this.rm.Next(0, AddSuffix.Length)];
-                        }
+                            rm = this,
+                            Key = addItem.Key,
+                            FromUrl = addItem.FromUrl,
+                            WebSocketID = addItem.WebSocketID,
+                            PlayerName = addItem.PlayerName,
 
-                    } while (hasTheSameName);
-
-                    // BaseInfomation.rm.AddPlayer
-                    var newPlayer = new Player()
-                    {
-                        rm = this,
-                        Key = addItem.Key,
-                        FromUrl = addItem.FromUrl,
-                        WebSocketID = addItem.WebSocketID,
-                        PlayerName = addItem.PlayerName,
-
-                        CreateTime = DateTime.Now,
-                        ActiveTime = DateTime.Now,
-                        StartFPIndex = -1,
-                        PromoteState = new Dictionary<string, int>()
+                            CreateTime = DateTime.Now,
+                            ActiveTime = DateTime.Now,
+                            StartFPIndex = -1,
+                            PromoteState = new Dictionary<string, int>()
                         {
                             {"mile",-1},
                             {"business",-1 },
                             {"volume",-1 },
                             {"speed",-1 }
                         },
-                        //Collect = -1,
-                        CollectPosition = new Dictionary<int, int>()
+                            //Collect = -1,
+                            CollectPosition = new Dictionary<int, int>()
                         {
                             {0,-1},
                             {1,-1},
@@ -159,64 +163,64 @@ namespace HouseManager4_0.RoomMainF
                             {36,-1},
                             {37,-1}
                         },
-                        returningOjb = commandWithTime.ReturningOjb.ojbWithoutBoss(new Node() { path = new List<Node.pathItem>() }),
-                        OpenMore = 0,
-                        PromoteDiamondCount = new Dictionary<string, int>()
+                            returningOjb = commandWithTime.ReturningOjb.ojbWithoutBoss(new Node() { path = new List<Node.pathItem>() }),
+                            OpenMore = 0,
+                            PromoteDiamondCount = new Dictionary<string, int>()
                         {
                             {"mile",0},
                             {"business",0 },
                             {"volume",0 },
                             {"speed",0 }
                         },
-                        positionInStation = this.rm.Next(0, 5),
-                        RefererAddr = addItem.RefererAddr,
-                        RefererCount = 0
-                    };
-                    this._Players.Add(addItem.Key, newPlayer);
-                    this._Players[addItem.Key].initializeCar(this, cf);
-                    this._Players[addItem.Key].initializeOthers();
-                    // this._Players[addItem.Key].SysRemovePlayerByKeyF = BaseInfomation.rm.SysRemovePlayerByKey;
-                    //System.Random rm = new System.Random(DateTime.Now.GetHashCode());
+                            positionInStation = this.rm.Next(0, 5),
+                            RefererAddr = addItem.RefererAddr,
+                            RefererCount = 0
+                        };
+                        this._Players.Add(addItem.Key, newPlayer);
+                        this._Players[addItem.Key].initializeCar(this, cf);
+                        this._Players[addItem.Key].initializeOthers();
+                        // this._Players[addItem.Key].SysRemovePlayerByKeyF = BaseInfomation.rm.SysRemovePlayerByKey;
+                        //System.Random rm = new System.Random(DateTime.Now.GetHashCode());
 
-                    int fpIndex = this.GetRandomPosition(false, gp); // this.rm.Next(0, Program.dt.GetFpCount());
+                        // this.rm.Next(0, Program.dt.GetFpCount());
 
-                    // this._FpOwner.Add(fpIndex, addItem.Key);
-                    this._Players[addItem.Key].StartFPIndex = fpIndex;
-                    //SetMoneyCanSave 在InitializeDebt 之后，MoneySet之前
-                    ((Player)this._Players[addItem.Key]).SetMoneyCanSave = this.SetMoneyCanSave;// RoomMain.SetMoneyCanSave;
-                    ((Player)this._Players[addItem.Key]).MoneyChanged = this.MoneyChanged;//  RoomMain.MoneyChanged;
-                    var notifyMsgs = new List<string>();
-                    this._Players[addItem.Key].MoneySet(500 * 100, ref notifyMsgs);
+                        // this._FpOwner.Add(fpIndex, addItem.Key);
+                        this._Players[addItem.Key].StartFPIndex = fpIndex;
+                        //SetMoneyCanSave 在InitializeDebt 之后，MoneySet之前
+                        ((Player)this._Players[addItem.Key]).SetMoneyCanSave = this.SetMoneyCanSave;// RoomMain.SetMoneyCanSave;
+                        ((Player)this._Players[addItem.Key]).MoneyChanged = this.MoneyChanged;//  RoomMain.MoneyChanged;
+                        var notifyMsgs = new List<string>();
+                        this._Players[addItem.Key].MoneySet(500 * 100, ref notifyMsgs);
 
-                    // this._Players[addItem.Key].SupportChangedF = RoomMain.SupportChanged;
+                        // this._Players[addItem.Key].SupportChangedF = RoomMain.SupportChanged;
 
-                    //  this._Players[addItem.Key].TheLargestHolderKeyChanged = this.TheLargestHolderKeyChanged;
-                    this._Players[addItem.Key].InitializeTheLargestHolder();
+                        //  this._Players[addItem.Key].TheLargestHolderKeyChanged = this.TheLargestHolderKeyChanged;
+                        this._Players[addItem.Key].InitializeTheLargestHolder();
 
-                    // this._Players[addItem.Key].Money
+                        // this._Players[addItem.Key].Money
 
-                    this._Players[addItem.Key].BustChangedF = this.BustChangedF;
-                    this._Players[addItem.Key].SetBust(false, ref notifyMsgs);
+                        this._Players[addItem.Key].BustChangedF = this.BustChangedF;
+                        this._Players[addItem.Key].SetBust(false, ref notifyMsgs);
 
-                    this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
-                    ((Player)this._Players[addItem.Key]).DrawObj3DModelF = this.DrawObj3DModelF;
+                        this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
+                        ((Player)this._Players[addItem.Key]).DrawObj3DModelF = this.DrawObj3DModelF;
 
-                    this._Players[addItem.Key].addUsedRoad(gp.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
+                        this._Players[addItem.Key].addUsedRoad(gp.GetFpByIndex(fpIndex).RoadCode, ref notifyMsgs);
 
-                    //   this._Players[addItem.Key].brokenParameterT1RecordChanged = this.brokenParameterT1RecordChanged;
-                    //  this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
-                    this._Players[addItem.Key].setType(RoleInGame.PlayerType.player);
-                    this._Players[addItem.Key].SetLevel(1, ref notifyMsgs);
-                    newPlayer.ShowLevelOfPlayerF = this.ShowLevelOfPlayerF;
-                    newPlayer.beforeBroke = this.BeforePlayerBroken;
-                    // newPlayer.driverSelected = this.driverSelected;
-                    ConfigMagic(newPlayer);
-                    ((Player)this._Players[addItem.Key]).direciton = getComplex(gp.GetFpByIndex(fpIndex));
-                    //  newPlayer.
-                    ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
-                    //((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
-                    ((Player)this._Players[addItem.Key]).backgroundData = new Dictionary<string, bool>();
-                    ((Player)this._Players[addItem.Key]).buildingReward = new Dictionary<int, int>()
+                        //   this._Players[addItem.Key].brokenParameterT1RecordChanged = this.brokenParameterT1RecordChanged;
+                        //  this._Players[addItem.Key].DrawSingleRoadF = this.DrawSingleRoadF;
+                        this._Players[addItem.Key].setType(RoleInGame.PlayerType.player);
+                        this._Players[addItem.Key].SetLevel(1, ref notifyMsgs);
+                        newPlayer.ShowLevelOfPlayerF = this.ShowLevelOfPlayerF;
+                        newPlayer.beforeBroke = this.BeforePlayerBroken;
+                        // newPlayer.driverSelected = this.driverSelected;
+                        ConfigMagic(newPlayer);
+                        ((Player)this._Players[addItem.Key]).direciton = getComplex(gp.GetFpByIndex(fpIndex));
+                        //  newPlayer.
+                        ((Player)this._Players[addItem.Key]).modelHasShowed = new Dictionary<string, bool>();
+                        //((Player)this._Players[addItem.Key]).aModelHasShowed = new Dictionary<string, bool>();
+                        ((Player)this._Players[addItem.Key]).backgroundData = new Dictionary<string, bool>();
+                        ((Player)this._Players[addItem.Key]).buildingReward = new Dictionary<int, int>()
                     {
                         {0,0},
                         {1,0},
@@ -224,11 +228,18 @@ namespace HouseManager4_0.RoomMainF
                         {3,0},
                         {4,0}
                     };
-                    ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
-                    ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null;
+                        ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
+                        ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null;
+                    }
+                    else
+                    {
+                        setPlayerOffLineBust();
+                        success = false;
+                        return "ng";
+                    }
                 }
-            }
 
+            }
             if (success)
             {
 
@@ -238,7 +249,38 @@ namespace HouseManager4_0.RoomMainF
             {
                 return "ng";
             }
+
             //  throw new NotImplementedException();
+        }
+
+        private void setPlayerOffLineBust()
+        {
+            List<string> notifyMsg = new List<string>();
+            double maxMinutes = 0;
+            Player selectedPlayer = null;
+            foreach (var item in this._Players)
+            {
+                var role = item.Value;
+                if (role.playerType == RoleInGame.PlayerType.player)
+                {
+                    var player = (Player)role;
+                    if (player.IsOnline()) { }
+                    else
+                    {
+                        var m = (DateTime.Now - player.ActiveTime).TotalMinutes;
+                        if (maxMinutes < m)
+                        {
+                            maxMinutes = m;
+                            selectedPlayer = player;
+                        }
+                    }
+                }
+            }
+            if (selectedPlayer != null)
+            {
+                selectedPlayer.SetBust(true, ref notifyMsg);
+            }
+            Startup.sendSeveralMsgs(notifyMsg);
         }
 
         private bool GetConnectionF(Player player)

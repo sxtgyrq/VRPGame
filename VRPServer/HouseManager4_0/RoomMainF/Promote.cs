@@ -303,7 +303,7 @@ namespace HouseManager4_0.RoomMainF
                         }
             if (!string.IsNullOrEmpty(url))
             {
-                Startup.sendMsg(url, sendMsg);
+                Startup.sendSingleMsg(url, sendMsg);
             }
         }
 

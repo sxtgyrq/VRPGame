@@ -11,7 +11,10 @@ namespace WsOfWebClient
     public partial class Room
     {
         public const string ImgPath = "img";
-        internal static async Task<byte[]> getImg(int index, string Md5, string fileName)
+
+
+
+        internal static byte[] getImg(int index, string Md5, string fileName)
         {
             var gfma = new CommonClass.SetCrossBG()
             {
@@ -19,7 +22,7 @@ namespace WsOfWebClient
                 Md5Key = Md5
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
-            var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
             if (string.IsNullOrEmpty(info))
             {
                 return new byte[] { };
@@ -56,7 +59,7 @@ namespace WsOfWebClient
             }
         }
 
-        
+
     }
 
 

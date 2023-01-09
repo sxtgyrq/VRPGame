@@ -1,7 +1,10 @@
-﻿using System;
+﻿using HouseManager4_0.interfaceOfHM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
+using static HouseManager4_0.Engine;
 
 namespace HouseManager4_0.RoomMainF
 {
@@ -328,21 +331,40 @@ namespace HouseManager4_0.RoomMainF
                                 {
                                     if (!roles[i].confuseRecord.IsBeingControlled())
                                     {
-                                        Engine_MagicEngine.attackMagicTool amt = new Engine_MagicEngine.attackMagicTool(roles[i].getCar().ability.driver.skill1);
-                                        // var harmValue = 0;//this.debtE.DealWithReduceWhenSimulationWithoutDefendMagic(amt, npc_Operate, car, longCollectMoney, victim, 100);
-                                        //  this.GetCollectReWard(item.Key) * 100
-                                        var harmValue = npc_Operate.confuseRecord.SimulationToMagicAttack(amt, npc_Operate, car, longCollectMoney, victim, 100);
-                                        //var harmValue = this.debtE.SimulationToMagicAttack(amt, npc_Operate, car, longCollectMoney, victim, 100);
-                                        var itemHarmValue = harmValue / distance;
-                                        if (npc_Operate.attackTag == null || npc_Operate.attackTag.HarmValue < itemHarmValue)
+                                        var immortalPartner = roles[i];
                                         {
-                                            npc_Operate.attackTag = new NPC.AttackTag()
+                                            Engine_MagicEngine.attackMagicTool amt = new Engine_MagicEngine.attackMagicTool(immortalPartner.getCar().ability.driver.skill1, immortalPartner);
+                                            // var harmValue = 0;//this.debtE.DealWithReduceWhenSimulationWithoutDefendMagic(amt, npc_Operate, car, longCollectMoney, victim, 100);
+                                            //  this.GetCollectReWard(item.Key) * 100
+                                            var harmValue = npc_Operate.confuseRecord.SimulationToMagicAttack(amt, npc_Operate, car, longCollectMoney, victim, 100);
+                                            //var harmValue = this.debtE.SimulationToMagicAttack(amt, npc_Operate, car, longCollectMoney, victim, 100);
+                                            var itemHarmValue = harmValue / distance;
+                                            if (npc_Operate.attackTag == null || npc_Operate.attackTag.HarmValue < itemHarmValue)
                                             {
-                                                aType = NPC.AttackTag.AttackType.ambush,
-                                                HarmValue = itemHarmValue,
-                                                Target = victim.Key,
-                                                fpPass = fp
-                                            };
+                                                npc_Operate.attackTag = new NPC.AttackTag()
+                                                {
+                                                    aType = NPC.AttackTag.AttackType.ambush,
+                                                    HarmValue = itemHarmValue,
+                                                    Target = victim.Key,
+                                                    fpPass = fp
+                                                };
+                                            }
+                                        }
+                                        {
+                                            Engine_MagicEngine.attackMagicTool amt = new Engine_MagicEngine.attackMagicTool(immortalPartner.getCar().ability.driver.skill2, immortalPartner);
+                                            var harmValue = npc_Operate.confuseRecord.SimulationToMagicAttack(amt, npc_Operate, car, longCollectMoney, victim, 100);
+                                            //var harmValue = this.debtE.SimulationToMagicAttack(amt, npc_Operate, car, longCollectMoney, victim, 100);
+                                            var itemHarmValue = harmValue / distance;
+                                            if (npc_Operate.attackTag == null || npc_Operate.attackTag.HarmValue < itemHarmValue)
+                                            {
+                                                npc_Operate.attackTag = new NPC.AttackTag()
+                                                {
+                                                    aType = NPC.AttackTag.AttackType.ambush,
+                                                    HarmValue = itemHarmValue,
+                                                    Target = victim.Key,
+                                                    fpPass = fp
+                                                };
+                                            }
                                         }
                                     }
                                 }
@@ -376,10 +398,10 @@ namespace HouseManager4_0.RoomMainF
                 if (CheckIsEnemy(npc_Operate, roles[i]))
                 {
 
-                    Engine_MagicEngine.attackMagicTool at = new Engine_MagicEngine.attackMagicTool(npc_Operate.getCar().ability.driver.skill1);
+                    Engine_MagicEngine.attackMagicTool at = new Engine_MagicEngine.attackMagicTool(npc_Operate.getCar().ability.driver.skill1, npc_Operate);
 
                     getItemVolumeAttack(npc_Operate, roles[i], at, gp);
-                    Engine_MagicEngine.attackMagicTool at2 = new Engine_MagicEngine.attackMagicTool(npc_Operate.getCar().ability.driver.skill2);
+                    Engine_MagicEngine.attackMagicTool at2 = new Engine_MagicEngine.attackMagicTool(npc_Operate.getCar().ability.driver.skill2, npc_Operate);
 
                     getItemVolumeAttack(npc_Operate, roles[i], at2, gp);
                 }
@@ -388,63 +410,53 @@ namespace HouseManager4_0.RoomMainF
 
         private void getItemVolumeAttack(NPC npc_Operate, RoleInGame itemValue, Engine_MagicEngine.attackMagicTool at, GetRandomPos gp)
         {
-            foreach (var item in this._collectPosition)
+            switch (at.skill.skillEnum)
             {
-                var centerPosition = gp.GetFpByIndex(item.Value);
-                var fromTarget = gp.GetFpByIndex(npc_Operate.StartFPIndex);
-                var endTarget = gp.GetFpByIndex(itemValue.StartFPIndex);
-
-                var costVolumn = this.GetCollectReWard(item.Key) * 100;
-
-                RoleInGame boss;
-                double distance;
-                if (npc_Operate.HasTheBoss(this._Players, out boss))
-                {
-                    var bossPoint = gp.GetFpByIndex(boss.StartFPIndex);
-                    distance =
-                        CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height, centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height)
-                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
-                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
-                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height);
-                }
-                else
-                {
-                    distance =
-                       GetDistance(fromTarget, centerPosition)
-                       + GetDistance(centerPosition, endTarget)
-                       + GetDistance(fromTarget, endTarget);
-                }
-
-                var victim = itemValue;
-                long harmValue;
-                var car = npc_Operate.getCar();
-                if (victim.improvementRecord.defenceValue > 0)
-                {
-                    harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100);
-                }
-                else
-                {
-                    harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100);
-                }
-                this.magicE.AmbushSelf(victim, at, ref harmValue, gp);
-                //harmValue = at.ImproveAttack(npc_Operate, harmValue);
-                var itemHarmValue = harmValue / distance;
-
-                if (npc_Operate.attackTag == null || npc_Operate.attackTag.HarmValue < itemHarmValue)
-                {
-                    switch (at.skill.skillEnum)
+                case CommonClass.driversource.SkillEnum.Fire:
                     {
-                        case CommonClass.driversource.SkillEnum.Electic:
+                        foreach (var item in this._collectPosition)
+                        {
+                            var centerPosition = gp.GetFpByIndex(item.Value);
+                            var fromTarget = gp.GetFpByIndex(npc_Operate.StartFPIndex);
+                            var endTarget = gp.GetFpByIndex(itemValue.StartFPIndex);
+
+                            var costVolumn = this.GetCollectReWard(item.Key) * 100;
+
+                            RoleInGame boss;
+                            double distance;
+                            if (npc_Operate.HasTheBoss(this._Players, out boss))
                             {
-                                npc_Operate.attackTag = new NPC.AttackTag()
-                                {
-                                    aType = NPC.AttackTag.AttackType.electric,
-                                    HarmValue = itemHarmValue,
-                                    Target = victim.Key,
-                                    fpPass = gp.GetFpByIndex(item.Value)
-                                };
-                            }; break;
-                        case CommonClass.driversource.SkillEnum.Fire:
+                                var bossPoint = gp.GetFpByIndex(boss.StartFPIndex);
+                                distance =
+                                    CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height, centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height)
+                                    + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                    + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                    + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height);
+                            }
+                            else
+                            {
+                                distance =
+                                   GetDistance(fromTarget, centerPosition)
+                                   + GetDistance(centerPosition, endTarget)
+                                   + GetDistance(fromTarget, endTarget);
+                            }
+
+                            var victim = itemValue;
+                            long harmValue;
+                            var car = npc_Operate.getCar();
+                            if (victim.improvementRecord.defenceValue > 0)
+                            {
+                                harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100);
+                            }
+                            else
+                            {
+                                harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100);
+                            }
+                            this.magicE.AmbushSelf(victim, at, ref harmValue, gp);
+                            //harmValue = at.ImproveAttack(npc_Operate, harmValue);
+                            var itemHarmValue = harmValue / distance;
+
+                            if (npc_Operate.attackTag == null || npc_Operate.attackTag.HarmValue < itemHarmValue)
                             {
                                 npc_Operate.attackTag = new NPC.AttackTag()
                                 {
@@ -453,9 +465,248 @@ namespace HouseManager4_0.RoomMainF
                                     Target = victim.Key,
                                     fpPass = gp.GetFpByIndex(item.Value)
                                 };
-                            }; break;
-                        case CommonClass.driversource.SkillEnum.Water:
+                                //   switch (at.skill.skillEnum)
+                                {
+                                    //case CommonClass.driversource.SkillEnum.Electic:
+                                    //    {
+                                    //        npc_Operate.attackTag = new NPC.AttackTag()
+                                    //        {
+                                    //            aType = NPC.AttackTag.AttackType.electric,
+                                    //            HarmValue = itemHarmValue,
+                                    //            Target = victim.Key,
+                                    //            fpPass = gp.GetFpByIndex(item.Value)
+                                    //        };
+                                    //    }; break;
+                                    //case CommonClass.driversource.SkillEnum.Fire:
+                                    {
+
+                                    }; //break;
+                                       //case CommonClass.driversource.SkillEnum.Water:
+                                       //    {
+                                       //        npc_Operate.attackTag = new NPC.AttackTag()
+                                       //        {
+                                       //            aType = NPC.AttackTag.AttackType.water,
+                                       //            HarmValue = itemHarmValue,
+                                       //            Target = victim.Key,
+                                       //            fpPass = gp.GetFpByIndex(item.Value)
+                                       //        };
+                                       //    }; break;
+
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case CommonClass.driversource.SkillEnum.Electic:
+                    {
+                        foreach (var item in this._collectPosition)
+                        {
+                            long harmValue;
                             {
+                                var carPosition = gp.GetFpByIndex(item.Value);
+                                var targetPosition = gp.GetFpByIndex(item.Value);
+                                double carMX, carMY, carMZ;
+                                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, 0, out carMX, out carMY, out carMZ);
+
+                                double targetMX, targetMY, targetMZ;
+                                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, 0, out targetMX, out targetMY, out targetMZ);
+
+                                var l3 = Math.Sqrt((carMX - targetMX) * (carMX - targetMX) + (carMY - targetMY) * (carMY - targetMY));
+                                var d = l3 / 3;
+
+                                var c2 = new System.Numerics.Complex((targetMX - carMX) / l3, (targetMY - carMY) / l3);
+                                var c3 = c2 * new System.Numerics.Complex(0, 1);
+
+                                var A = c3.Real;
+                                var B = c3.Imaginary;
+
+                                var x1 = carMX + d * c3.Real;
+                                var y1 = carMY + d * c3.Imaginary;
+
+                                var C1 = -(A * x1 + B * y1);
+
+                                var x2 = carMX - d * c3.Real;
+                                var y2 = carMY - d * c3.Imaginary;
+                                var C2 = -(A * x2 + B * y2);
+
+                                var costVolumn = this.GetCollectReWard(item.Key) * 100;
+                                var victim = itemValue;
+
+                                var car = npc_Operate.getCar();
+                                if (victim.improvementRecord.defenceValue > 0)
+                                {
+                                    harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100);
+                                }
+                                else
+                                {
+                                    harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100);
+                                }
+
+                                //int containItem = 0;
+                                foreach (var item2 in this._collectPosition)
+                                {
+                                    if (item2.Key == item.Key)
+                                    {
+                                        continue;
+                                    }
+                                    //  var from = Program.dt.GetFpByIndex(player.StartFPIndex);
+                                    var calItem = Program.dt.GetFpByIndex(item.Value);
+                                    double calMX, calMY, calMZ;
+                                    //double targetMX, targetMY, targetMZ;
+                                    CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(calItem.Longitude, calItem.Latitde, 0, out calMX, out calMY, out calMZ);
+                                    if (A * calMX + B * calMY + C1 < 0 && A * calMX + B * calMY + C2 > 0)
+                                    {
+                                        harmValue = harmValue * 80 / 100;
+                                        //containItem++;
+                                    }
+                                }
+                                this.magicE.AmbushSelf(victim, at, ref harmValue, gp);
+                            }
+                            double distance;
+                            {
+                                var centerPosition = gp.GetFpByIndex(item.Value);
+                                var fromTarget = gp.GetFpByIndex(npc_Operate.StartFPIndex);
+                                var endTarget = gp.GetFpByIndex(itemValue.StartFPIndex);
+                                RoleInGame boss;
+
+                                if (npc_Operate.HasTheBoss(this._Players, out boss))
+                                {
+                                    var bossPoint = gp.GetFpByIndex(boss.StartFPIndex);
+                                    distance =
+                                        CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height, centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height)
+                                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height);
+                                }
+                                else
+                                {
+                                    distance =
+                                       GetDistance(fromTarget, centerPosition)
+                                       + GetDistance(centerPosition, endTarget)
+                                       + GetDistance(fromTarget, endTarget);
+                                }
+                            }
+                            var itemHarmValue = harmValue / distance;
+
+                            if (npc_Operate.attackTag == null)
+                            {
+                                var victim = itemValue;
+                                npc_Operate.attackTag = new NPC.AttackTag()
+                                {
+                                    aType = NPC.AttackTag.AttackType.electric,
+                                    HarmValue = itemHarmValue,
+                                    Target = victim.Key,
+                                    fpPass = gp.GetFpByIndex(item.Value)
+                                };
+                            }
+                            else if (npc_Operate.attackTag.HarmValue < itemHarmValue)
+                            {
+                                if (this.rm.Next(0, 100) < 90)
+                                {
+                                    var victim = itemValue;
+                                    npc_Operate.attackTag = new NPC.AttackTag()
+                                    {
+                                        aType = NPC.AttackTag.AttackType.electric,
+                                        HarmValue = itemHarmValue,
+                                        Target = victim.Key,
+                                        fpPass = gp.GetFpByIndex(item.Value)
+                                    };
+                                }
+                            }
+                        }
+                    };
+                    break;
+                case CommonClass.driversource.SkillEnum.Water:
+                    {
+                        var grp = gp;
+                        foreach (var item in this._collectPosition)
+                        {
+                            long harmValue;
+                            {
+                                var carPosition = grp.GetFpByIndex(item.Value);
+                                var basePosition = grp.GetFpByIndex(npc_Operate.StartFPIndex);
+                                var targetPosition = grp.GetFpByIndex(itemValue.StartFPIndex);
+
+                                double carMX, carMY, carMZ;
+                                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, 0, out carMX, out carMY, out carMZ);
+
+                                double baseMX, baseMY, baseMZ;
+                                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(basePosition.Longitude, basePosition.Latitde, 0, out baseMX, out baseMY, out baseMZ);
+
+                                double targetMX, targetMY, targetMZ;
+                                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(targetPosition.Longitude, targetPosition.Latitde, 0, out targetMX, out targetMY, out targetMZ);
+
+                                var l1 = Math.Sqrt((carMX - baseMX) * (carMX - baseMX) + (carMY - baseMY) * (carMY - baseMY));
+                                if (l1 < 1e-6) continue;
+                                var c1 = new System.Numerics.Complex((carMX - baseMX) / l1, (carMY - baseMY) / l1);
+
+                                var l2 = Math.Sqrt((targetMX - baseMX) * (targetMX - baseMX) + (targetMY - baseMY) * (targetMY - baseMY));
+                                if (l2 < 1e-6) continue;
+                                var c2 = new System.Numerics.Complex((targetMX - baseMX) / l2, (targetMY - baseMY) / l2);
+
+                                var c3 = c2 / c1;
+                                int angle;
+                                if (c3.Real <= -1)
+                                {
+                                    angle = 180;
+                                }
+                                else if (c3.Real < 1)
+                                {
+                                    angle = Convert.ToInt32(Math.Acos(c3.Real) / Math.PI * 180);
+                                }
+                                else angle = 0;
+
+                                angle = 180 - angle;
+
+                                var costVolumn = this.GetCollectReWard(item.Key) * 100;
+                                var victim = itemValue;
+
+                                var car = npc_Operate.getCar();
+                                if (victim.improvementRecord.defenceValue > 0)
+                                {
+                                    harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver, victim.improvementRecord.defenceValue > 0)) / 100);
+                                }
+                                else
+                                {
+                                    harmValue = ((at.leftValue(car.ability) - costVolumn) * (100 - at.GetDefensiveValue(victim.getCar().ability.driver)) / 100);
+                                }
+                                if (angle < 90)
+                                {
+                                    harmValue = harmValue * (90 - angle) / 90;
+                                }
+                                else
+                                {
+                                    harmValue = harmValue / 100;
+                                }
+                            }
+                            double distance;
+                            {
+                                var centerPosition = gp.GetFpByIndex(item.Value);
+                                var fromTarget = gp.GetFpByIndex(npc_Operate.StartFPIndex);
+                                var endTarget = gp.GetFpByIndex(itemValue.StartFPIndex);
+                                RoleInGame boss;
+
+                                if (npc_Operate.HasTheBoss(this._Players, out boss))
+                                {
+                                    var bossPoint = gp.GetFpByIndex(boss.StartFPIndex);
+                                    distance =
+                                        CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height, centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height)
+                                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(centerPosition.Latitde, centerPosition.Longitude, centerPosition.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, endTarget.Latitde, endTarget.Longitude, endTarget.Height)
+                                        + CommonClass.Geography.getLengthOfTwoPoint.GetDistance(bossPoint.Latitde, bossPoint.Longitude, bossPoint.Height, fromTarget.Latitde, fromTarget.Longitude, fromTarget.Height);
+                                }
+                                else
+                                {
+                                    distance =
+                                       GetDistance(fromTarget, centerPosition)
+                                       + GetDistance(centerPosition, endTarget)
+                                       + GetDistance(fromTarget, endTarget);
+                                }
+                            }
+                            var itemHarmValue = harmValue / distance;
+                            if (npc_Operate.attackTag == null)
+                            {
+                                var victim = itemValue;
                                 npc_Operate.attackTag = new NPC.AttackTag()
                                 {
                                     aType = NPC.AttackTag.AttackType.water,
@@ -463,13 +714,28 @@ namespace HouseManager4_0.RoomMainF
                                     Target = victim.Key,
                                     fpPass = gp.GetFpByIndex(item.Value)
                                 };
-                            }; break;
-                        default:
+                            }
+                            else if (npc_Operate.attackTag.HarmValue < itemHarmValue)
                             {
-                                throw new Exception("输入异常！！！");
-                            };
-                    }
-                }
+                                if (this.rm.Next(0, 100) < 90)
+                                {
+                                    var victim = itemValue;
+                                    npc_Operate.attackTag = new NPC.AttackTag()
+                                    {
+                                        aType = NPC.AttackTag.AttackType.water,
+                                        HarmValue = itemHarmValue,
+                                        Target = victim.Key,
+                                        fpPass = gp.GetFpByIndex(item.Value)
+                                    };
+                                }
+                            }
+                        }
+                    };
+                    break;
+                default:
+                    {
+                        throw new Exception("输入异常！！！");
+                    };
             }
         }
 

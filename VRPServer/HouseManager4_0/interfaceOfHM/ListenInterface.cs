@@ -90,9 +90,14 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="ss"></param>
         void Sell(SetSellDiamond ss);
+        /// <summary>
+        /// 释玉--web前台对应
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         string TakeApartF(TakeApart t);
         /// <summary>
-        /// 命名为捐赠，实为存储！
+        /// 取款，同步等级！
         /// </summary>
         /// <param name="ots"></param>
         void OrderToSubsidize(OrderToSubsidize ots);
@@ -108,6 +113,9 @@ namespace HouseManager4_0.interfaceOfHM
         string CheckCarStateF(CheckCarState ccs);
         void SystemBradcast(SystemBradcast sb);
         string Statictis(ServerStatictis ss);
+        string GetFightSituationF(GetFightSituation fs);
+        string GetTaskCopyDetailF(GetTaskCopyDetail gtd);
+        string RemoveTaskCopyF(RemoveTaskCopyM gtd);
     }
 
     interface MapEditor

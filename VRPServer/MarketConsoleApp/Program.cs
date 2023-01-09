@@ -13,9 +13,9 @@ namespace MarketConsoleApp
 
             //TradeInfo tradeInfo = new TradeInfo("1D6cunZ4xRqKt8ysyjyqUNcYTyLFV1oL2n");
             //// await tradeInfo.GetTradeInfomationFromChain();
-            //Task.Run(() => tradeInfo.GetTradeInfomationFromChain());
+            // (() => tradeInfo.GetTradeInfomationFromChain());
             //TradeInfo info = new TradeInfo();
-            //var s =Task.Run<string>(()=>  info.GetTradeInfomation("1D6cunZ4xRqKt8ysyjyqUNcYTyLFV1oL2n")).Result;
+            //var s = <string>(()=>  info.GetTradeInfomation("1D6cunZ4xRqKt8ysyjyqUNcYTyLFV1oL2n")).Result;
             //Console.WriteLine(s);
             if (true)
             {

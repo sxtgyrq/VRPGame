@@ -28,7 +28,7 @@ namespace WsOfWebClient
             // throw new NotImplementedException();
         }
 
-        internal static async Task setRandomPic(IntroState iState, WebSocket webSocket)
+        internal static void setRandomPic(IntroState iState, WebSocket webSocket)
         {
             string checkCode = iState.randomValue.Trim();
             string base64String;
@@ -77,8 +77,7 @@ namespace WsOfWebClient
                 c = "VerifyCodePic"
             };
             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-            var sendData = Encoding.UTF8.GetBytes(returnMsg);
-            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            CommonF.SendData(returnMsg, webSocket);
         }
     }
 }

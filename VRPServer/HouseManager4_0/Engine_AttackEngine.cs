@@ -306,7 +306,7 @@ namespace HouseManager4_0
                     //this.SetAttackArrivalThread()
                     List<string> notifyMsg = new List<string>();
                     car.setState(player, ref notifyMsg, CarState.working);
-                    this.sendMsg(notifyMsg);
+                    this.sendSeveralMsgs(notifyMsg);
                     this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro, grp);
                 }
               );
@@ -321,7 +321,7 @@ namespace HouseManager4_0
                   //this.SetAttackArrivalThread()
                   List<string> notifyMsg = new List<string>();
                   car.setState(player, ref notifyMsg, CarState.working);
-                  this.sendMsg(notifyMsg);
+                  this.sendSeveralMsgs(notifyMsg);
                   this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro, grp);
               }
             );
@@ -357,7 +357,7 @@ namespace HouseManager4_0
                                     newStartT = 0;
 
                                 car.setState(player, ref notifyMsg, CarState.working);
-                                this.sendMsg(notifyMsg);
+                                this.sendSeveralMsgs(notifyMsg);
                                 //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
                                 SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro, grp);
                             };

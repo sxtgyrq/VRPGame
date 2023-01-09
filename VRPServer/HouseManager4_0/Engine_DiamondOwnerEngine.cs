@@ -65,7 +65,7 @@ namespace HouseManager4_0
                                 newStartT = 0;
 
                             car.setState(player, ref notifyMsg, CarState.working);
-                            this.sendMsg(notifyMsg);
+                            this.sendSeveralMsgs(notifyMsg);
                             //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
                             StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath, grp);
 
@@ -178,12 +178,7 @@ namespace HouseManager4_0
                 }
 
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            this.sendSeveralMsgs(notifyMsg); 
 
             if (needUpdatePromoteState)
             {

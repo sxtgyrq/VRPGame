@@ -476,12 +476,7 @@ namespace HouseManager4_0.RoomMainF
                 if (player.playerType == RoleInGame.PlayerType.player)
                     SendPurposeOfCar((Player)player, car, ref notifyMsg);
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg); 
         }
 
         void SendPurposeOfCar(Player player, Car car, ref List<string> notifyMsg)

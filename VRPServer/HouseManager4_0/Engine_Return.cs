@@ -32,12 +32,7 @@ namespace HouseManager4_0
                 car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
                 ReturnThenSetComeBack(player, car, rObj, grp, ref notifyMsg);
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            this.sendSeveralMsgs(notifyMsg);
         }
 
         private void ReturnThenSetComeBack(RoleInGame player, Car car, commandWithTime.returnning cmp, GetRandomPos grp, ref List<string> notifyMsg)
@@ -282,29 +277,6 @@ namespace HouseManager4_0
             }
 
         }
-
-
-
-        //private void StartSelectThread(List<Node.direction> selections)
-        //{
-        //    int k = 0;
-        //    while (true)
-        //    {
-        //        ThreadSleep(250);
-        //        k++;
-        //        //Consol.WriteLine($"提示，让玩家进行选择！！！");
-        //        if (k >= 2)
-        //        {
-        //            break;
-        //        }
-        //    }
-        //}
-
-        //enum ArriveType
-        //{
-        //    comeback,
-        //    taxCollect
-        //}
         delegate void ArriavalF(int newStartT);
         private void StartArriavalThread(int startT, int step, RoleInGame player, Car car, Node goPath, ArriavalF f, RoleInGame targetPlayer)
         {
@@ -331,7 +303,7 @@ namespace HouseManager4_0
                                 newStartT = 0;
 
                             car.setState(player, ref notifyMsg, CarState.returning);
-                            this.sendMsg(notifyMsg);
+                            this.sendSeveralMsgs(notifyMsg);
                             StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
 
                         };
@@ -363,7 +335,7 @@ namespace HouseManager4_0
                                 EditCarStateAfterSelect(step, player, ref car, ref notifyMsg, out newStartT);
                             }
                             car.setState(player, ref notifyMsg, CarState.returning);
-                            this.sendMsg(notifyMsg);
+                            this.sendSeveralMsgs(notifyMsg);
                             StartArriavalThread(newStartT, step, player, car, goPath, f, targetPlayer);
                         };
                         this.loop(p, step, startT, player, goPath);
@@ -404,7 +376,10 @@ namespace HouseManager4_0
                     {
                         player.PromoteDiamondCount[car.ability.diamondInCar]++;
                         if (player.playerType == RoleInGame.PlayerType.player)
+                        {
                             that.SendPromoteCountOfPlayer(car.ability.diamondInCar, player.PromoteDiamondCount[car.ability.diamondInCar], (Player)player, ref notifyMsg);
+                            that.taskM.DiamondCollected((Player)player);
+                        }
                     }
                     car.ability.Refresh(player, car, ref notifyMsg);
                     car.Refresh(player, ref notifyMsg);
@@ -441,13 +416,7 @@ namespace HouseManager4_0
                     throw new Exception($"小车返回是状态为{that._Players[comeBack.key].getCar().state}");
                 }
             }
-
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                this.sendMsg(url, sendMsg);
-            }
+            this.sendSeveralMsgs(notifyMsg);
         }
 
         internal string OrderToReturn(OrderToReturn otr, GetRandomPos grp)
@@ -504,15 +473,7 @@ namespace HouseManager4_0
                     }
                 }
 
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    if (!string.IsNullOrEmpty(url))
-                    {
-                        Startup.sendMsg(url, sendMsg);
-                    }
-                }
+                this.sendSeveralMsgs(notifyMsg); 
                 return "";
             }
             else

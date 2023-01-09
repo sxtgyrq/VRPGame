@@ -73,10 +73,10 @@ namespace WsOfWebClient.MapEditor
                     {
                         Random rm = new Random(DateTime.Now.GetHashCode());
                         ModeManger mm = new ModeManger();
-                        await mm.GetCatege(rm);
+                        mm.GetCatege(rm);
 
-                        var modelTypes = await mm.GetModelType(rm);
-                        await mm.SendModelTypes(modelTypes, webSocket);
+                        var modelTypes = mm.GetModelType(rm);
+                        mm.SendModelTypes(modelTypes, webSocket);
 
                         Dictionary<string, bool> roads = new Dictionary<string, bool>();
                         //stateOfSelection ss = stateOfSelection.roadCross;
@@ -85,7 +85,7 @@ namespace WsOfWebClient.MapEditor
                         //string anotherRoadCode;
                         //int anotherRoadOrder;
 
-                        var firstRoad = await getFirstRoad(rm);
+                        var firstRoad = getFirstRoad(rm);
                         //roadCode = firstRoad.roadCode;
                         //roadOrder = firstRoad.roadOrder;
                         //anotherRoadCode = firstRoad.anotherRoadCode;
@@ -119,7 +119,7 @@ namespace WsOfWebClient.MapEditor
                                 else if (c.c == "ShowOBJFile")
                                 {
                                     ShowOBJFile sf = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.ShowOBJFile>(returnResult.result);
-                                    await mm.ShowObj(sf, webSocket, rm);
+                                    mm.ShowObj(sf, webSocket, rm);
                                     continue;
                                 }
                                 switch (ss)
@@ -131,29 +131,29 @@ namespace WsOfWebClient.MapEditor
                                             {
                                                 case "nextCross":
                                                     {
-                                                        var r = await getNextCross(firstRoad, rm);
+                                                        var r = getNextCross(firstRoad, rm);
                                                         if (r != null)
                                                         {
-                                                            firstRoad = await getNextCross(firstRoad, rm);
+                                                            firstRoad = getNextCross(firstRoad, rm);
                                                             mm.AddDiction(firstRoad);
                                                         }
                                                         else
                                                         {
-                                                            await mm.ShowMsg(webSocket, "这是一个单向口，按 B 退出线路");
+                                                            mm.ShowMsg(webSocket, "这是一个单向口，按 B 退出线路");
                                                         }
                                                         //  await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "previousCross":
                                                     {
-                                                        var r = await getPreviousCross(firstRoad, rm);
+                                                        var r = getPreviousCross(firstRoad, rm);
                                                         if (r != null)
                                                         {
-                                                            firstRoad = await getPreviousCross(firstRoad, rm);
+                                                            firstRoad = getPreviousCross(firstRoad, rm);
                                                             mm.AddDiction(firstRoad);
                                                         }
                                                         else
                                                         {
-                                                            await mm.ShowMsg(webSocket, "这是一个单向口，按 B 退出线路");
+                                                            mm.ShowMsg(webSocket, "这是一个单向口，按 B 退出线路");
                                                         }
                                                         //await mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
@@ -175,22 +175,22 @@ namespace WsOfWebClient.MapEditor
                                                 case "SetBG":
                                                     {
                                                         var sb = Newtonsoft.Json.JsonConvert.DeserializeObject<SetBG>(returnResult.result);
-                                                        await mm.SetBackground(sb, firstRoad, address, rm, webSocket);
-                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
+                                                        mm.SetBackground(sb, firstRoad, address, rm, webSocket);
+                                                        mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "useBackground":
                                                     {
-                                                        await mm.SetBackground(true, firstRoad, address, rm, webSocket);
-                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
+                                                        mm.SetBackground(true, firstRoad, address, rm, webSocket);
+                                                        mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "unuseBackground":
                                                     {
-                                                        await mm.SetBackground(false, firstRoad, address, rm, webSocket);
-                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
+                                                        mm.SetBackground(false, firstRoad, address, rm, webSocket);
+                                                        mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                 case "showBackground":
                                                     {
-                                                        await mm.GetCrossBG(firstRoad, webSocket, rm);
+                                                        mm.GetCrossBG(firstRoad, webSocket, rm);
                                                     }; break;
                                                     //case "addModel":
                                                     //    {
@@ -218,7 +218,7 @@ namespace WsOfWebClient.MapEditor
                                                 case "AddModel":
                                                     {
                                                         mm.addModel = true;
-                                                        var m = await mm.GetModel(rm);
+                                                        var m = mm.GetModel(rm);
                                                         await mm.AddModel(m, webSocket);
                                                     }; break;
                                                 case "PreviousModel":
@@ -226,7 +226,7 @@ namespace WsOfWebClient.MapEditor
                                                         mm.PreviousModel();
                                                         if (mm.addModel)
                                                         {
-                                                            var m = await mm.GetModel(rm);
+                                                            var m = mm.GetModel(rm);
                                                             await mm.AddModel(m, webSocket);
                                                         }
                                                     }; break;
@@ -235,7 +235,7 @@ namespace WsOfWebClient.MapEditor
                                                         mm.NextModel();
                                                         if (mm.addModel)
                                                         {
-                                                            var m = await mm.GetModel(rm);
+                                                            var m = mm.GetModel(rm);
                                                             await mm.AddModel(m, webSocket);
                                                         }
                                                     }; break;
@@ -244,7 +244,7 @@ namespace WsOfWebClient.MapEditor
                                                         mm.PreviousUser(address);
                                                         if (mm.addModel)
                                                         {
-                                                            var m = await mm.GetModel(rm);
+                                                            var m = mm.GetModel(rm);
                                                             await mm.AddModel(m, webSocket);
                                                         }
                                                     }; break;
@@ -253,14 +253,14 @@ namespace WsOfWebClient.MapEditor
                                                         mm.NextUser(address);
                                                         if (mm.addModel)
                                                         {
-                                                            var m = await mm.GetModel(rm);
+                                                            var m = mm.GetModel(rm);
                                                             await mm.AddModel(m, webSocket);
                                                         }
                                                     }; break;
                                                 case "SaveObj":
                                                     {
                                                         SaveObj so = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveObj>(returnResult.result);
-                                                        await mm.SaveObjF(so, webSocket, rm, address, isAdministartor);
+                                                        mm.SaveObjF(so, webSocket, rm, address, isAdministartor);
                                                     }; break;
                                                 case "EditModel":
                                                     {
@@ -279,9 +279,9 @@ namespace WsOfWebClient.MapEditor
                                                 case "CreateNewObj":
                                                     {
                                                         CreateNewObj cno = Newtonsoft.Json.JsonConvert.DeserializeObject<CreateNewObj>(returnResult.result);
-                                                        var msg = await mm.CreateNew(cno, address, modelTypes, rm);
+                                                        var msg = mm.CreateNew(cno, address, modelTypes, rm);
                                                         //Consol.WriteLine(msg);
-                                                        await mm.GetCatege(rm);
+                                                        mm.GetCatege(rm);
                                                     }; break;
                                                 case "GetModelDetail":
                                                     {
@@ -291,29 +291,29 @@ namespace WsOfWebClient.MapEditor
                                                 case "UseModelObj":
                                                     {
                                                         UseModelObj umo = Newtonsoft.Json.JsonConvert.DeserializeObject<UseModelObj>(returnResult.result);
-                                                        await mm.UseModelObj(webSocket, umo, rm, isAdministartor);
+                                                        mm.UseModelObj(webSocket, umo, rm, isAdministartor);
                                                     }; break;
                                                 case "LockModelObj":
                                                     {
                                                         UseModelObj umo = Newtonsoft.Json.JsonConvert.DeserializeObject<UseModelObj>(returnResult.result);
-                                                        await mm.UseModelObj(webSocket, umo, rm, isAdministartor);
+                                                        mm.UseModelObj(webSocket, umo, rm, isAdministartor);
                                                     }; break;
                                                 case "ClearModelObj":
                                                     {
-                                                        await mm.ClearModelObj(webSocket, rm, isAdministartor);
+                                                        mm.ClearModelObj(webSocket, rm, isAdministartor);
                                                     }; break;
                                                 case "DownloadModel":
                                                     {
                                                         GetModelDetail gmd = Newtonsoft.Json.JsonConvert.DeserializeObject<GetModelDetail>(returnResult.result);
-                                                        await mm.DownloadModel(webSocket, gmd, rm);
+                                                        mm.DownloadModel(webSocket, gmd, rm);
                                                     }; break;
                                                 case "PreviousUnLockedModel":
                                                     {
-                                                        await mm.GetUnLockedModelID(webSocket, rm, "up");
+                                                        mm.GetUnLockedModelID(webSocket, rm, "up");
                                                     }; break;
                                                 case "NextUnLockedModel":
                                                     {
-                                                        await mm.GetUnLockedModelID(webSocket, rm, "");
+                                                        mm.GetUnLockedModelID(webSocket, rm, "");
                                                     }; break;
                                                 case "LookForHeight":
                                                     {
@@ -335,13 +335,13 @@ namespace WsOfWebClient.MapEditor
                                             if (administratorOfFinace.Contains(address))
                                             {
                                                 CommonClass.Finance.Charging cObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.Charging>(returnResult.result);
-                                                await mm.ChargingSend(webSocket, rm, cObj, address);
-                                                await mm.ChargingRefresh(webSocket, rm);
+                                                mm.ChargingSend(webSocket, rm, cObj, address);
+                                                mm.ChargingRefresh(webSocket, rm);
                                             }
                                         }; break;
                                     case "chargingRefresh":
                                         {
-                                            await mm.ChargingRefresh(webSocket, rm);
+                                              mm.ChargingRefresh(webSocket, rm);
                                         }; break;
                                     case "chargingNextPage":
                                         {

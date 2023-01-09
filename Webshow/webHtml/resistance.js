@@ -123,7 +123,7 @@
         margin-bottom: 0.25em;
         margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="dialogSys.toBeMyBoss('${obj.KeyLookfor}');">
             认作老大
-        </div>
+        </div>  
         <div style="background: orange;
         margin-bottom: 0.25em;
         margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="resistance.cancle();">
@@ -149,105 +149,117 @@
 
         var raceContent = '';
         switch (obj.race) {
-            case 0: { raceContent = ''; }; break;
+            case 0: {
+                raceContent = `<tr style="border:solid 1px white">
+                    <th colspan="6">效果</th>
+                    <th colspan="6">几率</th> 
+                </tr>
+                <tr style="border:solid 1px white">
+                    <th colspan="6">招募成功率</th>
+                    <td colspan="6">${obj.recruit}%</td> 
+                </tr>`;
+            }; break;
             case 1:
                 {
-                    raceContent = ` <tr style="border:solid 1px white">
-                    <th colspan="4">效果</th>
-                    <th colspan="4">几率</th>
-                    <th colspan="4"></th>
+                    raceContent = `<tr style="border:solid 1px white">
+                    <th colspan="6">效果</th>
+                    <th colspan="6">几率</th> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">招募成功</th>
-                    <td colspan="4">${obj.recruit}%</td>
-                    <td colspan="4">(${obj.buildingReward[0]})</td>
+                    <th colspan="6">招募成功率</th>
+                    <td colspan="6">${obj.recruit}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视抗卷</th>
-                    <td colspan="4">${obj.ignorePhysics}%</td>
-                    <td colspan="4">(${obj.buildingReward[1]}%)</td>
+                    <th colspan="6">忽视抗物理${obj.ignorePhysicsValue}点</th>
+                    <td colspan="6">${obj.ignorePhysics}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">强化速法几率</th>
-                    <td colspan="4">${obj.SpeedImprove}%</td>
-                    <td colspan="4">(${obj.buildingReward[2]}%)</td>
+                    <th colspan="6">提速法术提升${100 + obj.SpeedImproveValue}%</th>
+                    <td colspan="6">${obj.SpeedImproveProbability}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">强化防法几率</th>
-                    <td colspan="4">${obj.DefenseImprove}%</td>
-                    <td colspan="4">(${obj.buildingReward[3]}%)</td>
+                    <th colspan="6">加防法术提升${100 + obj.DefenseImproveValue}%</th>
+                    <td colspan="6">${obj.DefenseImproveProbability}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">强化攻发几率</th>
-                    <td colspan="4">${obj.AttackImprove}%</td>
-                    <td colspan="4">(${obj.buildingReward[4]}%)</td>
+                    <th colspan="6">红牛法术提升${100 + obj.AttackImproveValue}%</th>
+                    <td colspan="6">${obj.AttackImproveProbability}%</td> 
                 </tr>`;
                 }; break;
             case 2: {
                 raceContent = ` <tr style="border:solid 1px white">
-                    <th colspan="4">效果</th>
-                    <th colspan="4">几率</th>
-                    <th colspan="4"></th>
+                    <th colspan="6">效果</th>
+                    <th colspan="6">几率</th> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">招募成功</th>
-                    <td colspan="4">${obj.recruit}%</td>
-                    <td colspan="4">(${obj.buildingReward[0]})</td>
+                    <th colspan="6">招募成功率</th>
+                    <td colspan="6">${obj.recruit}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">故技重施几率</th>
-                    <td colspan="4">${obj.controlImprove}%</td>
-                    <td colspan="4">(${obj.buildingReward[1]}%)</td>
+                    <th colspan="6">故技重施</th>
+                    <td colspan="6">${obj.controlImprove}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视混乱20点</th>
-                    <td colspan="4">${obj.ignoreConfuse}%</td>
-                    <td colspan="4">(${obj.buildingReward[2]}%)</td>
+                    <th colspan="6">忽视抗混乱</th>
+                    <td colspan="6">${obj.ignoreConfuse}点</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视迷失20点</th>
-                    <td colspan="4">${obj.ignoreLose}%</td>
-                    <td colspan="4">(${obj.buildingReward[3]}%)</td>
+                    <th colspan="6">忽视抗迷失</th>
+                    <td colspan="6">${obj.ignoreLose}点</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视潜伏20点</th>
-                    <td colspan="4">${obj.ignoreAmbush}%</td>
-                    <td colspan="4">(${obj.buildingReward[4]}%)</td>
+                    <th colspan="6">忽视抗潜伏</th>
+                    <td colspan="6">${obj.ignoreAmbush}点</td> 
                 </tr>`;
             }; break;
             case 3:
                 {
                     raceContent = ` <tr style="border:solid 1px white">
-                    <th colspan="4">效果</th>
-                    <th colspan="4">几率</th>
-                    <th colspan="4"></th>
+                     <th colspan="6">效果</th>
+                    <th colspan="6">几率</th> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">招募成功</th>
-                    <td colspan="4">${obj.recruit}%</td>
-                    <td colspan="4">(${obj.buildingReward[0]})</td>
+                    <th colspan="6">招募成功率</th>
+                    <td colspan="6">${obj.recruit}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">法术狂暴</th>
-                    <td colspan="4">${obj.magicViolent}%</td>
-                    <td colspan="4">(${obj.buildingReward[1]}%)</td>
+                    <th colspan="6">法术狂暴${100 + obj.magicViolentValue}%</th>
+                    <td colspan="6">${obj.magicViolentProbability}%</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视雷抗20点</th>
-                    <td colspan="4">${obj.ignoreElectic}%</td>
-                    <td colspan="4">(${obj.buildingReward[2]}%)</td>
+                    <th colspan="6">忽视雷抗</th>
+                    <td colspan="6">${obj.IgnoreElectricMagicValue}点</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视火抗20点</th>
-                    <td colspan="4">${obj.ignoreFire}%</td>
-                    <td colspan="4">(${obj.buildingReward[3]}%)</td>
+                    <th colspan="6">忽视火抗</th>
+                    <td colspan="6">${obj.IgnoreFireMagicValue}点</td> 
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="4">忽视水抗20点</th>
-                    <td colspan="4">${obj.ignoreOfWater}%</td>
-                    <td colspan="4">(${obj.buildingReward[4]}%)</td>
+                    <th colspan="6">忽视水抗</th>
+                    <td colspan="6">${obj.IgnoreWaterMagicValue}点</td> 
                 </tr>`;
                 }; break;
+        }
+        var constrolState = '否';
+        var controlsColor = 'green';
+        var controlValue = '';
+        if (obj.LoseValue > 0) {
+            constrolState = '被迷惑';
+            controlsColor = '#FFB5B5';
+            controlValue = obj.LoseValue + '';
+        }
+        else if (obj.ConfuseValue > 0) {
+            constrolState = '处于混乱';
+            controlsColor = '#D9B3B3';
+            controlValue = obj.ConfuseValue + '';
+        }
+        else {
+            constrolState = '否';
+            controlsColor = 'green';
+        }
+        var plus = '';
+        if (obj.DefenceValue > 0) {
+            plus = '+';
         }
 
         var html = `  <div id="${that.operate2ID}" style="position: absolute;
@@ -278,29 +290,47 @@
             <tbody> 
                 <tr style="border:solid 1px white">
                     <th colspan="3">抗雷</th>
-                    <td colspan="3">${obj.defensiveOfElectic}</td>
+                    <td colspan="3">${obj.defensiveOfElectic}${plus}${plus == '' ? '' : obj.DefenceAttackMagicAdd}</td>
                     <th colspan="3">抗混</th>
-                    <td colspan="3">${obj.defensiveOfConfuse}</td>
+                    <td colspan="3">${obj.defensiveOfConfuse}${plus}${plus == '' ? '' : obj.ConfusePropertyByDefendMagic}</td>
                 </tr>
                 <tr style="border:solid 1px white">
                     <th colspan="3">抗水</th>
-                    <td colspan="3">${obj.defensiveOfWater}</td>
+                    <td colspan="3">${obj.defensiveOfWater}${plus}${plus == '' ? '' : obj.DefenceAttackMagicAdd}</td>
                     <th colspan="3">抗迷</th>
-                    <td colspan="3">${obj.defensiveOfLose}</td>
+                    <td colspan="3">${obj.defensiveOfLose}${plus}${plus == '' ? '' : obj.LostPropertyByDefendMagic}</td>
                 </tr>
                 <tr style="border:solid 1px white">
                     <th colspan="3">抗火</th>
-                    <td colspan="3">${obj.defensiveOfFire}</td>
-                    <th colspan="3">抗潜</th>
-                    <td colspan="3">${obj.defensiveOfAmbush}</td>
+                    <td colspan="3">${obj.defensiveOfFire}${plus}${plus == '' ? '' : obj.DefenceAttackMagicAdd}</td>
+                    <th colspan="3">抗潜伏</th>
+                    <td colspan="3">${obj.defensiveOfAmbush}${plus}${plus == '' ? '' : obj.AmbushPropertyByDefendMagic}</td>
                 </tr>
                 <tr style="border:solid 1px white">
-                    <th colspan="3">抗内卷</th>
-                    <td colspan="3">${obj.defensiveOfPhysics}</td>
+                    <th colspan="3">抗物理</th>
+                    <td colspan="3">${obj.defensiveOfPhysics}${plus}${plus == '' ? '' : obj.DefencePhysicsAdd}</td>
                     <th colspan="3"></th>
                     <td colspan="3"></td>
                 </tr>
                  ${raceContent}
+                <tr style="border:solid 1px white;color:yellow;">
+                    <th colspan="3">加防</th>
+                    <td colspan="3">${obj.DefenceValue}</td>
+                    <th colspan="3">提速</th>
+                    <td colspan="3">${obj.SpeedValue}</td>
+                </tr> 
+                <tr style="border:solid 1px white;color:yellow;">
+                    <th colspan="3">红牛</th>
+                    <td colspan="3">${obj.AttackValue}</td>
+                    <th colspan="3"></th>
+                    <td colspan="3"></td>
+                </tr>
+                <tr style="border:solid 1px white;color:${controlsColor};">
+                    <th colspan="3">被控制</th>
+                    <td colspan="3">${constrolState}</td>
+                    <th colspan="3">${controlValue}</th>
+                    <td colspan="3"></td>
+                </tr>
             </tbody> 
         </table> 
         <div style="background: yellowgreen;

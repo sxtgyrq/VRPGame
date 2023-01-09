@@ -1091,8 +1091,8 @@ namespace HouseManager4_0.RoomMainF
 
             List<int> animateResult = new List<int>();
             startT0 = startTInput;
-            endT0 = startT0 + this.magicE.shotTime(500, speedImproved);
-            startTInput += this.magicE.shotTime(500, speedImproved);
+            endT0 = startT0 + this.magicE.shotTime(350, speedImproved);
+            startTInput += this.magicE.shotTime(350, speedImproved);
             var animate1 = new Data.PathResult4()
             {
                 x = Convert.ToInt32(-(position.Real * percentOfPosition) * 256),
@@ -1117,24 +1117,25 @@ namespace HouseManager4_0.RoomMainF
                 animateResult.Add(animate1.t);
             }
             // animateResult.Add(animate1);
-            /*
-             * 上道路的速度为10m/s 即36km/h
-             */
+             
             //  var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
-            int interview;
-            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad, fp.Height) / 10 * 1000;
-            if (calInterview < 1e-8)
+            int interview = 350;
             {
-                interview = 0;
-            }
-            else if (calInterview < 1)
-            {
-                interview = 1;
-            }
-            else
-            {
-                interview = Convert.ToInt32(calInterview + 1);
+                /*原先代码！*/
+                //var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad, fp.Height) / 10 * 1000;
+                //if (calInterview < 1e-8)
+                //{
+                //    interview = 0;
+                //}
+                //else if (calInterview < 1)
+                //{
+                //    interview = 1;
+                //}
+                //else
+                //{
+                //    interview = Convert.ToInt32(calInterview + 1);
 
+                //}
             }
             interview = this.magicE.shotTime(interview, speedImproved);
 

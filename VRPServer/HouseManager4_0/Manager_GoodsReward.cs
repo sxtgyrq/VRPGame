@@ -57,7 +57,7 @@ namespace HouseManager4_0
                 }
                 Program.rm.modelM.setModels(player, modelsNeedToShow, ref notifyMsg);
                 if (player.canGetReward)
-                    Program.rm.goodsM.drawSelect(player, fp, modelsNeedToShow, ref notifyMsg);
+                    Program.rm.goodsM.drawSelect(player, fp, modelsNeedToSelect, ref notifyMsg);
                 else
                     Program.rm.goodsM.drawSelect(player, fp, new List<Data.detailmodel>(), ref notifyMsg);
             }

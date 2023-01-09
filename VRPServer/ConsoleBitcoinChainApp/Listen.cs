@@ -14,7 +14,7 @@ namespace ConsoleBitcoinChainApp
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
 
-        private static async Task<string> DealWith(string addr, int port)
+        private static string DealWith(string addr, int port)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace ConsoleBitcoinChainApp
                     var path = $"data/{addr}";
                     if (File.Exists(path))
                     {
-                        var json = await File.ReadAllTextAsync(path, Encoding.UTF8);
+                        var json = File.ReadAllText(path, Encoding.UTF8);
                         return json;
                     }
                     else

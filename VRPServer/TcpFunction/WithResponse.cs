@@ -28,7 +28,7 @@ namespace TcpFunction
                 {
                     NetworkStream ns = tc.GetStream();
                     var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                    await Common.SendLength(sendData.Length, ns);
+                    Common.SendLength(sendData.Length, ns);
                     //  Common.CheckBeforeReadReason reason;
                     var length = Common.ReceiveLength(ns);
                     if (sendData.Length == length) { }
@@ -42,7 +42,7 @@ namespace TcpFunction
                     await ns.WriteAsync(sendData, 0, sendData.Length);
 
                     var length2 = Common.ReceiveLength(ns);
-                    await Common.SendLength(length2, ns);
+                    Common.SendLength(length2, ns);
                     byte[] bytes = Common.ByteReader(length2, ns);
                     result = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
                     ns.Close(6000);
@@ -56,8 +56,8 @@ namespace TcpFunction
 
 
 
-        public delegate Task<string> DealWith(string notifyJson, int tcpPort);
-        public static async void ListenIpAndPort(string hostIP, int tcpPort, DealWith dealWith)
+        public delegate string DealWith(string notifyJson, int tcpPort);
+        public static void ListenIpAndPort(string hostIP, int tcpPort, DealWith dealWith)
         {
             Int32 port = tcpPort;
             IPAddress localAddr = IPAddress.Parse(hostIP);
@@ -73,9 +73,9 @@ namespace TcpFunction
                     using (NetworkStream ns = client.GetStream())
                     {
 
-                        notifyJson = await GetMsg01(client, ns);
-                        var outPut = await dealWith(notifyJson, tcpPort);
-                        await GetMsg02(client, ns, outPut);
+                        notifyJson = GetMsg01(client, ns);
+                        var outPut = dealWith(notifyJson, tcpPort);
+                        GetMsg02(client, ns, outPut);
                         ns.Close(6000);
                     }
                 }
@@ -83,10 +83,10 @@ namespace TcpFunction
             }
         }
 
-        private static async Task GetMsg02(TcpClient client, NetworkStream ns, string outPut)
+        private static void GetMsg02(TcpClient client, NetworkStream ns, string outPut)
         {
             var sendData = Encoding.UTF8.GetBytes(outPut);
-            await Common.SendLength(sendData.Length, ns);
+            Common.SendLength(sendData.Length, ns);
             var length2 = Common.ReceiveLength(ns);
             if (length2 != sendData.Length)
             {
@@ -94,15 +94,14 @@ namespace TcpFunction
                 //Consol.WriteLine(msg);
                 throw new Exception(msg);
             }
-            await ns.WriteAsync(sendData, 0, sendData.Length);
+            var t = ns.WriteAsync(sendData, 0, sendData.Length);
+            t.GetAwaiter().GetResult();
         }
 
-        private static async Task<string> GetMsg01(TcpClient client, NetworkStream ns)
+        private static string GetMsg01(TcpClient client, NetworkStream ns)
         {
             var length = Common.ReceiveLength(ns);
-
-
-            await Common.SendLength(length, ns);
+            Common.SendLength(length, ns);
             byte[] bytes = new byte[length];
 
             bytes = Common.ByteReader(length, ns);
@@ -250,7 +249,7 @@ namespace TcpFunction
             var length = bytes[0] * 256 * 256 * 256 + bytes[1] * 256 * 256 + bytes[2] * 256 + bytes[3] * 1;
             return length;
         }
-        public static async Task SendLength(int length, NetworkStream ns)
+        public static void SendLength(int length, NetworkStream ns)
         {
             var sendDataPreviw = new byte[]
             {
@@ -259,7 +258,8 @@ namespace TcpFunction
                 Convert.ToByte((length>>8)%256),
                 Convert.ToByte((length>>0)%256),
             };
-            await ns.WriteAsync(sendDataPreviw, 0, 4);
+            var t = ns.WriteAsync(sendDataPreviw, 0, 4);
+            t.GetAwaiter().GetResult();
         }
     }
 }

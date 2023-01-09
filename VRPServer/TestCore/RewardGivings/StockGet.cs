@@ -34,7 +34,7 @@ namespace TestCore.RewardGivings
         CommonClass.ModelTranstraction.AwardsGivingPass.Result r8 = null;
         CommonClass.ModelTranstraction.AwardsGivingPass.Result r9 = null;
         [SetUp]
-        public void Setup()
+        public async void Setup()
         {
             /*
              *  此测试模拟股份交易，测试股份转让，包括资金够，资金不够
@@ -279,7 +279,7 @@ namespace TestCore.RewardGivings
             Thread.Sleep(100);
 
 
-            msg2 = rm.TradeCoinF(new CommonClass.ModelTranstraction.TradeCoin()
+            msg2 =   rm.TradeCoinF(new CommonClass.ModelTranstraction.TradeCoin()
             {
                 c = "TradeCoin",
                 addrBussiness = "3BkRN6seLYYgSqGQNX3o1poEzCXhGK3vTs",

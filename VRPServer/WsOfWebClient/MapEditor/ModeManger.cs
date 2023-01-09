@@ -29,7 +29,7 @@ namespace WsOfWebClient.MapEditor
             int indexOfSelect { get; set; }
             List<aModel> material { get; set; }
             //  private static async Task<CommonClass.MapEditor.Position>
-            internal async Task GetCatege(Random rm)
+            internal void GetCatege(Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
@@ -38,7 +38,7 @@ namespace WsOfWebClient.MapEditor
                     {
                         c = "GetCatege",
                     });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 //Consol.WriteLine(json);
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
                 // return obj;
@@ -55,7 +55,7 @@ namespace WsOfWebClient.MapEditor
                 material = x.ToList();
                 // return obj;
             }
-            internal async Task<List<string>> GetModelType(Random rm)
+            internal List<string> GetModelType(Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
@@ -64,12 +64,12 @@ namespace WsOfWebClient.MapEditor
                     {
                         c = "GetModelType",
                     });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 //Consol.WriteLine(json);
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
                 return obj;
             }
-            public async Task SendModelTypes(List<string> modelTypes, WebSocket webSocket)
+            public void SendModelTypes(List<string> modelTypes, WebSocket webSocket)
             {
                 // this.ID = "n" + Guid.NewGuid().ToString("N");
                 var sn = new
@@ -78,8 +78,7 @@ namespace WsOfWebClient.MapEditor
                     modelTypes = modelTypes
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sn);
-                var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(sendMsg, webSocket);
             }
             public async Task AddModel(aModel m, WebSocket webSocket)
             {
@@ -95,7 +94,7 @@ namespace WsOfWebClient.MapEditor
                 var sendData = Encoding.UTF8.GetBytes(sendMsg);
                 await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
             }
-            public async Task DrawModel(aModel m, CommonClass.databaseModel.detailmodel dm, WebSocket webSocket)
+            public void DrawModel(aModel m, CommonClass.databaseModel.detailmodel dm, WebSocket webSocket)
             {
                 //this.ID = "n" + Guid.NewGuid().ToString("N");
                 var sn = new
@@ -110,10 +109,10 @@ namespace WsOfWebClient.MapEditor
                     r = dm.rotatey
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sn);
-                var sendData = Encoding.ASCII.GetBytes(sendMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(sendMsg, webSocket);
             }
-            public async Task SaveObjF(SaveObj so, WebSocket webSocket, Random rm, string author, bool isAdministartor)
+
+            public void SaveObjF(SaveObj so, WebSocket webSocket, Random rm, string author, bool isAdministartor)
             {
                 if (material[this.indexOfSelect].author == author)
                 { }
@@ -123,7 +122,7 @@ namespace WsOfWebClient.MapEditor
                 }
                 else
                 {
-                    await ShowMsg(webSocket, "只有管理员与作者才能编辑该模型！");
+                    ShowMsg(webSocket, "只有管理员与作者才能编辑该模型！");
                     return;
                 }
                 if (this.addModel)
@@ -140,7 +139,7 @@ namespace WsOfWebClient.MapEditor
                         y = so.y,
                         z = so.z
                     });
-                    await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                    Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 }
                 else
                 {
@@ -155,7 +154,7 @@ namespace WsOfWebClient.MapEditor
                         y = so.y,
                         z = so.z
                     });
-                    await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                    Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
                     ShowOBJFile sf = new ShowOBJFile()
                     {
@@ -163,7 +162,7 @@ namespace WsOfWebClient.MapEditor
                         x = so.x,
                         z = so.z
                     };
-                    await this.ShowObj(sf, webSocket, rm);
+                    this.ShowObj(sf, webSocket, rm);
                 }
                 //var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.Position>(json);
                 //return obj;
@@ -207,7 +206,7 @@ namespace WsOfWebClient.MapEditor
             //    throw new NotImplementedException();
             //}
 
-            internal async Task GetCrossBG(Position baseCross, WebSocket webSocket, Random rm)
+            internal void GetCrossBG(Position baseCross, WebSocket webSocket, Random rm)
             {
                 string firstRoadcode, secondRoadcode;
                 int firstRoadorder, secondRoadorder;
@@ -238,7 +237,7 @@ namespace WsOfWebClient.MapEditor
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ubs);
                 var crossName = $"{firstRoadcode}{firstRoadorder}{secondRoadcode}{secondRoadorder}";
-                var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var respon = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 {
                     if (Directory.Exists($"imgT/{crossName}/"))
                     {
@@ -260,12 +259,13 @@ namespace WsOfWebClient.MapEditor
                     //  name=$"{ubs.firstRoadcode}{ubs.}{}{}"
                 };
                 sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
-                var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
 
+                var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                var t = webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                t.GetAwaiter().GetResult();
             }
 
-            internal async Task<aModel> GetModel(Random rm)
+            internal aModel GetModel(Random rm)
             {
                 if (this.material[this.indexOfSelect].initialized)
                 {
@@ -273,19 +273,18 @@ namespace WsOfWebClient.MapEditor
                 }
                 else
                 {
-                    await this.material[this.indexOfSelect].initialize(rm);
+                    this.material[this.indexOfSelect].initialize(rm);
                     this.material[this.indexOfSelect].initialized = true;
                 }
                 return this.material[this.indexOfSelect];
-                // throw new NotImplementedException();
             }
 
-            public async Task ShowObj(ShowOBJFile sf, WebSocket webSocket, Random rm)
+            public void ShowObj(ShowOBJFile sf, WebSocket webSocket, Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sf);
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.ObjResult>(json);
 
 
@@ -293,8 +292,8 @@ namespace WsOfWebClient.MapEditor
                 for (int i = 0; i < obj.detail.Count; i++)
                 {
                     var objInfomation = this.material.Find(item => item.amID == obj.detail[i].amodel);
-                    await objInfomation.initialize(rm);
-                    await this.DrawModel(objInfomation, obj.detail[i], webSocket);
+                    objInfomation.initialize(rm);
+                    this.DrawModel(objInfomation, obj.detail[i], webSocket);
                 }
             }
 
@@ -327,7 +326,7 @@ namespace WsOfWebClient.MapEditor
                 }
                 return result;
             }
-            internal async Task SetBackground(bool isUsed, Position baseCross, string address, Random rm, WebSocket webSocket)
+            internal void SetBackground(bool isUsed, Position baseCross, string address, Random rm, WebSocket webSocket)
             {
                 string firstRoadcode, secondRoadcode;
                 int firstRoadorder, secondRoadorder;
@@ -358,7 +357,7 @@ namespace WsOfWebClient.MapEditor
                     var index = rm.Next(0, roomUrls.Count);
                     var roomUrl = roomUrls[index];
                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(ubs);
-                    var respon = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                    var respon = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                     //GetBackgroundScene.Result r = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBackgroundScene.Result>(respon);
                     //var sm = new
                     //{
@@ -370,7 +369,7 @@ namespace WsOfWebClient.MapEditor
                     //await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
             }
-            internal async Task SetBackground(SetBG sb, Position baseCross, string address, Random rm, WebSocket webSocket)
+            internal void SetBackground(SetBG sb, Position baseCross, string address, Random rm, WebSocket webSocket)
             {
                 string firstRoadcode, secondRoadcode;
                 int firstRoadorder, secondRoadorder;
@@ -421,7 +420,7 @@ namespace WsOfWebClient.MapEditor
                             var index = rm.Next(0, roomUrls.Count);
                             var roomUrl = roomUrls[index];
                             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sbgs);
-                            await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                            Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                         }
                     }
                     else
@@ -500,7 +499,7 @@ namespace WsOfWebClient.MapEditor
                     }
                 }
             }
-            internal async Task ShowMsg(WebSocket webSocket, string msg)
+            internal void ShowMsg(WebSocket webSocket, string msg)
             {
                 var sm = new
                 {
@@ -508,9 +507,8 @@ namespace WsOfWebClient.MapEditor
                     Msg = msg
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
-                var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-                // throw new NotImplementedException();
+
+                CommonF.SendData(sendMsg, webSocket);
             }
 
 
@@ -539,7 +537,7 @@ namespace WsOfWebClient.MapEditor
                         c = "DelObjInfo",
                         modelID = this.ID,
                     });
-                    await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                    Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
                     ShowOBJFile sf = new ShowOBJFile()
                     {
@@ -547,15 +545,15 @@ namespace WsOfWebClient.MapEditor
                         x = dm.x,
                         z = dm.z,
                     };
-                    await this.ShowObj(sf, webSocket, rm);
+                    this.ShowObj(sf, webSocket, rm);
                 }
                 else
                 {
-                    await this.ShowMsg(webSocket, "只有管理员才能删除");
+                    this.ShowMsg(webSocket, "只有管理员才能删除");
                 }
             }
             readonly char[] splits = new char[] { '\r', '\n' };
-            internal async Task<string> CreateNew(CreateNewObj cno, string author, List<string> modelTypesInput, Random rm)
+            internal string CreateNew(CreateNewObj cno, string author, List<string> modelTypesInput, Random rm)
             {
                 var modelTypes = new List<string>();
                 for (int i = 0; i < modelTypesInput.Count; i += 2)
@@ -620,7 +618,7 @@ namespace WsOfWebClient.MapEditor
                         var index = rm.Next(0, roomUrls.Count);
                         var roomUrl = roomUrls[index];
                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(cn);
-                        return await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                        return Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
                     }
                 }
@@ -642,7 +640,7 @@ namespace WsOfWebClient.MapEditor
                     c = "GetModelDetail",
                     modelID = gmd.name
                 });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
                 if (string.IsNullOrEmpty(json)) { }
                 else
@@ -652,7 +650,7 @@ namespace WsOfWebClient.MapEditor
                 }
             }
 
-            internal async Task UseModelObj(WebSocket webSocket, UseModelObj umo, Random rm, bool isAdministartor)
+            internal void UseModelObj(WebSocket webSocket, UseModelObj umo, Random rm, bool isAdministartor)
             {
                 if (isAdministartor)
                 {
@@ -664,16 +662,16 @@ namespace WsOfWebClient.MapEditor
                         modelID = umo.name,
                         Used = umo.used
                     });
-                    await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                    Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 }
                 else
                 {
-                    await this.ShowMsg(webSocket, "只有管理员才能进行此操作！");
+                    this.ShowMsg(webSocket, "只有管理员才能进行此操作！");
                 }
 
             }
 
-            internal async Task ClearModelObj(WebSocket webSocket, Random rm, bool isAdministartor)
+            internal void ClearModelObj(WebSocket webSocket, Random rm, bool isAdministartor)
             {
                 if (isAdministartor)
                 {
@@ -683,11 +681,11 @@ namespace WsOfWebClient.MapEditor
                     {
                         c = "ClearModelObj"
                     });
-                    await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                    Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 }
                 else
                 {
-                    await this.ShowMsg(webSocket, "只有管理元才能进行此操作！");
+                    this.ShowMsg(webSocket, "只有管理元才能进行此操作！");
                 }
 
             }
@@ -701,7 +699,7 @@ namespace WsOfWebClient.MapEditor
                     MercatorX = lfh.MercatorX,
                     MercatorY = lfh.MercatorY,
                 });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
                 if (string.IsNullOrEmpty(json)) { }
                 else
@@ -710,7 +708,7 @@ namespace WsOfWebClient.MapEditor
                     await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
             }
-            internal async Task DownloadModel(WebSocket webSocket, GetModelDetail gmd, Random rm)
+            internal void DownloadModel(WebSocket webSocket, GetModelDetail gmd, Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
@@ -719,7 +717,7 @@ namespace WsOfWebClient.MapEditor
                     c = "GetModelDetail",
                     modelID = gmd.name
                 });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
                 if (string.IsNullOrEmpty(json)) { }
                 else
@@ -727,13 +725,12 @@ namespace WsOfWebClient.MapEditor
                     var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.ModelDetail>(json);
                     obj.c = "DownloadModel";
                     json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                    var sendData = Encoding.UTF8.GetBytes(json);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(json, webSocket);
                 }
             }
 
             int startIndex = 0;
-            internal async Task GetUnLockedModelID(WebSocket webSocket, Random rm, string direction)
+            internal void GetUnLockedModelID(WebSocket webSocket, Random rm, string direction)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
@@ -743,7 +740,7 @@ namespace WsOfWebClient.MapEditor
                     startIndex = startIndex,
                     direction = direction
                 });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 //Consol.WriteLine(json);
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -758,9 +755,9 @@ namespace WsOfWebClient.MapEditor
                             mctX = Convert.ToInt32(result.x * 256),
                             mctY = Convert.ToInt32(result.z * -256),
                         };
+
                         sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sn);
-                        var sendData = Encoding.ASCII.GetBytes(sendMsg);
-                        await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                        CommonF.SendData(sendMsg, webSocket);
 
                         ShowOBJFile sf = new ShowOBJFile()
                         {
@@ -768,7 +765,7 @@ namespace WsOfWebClient.MapEditor
                             z = result.z,
                             c = "ShowOBJFile"
                         };
-                        await this.ShowObj(sf, webSocket, rm);
+                        this.ShowObj(sf, webSocket, rm);
                     }
                 }
             }
@@ -777,14 +774,14 @@ namespace WsOfWebClient.MapEditor
         partial class ModeManger
         {
             int chargingOrder = 100000000;
-            public async Task ChargingSend(WebSocket webSocket, Random rm, CommonClass.Finance.Charging cObj, string addr)
+            public void ChargingSend(WebSocket webSocket, Random rm, CommonClass.Finance.Charging cObj, string addr)
             {
                 cObj.c = "Charging";
                 cObj.ChargingAddr = addr;
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(cObj);
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 CommonClass.Finance.Charging.Result r
                     = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.Charging.Result>(json);
                 this.chargingOrder = r.chargingOrder;
@@ -793,7 +790,7 @@ namespace WsOfWebClient.MapEditor
                 // await this.ShowMsg(webSocket, r.msg);
             }
 
-            async Task showItemOfCharging(WebSocket webSocket, int row, int chargingOrder, int index)
+            void showItemOfCharging(WebSocket webSocket, int row, int chargingOrder, int index)
             {
                 CommonClass.Finance.ChargingLookFor condition = new CommonClass.Finance.ChargingLookFor()
                 {
@@ -802,7 +799,7 @@ namespace WsOfWebClient.MapEditor
                 };
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(condition);
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 if (string.IsNullOrEmpty(json)) { }
                 else
                 {
@@ -815,20 +812,19 @@ namespace WsOfWebClient.MapEditor
                         row = row
                     };
                     json = Newtonsoft.Json.JsonConvert.SerializeObject(objWeb);
-                    var sendData = Encoding.UTF8.GetBytes(json);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(json, webSocket);
                 }
             }
 
             Dictionary<int, bool> showItemDic = new Dictionary<int, bool>() { };
 
-            internal async Task ChargingRefresh(WebSocket webSocket, Random rm)
+            internal void ChargingRefresh(WebSocket webSocket, Random rm)
             {
                 var obj = new { c = "ChargingMax" };
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                var countStr = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var countStr = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 this.chargingOrder = Convert.ToInt32(countStr);
                 for (int i = 0; i < 10; i++)
                 {
@@ -836,7 +832,7 @@ namespace WsOfWebClient.MapEditor
                     var row = i + 0;
                     if (indexOfData > 0)
                     {
-                        await showItemOfCharging(webSocket, row, indexOfData, index);
+                        showItemOfCharging(webSocket, row, indexOfData, index);
                     }
                 }
             }
@@ -855,7 +851,7 @@ namespace WsOfWebClient.MapEditor
                     var row = i + 0;
                     if (indexOfData > 0)
                     {
-                        await showItemOfCharging(webSocket, row, indexOfData, index);
+                        showItemOfCharging(webSocket, row, indexOfData, index);
                     }
                 }
             }
@@ -869,7 +865,7 @@ namespace WsOfWebClient.MapEditor
                     var row = i + 0;
                     if (indexOfData > 0)
                     {
-                        await showItemOfCharging(webSocket, row, indexOfData, index);
+                        showItemOfCharging(webSocket, row, indexOfData, index);
                     }
                 }
             }

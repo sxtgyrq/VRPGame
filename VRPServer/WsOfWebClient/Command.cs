@@ -19,7 +19,7 @@ namespace WsOfWebClient
     {
         public string RefererAddr { get; set; }
     }
-    
+
 
     public class CancleLookForBuildings : CommonClass.Command { }
     public class LookForBuildings : CommonClass.Command
@@ -207,4 +207,8 @@ namespace WsOfWebClient
 
     }
 
+    public class RemoveTaskCopy : CommonClass.Command
+    {
+        public string Code { get; set; }
+    }
 }

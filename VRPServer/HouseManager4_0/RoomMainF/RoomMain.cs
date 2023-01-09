@@ -41,6 +41,8 @@ namespace HouseManager4_0.RoomMainF
             this.modelR = new Manager_Resistance(this);
             this.modelC = new Manager_Connection(this);
             this.modelL = new Manager_Level(this);
+            this.taskM = new Manager_TaskCopy(this);
+
             lock (PlayerLock)
             {
                 this._Players = new Dictionary<string, RoleInGame>();
@@ -69,6 +71,105 @@ namespace HouseManager4_0.RoomMainF
         public string CheckCarStateF(CheckCarState ccs)
         {
             return this.checkE.CheckCarStateF(ccs);
+        }
+
+        public string GetFightSituationF(GetFightSituation fs)
+        {
+            List<string> parterns = new List<string>();
+            List<string> opponents = new List<string>();
+
+            lock (this.PlayerLock)
+            {
+                if (this._Players.ContainsKey(fs.Key))
+                {
+                    var player = this._Players[fs.Key];
+                    foreach (var item in this._Players)
+                    {
+                        if (item.Value.TheLargestHolderKey == player.Key)
+                        {
+                            parterns.Add(item.Key);
+                        }
+                        else if (item.Value.Key == player.TheLargestHolderKey)
+                        {
+                            parterns.Add(item.Key);
+                        }
+                        else if (item.Value.TheLargestHolderKey == player.TheLargestHolderKey)
+                        {
+                            parterns.Add(item.Key);
+                        }
+                        else if (item.Value.Key == player.Key)
+                        {
+                            parterns.Add(item.Key);
+                        }
+                        if (item.Value.playerType == RoleInGame.PlayerType.NPC)
+                        {
+                            var npc = (NPC)item.Value;
+                            if (this.CheckIsEnemy(npc, player))
+                            {
+                                opponents.Add(npc.Key);
+                            }
+                        }
+                    }
+                    if (player.playerType == RoleInGame.PlayerType.player)
+                    {
+
+                    }
+
+                }
+            }
+            var situation = new GetFightSituation.GetFightSituationResult()
+            {
+                c = "GetFightSituationResult",
+                Opponents = opponents.ToArray(),
+                Parters = parterns.ToArray(),
+            };
+            return Newtonsoft.Json.JsonConvert.SerializeObject(situation);
+        }
+
+        public string RemoveTaskCopyF(RemoveTaskCopyM gtd)
+        {
+            if (this._Players.ContainsKey(gtd.Key))
+            {
+                var role = this._Players[gtd.Key];
+                if (role.playerType == RoleInGame.PlayerType.player)
+                {
+                    var player = (Player)role;
+                    this.taskM.Delete(player, gtd.Code);
+                    //   player.initializeTaskCopy();
+                }
+            }
+            {
+                return "gg";
+            }
+        }
+
+        public string GetTaskCopyDetailF(GetTaskCopyDetail gtd)
+        {
+
+            if (this._Players.ContainsKey(gtd.Key))
+            {
+                var role = this._Players[gtd.Key];
+                if (role.playerType == RoleInGame.PlayerType.player)
+                {
+                    var player = (Player)role;
+                    var list = this.taskM.Display(player, player.taskCopys);
+                    var obj = new GetTaskCopyDetail.GetTaskCopyResult()
+                    {
+                        c = "GetTaskCopyResult",
+                        Detail = list.ToArray(),
+                    };
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                }
+            }
+            {
+                var list = new List<string>().ToArray();
+                var obj = new GetTaskCopyDetail.GetTaskCopyResult()
+                {
+                    c = "GetTaskCopyResult",
+                    Detail = list,
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            }
         }
 
         public string Statictis(ServerStatictis ss)

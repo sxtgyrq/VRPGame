@@ -1,6 +1,7 @@
 ﻿using CommonClass;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace HouseManager4_0.RoomMainF
@@ -11,6 +12,28 @@ namespace HouseManager4_0.RoomMainF
         //{
         //    return GetRandomPosition(withWeight, Program.dt);
         //}
+        public int GetRandomPosition(bool withWeight, GetRandomPos gp, out bool isFull)
+        {
+            int fpCount = gp.GetFpCount();
+            List<int> material = new List<int>(fpCount);
+            for (int i = 0; i < fpCount; i++)
+            {
+                material.Add(i);
+            }
+            if (material.Count(item => !this.FpIsUsing(item)) < 3)
+            {
+                isFull = true;
+                return -1;
+            }
+            else
+            {
+                isFull = false;
+                return GetRandomPosition(withWeight, gp);
+            }
+            //for(int i=0;)
+
+        }
+
         public int GetRandomPosition(bool withWeight, GetRandomPos gp)
         {
             int index;
@@ -23,11 +46,28 @@ namespace HouseManager4_0.RoomMainF
                         continue;
                     }
             }
-            while (this.FpIsUsing(index)); 
+            while (this.FpIsUsing(index));
             return index;
         }
 
-
+        /// <summary>
+        /// 此段代码debug时用。
+        /// </summary>
+        /// <param name="gp"></param>
+        /// <param name="searchName"></param>
+        /// <returns></returns>
+        int FindIndexByFpName (GetRandomPos gp,string searchName)
+        {
+            for (int i = 0; i < gp.GetFpCount(); i++) 
+            {
+                var fp = gp.GetFpByIndex(i);
+                if (fp.FastenPositionName.Contains(searchName)) 
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
         public GetPositionResult GetPosition(GetPosition getPosition)
         {

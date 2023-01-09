@@ -19,7 +19,7 @@ namespace WsOfWebClient.BLL
             /// </summary>
             public string Key { get; set; }
         }
-        internal static async Task<CheckIsOKResult> checkIsOK(CheckSession checkSession, State s)
+        internal static CheckIsOKResult checkIsOK(CheckSession checkSession, State s)
         {
             //
             try
@@ -33,7 +33,7 @@ namespace WsOfWebClient.BLL
                 if (Room.CheckSign(playerCheck))
                 {
                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(playerCheck);
-                    var reqResult = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[playerCheck.RoomIndex], sendMsg);
+                    var reqResult = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[playerCheck.RoomIndex], sendMsg);
                     if (reqResult.ToLower() == "ok")
                     {
                         s.roomIndex = playerCheck.RoomIndex;

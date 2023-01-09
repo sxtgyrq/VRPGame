@@ -93,7 +93,7 @@ namespace HouseManager4_0
                         }
                     }
                 }
-                var msgL = this.sendMsg(notifyMsg).Count;
+                var msgL = this.sendSeveralMsgs(notifyMsg).Count;
                 msgL++;
                 //for (var i = 0; i < notifyMsg.Count; i += 2)
                 //{
@@ -414,7 +414,7 @@ namespace HouseManager4_0
                                     }
                                 }
                             }
-                            this.sendMsg(notifyMsg);
+                            this.sendSeveralMsgs(notifyMsg);
                         };
                         showCross();
                         player.ShowCrossAfterWebUpdate = showCross;
@@ -444,7 +444,7 @@ namespace HouseManager4_0
                     player.getCar().setState(player, ref notifyMsg, oldState);
                     player.SendBG(player, ref notifyMsg);
                 }
-                this.sendMsg(notifyMsg);
+                this.sendSeveralMsgs(notifyMsg);
                 p();
             }
             else
@@ -453,7 +453,7 @@ namespace HouseManager4_0
                 var reduceValue = player.getCar().ability.ReduceBusinessAndVolume(player, player.getCar(), ref notifyMsg);
                 reduceValue = Math.Max(0, reduceValue);
                 SelectionIsWrong(player, reduceValue, notifyMsg);
-                this.sendMsg(notifyMsg);
+                this.sendSeveralMsgs(notifyMsg);
                 player.playerSelectDirectionTh = new Thread(() => StartSelectThreadB(selections, selectionCenter, player, oldState, p));
             }
 
@@ -561,12 +561,7 @@ namespace HouseManager4_0
             public List<string> notifyMsgs = new List<string>();
             public void send(Engine e)
             {
-                for (var i = 0; i < notifyMsgs.Count; i += 2)
-                {
-                    var url = notifyMsgs[i];
-                    var sendMsg = notifyMsgs[i + 1];
-                    e.sendMsg(url, sendMsg);
-                }
+                e.sendSeveralMsgs(this.notifyMsgs); 
             }
         }
 
@@ -580,6 +575,20 @@ namespace HouseManager4_0
                 {
                     p();
                 }
+                else if (
+                  player.playerType == RoleInGame.PlayerType.player &&
+                  player.improvementRecord.speedValue > 0)
+                {
+                    if (that.rm.Next(0, 100) < 50)
+                    {
+                        this.ThreadSleep(5);
+                        p();
+                    }
+                    else
+                    {
+                        StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
+                    }
+                }
                 else
                 {
                     StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
@@ -590,8 +599,22 @@ namespace HouseManager4_0
                 this.ThreadSleep(Math.Max(5, startT));
                 if (player.playerType == RoleInGame.PlayerType.NPC || player.Bust)
                 {
-                    this.ThreadSleep(500);
+                    this.ThreadSleep(50);
                     p();
+                }
+                else if (
+                    player.playerType == RoleInGame.PlayerType.player &&
+                    player.improvementRecord.speedValue > 0)
+                {
+                    if (that.rm.Next(0, 100) < 50)
+                    {
+                        this.ThreadSleep(5);
+                        p();
+                    }
+                    else
+                    {
+                        StartSelectThreadA(goPath.path[step].selections, goPath.path[step].selectionCenter, (Player)player, p, goPath);
+                    }
                 }
                 else
                 {

@@ -129,6 +129,18 @@ namespace CommonClass
         public string targetRoleID { get; set; }
         public string actionRoleID { get; set; }
     }
+    public class ElectricMarkNotify : CommandNotify
+    {
+        public double[] lineParameter { get; set; }
+    }
+    public class WaterMarkNotify : CommandNotify
+    {
+        public double[] lineParameter { get; set; }
+    }
+    public class FireMarkNotify : CommandNotify
+    {
+        public double[] lineParameter { get; set; }
+    }
     public class ViewSearch : CommandNotify
     {
         public int mctX { get; set; }
@@ -737,6 +749,15 @@ namespace CommonClass
 
         public string OnLineStr { get; set; }
         public string KeyLookfor { get; set; }
+
+        //public long SpeedValue { get; set; }
+        //public long DefenceValue { get; set; }
+        //public long AttackValue { get; set; }
+        //public long LoseValue { get; set; }
+        //public long ConfuseValue { get; set; }
+
+        // public long SpeedValue { get; set; }
+        // public long SpeedValue { get; set; }
         //  public int 
     }
 
@@ -750,12 +771,14 @@ namespace CommonClass
         /// </summary> 
         public int recruit { get; set; }
 
-        public int magicViolent { get; set; }
+        public int magicViolentValue { get; set; }
+        public int magicViolentProbability { get; set; }
+
         public int controlImprove { get; set; }
         //public driversource.Resistance Ignore { get; set; }
 
-        public int SpeedImprove { get; set; }
-        public int DefenseImprove { get; set; }
+        public int SpeedImproveProbability { get; set; }
+        public int DefenseImproveProbability { get; set; }
         public int AttackImprove { get; set; }
 
         public int defensiveOfElectic { get; set; }
@@ -766,16 +789,64 @@ namespace CommonClass
         public int defensiveOfAmbush { get; set; }
         public int defensiveOfPhysics { get; set; }
 
-        public int ignoreElectic { get; set; }
-        public int ignoreOfWater { get; set; }
-        public int ignoreFire { get; set; }
+        //public int ignoreElectic { get; set; }
+        //public int ignoreOfWater { get; set; }
+        //public int ignoreFire { get; set; }
         public int ignoreLose { get; set; }
         public int ignoreConfuse { get; set; }
         public int ignoreAmbush { get; set; }
         public int ignorePhysics { get; set; }
         public Dictionary<int, int> buildingReward { get; set; }
         public int race { get; set; }
+
+        public long SpeedValue { get; set; }
+        public long DefenceValue { get; set; }
+        public long AttackValue { get; set; }
+        public long LoseValue { get; set; }
+        public long ConfuseValue { get; set; }
+        public int ignorePhysicsValue { get; set; }
+
+        public int IgnoreFireMagicValue { get; set; }
+        public int IgnoreElectricMagicValue { get; set; }
+        public int IgnoreWaterMagicValue { get; set; }
+
+        public int IgnoreAmbushValue { get; set; }
+        public int IgnoreLostValue { get; set; }
+        public int IgnoreConfuseValue { get; set; }
+
+
+        public int SpeedImproveValue { get; set; }
+        public int DefenseImproveValue { get; set; }
+        public int AttackImproveProbability { get; set; }
+        public int AttackImproveValue { get; set; }
+        public int AmbushPropertyByDefendMagic { get; set; }
+        public int ConfusePropertyByDefendMagic { get; set; }
+        public int LostPropertyByDefendMagic { get; set; }
+        public int DefenceAttackMagicAdd { get; set; }
+        public int DefencePhysicsAdd { get; set; }
     }
 
+    public class GetFightSituation : Command
+    {
+        public string Key { get; set; }
+        public class GetFightSituationResult : Command
+        {
+            public string[] Parters { get; set; }
+            public string[] Opponents { get; set; }
+        }
+    }
 
+    public class GetTaskCopyDetail : Command 
+    {
+        public string Key { get; set; }
+        public class GetTaskCopyResult : Command
+        {
+            public string[] Detail { get; set; } 
+        }
+    }
+    public class RemoveTaskCopyM : Command 
+    {
+        public string Key { get; set; }
+        public string Code { get; set; }
+    }
 }

@@ -40,7 +40,9 @@ namespace ConsoleBitcoinChainApp
                     {
                         var addr = list[i];
                         BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
-                        var tradeDetail = Task.Run(() => t.GetTradeInfomationFromChain_v2()).Result;
+                        //tradeDetail = Task.Run(() => t.GetTradeInfomationFromChain_v2()).Result;
+                        var t1 = t.GetTradeInfomationFromChain_v2(); 
+                        var tradeDetail = t1.GetAwaiter().GetResult();
                         var json = Newtonsoft.Json.JsonConvert.SerializeObject(tradeDetail);
                         lock (Program.locker)
                             File.WriteAllText($"data/{addr}", json, System.Text.Encoding.UTF8);

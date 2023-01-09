@@ -35,10 +35,7 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
             }
-            for (var i = 0; i < msgs.Count; i += 2)
-            {
-                Startup.sendMsg(msgs[i], msgs[i + 1]);
-            }
+            Startup.sendSeveralMsgs(msgs); 
         }
 
         public void MarketUpdate(MarketPrice sa)
@@ -184,12 +181,7 @@ namespace HouseManager4_0.RoomMainF
                         }
                     }
 
-                for (var i = 0; i < notifyMsg.Count; i += 2)
-                {
-                    var url = notifyMsg[i];
-                    var sendMsg = notifyMsg[i + 1];
-                    Startup.sendMsg(url, sendMsg);
-                }
+                Startup.sendSeveralMsgs(notifyMsg);
             }
         }
 
@@ -238,12 +230,7 @@ namespace HouseManager4_0.RoomMainF
 
             }
 
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg); 
         }
 
 
@@ -260,7 +247,10 @@ namespace HouseManager4_0.RoomMainF
                 if (sellCount > 0)
                 {
                     if (role.playerType == RoleInGame.PlayerType.player)
+                    {
                         SendPromoteCountOfPlayer(ss.pType, (Player)role, ref notifyMsg);
+                        this.taskM.DiamondSell((Player)role);
+                    }
                     Thread th = new Thread(() => this.Market.Receive(ss.pType, sellCount));
                     th.Start();
                 }
@@ -284,6 +274,14 @@ namespace HouseManager4_0.RoomMainF
                     {
                         if (role.getCar().state == Car.CarState.waitAtBaseStation)
                         {
+                            if (role.getCar().ability.getDataCount("mile")[0] +
+                                role.getCar().ability.getDataCount("business")[0] +
+                                role.getCar().ability.getDataCount("volume")[0] +
+                                 role.getCar().ability.getDataCount("speed")[0] > 0)
+                            {
+                                taskM.TakeApartF(role);
+                            }
+
                             role.PromoteDiamondCount["mile"] += role.getCar().ability.getDataCount("mile")[0];
                             role.PromoteDiamondCount["business"] += role.getCar().ability.getDataCount("business")[0];
                             role.PromoteDiamondCount["volume"] += role.getCar().ability.getDataCount("volume")[0];
@@ -300,13 +298,7 @@ namespace HouseManager4_0.RoomMainF
                         }
                     }
                 }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                //Consol.WriteLine($"url:{url}");
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg); 
             return "";
         }
         public void Sell(SetSellDiamond ss)
@@ -350,13 +342,7 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
 
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                //Consol.WriteLine($"url:{url}");
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg); 
         }
 
 

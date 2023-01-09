@@ -10,9 +10,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static Model.SaveRoad;
 
 namespace WsOfWebClient
 {
+    public class CommonF
+    {
+        public static void SendData(string sendMsg, WebSocket webSocket)
+        {
+            var sendData = Encoding.UTF8.GetBytes(sendMsg);
+            var t = webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            t.GetAwaiter().GetResult();
+        }
+    }
     public partial class Room { }
     public partial class Room
     {
@@ -51,7 +61,7 @@ namespace WsOfWebClient
         }
         private static System.Random rm = new System.Random(DateTime.Now.GetHashCode());
 
-        internal static async Task<PlayerAdd_V2> getRoomNum(int websocketID, string playerName, string refererAddr)
+        internal static PlayerAdd_V2 getRoomNum(int websocketID, string playerName, string refererAddr)
         {
             int roomIndex = 0;
             {
@@ -63,8 +73,8 @@ namespace WsOfWebClient
                 }
                 else
                 {
-                    var frequency1 = await getFrequency(Room.roomUrls[index1]); ; //Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
-                    var frequency2 = await getFrequency(Room.roomUrls[index2]);
+                    var frequency1 = getFrequency(Room.roomUrls[index1]); ; //Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
+                    var frequency2 = getFrequency(Room.roomUrls[index2]);
                     //100代表1/120hz,这里的2000，极值是1Hz(12000)。极限是2Hz(24000)
                     var value1 = frequency1 < 12000 ? frequency1 : Math.Max(1, 24000 - frequency1);
                     var value2 = frequency2 < 12000 ? frequency2 : Math.Max(1, 24000 - frequency2);
@@ -97,15 +107,14 @@ namespace WsOfWebClient
             // throw new NotImplementedException();
         }
 
-        private static async Task<int> getFrequency(string roomUrl)
+        private static int getFrequency(string roomUrl)
         {
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new GetFrequency()
             {
                 c = "GetFrequency",
 
             });
-            var result = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
-
+            var result = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             return int.Parse(result);
         }
 
@@ -135,23 +144,27 @@ namespace WsOfWebClient
             return playerCheck.Check == check;
         }
 
-        public static async Task<State> GetRoomThenStart(State s, System.Net.WebSockets.WebSocket webSocket, string playerName, string refererAddr)
+        public static State GetRoomThenStart(State s, System.Net.WebSockets.WebSocket webSocket, string playerName, string refererAddr)
         {
             /*
              * 单人组队下
              */
             int roomIndex;
-            var roomInfo = await Room.getRoomNum(s.WebsocketID, playerName, refererAddr);
+            var roomInfo = Room.getRoomNum(s.WebsocketID, playerName, refererAddr);
             roomIndex = roomInfo.RoomIndex;
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
-            var receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
+            var receivedMsg = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
             if (receivedMsg == "ok")
             {
-                await WriteSession(roomInfo, webSocket);
+                WriteSession(roomInfo, webSocket);
                 s.roomIndex = roomIndex;
-                s = await setOnLine(s, webSocket);
+                s = setOnLine(s, webSocket);
 
+            }
+            else
+            {
+                NotifyMsg(webSocket, "进入房间失败！");
             }
             return s;
         }
@@ -162,7 +175,7 @@ namespace WsOfWebClient
         /// <param name="s"></param>
         /// <param name="webSocket"></param>
         /// <returns></returns>
-        public static async Task<State> setOnLine(State s, WebSocket webSocket)
+        public static State setOnLine(State s, WebSocket webSocket)
         {
             State result;
             {
@@ -224,12 +237,11 @@ namespace WsOfWebClient
                         c = "SetRobot",
                         modelBase64 = ConnectInfo.RobotBase64
                     });
-                    var sendData = Encoding.ASCII.GetBytes(msg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(msg, webSocket);
 
                     {
                         #region 校验响应
-                        var checkIsOk = await CheckRespon(webSocket, "SetRobot");
+                        var checkIsOk = CheckRespon(webSocket, "SetRobot");
                         if (checkIsOk) { }
                         else
                         {
@@ -239,7 +251,7 @@ namespace WsOfWebClient
                     }
                 }
                 {
-                    var checkIsOk = await addRMB(webSocket);
+                    var checkIsOk = addRMB(webSocket);
                     if (checkIsOk) { }
                     else
                     {
@@ -247,7 +259,7 @@ namespace WsOfWebClient
                     }
                 }
                 {
-                    var checkIsOk = await leaveGameIcon(webSocket);
+                    var checkIsOk = leaveGameIcon(webSocket);
                     if (checkIsOk) { }
                     else
                     {
@@ -255,7 +267,7 @@ namespace WsOfWebClient
                     }
                 }
                 {
-                    var checkIsOk = await ProfileIcon(webSocket);
+                    var checkIsOk = ProfileIcon(webSocket);
                     if (checkIsOk) { }
                     else
                     {
@@ -266,8 +278,8 @@ namespace WsOfWebClient
                 if (string.IsNullOrEmpty(ConnectInfo.DiamondObj))
                 {
 
-                    ConnectInfo.DiamondObj = await File.ReadAllTextAsync("model/diamond/untitled.obj");
-                    ConnectInfo.DiamondMtl = await File.ReadAllTextAsync("model/diamond/untitled.mtl");
+                    ConnectInfo.DiamondObj = File.ReadAllText("model/diamond/untitled.obj");
+                    ConnectInfo.DiamondMtl = File.ReadAllText("model/diamond/untitled.mtl");
                     ConnectInfo.DiamondJpg = new string[]
                     {
                         Convert.ToBase64String(  File.ReadAllBytes("model/diamond/black.jpg")),
@@ -284,12 +296,11 @@ namespace WsOfWebClient
                         mtlText = ConnectInfo.DiamondMtl,
                         imageBase64s = ConnectInfo.DiamondJpg
                     });
-                    var sendData = Encoding.ASCII.GetBytes(msg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(msg, webSocket);
 
                     {
                         #region 校验响应
-                        var checkIsOk = await CheckRespon(webSocket, "SetDiamond");
+                        var checkIsOk = CheckRespon(webSocket, "SetDiamond");
                         if (checkIsOk) { }
                         else
                         {
@@ -303,8 +314,8 @@ namespace WsOfWebClient
                     var bytes = File.ReadAllBytes("model/speedicon/walnut.jpg");
                     var Base64 = Convert.ToBase64String(bytes);
                     ConnectInfo.SpeedIconBase64 = Base64;
-                    ConnectInfo.SpeedMtl = await File.ReadAllTextAsync("model/speedicon/mfire.mtl");
-                    ConnectInfo.SpeedObj = await File.ReadAllTextAsync("model/speedicon/mfire.obj");
+                    ConnectInfo.SpeedMtl = File.ReadAllText("model/speedicon/mfire.mtl");
+                    ConnectInfo.SpeedObj = File.ReadAllText("model/speedicon/mfire.obj");
                 }
                 {
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new
@@ -314,12 +325,10 @@ namespace WsOfWebClient
                         Mtl = ConnectInfo.SpeedMtl,
                         Img = ConnectInfo.SpeedIconBase64
                     });
-                    var sendData = Encoding.ASCII.GetBytes(msg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                    CommonF.SendData(msg, webSocket);
                     {
                         #region 校验响应
-                        var checkIsOk = await CheckRespon(webSocket, "SetSpeedIcon");
+                        var checkIsOk = CheckRespon(webSocket, "SetSpeedIcon");
                         if (checkIsOk) { }
                         else
                         {
@@ -329,59 +338,71 @@ namespace WsOfWebClient
                     }
                 }
 
-                if (await SetModelCopy(new attackIcon(), webSocket)) { }
+                if (SetModelCopy(new attackIcon(), webSocket)) { }
                 else
                 {
                     return null;
                 }
                 shieldIcon si = new shieldIcon();
-                if (await SetModelCopy(si, webSocket)) { }
+                if (SetModelCopy(si, webSocket)) { }
                 else
                 {
                     return null;
                 }
                 confusePrepareIcon cpi = new confusePrepareIcon();
-                if (await SetModelCopy(cpi, webSocket)) { }
+                if (SetModelCopy(cpi, webSocket)) { }
                 else
                 {
                     return null;
                 }
                 lostPrepareIcon lpi = new lostPrepareIcon();
-                if (await SetModelCopy(lpi, webSocket)) { }
+                if (SetModelCopy(lpi, webSocket)) { }
                 else
                 {
                     return null;
                 }
                 ambushPrepareIcon api = new ambushPrepareIcon();
-                if (await SetModelCopy(api, webSocket)) { }
+                if (SetModelCopy(api, webSocket)) { }
                 else
                 {
                     return null;
                 }
                 waterIcon wi = new waterIcon();
-                if (await SetModelCopy(wi, webSocket)) { }
+                if (SetModelCopy(wi, webSocket)) { }
                 else
                 {
                     return null;
                 }
                 direction di = new direction();
-                if (await SetModelCopy(di, webSocket)) { }
+                if (SetModelCopy(di, webSocket)) { }
                 else
                 {
                     return null;
                 }
                 ModelConfig.directionArrowIcon da = new ModelConfig.directionArrowIcon();
-                if (await SetModelCopy(da, webSocket)) { }
+                if (SetModelCopy(da, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                ModelConfig.opponentIcon oi = new ModelConfig.opponentIcon();
+                if (SetModelCopy(oi, webSocket)) { }
+                else
+                {
+                    return null;
+                }
+                ModelConfig.teammateIcon ti = new ModelConfig.teammateIcon();
+                if (SetModelCopy(ti, webSocket)) { }
                 else
                 {
                     return null;
                 }
 
-                result = await setState(s, webSocket, LoginState.OnLine);
+                result = setState(s, webSocket, LoginState.OnLine);
 
                 {
                     #region 校验响应
-                    var checkIsOk = await CheckRespon(webSocket, "SetOnLine");
+                    var checkIsOk = CheckRespon(webSocket, "SetOnLine");
                     if (checkIsOk)
                     {
                         // UpdateAfter3DCreate();
@@ -392,25 +413,24 @@ namespace WsOfWebClient
                     }
                     #endregion
                 }
-                await initializeOperation(s);
+                initializeOperation(s);
             }
             return result;
         }
 
 
 
-        private static async Task<bool> SetModelCopy(interfaceTag.modelForCopy mp, WebSocket webSocket)
+        private static bool SetModelCopy(interfaceTag.modelForCopy mp, WebSocket webSocket)
         {
             if (string.IsNullOrEmpty(mp.Tag))
             {
                 var bytes = File.ReadAllBytes(mp.imgPath);
                 var Base64 = Convert.ToBase64String(bytes);
                 mp.SetImgBase64(Base64);
-                string mtl = await File.ReadAllTextAsync(mp.mtlPath);
+                string mtl = File.ReadAllText(mp.mtlPath);
                 mp.SetMtl(mtl);
-                string obj = await File.ReadAllTextAsync(mp.objPath);
+                string obj = File.ReadAllText(mp.objPath);
                 mp.setObj(obj);
-                // ConnectInfo.SpeedObj = await File.ReadAllTextAsync("model/speedicon/mfire.obj");
             }
             {
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new
@@ -420,12 +440,10 @@ namespace WsOfWebClient
                     Mtl = mp.GetMtl(),
                     Img = mp.GetImg(),
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
                 {
                     #region 校验响应
-                    var checkIsOk = await CheckRespon(webSocket, mp.Command);
+                    var checkIsOk = CheckRespon(webSocket, mp.Command);
                     if (checkIsOk)
                     {
                         return true;
@@ -741,7 +759,7 @@ namespace WsOfWebClient
             }
         }
 
-        private static async Task<bool> ProfileIcon(WebSocket webSocket)
+        private static bool ProfileIcon(WebSocket webSocket)
         {
             if (ConnectInfo.ProfileModel.Length == 0)
             {
@@ -766,11 +784,9 @@ namespace WsOfWebClient
                     c = "SetProfileIcon",
                     data = ConnectInfo.ProfileModel,
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
             }
-            var checkIsOk = await CheckRespon(webSocket, "ProfileIcon");
+            var checkIsOk = CheckRespon(webSocket, "ProfileIcon");
             if (checkIsOk) { return true; }
             else
             {
@@ -778,7 +794,7 @@ namespace WsOfWebClient
             }
         }
 
-        private static async Task<bool> leaveGameIcon(WebSocket webSocket)
+        private static bool leaveGameIcon(WebSocket webSocket)
         {
             if (ConnectInfo.LeaveGameModel.Length == 0)
             {
@@ -803,11 +819,9 @@ namespace WsOfWebClient
                     c = "SetLeaveGameIcon",
                     data = ConnectInfo.LeaveGameModel,
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
             }
-            var checkIsOk = await CheckRespon(webSocket, "SetLeaveGameIcon");
+            var checkIsOk = CheckRespon(webSocket, "SetLeaveGameIcon");
             if (checkIsOk) { return true; }
             else
             {
@@ -821,18 +835,18 @@ namespace WsOfWebClient
         /// <param name="webSocket"></param>
         /// <param name="v"></param>
         /// <returns></returns>
-        private static async Task<bool> CheckRespon(WebSocket webSocket, string checkValue)
+        private static bool CheckRespon(WebSocket webSocket, string checkValue)
         {
             var timeOut = new CancellationTokenSource(1500000).Token;
-            var resultAsync = await Startup.ReceiveStringAsync(webSocket, timeOut);
+            var resultAsync = Startup.ReceiveStringAsync(webSocket, timeOut);
             if (resultAsync.result == checkValue)
             {
                 return true;
             }
             else
             {
-                //Consol.WriteLine($"{resultAsync.result}校验{checkValue}失败！");
-                await webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
+                var t2 = webSocket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "错误的回话", new CancellationToken());
+                t2.GetAwaiter().GetResult();
                 return false;
             }
         }
@@ -842,7 +856,7 @@ namespace WsOfWebClient
         /// </summary>
         /// <param name="webSocket"></param>
         /// <returns></returns>
-        private static async Task<bool> addRMB(WebSocket webSocket)
+        private static bool addRMB(WebSocket webSocket)
         {
             if (ConnectInfo.YuanModel == "")
             {
@@ -857,13 +871,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.YuanModel,
                     faceValue = "model"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk) { }
                 else
                 {
@@ -892,13 +904,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB100,
                     faceValue = "rmb100"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk) { }
                 else
                 {
@@ -927,13 +937,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB50,
                     faceValue = "rmb50"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk) { }
                 else
                 {
@@ -962,12 +970,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB20,
                     faceValue = "rmb20"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk) { }
                 else
                 {
@@ -996,13 +1003,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB10,
                     faceValue = "rmb10"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk) { }
                 else
                 {
@@ -1031,12 +1036,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB5,
                     faceValue = "rmb5"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk)
                 {
                     //return true;
@@ -1068,12 +1072,11 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB1,
                     faceValue = "rmb1"
                 });
-                var sendData = Encoding.ASCII.GetBytes(msg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(msg, webSocket);
             }
             #region 校验响应
             {
-                var checkIsOk = await CheckRespon(webSocket, "SetRMB");
+                var checkIsOk = CheckRespon(webSocket, "SetRMB");
                 if (checkIsOk)
                 {
                     return true;
@@ -1086,7 +1089,7 @@ namespace WsOfWebClient
             #endregion
         }
 
-        internal static async Task<string> magic(State s, Skill2 s2)
+        internal static string magic(State s, Skill2 s2)
         {
             Regex rex_Target = new Regex("^(?<target>[a-f0-9]{32})$");
 
@@ -1109,7 +1112,7 @@ namespace WsOfWebClient
                         selectIndex = 2
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
-                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                 }
             }
             return "";
@@ -1124,7 +1127,7 @@ namespace WsOfWebClient
                 rotationY = va.rotationY,
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
-            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return "";
             // throw new NotImplementedException();
         }
@@ -1137,7 +1140,7 @@ namespace WsOfWebClient
                 Key = s.Key,
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
-            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return "";
         }
         internal static async Task<string> magic(State s, Skill1 s1)
@@ -1163,7 +1166,7 @@ namespace WsOfWebClient
                         selectIndex = 1
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ms);
-                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                 }
             }
             return "";
@@ -1178,7 +1181,7 @@ namespace WsOfWebClient
                 Index = ds.driverIndex
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ssd);
-            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return "";
         }
 
@@ -1200,7 +1203,7 @@ namespace WsOfWebClient
                                 count = Math.Min(bd.count, 50)
                             };
                             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(sbd);
-                            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                         }; break;
                     default: { }; break;
                 }
@@ -1226,7 +1229,7 @@ namespace WsOfWebClient
                                 count = Math.Min(bd.count, 50)
                             };
                             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ssd);
-                            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                         }; break;
                     default: { }; break;
                 }
@@ -1245,7 +1248,7 @@ namespace WsOfWebClient
                     selectObjName = grfb.selectObjName
                 };
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
-                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 if (string.IsNullOrEmpty(info))
                 {
                     return s;
@@ -1325,7 +1328,7 @@ namespace WsOfWebClient
                             //  car = "car" + m.Groups["car"].Value,
                         };
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                        await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                        Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                     }
                 }
                 return "";
@@ -1344,7 +1347,7 @@ namespace WsOfWebClient
                     signature = uL.signature,
                 };
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             }
         }
         internal static async Task GetSubsidize(State s, GetSubsidize getSubsidize)
@@ -1361,7 +1364,7 @@ namespace WsOfWebClient
                     value = getSubsidize.value
                 };
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             }
 
             //throw new NotImplementedException();
@@ -1378,7 +1381,7 @@ namespace WsOfWebClient
             {
                 var targetOwner = m_Target.Groups["target"].Value;
 
-                // Console.WriteLine($"正则匹配成功： {m.Groups["key"] }");
+                // Consoe.WriteLine($"正则匹配成功： {m.Groups["key"] }");
                 //   if (m.Groups["key"].Value == s.Key)
                 {
                     var getPosition = new SetBust()
@@ -1390,7 +1393,7 @@ namespace WsOfWebClient
                         target = bust.Target
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                 }
             }
             return "";
@@ -1406,7 +1409,7 @@ namespace WsOfWebClient
                 dType = donate.dType
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
-            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return "";
         }
 
@@ -1425,7 +1428,7 @@ namespace WsOfWebClient
                 {
                     //   var targetOwner = m_Target.Groups["target"].Value;
 
-                    //  Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                    //  Consoe.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
                     //if (m.Groups["key"].Value == s.Key)
                     {
                         var getPosition = new SetAbility()
@@ -1437,7 +1440,7 @@ namespace WsOfWebClient
                             count = a.count
                         };
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                        await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                        Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                     }
                 }
                 return "";
@@ -1455,7 +1458,7 @@ namespace WsOfWebClient
             };
             var msgString = Newtonsoft.Json.JsonConvert.SerializeObject(dialogMsg);
             //Room.roomUrls[s.roomIndex]
-            var result = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msgString);
+            var result = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msgString);
             return result;
             //var result = await Startup.sendInmationToUrlAndGetRes(s.roomIndex, msg);
         }
@@ -1467,7 +1470,7 @@ namespace WsOfWebClient
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private async static Task initializeOperation(State s)
+        private static void initializeOperation(State s)
         {
             // var key = CommonClass.Random.GetMD5HashFromStr(ConnectInfo.ConnectedInfo + websocketID + DateTime.Now.ToString());
             // var roomUrl = roomUrls[s.roomIndex];
@@ -1477,7 +1480,7 @@ namespace WsOfWebClient
                 Key = s.Key
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-            var result = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            var result = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
 
         }
         internal static async Task<string> setToCollectTax(State s, Tax tax)
@@ -1491,7 +1494,7 @@ namespace WsOfWebClient
             {
                 //   var targetOwner = m_Target.Groups["target"].Value;
 
-                // Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
+                // Consoe.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
                 // if (m.Groups["key"].Value == s.Key)
                 {
                     var getPosition = new SetTax()
@@ -1502,7 +1505,7 @@ namespace WsOfWebClient
                         target = tax.Target
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                 }
             }
             return "";
@@ -1531,13 +1534,13 @@ namespace WsOfWebClient
                         target = attack.Target
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                 }
             }
             return "";
         }
 
-        private async static Task<string> getRoadInfomation(State s)
+        private static string getRoadInfomation(State s)
         {
             var m = new Map()
             {
@@ -1545,32 +1548,36 @@ namespace WsOfWebClient
                 DataType = "All"
             };
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(m);
-            var result = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            var result = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return result;
         }
 
-        public static async Task<State> GetRoomThenStartAfterCreateTeam(State s, System.Net.WebSockets.WebSocket webSocket, TeamResult team, string playerName, string refererAddr)
+        public static State GetRoomThenStartAfterCreateTeam(State s, System.Net.WebSockets.WebSocket webSocket, TeamResult team, string playerName, string refererAddr)
         {
             /*
              * 组队，队长状态下，队长点击了开始
              */
             int roomIndex;
-            var roomInfo = await Room.getRoomNum(s.WebsocketID, playerName, refererAddr);
+            var roomInfo = Room.getRoomNum(s.WebsocketID, playerName, refererAddr);
             roomIndex = roomInfo.RoomIndex;
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
-            var receivedMsg = await Team.SetToBegain(team, roomIndex);
+            var receivedMsg = Team.SetToBegain(team, roomIndex);
             receivedMsg = receivedMsg.Substring(0, 2);
             // var receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
             if (receivedMsg == "ok")
             {
-                receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
-                Console.WriteLine($"{receivedMsg},{s.Key},{s.WebsocketID}");
+                receivedMsg = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomInfo.RoomIndex], sendMsg);
+                //  Consoe.WriteLine($"{receivedMsg},{s.Key},{s.WebsocketID}");
                 if (receivedMsg == "ok")
                 {
-                    await WriteSession(roomInfo, webSocket);
+                    WriteSession(roomInfo, webSocket);
                     s.roomIndex = roomIndex;
-                    s = await setOnLine(s, webSocket);
+                    s = setOnLine(s, webSocket);
+                }
+                else
+                {
+                    NotifyMsg(webSocket, "进入房间失败！");
                 }
             }
             return s;
@@ -1582,23 +1589,27 @@ namespace WsOfWebClient
             //  return true;
         }
 
-        internal static async Task<State> GetRoomThenStartAfterJoinTeam(State s, WebSocket webSocket, int roomIndex, string playerName, string refererAddr)
+        internal static State GetRoomThenStartAfterJoinTeam(State s, WebSocket webSocket, int roomIndex, string playerName, string refererAddr)
         {
             var roomInfo = Room.getRoomNumByRoom(s.WebsocketID, roomIndex, playerName, refererAddr);
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
-            var receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomIndex], sendMsg);
-            Console.WriteLine($"{receivedMsg},{s.Key},{s.WebsocketID}");
+            var receivedMsg = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomIndex], sendMsg);
+            //Consoe.WriteLine($"{receivedMsg},{s.Key},{s.WebsocketID}");
             if (receivedMsg == "ok")
             {
-                await WriteSession(roomInfo, webSocket);
+                WriteSession(roomInfo, webSocket);
                 s.roomIndex = roomIndex;
-                s = await setOnLine(s, webSocket);
+                s = setOnLine(s, webSocket);
+            }
+            else
+            {
+                NotifyMsg(webSocket, "进入房间失败！");
             }
             return s;
         }
 
-        static async Task WriteSession(PlayerAdd_V2 roomInfo, WebSocket webSocket)
+        static void WriteSession(PlayerAdd_V2 roomInfo, WebSocket webSocket)
         {
             // roomNumber
             /*
@@ -1607,24 +1618,21 @@ namespace WsOfWebClient
             roomInfo.FromUrl = "";
             var session = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { session = session, c = "setSession" });
-            var sendData = Encoding.UTF8.GetBytes(msg);
-            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), System.Net.WebSockets.WebSocketMessageType.Text, true, CancellationToken.None);
+            CommonF.SendData(msg, webSocket);
         }
 
-        internal static async Task<State> setState(State s, WebSocket webSocket, LoginState ls)
+        internal static State setState(State s, WebSocket webSocket, LoginState ls)
         {
             s.Ls = ls;
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "setState", state = Enum.GetName(typeof(LoginState), s.Ls) });
-            var sendData = Encoding.UTF8.GetBytes(msg);
-            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            CommonF.SendData(msg, webSocket);
             return s;
         }
 
-        internal static async Task Alert(WebSocket webSocket, string alertMsg)
+        internal static void Alert(WebSocket webSocket, string alertMsg)
         {
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "Alert", msg = alertMsg });
-            var sendData = Encoding.UTF8.GetBytes(msg);
-            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            CommonF.SendData(msg, webSocket);
         }
 
         internal static bool CheckSecret(string result, string key, out int roomIndex, out string refererAddr)
@@ -1659,7 +1667,7 @@ namespace WsOfWebClient
         {
             ccs.Key = s.Key;
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ccs);
-            await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
         }
         internal static async Task<string> setPromote(State s, Promote promote)
         {
@@ -1682,7 +1690,7 @@ namespace WsOfWebClient
                             pType = promote.pType
                         };
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                        await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                        Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                     }
                 }
 
@@ -1709,11 +1717,67 @@ namespace WsOfWebClient
                             collectIndex = collect.collectIndex
                         };
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                        await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                        Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                     }
                 }
             }
             return "";
+        }
+
+        internal static async Task<State> GetFightSituation(State s, WebSocket webSocket)
+        {
+            string respon;
+            {
+                CommonClass.GetFightSituation gfs = new GetFightSituation()
+                {
+                    c = "GetFightSituation",
+                    Key = s.Key,
+                };
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfs);
+                respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            }
+            {
+                var notifyMsg = respon;
+                var sendData = Encoding.UTF8.GetBytes(notifyMsg);
+                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                return s;
+            }
+        }
+        internal static async Task<string> RemoveTaskCopy(State s, RemoveTaskCopy rtc)
+        {
+            string respon;
+            {
+                CommonClass.RemoveTaskCopyM gfs = new RemoveTaskCopyM()
+                {
+                    c = "RemoveTaskCopyM",
+                    Key = s.Key,
+                    Code = rtc.Code,
+                };
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfs);
+                respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+                return respon;
+            }
+
+        }
+
+        internal static async Task<State> GetTaskCopy(State s, WebSocket webSocket)
+        {
+            string respon;
+            {
+                CommonClass.GetTaskCopyDetail gfs = new GetTaskCopyDetail()
+                {
+                    c = "GetTaskCopyDetail",
+                    Key = s.Key,
+                };
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfs);
+                respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            }
+            {
+                var notifyMsg = respon;
+                var sendData = Encoding.UTF8.GetBytes(notifyMsg);
+                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                return s;
+            }
         }
     }
 
@@ -1722,7 +1786,7 @@ namespace WsOfWebClient
     {
         //  "http://127.0.0.1:11100" + "/notify"
         static string teamUrl = "127.0.0.1:11200";
-        internal static async Task<TeamResult> createTeam2(int websocketID, string playerName, string command_start)
+        internal static TeamResult createTeam2(int websocketID, string playerName, string command_start)
         {
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.TeamCreate()
             {
@@ -1732,26 +1796,24 @@ namespace WsOfWebClient
                 CommandStart = command_start,
                 PlayerName = playerName
             });
-            var result = await Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
-
+            var result = Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
             return Newtonsoft.Json.JsonConvert.DeserializeObject<TeamResult>(result);
 
         }
 
-        internal static async Task<string> SetToBegain(TeamResult team, int roomIndex)
+        internal static string SetToBegain(TeamResult team, int roomIndex)
         {
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.TeamBegain()
             {
                 c = "TeamBegain",
                 TeamNum = team.TeamNumber,
                 RoomIndex = roomIndex
-                //  TeamNumber = team.TeamNumber
             });
-            var result = await Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
+            var result = Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
             return result;
         }
 
-        internal static async Task<string> findTeam2(int websocketID, string playerName, string command_start, string teamIndex)
+        internal static string findTeam2(int websocketID, string playerName, string command_start, string teamIndex)
         {
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.TeamJoin()
             {
@@ -1762,7 +1824,7 @@ namespace WsOfWebClient
                 PlayerName = playerName,
                 TeamIndex = teamIndex
             });
-            string resStr = await Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
+            string resStr = Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
             return resStr;
             //return Newtonsoft.Json.JsonConvert.DeserializeObject<TeamFoundResult>(json);
         }
@@ -1771,7 +1833,7 @@ namespace WsOfWebClient
         {
             var rootPath = System.IO.Directory.GetCurrentDirectory();
             //Consol.WriteLine($"path:{rootPath}");
-            //Console.WriteLine($"IPPath:{rootPath}");
+            //Consoe.WriteLine($"IPPath:{rootPath}");
             if (File.Exists($"{rootPath}\\config\\teamIP.txt"))
             {
                 var text = File.ReadAllText($"{rootPath}\\config\\teamIP.txt");

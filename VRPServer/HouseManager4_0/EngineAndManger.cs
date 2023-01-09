@@ -1,6 +1,7 @@
 ﻿using HouseManager4_0.RoomMainF;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 
 namespace HouseManager4_0
@@ -59,24 +60,28 @@ namespace HouseManager4_0
 
     public abstract class SendMsg
     {
-        public string sendMsg(string controllerUrl, string json)
+        public string sendSingleMsg(string controllerUrl, string json)
         {
-            return Startup.sendMsg(controllerUrl, json);
+            return Startup.sendSingleMsg(controllerUrl, json);
         }
-        public List<string> sendMsg(List<string> notifyMsg)
+
+        public List<string> sendSeveralMsgs(List<string> notifyMsg)
         {
-            List<string> result = new List<string>();
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                if (!string.IsNullOrEmpty(url))
-                {
-                    result.Add(this.sendMsg(url, sendMsg));
-                    //  Startup.sendMsg(url, sendMsg);
-                }
-            }
-            return result;
+            return Startup.sendSeveralMsgs(notifyMsg);
         }
+        //public List<string> sendMsg(List<string> notifyMsg)
+        //{
+        //    List<string> result = new List<string>();
+        //    for (var i = 0; i < notifyMsg.Count; i += 2)
+        //    {
+        //        var url = notifyMsg[i];
+        //        var sendMsg = notifyMsg[i + 1];
+        //        if (!string.IsNullOrEmpty(url))
+        //        {
+        //            result.Add(this.sendMsg(url, sendMsg));
+        //        }
+        //    }
+        //    return result;
+        //}
     }
 }

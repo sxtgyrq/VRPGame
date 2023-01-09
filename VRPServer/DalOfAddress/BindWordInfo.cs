@@ -180,7 +180,24 @@ WHERE bindWordMsg=@bindWordMsg;";
                     return "";
                 }
             }
-            else return ""; 
+            else return "";
+        }
+        public static string GetWordByAddr(string bindWordAddr)
+        { 
+            string sQL = $@"SELECT bindWordAddr,bindWordMsg,bindWordSign,endTime from bindwordinfo 
+ WHERE bindWordAddr='{bindWordAddr}';";
+            var ds = MySqlHelper.ExecuteDataset(Connection.ConnectionStr, sQL);
+            if (ds.Tables.Count > 0)
+            {
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    var bindWordMsg = Convert.ToString(ds.Tables[0].Rows[0]["bindWordMsg"]).Trim();
+                    var bindWordSign = Convert.ToString(ds.Tables[0].Rows[0]["bindWordSign"]).Trim();
+                    var endTime = Convert.ToDateTime(ds.Tables[0].Rows[0]["endTime"]);
+                    return bindWordMsg;
+                }
+            }
+            return "";
         }
     }
 }

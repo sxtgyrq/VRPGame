@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 
 namespace HouseManager4_0.interfaceOfEngine
@@ -19,7 +20,8 @@ namespace HouseManager4_0.interfaceOfEngine
 
     interface sendMsg
     {
-        string sendMsg(string controllerUrl, string json);
+        //string sendMsg(string controllerUrl, string json);
+        string sendSingleMsg(string controllerUrl, string json);
     }
 
     interface tryCatchAction

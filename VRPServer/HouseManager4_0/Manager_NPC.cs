@@ -1,4 +1,5 @@
-﻿using HouseManager4_0.RoomMainF;
+﻿using HouseManager4_0.interfaceOfHM;
+using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,16 @@ namespace HouseManager4_0
     {
         List<string> NPCNames = new List<string>()
         {
-            "尧帝",
-            "重耳",
-            "张仪",
-            "霍去病",
-            "尉迟恭",
-            "关羽",
-            "王维",
-            "白居易",
-            "罗贯中",
-            "柳宗元"
+            "和珅",
+            "赵高",
+            "李斯",
+            "杨国忠",
+            "蔡京",
+            "秦桧",
+            "严嵩",
+            "魏忠贤",
+            "高俅",
+            "安禄山"
         };
 
         internal void ControlNPC(GetRandomPos grp)
@@ -53,7 +54,7 @@ namespace HouseManager4_0
                 this.ControlNPCItem(npc, grp, ref notifyMsgs);
                 //   ControlNPC(npc);
             }
-            this.sendMsg(notifyMsgs);
+            this.sendSeveralMsgs(notifyMsgs);
             ///throw new NotImplementedException();
         }
 
@@ -132,7 +133,7 @@ namespace HouseManager4_0
              * 获取玩家的最大等级A
              * 找到所有NPC中级别大于A+1的NPC
              * 将找到的NPC删除
-             * 同时删除没有敌人的NPC
+             * 同时删除没有敌人的NPC,拥有挑战者记录有，但无敌人的NPC
              */
 
             lock (that.PlayerLock)
@@ -167,7 +168,7 @@ namespace HouseManager4_0
                         if (!that._Players[keysOfNPCs[i]].Bust)
                             that._Players[keysOfNPCs[i]].SetBust(true, ref notifyMsgs);
                     }
-                    this.sendMsg(notifyMsgs);
+                    this.sendSeveralMsgs(notifyMsgs);
                 }
                 {
                     List<string> keysOfNPCs = new List<string>();
@@ -191,12 +192,12 @@ namespace HouseManager4_0
                         if (!that._Players[keysOfNPCs[i]].Bust)
                             that._Players[keysOfNPCs[i]].SetBust(true, ref notifyMsgs);
                     }
-                    this.sendMsg(notifyMsgs);
+                    this.sendSeveralMsgs(notifyMsgs);
                 }
             }
         }
 
-        public Manager_NPC(RoomMain roomMain)
+        public Manager_NPC(RoomMainF.RoomMain roomMain)
         {
             this.roomMain = roomMain;
         }
@@ -216,11 +217,14 @@ namespace HouseManager4_0
                 {
                     if (item.Value.playerType == RoleInGame.PlayerType.player)
                     {
-                        var level = getLevelOfRole((Player)item.Value) + 1;
-                        if (levels.Contains(level)) { }
-                        else
+                        var levelOfRole = getLevelOfRole((Player)item.Value) + 1;
+                        for (int level = 2; level <= levelOfRole; level++)
                         {
-                            levels.Add(level);
+                            if (levels.Contains(level)) { }
+                            else
+                            {
+                                levels.Add(level);
+                            }
                         }
                     }
                 }
@@ -464,69 +468,70 @@ namespace HouseManager4_0
                         that._Players[keys[i]].SetLevel(npc.Level, ref notifyMsgs);
                         that.modelL.OrderToUpdateLevel(that._Players[keys[i]], ref notifyMsgs);
                     }
+                    this.that.taskM.PlayerLevelSynchronize((Player)that._Players[keys[i]]);
                 }
             }
         }
 
-        internal void Moleste(Player player, int target, ref List<string> notifyMsg)
-        {
-            RoleInGame bossOfPlayer;
-            if (player.HasTheBoss(this.that._Players, out bossOfPlayer))
-            {
+        //internal void Moleste(Player player, int target, ref List<string> notifyMsg)
+        //{
+        //    RoleInGame bossOfPlayer;
+        //    if (player.HasTheBoss(this.that._Players, out bossOfPlayer))
+        //    {
 
-            }
-            else
-            {
-                bossOfPlayer = player;
-            }
-            var from = Program.dt.GetFpByIndex(bossOfPlayer.StartFPIndex);
-            double minDistance = double.MaxValue;
-            NPC nearestNPC = null;
-            foreach (var item in that._Players)
-            {
-                if (item.Value.playerType == RoleInGame.PlayerType.NPC)
-                {
-                    var fpTo = Program.dt.GetFpByIndex(item.Value.StartFPIndex);
-                    var distance = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
-                    if (distance < minDistance)
-                    {
-                        nearestNPC = (NPC)item.Value;
-                        minDistance = distance;
-                    }
-                }
-            }
-            if (nearestNPC != null)
-            {
+        //    }
+        //    else
+        //    {
+        //        bossOfPlayer = player;
+        //    }
+        //    var from = Program.dt.GetFpByIndex(bossOfPlayer.StartFPIndex);
+        //    double minDistance = double.MaxValue;
+        //    NPC nearestNPC = null;
+        //    foreach (var item in that._Players)
+        //    {
+        //        if (item.Value.playerType == RoleInGame.PlayerType.NPC)
+        //        {
+        //            var fpTo = Program.dt.GetFpByIndex(item.Value.StartFPIndex);
+        //            var distance = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(from.Latitde, from.Longitude, from.Height, fpTo.Latitde, fpTo.Longitude, fpTo.Height);
+        //            if (distance < minDistance)
+        //            {
+        //                nearestNPC = (NPC)item.Value;
+        //                minDistance = distance;
+        //            }
+        //        }
+        //    }
+        //    if (nearestNPC != null)
+        //    {
 
-                bool notNeedToMoleste;
-                if (bossOfPlayer.Level >= nearestNPC.Level)
-                {
-                    notNeedToMoleste = true;
-                }
-                else if (bossOfPlayer.Level + 1 == nearestNPC.Level)
-                {
-                    if (that.rm.Next(0, 100) < 90)
-                    {
-                        notNeedToMoleste = true;
-                    }
-                    else
-                    {
-                        notNeedToMoleste = false;
-                    }
-                }
-                else
-                {
-                    notNeedToMoleste = false;
-                }
-                if (notNeedToMoleste) { }
-                else if (nearestNPC.BeingMolestedF(player.Key, ref notifyMsg))
-                {
-                    this.WebNotify(player, $"你骚扰了【{nearestNPC.PlayerName}】，他会对你进行一次攻击！");
-                }
-            }
-            //throw new NotImplementedException();
+        //        bool notNeedToMoleste;
+        //        if (bossOfPlayer.Level >= nearestNPC.Level)
+        //        {
+        //            notNeedToMoleste = true;
+        //        }
+        //        else if (bossOfPlayer.Level + 1 == nearestNPC.Level)
+        //        {
+        //            if (that.rm.Next(0, 100) < 90)
+        //            {
+        //                notNeedToMoleste = true;
+        //            }
+        //            else
+        //            {
+        //                notNeedToMoleste = false;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            notNeedToMoleste = false;
+        //        }
+        //        if (notNeedToMoleste) { }
+        //        else if (nearestNPC.BeingMolestedF(player.Key, ref notifyMsg))
+        //        {
+        //            this.WebNotify(player, $"你骚扰了【{nearestNPC.PlayerName}】，他会对你进行一次攻击！");
+        //        }
+        //    }
+        //    //throw new NotImplementedException();
 
-        }
+        //}
 
         //NPC npc, ref List<string> notifyMsgs
         private void afterReturnedM(NPC npc, ref List<string> notifyMsgs, GetRandomPos grp)
@@ -804,59 +809,59 @@ namespace HouseManager4_0
             }
             return doNext;
         }
-        bool waitedFunctionM(NPC npc2, ref List<string> notifyMsgs, string operateKye, GetRandomPos grp)
-        {
-            bool doNext;
-            if (!string.IsNullOrEmpty(operateKye))
-            {
-                if (that._Players.ContainsKey(operateKye))
-                {
-                    var operatePlayer = that._Players[operateKye];
-                    if (operatePlayer.Bust)
-                    {
-                        npc2.SetBust(true, ref notifyMsgs);
-                    }
-                    else
-                    {
-                        if (this.moneyIsEnoughToAttack(npc2))
-                        {
-                            Model.FastonPosition fp;
-                            if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, Program.dt, out fp))
-                            {
-                                var sa = new CommonClass.SetAttack()
-                                {
-                                    c = "SetAttack",
-                                    Key = npc2.Key,
-                                    target = operatePlayer.StartFPIndex,
-                                    targetOwner = operatePlayer.Key,
-                                };
-                                this.startNewCommandThread(200, sa, this, grp);
-                                //that.attackE.updateAttack();
-                            }
-                            else
-                            {
-                                CollectFp(npc2, fp, ref notifyMsgs, grp);
-                            }
-                        }
-                        else
-                        {
-                            this.CollectNearSelf(npc2, grp);
-                        }
-                        // CollectNearSelf(npc);
-                    }
-                }
-                else
-                {
-                    npc2.SetBust(true, ref notifyMsgs);
-                }
-                doNext = false;
-            }
-            else
-            {
-                doNext = true;
-            }
-            return doNext;
-        }
+        //bool waitedFunctionM(NPC npc2, ref List<string> notifyMsgs, string operateKye, GetRandomPos grp)
+        //{
+        //    bool doNext;
+        //    if (!string.IsNullOrEmpty(operateKye))
+        //    {
+        //        if (that._Players.ContainsKey(operateKye))
+        //        {
+        //            var operatePlayer = that._Players[operateKye];
+        //            if (operatePlayer.Bust)
+        //            {
+        //                npc2.SetBust(true, ref notifyMsgs);
+        //            }
+        //            else
+        //            {
+        //                if (this.moneyIsEnoughToAttack(npc2))
+        //                {
+        //                    Model.FastonPosition fp;
+        //                    if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, Program.dt, out fp))
+        //                    {
+        //                        var sa = new CommonClass.SetAttack()
+        //                        {
+        //                            c = "SetAttack",
+        //                            Key = npc2.Key,
+        //                            target = operatePlayer.StartFPIndex,
+        //                            targetOwner = operatePlayer.Key,
+        //                        };
+        //                        this.startNewCommandThread(200, sa, this, grp);
+        //                        //that.attackE.updateAttack();
+        //                    }
+        //                    else
+        //                    {
+        //                        CollectFp(npc2, fp, ref notifyMsgs, grp);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    this.CollectNearSelf(npc2, grp);
+        //                }
+        //                // CollectNearSelf(npc);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            npc2.SetBust(true, ref notifyMsgs);
+        //        }
+        //        doNext = false;
+        //    }
+        //    else
+        //    {
+        //        doNext = true;
+        //    }
+        //    return doNext;
+        //}
 
         bool moneyIsEnoughToAttack(NPC npc)
         {
@@ -975,7 +980,7 @@ namespace HouseManager4_0
 
 
                                 {
-                                    List<int> indexOfRole = new List<int>();
+                                    // List<int> indexOfRole = new List<int>();
                                     int indexPosition;
                                     do
                                     {
@@ -1018,15 +1023,18 @@ namespace HouseManager4_0
                             }
                             else if (npc.Level > 4)
                             {
+
                                 var max = npc.Level - 1;
-                                max = Math.Min(10, max);
-                                List<NPC> roles = new List<NPC>(max);
-                                for (int indexOfRole = 0; indexOfRole < max; max++)
+                                max = Math.Min(5, max);
+
+                                List<NPC> roles = new List<NPC>(max) { };
+
+                                for (int indexOfRole = 0; indexOfRole < max; indexOfRole++)
                                 {
                                     roles.Add(null);
                                 }
                                 {
-                                    List<int> indexOfRole = new List<int>();
+                                    // List<int> indexOfRole = new List<int>();
                                     int indexPosition;
                                     do
                                     {
@@ -1035,7 +1043,7 @@ namespace HouseManager4_0
                                     while (roles[indexPosition] != null);
                                     roles[indexPosition] = npc;
                                 }
-                                for (int i = 0; i < npc.Level - 2; i++)
+                                for (int i = 0; i < max - 1; i++)
                                 {
                                     int indexPosition;
                                     var addNpcKey = this.AddNpcPlayer(npc.Level, cf, gp);
@@ -1045,7 +1053,7 @@ namespace HouseManager4_0
                                     addNpc.CopyChanlleger(npc.challenger);
                                     do
                                     {
-                                        indexPosition = that.rm.Next(0, 3);
+                                        indexPosition = that.rm.Next(0, max);
                                     }
                                     while (roles[indexPosition] != null);
                                     roles[indexPosition] = addNpc;
@@ -1092,8 +1100,11 @@ namespace HouseManager4_0
                     else
                     {
                         var player = (Player)that._Players[keyOfAttacker];
-                        that.WebNotify(player, $"【{npc.PlayerName}】已有挑战者！");
-#warning 这里要提示。
+                        if (npc.challenger == player.Key) { }
+                        else if (npc.challenger == player.TheLargestHolderKey) { }
+                        else
+                            that.WebNotify(player, $"【{npc.PlayerName}】已有挑战者！");
+                        //#warning 这里要提示。
                     }
                 }
             }
@@ -1103,7 +1114,7 @@ namespace HouseManager4_0
         internal void counterAttack(NPC npc, ref List<string> notifyMsg, GetRandomPos grp)
         {
             if (waitedFunctionMWithChanllenger(npc, ref notifyMsg, npc.challenger, grp)) { }
-            // else if (waitedFunctionM(npc, ref notifyMsg, npc.molester)) { }
+
         }
         void dealWithChallenger(NPC npc_Operate, ref List<string> notifyMsg, string operateKey)
         {

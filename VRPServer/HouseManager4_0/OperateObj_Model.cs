@@ -27,7 +27,7 @@ namespace HouseManager4_0
                     }
                 }
             }
-            this.sendMsg(notifyMsgs);
+            this.sendSeveralMsgs(notifyMsgs);
         }
     }
 }

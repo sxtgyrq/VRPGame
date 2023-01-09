@@ -374,6 +374,221 @@ var carAnimationData = function (passObj) {
     }
 }
 
+var animationF_bak = function (key, obj, now, isSelf, lengthOfCC) {
+    var isAnimation = false;
+    if (isSelf) {
+
+    }
+    for (var j = 0; j < obj.animateData.length; j++) {
+        if (obj.animateData[j].privateKey >= 0) {
+            if (obj.animateData[j].initialData != undefined) {
+                var initialData = obj.animateData[j].initialData;
+                var start = initialData.start;
+                var end = initialData.end;
+                if (now > start && end > now) {
+                    var animateData = initialData.animateData;
+                    for (var i = 0; i < animateData.length; i++) {
+
+                        var percent = (now - start - animateData[i].t0) / (animateData[i].t1 - animateData[i].t0);
+                        if (percent < 0) {
+                            continue;
+                        }
+                        else if (percent < 1) {
+                            var x = animateData[i].x0 + percent * (animateData[i].x1 - animateData[i].x0);
+                            var y = animateData[i].y0 + percent * (animateData[i].y1 - animateData[i].y0);
+                            var z = (animateData[i].z0 + percent * (animateData[i].z1 - animateData[i].z0)) * objMain.heightAmplify;
+
+                            if (objMain.carGroup.getObjectByName(key) != undefined) {
+                                objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
+
+                                //var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+                                var scale = lengthOfCC * 0.001;
+                                if (scale < 0.002) {
+                                    scale = 0.002;
+                                }
+                                objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+
+                                var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
+                                ;
+                                if (!complexV.isZero()) {
+                                    var rotateZ = 0;
+                                    var complexV2 = new Complex(complexV.mo(), animateData[i].z1 - animateData[i].z0);
+                                    if (!complexV2.isZero()) {
+                                        rotateZ = -complexV2.toAngle();
+                                    }
+                                    objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, rotateZ);
+                                    if (isSelf) {
+                                        objMain.controls.target.set(x, z, -y);
+                                        var angle = objMain.controls.getPolarAngle();
+                                        //if(
+                                        var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                                        var distance = 32;
+                                        if (dCal >= 33) {
+                                            distance = dCal * 0.99 - 0.01;
+                                        }
+                                        else if (dCal <= 31) {
+                                            distance = dCal * 1.01 + 0.01;
+                                        }
+                                        var unitY = distance * Math.cos(angle);
+                                        var unitZX = distance * Math.sin(angle);
+
+                                        var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                                        var unitX = unitZX * Math.sin(angleOfCamara);
+                                        var unitZ = unitZX * Math.cos(angleOfCamara);
+                                        //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
+                                        //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
+
+                                        objMain.camera.position.set(x + unitX, unitY + z, -y + unitZ);
+                                        objMain.camera.lookAt(x, z, -y);
+                                    }
+                                }
+                                isAnimation = isSelf && true;
+                                break;
+                            }
+                        }
+                        else {
+                            var x = animateData[i].x0 + 1 * (animateData[i].x1 - animateData[i].x0);
+                            var y = animateData[i].y0 + 1 * (animateData[i].y1 - animateData[i].y0);
+                            var z = (animateData[i].z0 + 1 * (animateData[i].z1 - animateData[i].z0)) * objMain.heightAmplify;;
+                            if (objMain.carGroup.getObjectByName(key)) {
+                                objMain.carGroup.getObjectByName(key).position.set(x, z, -y);
+
+                                var scale = lengthOfCC * 0.001;
+                                if (scale < 0.002) {
+                                    scale = 0.002;
+                                }
+                                objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+                                var complexV = new Complex(animateData[i].x1 - animateData[i].x0, -(animateData[i].y1 - animateData[i].y0));
+                                ;
+                                if (!complexV.isZero()) {
+                                    var rotateZ = 0;
+                                    var complexV2 = new Complex(complexV.mo(), animateData[i].z1 - animateData[i].z0);
+                                    if (!complexV2.isZero()) {
+                                        rotateZ = -complexV2.toAngle();
+                                    }
+                                    objMain.carGroup.getObjectByName(key).rotation.set(0, -complexV.toAngle() + Math.PI, rotateZ);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        else if (objMain.carGroup.getObjectByName(key)) {
+            var scale = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target) * 0.001;
+            if (scale < 0.002) {
+                scale = 0.002;
+            }
+            objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+        }
+    }
+    if (obj.animateData.length > 1) {
+        if (obj.animateData[0].privateKey >= 0 && obj.animateData[1].privateKey < 0) {
+            var initialData = obj.animateData[0].initialData;
+            var animateData = initialData.animateData;
+            if (animateData.length == 0) {
+                var scale = lengthOfCC * 0.001;
+                if (scale < 0.002) {
+                    scale = 0.002;
+                }
+                if (objMain.carGroup.getObjectByName(key))
+                    objMain.carGroup.getObjectByName(key).scale.set(scale, scale, scale);
+            }
+        }
+    }
+    return isAnimation;
+}
+var animationF = function (roleKey, obj, now, isSelf, lengthOfCC) {
+    var isAnimation = false;
+    for (var indexOfAnimateDataOfSingleCar = 0; indexOfAnimateDataOfSingleCar < obj.animateData.length; indexOfAnimateDataOfSingleCar++) {
+        if (obj.animateData[indexOfAnimateDataOfSingleCar].privateKey > 0) {
+            if (obj.animateData[indexOfAnimateDataOfSingleCar].initialData != undefined) {
+                var initialData = obj.animateData[indexOfAnimateDataOfSingleCar].initialData;
+                var start = initialData.start;
+                var end = initialData.end;
+                if (end > now && now > start) {
+                    var animateData = initialData.animateData;
+                    var itemIsAnimation = animationItemF(roleKey, now, isSelf, start, lengthOfCC, animateData);
+                    if (itemIsAnimation) {
+                        isAnimation = true;
+                    } 
+                }
+            }
+        }
+    }
+    return isAnimation;
+}
+
+var animationItemF = function (roleKey, now, isSelf, start, lengthOfCC, animateData) {
+    var isAnimation = false;
+    for (var indexOfAD = 0; indexOfAD < animateData.length; indexOfAD++) {
+        var percent = (now - start - animateData[indexOfAD].t0) / (animateData[indexOfAD].t1 - animateData[indexOfAD].t0);
+        if (percent < 0) {
+            continue;
+        }
+        else if (percent < 1) {
+            var x = animateData[indexOfAD].x0 + percent * (animateData[indexOfAD].x1 - animateData[indexOfAD].x0);
+            var y = animateData[indexOfAD].y0 + percent * (animateData[indexOfAD].y1 - animateData[indexOfAD].y0);
+            var z = (animateData[indexOfAD].z0 + percent * (animateData[indexOfAD].z1 - animateData[indexOfAD].z0)) * objMain.heightAmplify;
+
+            if (objMain.carGroup.getObjectByName(roleKey) != undefined) {
+                objMain.carGroup.getObjectByName(roleKey).position.set(x, z, -y);
+                var complexV = new Complex(animateData[indexOfAD].x1 - animateData[indexOfAD].x0, -(animateData[indexOfAD].y1 - animateData[indexOfAD].y0));
+                if (!complexV.isZero()) {
+                    var rotateZ = 0;
+                    var complexV2 = new Complex(complexV.mo(), animateData[indexOfAD].z1 - animateData[indexOfAD].z0);
+                    if (!complexV2.isZero()) {
+                        rotateZ = -complexV2.toAngle();
+                    }
+                    objMain.carGroup.getObjectByName(roleKey).rotation.set(0, -complexV.toAngle() + Math.PI, rotateZ);
+                    if (isSelf) {
+                        objMain.controls.target.set(x, z, -y);
+                        var angle = objMain.controls.getPolarAngle();
+                        var dCal = lengthOfCC;
+                        var distance = 32;
+                        if (dCal >= 33) {
+                            distance = dCal * 0.99 - 0.01;
+                        }
+                        else if (dCal <= 31) {
+                            distance = dCal * 1.01 + 0.01;
+                        }
+                        var unitY = distance * Math.cos(angle);
+                        var unitZX = distance * Math.sin(angle);
+
+                        var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                        var unitX = unitZX * Math.sin(angleOfCamara);
+                        var unitZ = unitZX * Math.cos(angleOfCamara);
+
+                        objMain.camera.position.set(x + unitX, unitY + z, -y + unitZ);
+                        objMain.camera.lookAt(x, z, -y);
+                        isAnimation = true;
+
+                    }
+                    return isAnimation;
+                }
+            }
+        }
+        else {
+            var x = animateData[indexOfAD].x0 + 1 * (animateData[indexOfAD].x1 - animateData[indexOfAD].x0);
+            var y = animateData[indexOfAD].y0 + 1 * (animateData[indexOfAD].y1 - animateData[indexOfAD].y0);
+            var z = (animateData[indexOfAD].z0 + 1 * (animateData[indexOfAD].z1 - animateData[indexOfAD].z0)) * objMain.heightAmplify;;
+            if (objMain.carGroup.getObjectByName(roleKey)) {
+                objMain.carGroup.getObjectByName(roleKey).position.set(x, z, -y);
+                var complexV = new Complex(animateData[indexOfAD].x1 - animateData[indexOfAD].x0, -(animateData[indexOfAD].y1 - animateData[indexOfAD].y0));
+                if (!complexV.isZero()) {
+                    var rotateZ = 0;
+                    var complexV2 = new Complex(complexV.mo(), animateData[indexOfAD].z1 - animateData[indexOfAD].z0);
+                    if (!complexV2.isZero()) {
+                        rotateZ = -complexV2.toAngle();
+                    }
+                    objMain.carGroup.getObjectByName(roleKey).rotation.set(0, -complexV.toAngle() + Math.PI, rotateZ);
+                }
+            }
+        }
+    }
+    return isAnimation;
+};
 var test = function () {
     var a = { 'b': 1 };
     var f = function (p) {

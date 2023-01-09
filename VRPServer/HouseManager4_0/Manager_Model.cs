@@ -1,8 +1,12 @@
 ﻿using CommonClass;
+using Google.Protobuf.WellKnownTypes;
+//using HouseManager4_0.interfaceOfHM;
 using HouseManager4_0.RoomMainF;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using static HouseManager4_0.Car;
 
@@ -53,7 +57,7 @@ namespace HouseManager4_0
                             var m2 = cloesdMaterial[i];
                             this.that.DrawObj3DModelF(m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
                             // player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
-                        } 
+                        }
                     }
                 }
             }
@@ -98,6 +102,9 @@ namespace HouseManager4_0
                                                     hash = newRm.Next(5);
                                                     int defendLevel = 1;
                                                     string rewardLittleReason;
+
+                                                    this.that.taskM.GetRewardFromBuildingF(player);
+
                                                     if (string.IsNullOrEmpty(player.BTCAddress))
                                                     {
                                                         rewardLittleReason = ",你还没有登录，登录可获取更多加成。";
@@ -143,13 +150,27 @@ namespace HouseManager4_0
                                                             {
                                                                 return "";
                                                             }
-                                                            player.buildingReward[hash] += defendLevel;
-                                                            switch (hash)
                                                             {
-                                                                case 0:
-                                                                    {
-                                                                        this.WebNotify(player, $"招募力+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                    }; break;
+                                                                player.buildingReward[hash] = 0;
+                                                                //player.buildingReward[hash] += defendLevel;
+                                                                switch (hash)
+                                                                {
+                                                                    case 0:
+                                                                        {
+                                                                            switch (defendLevel)
+                                                                            {
+                                                                                case 1: player.buildingReward[hash] = that.rm.Next(1, 30); break;
+                                                                                case 2: player.buildingReward[hash] = that.rm.Next(15, 40); break;
+                                                                                case 3: player.buildingReward[hash] = that.rm.Next(29, 50); break;
+                                                                                case 4: player.buildingReward[hash] = that.rm.Next(43, 60); break;
+                                                                                case 5: player.buildingReward[hash] = that.rm.Next(57, 70); break;
+                                                                                case 6: player.buildingReward[hash] = that.rm.Next(71, 80); break;
+                                                                                case 7: player.buildingReward[hash] = that.rm.Next(85, 90); break;
+                                                                                case 8: player.buildingReward[hash] = that.rm.Next(99, 100); break;
+                                                                            }
+                                                                            this.WebNotify(player, $"获得了新的招募成功率属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                        }; break;
+                                                                }
                                                             }
                                                         }
                                                         else if (hash < 5)
@@ -165,75 +186,98 @@ namespace HouseManager4_0
                                                             }
                                                             else
                                                             {
-                                                                player.buildingReward[hash] += defendLevel;
-                                                                switch (player.getCar().ability.driver.race)
+                                                                //if (player.buildingReward[hash] > 100)
+                                                                //{
+                                                                //    player.buildingReward[hash] = 100;
+                                                                //    this.WebNotify(player, $"储备已满");
+                                                                //}
+                                                                //else
+                                                                player.buildingReward[hash] = 0;
                                                                 {
-                                                                    case CommonClass.driversource.Race.immortal:
-                                                                        {
-                                                                            switch (hash)
+                                                                    switch (defendLevel)
+                                                                    {
+                                                                        case 1: player.buildingReward[hash] = that.rm.Next(2, 26); break;
+                                                                        case 2: player.buildingReward[hash] = that.rm.Next(12, 33); break;
+                                                                        case 3: player.buildingReward[hash] = that.rm.Next(22, 40); break;
+                                                                        case 4: player.buildingReward[hash] = that.rm.Next(32, 47); break;
+                                                                        case 5: player.buildingReward[hash] = that.rm.Next(42, 54); break;
+                                                                        case 6: player.buildingReward[hash] = that.rm.Next(52, 61); break;
+                                                                        case 7: player.buildingReward[hash] = that.rm.Next(62, 68); break;
+                                                                        case 8: player.buildingReward[hash] = that.rm.Next(72, 75); break;
+                                                                    }
+                                                                    // player.buildingReward[hash] += defendLevel;
+                                                                    switch (player.getCar().ability.driver.race)
+                                                                    {
+                                                                        case CommonClass.driversource.Race.immortal:
                                                                             {
-                                                                                case 1:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"法术狂暴+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 2:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"忽视抗雷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 3:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"忽视抗火几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 4:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"忽视抗水几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                            };
-                                                                        }; break;
-                                                                    case CommonClass.driversource.Race.people:
-                                                                        {
-                                                                            switch (hash)
+                                                                                switch (hash)
+                                                                                {
+                                                                                    case 1:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的法术狂暴属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 2:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的忽视雷抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 3:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的忽视火抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 4:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的忽视水抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                };
+                                                                            }; break;
+                                                                        case CommonClass.driversource.Race.people:
                                                                             {
-                                                                                case 1:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"故技重施+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 2:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"忽视抗混几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 3:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"忽视抗迷几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 4:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"忽视潜伏几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                            };
-                                                                        }; break;
-                                                                    case CommonClass.driversource.Race.devil:
-                                                                        {
-                                                                            switch (hash)
+                                                                                switch (hash)
+                                                                                {
+                                                                                    case 1:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的故技重施属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            // this.WebNotify(player, $"故技重施+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 2:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"忽视抗混+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 3:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"忽视抗迷+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 4:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"忽视潜伏+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                };
+                                                                            }; break;
+                                                                        case CommonClass.driversource.Race.devil:
                                                                             {
-                                                                                case 1:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"力争上游+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 2:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"加速强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 3:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"加防强化几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                                case 4:
-                                                                                    {
-                                                                                        this.WebNotify(player, $"强化冲撞几率+{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
-                                                                                    }; break;
-                                                                            };
-                                                                        }; break;
+                                                                                switch (hash)
+                                                                                {
+                                                                                    case 1:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的忽视物理属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 2:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的加速提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            // this.WebNotify(player, $"加速强化+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 3:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的加防提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            //this.WebNotify(player, $"加防强化+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                    case 4:
+                                                                                        {
+                                                                                            this.WebNotify(player, $"获得了新的红牛提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                        }; break;
+                                                                                };
+                                                                            }; break;
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -250,7 +294,6 @@ namespace HouseManager4_0
                                                 WebNotify(player, "当前状态，求福不顶用！");
                                             }; break;
                                     }
-                                    player.canGetReward = false;
                                 }
                                 else
                                 {
@@ -261,7 +304,7 @@ namespace HouseManager4_0
                         }
                     }
                 }
-                var msgL = this.sendMsg(notifyMsg).Count;
+                var msgL = this.sendSeveralMsgs(notifyMsg).Count;
                 msgL++;
                 //for (var i = 0; i < notifyMsg.Count; i += 2)
                 //{
@@ -275,6 +318,76 @@ namespace HouseManager4_0
                 return $"{msgL}".Length > 0 ? "" : "";
             }
 
+        }
+
+        internal void GetRewardFromBuildingByNPC(NPC npc)
+        {
+            List<string> notifyMsg = new List<string>();
+            lock (that.PlayerLock)
+            {
+                if (that._Players.ContainsKey(npc.Key))
+                {
+                    if (that._Players[npc.Key].Bust) { }
+                    else
+                    {
+                        if (npc.canGetReward)
+                        {
+                            var car = npc.getCar();
+                            switch (car.state)
+                            {
+                                case CarState.waitOnRoad:
+                                    {
+                                        var models = that.goodsM.GetConnectionModels(npc.getCar().targetFpIndex);
+
+                                        if (models.Count > 0)
+                                        {
+                                            models = (from item in models orderby item.x + item.y select item).ToList();
+                                            var hash = (npc.Key + npc.PlayerName + models[0].modelID).GetHashCode();
+                                            var newRm = new System.Random(hash);
+                                            hash = newRm.Next(5);
+                                            hash = hash % 4 + 1;
+
+
+                                            //npc.buildingReward[hash] = 0;
+                                            var defendLevel = npc.Level - 1;
+                                            if (defendLevel < 1)
+                                            {
+                                                defendLevel = 1;
+                                            }
+                                            else if (defendLevel > 8)
+                                            {
+                                                defendLevel = 8;
+                                            }
+                                            int randomValue = 0;
+                                            switch (defendLevel)
+                                            {
+                                                case 1: randomValue = that.rm.Next(1, 30); break;
+                                                case 2: randomValue = that.rm.Next(15, 40); break;
+                                                case 3: randomValue = that.rm.Next(29, 50); break;
+                                                case 4: randomValue = that.rm.Next(43, 60); break;
+                                                case 5: randomValue = that.rm.Next(57, 70); break;
+                                                case 6: randomValue = that.rm.Next(71, 80); break;
+                                                case 7: randomValue = that.rm.Next(85, 90); break;
+                                                case 8: randomValue = that.rm.Next(99, 100); break;
+                                            }
+                                            if (npc.buildingReward[hash] < randomValue)
+                                                npc.buildingReward[hash] = randomValue;
+                                        }
+                                        npc.canGetReward = false;
+                                    }; break;
+                                default:
+                                    {
+                                        npc.canGetReward = false;
+                                    }; break;
+                            }
+                            npc.canGetReward = false;
+                        }
+                        else
+                        {
+                        }
+                    }
+                }
+            }
         }
 
         public enum RewardByModel
@@ -303,8 +416,10 @@ namespace HouseManager4_0
     }
     public partial class Manager_Model
     {
-        public const int IgnorePhysics = 50;
-        public const int IgnoreMagic = 30;
-        public const int IgnoreControl = 25;
+        // public const int IgnorePhysics = 50;
+        //public const int IgnoreElectricMagic = 30;
+        //public const int IgnoreFireMagic = 30;
+        //public const int IgnoreWaterMagic = 30;
+        //public const int IgnoreControl = 25;
     }
 }

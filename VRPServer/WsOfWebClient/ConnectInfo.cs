@@ -112,5 +112,13 @@ namespace WsOfWebClient
         public static string DirectionArrowIconBase64 = "";
         public static string DirectionArrowObj = "";
         public static string DirectionArrowMtl = "";
+
+        public static string OpponentIconBase64 = "";
+        public static string OpponentIconObj = "";
+        public static string OpponentIconMtl = "";
+
+        public static string TeammateIconBase64 = "";
+        public static string TeammateIconObj = "";
+        public static string TeammateIconMtl = "";
     }
 }

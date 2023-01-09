@@ -66,10 +66,7 @@ namespace HouseManager4_0.RoomMainF
                 }
             }
             //   var notifyMsgs = GPResult.NotifyMsgs;
-            for (var i = 0; i < notifyMsgs.Count; i += 2)
-            {
-                Startup.sendMsg(notifyMsgs[i], notifyMsgs[i + 1]);
-            }
+            Startup.sendSeveralMsgs(notifyMsgs); 
             if (success)
             {
                 CheckAllPromoteState(key);

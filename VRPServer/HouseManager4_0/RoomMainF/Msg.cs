@@ -54,12 +54,7 @@ namespace HouseManager4_0.RoomMainF
                         }
                     }
                 }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg);
         }
 
         public void ResponMsg(DialogMsg dm)
@@ -77,12 +72,7 @@ namespace HouseManager4_0.RoomMainF
 
                     }
                 }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg);
         }
 
         public void RequstMsg(DialogMsg dm)
@@ -100,12 +90,7 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            Startup.sendSeveralMsgs(notifyMsg);
         }
     }
 }

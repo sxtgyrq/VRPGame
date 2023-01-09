@@ -295,7 +295,7 @@ namespace HouseManager4_0
                             throw new Exception("这种情况不会出现");
 
                         car.setState(player, ref notifyMsg, CarState.working);
-                        this.sendMsg(notifyMsg);
+                        this.sendSeveralMsgs(notifyMsg);
                         StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath, grp);
                     };
                     this.loop(p, step, startT, player, goPath);
@@ -390,12 +390,7 @@ namespace HouseManager4_0
                 }
 
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+            this.sendSeveralMsgs(notifyMsg); 
             if (needUpdateCollectState)
             {
                 that.CheckAllPlayersCollectState();
@@ -431,11 +426,12 @@ namespace HouseManager4_0
                 needUpdateCollectState = true;
 
                 if (role.playerType == RoleInGame.PlayerType.player)
+                {
                     that.GetMusic((Player)role, ref notifyMsg);
-                if (role.playerType == RoleInGame.PlayerType.player)
                     that.GetBackground((Player)role, ref notifyMsg);
-                if (role.playerType == RoleInGame.PlayerType.player)
                     ((Player)role).RefererCount++;
+                    ((Player)role).ActiveTime = DateTime.Now;
+                }
             }
             else
             {
@@ -460,9 +456,16 @@ namespace HouseManager4_0
             {
                 that.frequencyM.addFrequencyRecord();
             }
-            if (role.playerType == RoleInGame.PlayerType.player)
             {
-                that.goodsM.ShowConnectionModels(role, pa.target, ref notifyMsg);
+                if (role.playerType == RoleInGame.PlayerType.player)
+                {
+                    that.goodsM.ShowConnectionModels(role, pa.target, ref notifyMsg);
+                }
+                else if (role.playerType == RoleInGame.PlayerType.NPC)
+                {
+                    //that.modelM
+                    that.modelM.GetRewardFromBuildingByNPC((NPC)role);
+                }
             }
             if (role.playerType == RoleInGame.PlayerType.player)
             {

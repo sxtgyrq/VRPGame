@@ -252,49 +252,43 @@ namespace HouseManager4_0
 
             get
             {
-                //  throw new Exception("没完！");
-                if (string.IsNullOrEmpty(_theLargestHolderKey))
+                if (this.playerType == PlayerType.player)
                 {
-
-                }
-                else if (this.rm._Players.ContainsKey(_theLargestHolderKey))
-                {
-                    var boss = this.rm._Players[_theLargestHolderKey];
-                    if (boss.playerType == PlayerType.NPC)
+                    if (string.IsNullOrEmpty(_theLargestHolderKey))
                     {
 
-                        return _theLargestHolderKey;///NPC返回指定的
                     }
-                    else
+                    else if (this.rm._Players.ContainsKey(_theLargestHolderKey))
                     {
-                        var playerBoss = (Player)boss;
-                        if (playerBoss.Bust)
+                        var boss = this.rm._Players[_theLargestHolderKey];
                         {
-                        }
-                        else if (playerBoss._theLargestHolderKey == playerBoss.Key)
-                        {
-                            return this._theLargestHolderKey;
-                        }
-                        else
-                        {
+                            var playerBoss = (Player)boss;
+                            if (playerBoss.Bust)
+                            {
+                            }
+                            else if (playerBoss._theLargestHolderKey == playerBoss.Key)
+                            {
+                                return this._theLargestHolderKey;
+                            }
+                            else
+                            {
+                            }
                         }
                     }
+                    this._theLargestHolderKey = this.Key;
+                    return this.Key;
                 }
-                else
+                else if (this.playerType == PlayerType.NPC)
                 {
+                    if (!string.IsNullOrEmpty(_theLargestHolderKey))
+                    {
+                        return _theLargestHolderKey;
+                    }
+                    this._theLargestHolderKey = this.Key;
+                    return this.Key;
                 }
-                this._theLargestHolderKey = this.Key;
-                return this.Key;
+                else return this.Key;
             }
-            //set
-            //{
-            //    if (value == this._theLargestHolderKey)
-            //    { }
-            //    else
-            //    {
-            //        this._theLargestHolderKey = value;
-            //    }
-            //}
         }
 
 
@@ -896,7 +890,21 @@ namespace HouseManager4_0
 
         public delegate void DrawModel(Player player, string modelID, double x, double y, double z, string amodel, string modelType, double rotatey, bool existed, string imageBase64, string objText, string mtlText, ref List<string> notifyMsg);
         public DrawModel DrawObj3DModelF { get; set; }
-        public string BTCAddress = "";
+
+        string bTCAddressValue = "";
+        public string BTCAddress
+        {
+            get { return this.bTCAddressValue; }
+            set
+            {
+                if (string.IsNullOrEmpty(value.Trim())) { }
+                else if (string.IsNullOrEmpty(this.bTCAddressValue))
+                {
+                    this.bTCAddressValue = value;
+
+                }
+            }
+        }
 
         public Dictionary<string, bool> backgroundData { get; set; }
 
@@ -971,6 +979,22 @@ namespace HouseManager4_0
         //  internal Action NavigationAction = null;
         internal RoomMain.Node NavigationData = null;
         public int SendTransmitMsg = 100;
+
+        public List<CommonClass.databaseModel.taskcopy> taskCopys = new List<taskcopy>();
+        public void initializeTaskCopy()
+        {
+            this.taskCopys = new List<taskcopy>();
+            if (BitCoin.CheckAddress.CheckAddressIsUseful(this.BTCAddress))
+            {
+                this.taskCopys = DalOfAddress.TaskCopy.GetALLItem(this.BTCAddress);
+                //鼓楼Stock,此副本作为新手引导而用。
+                var addSuccess = Program.rm.taskM.Add("GLSTOCK", this.BTCAddress.ToString(), this);
+                if (addSuccess)
+                {
+                    this.taskCopys = DalOfAddress.TaskCopy.GetALLItem(this.BTCAddress);
+                }
+            }
+        }
     }
     public class NPC : RoleInGame
     {
@@ -1111,8 +1135,6 @@ namespace HouseManager4_0
             }
             notifyMsg = null;
         }
-
-
     }
 
     public class OtherPlayers

@@ -19,9 +19,13 @@ namespace ConsoleBitcoinChainApp
                 return _UriStr;
             }
         }
-        public static async Task<Dictionary<string, long>> GetTradeInfomationFromChain(string addr)
+        public static Dictionary<string, long> GetTradeInfomationFromChain(string addr)
         {
-            var resultString = await TcpFunction.WithResponse.SendInmationToUrlAndGetRes(UriStr, addr);
+            var t = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(UriStr, addr);
+            var resultString = t.GetAwaiter().GetResult();
+            
+            //var resultString = t.Result;
+            //var resultString = await TcpFunction.WithResponse.SendInmationToUrlAndGetRes(UriStr, addr);
             return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(resultString);
         }
 

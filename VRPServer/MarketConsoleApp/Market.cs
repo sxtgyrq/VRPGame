@@ -94,17 +94,19 @@ namespace MarketConsoleApp
         {
             //  throw new NotImplementedException();
             // Console.WriteLine(msg);
+
             for (var j = 0; j < this.servers.Length; j++)
             {
                 var server = this.servers[j];
-                Task.Run(() =>
+
                 sendMsg(server,
-                    Newtonsoft.Json.JsonConvert.SerializeObject(
-                        new CommonClass.SystemBradcast()
-                        {
-                            c = "SystemBradcast",
-                            msg = msg
-                        })));
+                  Newtonsoft.Json.JsonConvert.SerializeObject(
+                      new CommonClass.SystemBradcast()
+                      {
+                          c = "SystemBradcast",
+                          msg = msg
+                      }));
+                ;
             }
         }
 
@@ -127,11 +129,15 @@ namespace MarketConsoleApp
                             {
                                 c = "ServerStatictis"
                             });
-                    var r = Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
-                    if (string.IsNullOrEmpty(r.Result)) { }
+                    var t = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json);
+                   
+                    var rResult = t.GetAwaiter().GetResult();
+                    // var r = t;
+                    //var r =  <string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
+                    if (string.IsNullOrEmpty(rResult)) { }
                     else
                     {
-                        List<int> count = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(r.Result);
+                        List<int> count = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(rResult);
                         var fileName = server.Replace('.', '_').Replace(':', '_');
                         fileName = $"log/{fileName}.txt";
                         var msg = $"{server},{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")},总共:{count[0]},玩家:{count[1]},NPC:{count[2]},在线玩家:{count[3]}";
@@ -152,14 +158,14 @@ namespace MarketConsoleApp
         object ModelInputLock = new object();
         internal void getAllBitcoinThread()
         {
-            //var t = Task.Run(() => getAllBitInfomation());
+            //var t =  () => getAllBitInfomation());
 
-            Thread th = new Thread(async () => await this.getAllBitInfomation());
+            Thread th = new Thread(() => getAllBitInfomation());
             th.Start();
             //  throw new NotImplementedException();
         }
 
-        private async Task getAllBitInfomation()
+        private async void getAllBitInfomation()
         {
             while (true)
             {
@@ -183,10 +189,11 @@ namespace MarketConsoleApp
                                 continue;
                             }
                             //detail.bussinessAddress;
-                            var dicResult = await ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(detail.bussinessAddress);
+                            var dicResult = ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(detail.bussinessAddress);
+
                             //BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(detail.bussinessAddress);
-                            ////  Task.Run < Dictionary<string, long>(() => t.GetTradeInfomationFromChain());
-                            //var result = Task.Run<Dictionary<string, long>>(() => t.GetTradeInfomationFromChain());
+                            ////   < Dictionary<string, long>(() => t.GetTradeInfomationFromChain());
+                            //var result =  <Dictionary<string, long>>(() => t.GetTradeInfomationFromChain());
                             lock (ModelInputLock)
                             {
                                 if (ModelInputSatoshi.ContainsKey(item.modelID))
@@ -280,16 +287,16 @@ namespace MarketConsoleApp
                             for (var j = 0; j < this.servers.Length; j++)
                             {
                                 var server = this.servers[j];
-                                await sendMsg(server,
-                                    Newtonsoft.Json.JsonConvert.SerializeObject(
-                                        new CommonClass.ModelStock()
-                                        {
-                                            c = "ModelStock",
-                                            modelID = allItem[i].modelID,
-                                            stocks = stocks,
-                                            stocksOriginal = stocksOriginal,
-                                            bussinessAddress = bussinessAddress,
-                                        }));
+                                sendMsg(server,
+                                  Newtonsoft.Json.JsonConvert.SerializeObject(
+                                      new CommonClass.ModelStock()
+                                      {
+                                          c = "ModelStock",
+                                          modelID = allItem[i].modelID,
+                                          stocks = stocks,
+                                          stocksOriginal = stocksOriginal,
+                                          bussinessAddress = bussinessAddress,
+                                      }));
                             }
                         }
                     }
@@ -334,7 +341,7 @@ namespace MarketConsoleApp
             // throw new NotImplementedException();
         }
 
-        private async Task<string> DealWith(string notifyJson, int tcpPort)
+        private string DealWith(string notifyJson, int tcpPort)
         {
             //  Console.WriteLine($"DealWith-Msg-{notifyJson}");
             CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
@@ -352,7 +359,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.mileCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mi.pType));
                                         th.Start();
                                         saveCount(mi.pType, this.mileCount);
                                     }
@@ -364,7 +371,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.businessCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mi.pType));
                                         th.Start();
                                         saveCount(mi.pType, this.businessCount);
                                     }
@@ -376,7 +383,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.volumeCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mi.pType));
                                         th.Start();
                                         saveCount(mi.pType, this.volumeCount);
                                     }
@@ -388,7 +395,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.speedCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mi.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mi.pType));
                                         th.Start();
                                         saveCount(mi.pType, this.speedCount);
                                     }
@@ -407,7 +414,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.mileCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mo.pType));
                                         th.Start();
                                         saveCount(mo.pType, this.mileCount);
                                     }
@@ -419,7 +426,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.businessCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mo.pType));
                                         th.Start();
                                         saveCount(mo.pType, this.businessCount);
                                     }
@@ -431,7 +438,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.volumeCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mo.pType));
                                         th.Start();
                                         saveCount(mo.pType, this.volumeCount);
                                     }
@@ -443,7 +450,7 @@ namespace MarketConsoleApp
                                     var price2 = getPrice(this.speedCount);
                                     if (price1 != price2)
                                     {
-                                        Thread th = new Thread(async () => await tellMarketItem(mo.pType));
+                                        Thread th = new Thread(() => tellMarketItem(mo.pType));
                                         th.Start();
                                         saveCount(mo.pType, this.speedCount);
                                     }
@@ -456,7 +463,9 @@ namespace MarketConsoleApp
                         if (BitCoin.CheckAddress.CheckAddressIsUseful(trant.adress))
                         {
                             TradeInfo tradeInfo = new TradeInfo(trant.adress);
-                            await tradeInfo.GetTradeInfomationFromChain();
+                            var t = tradeInfo.GetTradeInfomationFromChain();
+                            t.GetAwaiter().GetResult();
+                           
                         }
                     }; break;
             }
@@ -468,7 +477,7 @@ namespace MarketConsoleApp
             DalOfAddress.Diamoudcount.UpdateItem(pType, count);
         }
 
-        private async Task tellMarketItem(string pType)
+        private void tellMarketItem(string pType)
         {
             for (var i = 0; i < this.servers.Length; i++)
             {
@@ -478,51 +487,51 @@ namespace MarketConsoleApp
                 {
                     case "mile":
                         {
-                            await sendMsg(this.servers[i],
-                                Newtonsoft.Json.JsonConvert.SerializeObject(
-                                    new CommonClass.MarketPrice()
-                                    {
-                                        c = "MarketPrice",
-                                        count = this.mileCount,
-                                        price = getPrice(this.mileCount),
-                                        sellType = "mile",
-                                    }));
+                            sendMsg(this.servers[i],
+                              Newtonsoft.Json.JsonConvert.SerializeObject(
+                                  new CommonClass.MarketPrice()
+                                  {
+                                      c = "MarketPrice",
+                                      count = this.mileCount,
+                                      price = getPrice(this.mileCount),
+                                      sellType = "mile",
+                                  }));
                         }; break;
                     case "business":
                         {
-                            await sendMsg(this.servers[i],
-                                Newtonsoft.Json.JsonConvert.SerializeObject(
-                                    new CommonClass.MarketPrice()
-                                    {
-                                        c = "MarketPrice",
-                                        count = this.businessCount,
-                                        price = getPrice(this.businessCount),
-                                        sellType = "business",
-                                    }));
+                            sendMsg(this.servers[i],
+                              Newtonsoft.Json.JsonConvert.SerializeObject(
+                                  new CommonClass.MarketPrice()
+                                  {
+                                      c = "MarketPrice",
+                                      count = this.businessCount,
+                                      price = getPrice(this.businessCount),
+                                      sellType = "business",
+                                  }));
                         }; break;
                     case "volume":
                         {
-                            await sendMsg(this.servers[i],
-                                Newtonsoft.Json.JsonConvert.SerializeObject(
-                                    new CommonClass.MarketPrice()
-                                    {
-                                        c = "MarketPrice",
-                                        count = this.volumeCount,
-                                        price = getPrice(this.volumeCount),
-                                        sellType = "volume",
-                                    }));
+                            sendMsg(this.servers[i],
+                              Newtonsoft.Json.JsonConvert.SerializeObject(
+                                  new CommonClass.MarketPrice()
+                                  {
+                                      c = "MarketPrice",
+                                      count = this.volumeCount,
+                                      price = getPrice(this.volumeCount),
+                                      sellType = "volume",
+                                  }));
                         }; break;
                     case "speed":
                         {
-                            await sendMsg(this.servers[i],
-                                Newtonsoft.Json.JsonConvert.SerializeObject(
-                                    new CommonClass.MarketPrice()
-                                    {
-                                        c = "MarketPrice",
-                                        count = this.speedCount,
-                                        price = getPrice(this.speedCount),
-                                        sellType = "speed",
-                                    }));
+                            sendMsg(this.servers[i],
+                              Newtonsoft.Json.JsonConvert.SerializeObject(
+                                  new CommonClass.MarketPrice()
+                                  {
+                                      c = "MarketPrice",
+                                      count = this.speedCount,
+                                      price = getPrice(this.speedCount),
+                                      sellType = "speed",
+                                  }));
                         }; break;
                 }
             }
@@ -550,7 +559,7 @@ namespace MarketConsoleApp
             return DalOfAddress.Diamoudcount.GetCount(v);
         }
 
-        internal async void tellMarketIsOn()
+        internal void tellMarketIsOn()
         {
             //  this.servers = File.ReadAllLines("servers.txt");
             for (var i = 0; i < this.servers.Length; i++)
@@ -558,53 +567,56 @@ namespace MarketConsoleApp
                 //string ip = this.servers[i].Split(':')[0];
                 //int port = int.Parse(this.servers[i].Split(':')[1]);
 
-                await sendMsg(this.servers[i],
-                    Newtonsoft.Json.JsonConvert.SerializeObject(
-                        new CommonClass.MarketPrice()
-                        {
-                            c = "MarketPrice",
-                            count = this.mileCount,
-                            price = getPrice(this.mileCount),
-                            sellType = "mile",
-                        }));
-                await sendMsg(this.servers[i],
-                   Newtonsoft.Json.JsonConvert.SerializeObject(
-                       new CommonClass.MarketPrice()
-                       {
-                           c = "MarketPrice",
-                           count = this.businessCount,
-                           price = getPrice(this.businessCount),
-                           sellType = "business",
-                       }));
-                await sendMsg(this.servers[i],
-                   Newtonsoft.Json.JsonConvert.SerializeObject(
-                       new CommonClass.MarketPrice()
-                       {
-                           c = "MarketPrice",
-                           count = this.volumeCount,
-                           price = getPrice(this.volumeCount),
-                           sellType = "volume",
-                       }));
-                await sendMsg(this.servers[i],
-                   Newtonsoft.Json.JsonConvert.SerializeObject(
-                       new CommonClass.MarketPrice()
-                       {
-                           c = "MarketPrice",
-                           count = this.speedCount,
-                           price = getPrice(this.speedCount),
-                           sellType = "speed",
-                       }));
+                sendMsg(this.servers[i],
+                  Newtonsoft.Json.JsonConvert.SerializeObject(
+                      new CommonClass.MarketPrice()
+                      {
+                          c = "MarketPrice",
+                          count = this.mileCount,
+                          price = getPrice(this.mileCount),
+                          sellType = "mile",
+                      }));
+                sendMsg(this.servers[i],
+                 Newtonsoft.Json.JsonConvert.SerializeObject(
+                     new CommonClass.MarketPrice()
+                     {
+                         c = "MarketPrice",
+                         count = this.businessCount,
+                         price = getPrice(this.businessCount),
+                         sellType = "business",
+                     }));
+                sendMsg(this.servers[i],
+                 Newtonsoft.Json.JsonConvert.SerializeObject(
+                     new CommonClass.MarketPrice()
+                     {
+                         c = "MarketPrice",
+                         count = this.volumeCount,
+                         price = getPrice(this.volumeCount),
+                         sellType = "volume",
+                     }));
+                sendMsg(this.servers[i],
+                 Newtonsoft.Json.JsonConvert.SerializeObject(
+                     new CommonClass.MarketPrice()
+                     {
+                         c = "MarketPrice",
+                         count = this.speedCount,
+                         price = getPrice(this.speedCount),
+                         sellType = "speed",
+                     }));
             }
 
 
         }
 
-        public static async Task sendMsg(string controllerUrl, string json)
+        public static void sendMsg(string controllerUrl, string json)
         {
             // TcpFunction.WithResponse.SendInmationToUrlAndGetRes
             try
             {
-                await Task.Run(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
+                var t = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json);
+                t.GetAwaiter().GetResult();
+                
+                //await ) => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
                 //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}往{controllerUrl}发送消息--成功！");
             }
             catch (Exception e)

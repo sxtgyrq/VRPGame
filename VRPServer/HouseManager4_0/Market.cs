@@ -29,7 +29,7 @@ namespace HouseManager4_0
             this._priceChanged = priceChanged;
             var rootPath = System.IO.Directory.GetCurrentDirectory();
             //Consol.WriteLine($"path:{rootPath}");
-          
+
             if (File.Exists($"{rootPath}\\config\\MarketIP.txt"))
             {
                 var text = File.ReadAllText($"{rootPath}\\config\\MarketIP.txt");
@@ -95,7 +95,7 @@ namespace HouseManager4_0
                 pType = pType,
                 count = v
             });
-            Startup.sendMsg($"{this.IP}:{this.port}", json);
+            Startup.sendSingleMsg($"{this.IP}:{this.port}", json);
 
         }
         public delegate void sendMsgF(string ipAndPort, string json);
@@ -113,7 +113,7 @@ namespace HouseManager4_0
                 pType = pType,
                 count = v
             });
-            Startup.sendMsg($"{this.IP}:{this.port}", json);
+            Startup.sendSingleMsg($"{this.IP}:{this.port}", json);
         }
 
 

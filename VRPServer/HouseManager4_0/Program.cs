@@ -49,6 +49,29 @@ namespace HouseManager4_0
 主要实现功能是寻宝、攻击、收集一体化。这是为前台提供新的服务！
 ";
             Console.WriteLine($"版本号：{version}");
+
+            {
+                Console.Write("输入密码:");
+                var pass = string.Empty;
+                ConsoleKey key;
+                do
+                {
+                    var keyInfo = Console.ReadKey(intercept: true);
+                    key = keyInfo.Key;
+
+                    if (key == ConsoleKey.Backspace && pass.Length > 0)
+                    {
+                        Console.Write("\b \b");
+                        pass = pass[0..^1];
+                    }
+                    else if (!char.IsControl(keyInfo.KeyChar))
+                    {
+                        Console.Write("*");
+                        pass += keyInfo.KeyChar;
+                    }
+                } while (key != ConsoleKey.Enter);
+                DalOfAddress.Connection.SetPassWord(pass);
+            }
             Program.startTime = DateTime.Now;
 
             Program.boundary = new Geometry.Boundary();

@@ -50,13 +50,7 @@ namespace HouseManager4_0
                 return false;
                 //Consol.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                //Consol.WriteLine($"url:{url}");
-                Startup.sendMsg(url, sendMsg);
-            }
+            this.sendSeveralMsgs(notifyMsg); 
             return true;
         }
 
@@ -68,6 +62,8 @@ namespace HouseManager4_0
             {
                 player.levelObj.SetLevel(result.Level);
                 player.levelObj.SetTimeStamp(result.TimeStampStr);
+
+               
             }
             else if (remarkI == DalOfAddress.LevelForSave.UpdateResultInDB.WrongTimeStr)
             {
@@ -77,6 +73,7 @@ namespace HouseManager4_0
             {
                 WebNotify(player, "等级更新失败，是不是已经用于领奖了？");
             }
+
         }
 
         public void OrderToUpdateLevel(RoleInGame role, ref List<string> notifyMsgs)

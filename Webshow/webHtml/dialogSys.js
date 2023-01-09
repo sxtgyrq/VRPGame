@@ -11,6 +11,9 @@
         if (document.getElementById('friendsList') != null) {
             document.getElementById('friendsList').remove();
         }
+        if (document.getElementById('roleStatePanel') != null) {
+            document.getElementById('roleStatePanel').remove();
+        }
         {
             var friendsList = document.createElement('friendsList');
 
@@ -56,12 +59,17 @@
             this.iconAlart();
             this.updatePanel();
         }
+        this.dealWithRoleState();
     },
     show: function () {
         if (document.getElementById('friendsList') != null) {
             document.getElementById('friendsList').remove();
+            if (document.getElementById('roleStatePanel') != null) {
+                document.getElementById('roleStatePanel').remove();
+            }
             return;
-        } 
+        }
+        this.cancleTask();
         var count = 0;
         var selectKey = '';
         for (var item in this.msgs) {
@@ -103,6 +111,7 @@
         else if (count > 1) {
             this.showFriendsList();
         }
+
     },
     showDialog: function (data) {
 
@@ -428,11 +437,113 @@
 
         // document.body.appendChild(friendsList);
     },
-    toBeMyBoss: function (key)
-    {
+    toBeMyBoss: function (key) {
         var obj = { 'c': 'Msg', 'MsgPass': '认你做老大', 'to': key };
-
         objMain.ws.send(JSON.stringify(obj));
+    },
+    ShowFightSituation: function (data) {
+        var Opponents = data.Opponents;
+        var Parters = data.Parters;
+        for (var i = 0; i < Parters.length; i++) {
+            var model = objMain.ModelInput.Teammate.obj.clone();
+            model.rotation.x = Math.PI;
+            var flag = objMain.playerGroup.getObjectByName('flag_' + Parters[i]);
+            model.position.set(flag.position.x, flag.position.y - 0.15, flag.position.z);
+            objMain.fightSituationGroup.add(model);
+        }
+        for (var i = 0; i < Opponents.length; i++) {
+            var model = objMain.ModelInput.Opponent.obj.clone();
+            model.rotation.x = Math.PI;
+            var flag = objMain.playerGroup.getObjectByName('flag_' + Opponents[i]);
+            model.position.set(flag.position.x, flag.position.y - 0.15, flag.position.z);
+            objMain.fightSituationGroup.add(model);
+        }
+        this.dealWithRoleState();
+    },
+    dealWithRoleState: function () {
+        if (document.getElementById('friendsList') == null) {
+            document.getElementById('roleStatePanel').remove();
+            return;
+        }
+        var fightSituationBtnName = '';
+        if (objMain.fightSituationGroup.children.length > 0) {
+            fightSituationBtnName = '取消查看';
+        }
+        else {
+            fightSituationBtnName = '查看态势';
+        }
+        var html = `<div id="roleStatePanel" style="position: absolute; z-index: 8; top: calc(100% - 60px - 5.25em); left: calc(12em + 20px); width: 6em; height: 5.25em; border: solid 1px red; text-align: center; background: rgba(104, 48, 8, 0.85); color: #83ffff;">
+        <div style="background: yellowgreen; 
+        margin-top: 0.25em;
+        padding:0.5em 0 0.5em 0;" onclick="dialogSys.RefreshTaskCopy();">
+            任务
+        </div>
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;
+        padding:0.5em 0 0.5em 0;" onclick="dialogSys.RefreshRoleState();">
+            ${fightSituationBtnName}
+        </div>
+    </div>`;
+        var frag = document.createRange().createContextualFragment(html);
+        frag.id = 'roleStatePanel';
+        document.body.appendChild(frag);
+    },
+    RefreshRoleState: function () {
+        while (document.getElementById('roleStatePanel') != null) {
+            document.getElementById('roleStatePanel').remove();
+        }
+        if (objMain.fightSituationGroup.children.length > 0) {
+            objMain.mainF.removeF.clearGroup(objMain.fightSituationGroup);
+            this.dealWithRoleState();
+        }
+        else {
+            objMain.ws.send(JSON.stringify({ 'c': 'GetFightSituation', 'Page': 0 }));
+        }
+    },
+    RefreshTaskCopy: function () {
+        objMain.ws.send(JSON.stringify({ 'c': 'GetTaskCopy' }));
+        this.show();
+    },
+    drawPanelOfTaskCoyp: function (datas) {
+        var s1 = '';
+        if (datas.length == 0) {
+            s1 = `<div style="border-bottom:dashed 1px #edcb8b45;margin-bottom: 2em;">
+                <h1 style="font-size:x-large;">当前没有任务</h1> 
+            </div>`;
+        }
+        else {
+            for (var i = 0; i < datas.length; i += 3) {
+                s1 += `<div style="border-bottom: dashed 1px #edcb8b45;margin-bottom: 2em;">
+                <h1 style="font-size:x-large;">${datas[i + 1]}</h1>
+                <b style="word-break:break-all;word-wrap:anywhere">${datas[i + 2]}</b>
+                <button onclick="dialogSys.TaskCopyCancle('${datas[i]}',this);">取消</button>
+            </div>`;
+            }
+        }
+        var html = `<div id="taskCoypPanel" style="overflow-y: scroll; width: 80%; height: 80%; max-width: 30em; max-height: calc(100% - 10em); margin-left: auto; margin-right: auto; margin-top: 5em; border: dotted 2px blue; border-top-left-radius: 1em; color: greenyellow; background-color: #722732; opacity: 0.85; background-size: 74px 74px; background-image: repeating-linear-gradient(0deg, #852732, #852732 3.7px, #722732 3.7px, #722732);z-index:9;position:relative;">
+<div style="float:right;margin-right:2em;margin-top:-2em;">
+                <button style="position: fixed;" onclick="dialogSys.cancleTask();">×</button>
+            </div>
+             ${s1}
+        </div>`;
+        var frag = document.createRange().createContextualFragment(html);
+        frag.id = 'taskCoypPanel';
+        document.body.appendChild(frag);
+    },
+    cancleTask: function () {
+        while (document.getElementById('taskCoypPanel') != null) {
+            document.getElementById('taskCoypPanel').remove();
+        }
+    },
+    TaskCopyCancle: function (code, ele) {
+        if (confirm('确认取消任务？')) {
+            ele.parentElement.remove();
+            objMain.ws.send(JSON.stringify({ 'c': 'RemoveTaskCopy', 'Code': code }));
+        }
+        //while (document.getElementById('taskCoypPanel') != null) {
+        //    document.getElementById('taskCoypPanel').remove();
+        //}
     }
 };
 

@@ -28,11 +28,11 @@
                 animation: mymove 1.9s infinite;
                 -webkit-animation: mymove 1.9s infinite;
             }
+
         .friendMsg {
             animation: mymove 1.9s infinite;
             -webkit-animation: mymove 1.9s infinite;
         }
-            
     </style>
 </head>
 <body style="width:100%;height:100%;overflow:hidden;">
@@ -224,11 +224,26 @@
     </div>
 
     <div style="position:absolute;z-index:8;top:0px;width:12em; height:calc(100% - 60px);border:solid 1px red;text-align:center;background:rgba(104, 48, 8, 0.85);color:#83ffff; overflow-y:scroll;  ">
-        <div  class="friendMsg">
+        <div class="friendMsg">
             玩家A
         </div>
         <div style="margin-bottom:0.25em;margin-top:0.25em">
             玩家B
+        </div>
+    </div>
+
+    <div style="position: absolute; z-index: 8; top: calc(100% - 60px - 5.25em); left: calc(12em + 20px); width: 12em; height: 5.25em; border: solid 1px red; text-align: center; background: rgba(104, 48, 8, 0.85); color: #83ffff;">
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;
+        padding:0.5em 0 0.5em 0;font-size:1em;" onclick="resistance.cancle();resistance.bindData2('${obj.KeyLookfor}');">
+            刷新态势
+        </div>
+        <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;
+        padding:0.5em 0 0.5em 0;font-size:1em;" onclick="resistance.cancle();resistance.bindData2('${obj.KeyLookfor}');">
+            刷新态势
         </div>
     </div>
     <!--<script src="mainf.js"></script>-->

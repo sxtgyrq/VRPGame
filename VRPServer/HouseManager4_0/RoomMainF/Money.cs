@@ -88,6 +88,8 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         //  doSaveMoney = true;
                                         role.MoneySet(role.Money - money, ref notifyMsg);
+                                        if (role.playerType == RoleInGame.PlayerType.player)
+                                            taskM.MoneySet((Player)role);
                                     }
                                 }; break;
                             case "all":
@@ -97,6 +99,8 @@ namespace HouseManager4_0.RoomMainF
                                     {
                                         //  doSaveMoney = true;
                                         role.MoneySet(role.Money - money, ref notifyMsg);
+                                        if (role.playerType == RoleInGame.PlayerType.player)
+                                            taskM.MoneySet((Player)role);
                                     }
                                 }; break;
                         }
@@ -117,16 +121,7 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                //Consol.WriteLine($"url:{url}");
-                if (!string.IsNullOrEmpty(url))
-                {
-                    Startup.sendMsg(url, sendMsg);
-                }
-            }
+            Startup.sendSeveralMsgs(notifyMsg); 
 
             if (money > 0)
             {
@@ -160,6 +155,7 @@ namespace HouseManager4_0.RoomMainF
                                     DalOfAddress.MoneyGet.GetSubsidizeAndLeft(ots.address, ots.value, out subsidizeGet, out subsidizeLeft);
                                     var player = this._Players[ots.Key];
                                     ((Player)player).BTCAddress = ots.address;
+                                    this.taskM.Initialize(  ((Player)player));
                                     player.MoneySet(player.Money + subsidizeGet + Referer, ref notifyMsg);
                                     if (Referer > 0)
                                     {
@@ -177,12 +173,8 @@ namespace HouseManager4_0.RoomMainF
             {
                 //这里在web前台进行校验。
             }
-            for (var i = 0; i < notifyMsg.Count; i += 2)
-            {
-                var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1];
-                Startup.sendMsg(url, sendMsg);
-            }
+
+            Startup.sendSeveralMsgs(notifyMsg); 
         }
 
         private void SendLeftMoney(Player player, long subsidizeLeft, string address, ref List<string> notifyMsg)

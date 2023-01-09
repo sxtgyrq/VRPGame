@@ -1,8 +1,11 @@
-﻿using System;
+﻿using CommonClass;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static CommonClass.ModelTranstraction;
 
 namespace HouseManager4_0
@@ -14,13 +17,13 @@ namespace HouseManager4_0
             var dealWith = new TcpFunction.WithResponse.DealWith(DealWith);
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
-        private static async Task<string> DealWith(string notifyJson, int port)
+        private static string DealWith(string notifyJson, int port)
         {
             try
             {
                 CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(notifyJson);
-                var r = await Task.Run<string>(() => DealWithInterfaceAndObj(Program.rm, c, notifyJson));
-                return r;
+                return DealWithInterfaceAndObj(Program.rm, c, notifyJson);
+
             }
             catch
             {
@@ -62,12 +65,9 @@ namespace HouseManager4_0
                                     fPIndex = GPResult.fPIndex
                                 };
 
-                                Startup.sendMsg(GPResult.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(notify));
+                                Startup.sendSingleMsg(GPResult.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(notify));
                                 var notifyMsgs = GPResult.NotifyMsgs;
-                                for (var i = 0; i < notifyMsgs.Count; i += 2)
-                                {
-                                    Startup.sendMsg(notifyMsgs[i], notifyMsgs[i + 1]);
-                                }
+                                Startup.sendSeveralMsgs(notifyMsgs); 
                             }
                             outPut = "ok";
                         }; break;
@@ -146,13 +146,11 @@ namespace HouseManager4_0
                     case "SetBuyDiamond":
                         {
                             CommonClass.SetBuyDiamond bd = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetBuyDiamond>(notifyJson);
-
                             objI.Buy(bd);
                         }; break;
                     case "SetSellDiamond":
                         {
                             CommonClass.SetSellDiamond ss = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.SetSellDiamond>(notifyJson);
-
                             objI.Sell(ss);
                         }; break;
                     case "OrderToSubsidize":
@@ -344,16 +342,19 @@ namespace HouseManager4_0
                         }; break;
                     case "GetRewardFromBuildingM":
                         {
+                            //此方法对应web平台求福
                             CommonClass.GetRewardFromBuildingM m = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.GetRewardFromBuildingM>(notifyJson);
                             outPut = objI.GetRewardFromBuildingF(m);
                         }; break;
                     case "GetResistanceObj":
                         {
+                            //获取属性
                             CommonClass.GetResistanceObj r = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.GetResistanceObj>(notifyJson);
                             outPut = objI.GetResistance(r);
                         }; break;
                     case "TakeApart":
                         {
+                            //对应强太释玉
                             CommonClass.TakeApart t = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TakeApart>(notifyJson);
                             outPut = objI.TakeApartF(t);
                         }; break;
@@ -416,6 +417,9 @@ namespace HouseManager4_0
                         }; break;
                     case "Charging":
                         {
+                            /*
+                             * 充值
+                             */
                             CommonClass.Finance.Charging chargingObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.Charging>(notifyJson);
                             outPut = objI.ChargingF(chargingObj, Program.dt);
                         }; break;
@@ -432,8 +436,27 @@ namespace HouseManager4_0
                         {
                             RewardBuildingShow rbs = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardBuildingShow>(notifyJson);
                             outPut = objI.RewardBuildingShowF(rbs);
-                          //  objI.nea
+                            //  objI.nea
                         }; break;
+                    case "GetFightSituation":
+                        {
+                            GetFightSituation fs = Newtonsoft.Json.JsonConvert.DeserializeObject<GetFightSituation>(notifyJson);
+                            outPut = objI.GetFightSituationF(fs);
+                        }; break;
+                    case "GetTaskCopyDetail":
+                        {
+                            GetTaskCopyDetail gtd = Newtonsoft.Json.JsonConvert.DeserializeObject<GetTaskCopyDetail>(notifyJson);
+                            outPut = objI.GetTaskCopyDetailF(gtd);
+                        }; break;
+                    case "RemoveTaskCopyM":
+                        {
+                            RemoveTaskCopyM gtd = Newtonsoft.Json.JsonConvert.DeserializeObject<RemoveTaskCopyM>(notifyJson);
+                            outPut = objI.RemoveTaskCopyF(gtd);
+                        }; break;
+                        //case "CopyTaskDisplay": 
+                        //    {
+
+                        //    };break;
                 }
             }
             {
@@ -446,9 +469,13 @@ namespace HouseManager4_0
             var dealWith = new TcpFunction.WithResponse.DealWith(DealWithMonitor);
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
-        private static async Task<string> DealWithMonitor(string notifyJson, int tcpPort)
+        private static string DealWithMonitor(string notifyJson, int tcpPort)
         {
-            return await Task.Run(() => DealWithMonitorValue(notifyJson));
+            //  string result = "";
+            return DealWithMonitorValue(notifyJson);
+            //var t1 = new Task<string>(() => DealWithMonitorValue(notifyJson));
+
+            //return t1.Result;
         }
 
         private static string DealWithMonitorValue(string notifyJson)

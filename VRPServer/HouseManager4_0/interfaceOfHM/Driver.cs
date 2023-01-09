@@ -44,9 +44,9 @@ namespace HouseManager4_0.interfaceOfHM
     }
     interface SkillImproveT
     {
-        int MagicImprovedValue(RoleInGame player);
+        int MagicImprovedProbabilityAndValue(RoleInGame player, ref Random rm);
         // void IgnoreWater(ref RoleInGame role, ref System.Random rm);
-        void ReduceMagicImprovedValue(RoleInGame player);
+        //  void ReduceMagicImprovedValue(RoleInGame player);
     }
     interface AttackT : AttackIgnore, SkillImproveT
     {
@@ -62,7 +62,7 @@ namespace HouseManager4_0.interfaceOfHM
         // long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation);
         bool CheckCarState(HouseManager4_0.Car car);
         public long ImproveAttack(RoleInGame role, long attackMoney, ref List<string> notifyMsgs);
-        long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMainF.RoomMain that, GetRandomPos grp);
+        long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMainF.RoomMain that, GetRandomPos grp, ref List<string> notifyMsg);
         void MagicAnimateShow(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
         //bool Ignore(ref RoleInGame role, ref System.Random rm);
         //long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, Engine_DebtEngine engine_DebtEngine);
@@ -75,11 +75,16 @@ namespace HouseManager4_0.interfaceOfHM
     interface ControlExpand : AttackIgnore, SkillDouble
     {
         bool DealWith();
+
         void SetReturn(bool success, GetRandomPos grp, ref List<string> notifyMsg);
         // void ReduceDefend(ref List<string> notifyMsg);
         void Ignore(ref Random rm);
         void ReduceIgnore();
         void SetHarm(ref long reduceSumInput, ref List<string> notifyMsg);
+        int IgnoreValue
+        {
+            get;
+        }
     }
     //interface ControlExpand : AttackIgnore, SkillDouble
     //{

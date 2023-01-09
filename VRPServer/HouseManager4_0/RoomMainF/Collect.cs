@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using static HouseManager4_0.Car;
 
 namespace HouseManager4_0.RoomMainF
@@ -44,10 +45,7 @@ namespace HouseManager4_0.RoomMainF
                         }
                     }
 
-            for (var i = 0; i < sendMsgs.Count; i += 2)
-            {
-                Startup.sendMsg(sendMsgs[i], sendMsgs[i + 1]);
-            }
+            Startup.sendSeveralMsgs(sendMsgs); 
         }
         private BradCastCollectInfoDetail_v2 GetCollectInfomation(int webSocketID, int collectIndex)
         {
@@ -171,7 +169,7 @@ namespace HouseManager4_0.RoomMainF
                 //var collectP = Program.dt.GetFpByIndex(this._collectPosition[i]);
                 //positions.Add(collectP);
             }
-            positions = (from item in positions orderby CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude,target.Height, grp.GetFpByIndex(this._collectPosition[item]).Latitde, grp.GetFpByIndex(this._collectPosition[item]).Longitude, grp.GetFpByIndex(this._collectPosition[item]).Height) select item).ToList();
+            positions = (from item in positions orderby CommonClass.Geography.getLengthOfTwoPoint.GetDistance(target.Latitde, target.Longitude, target.Height, grp.GetFpByIndex(this._collectPosition[item]).Latitde, grp.GetFpByIndex(this._collectPosition[item]).Longitude, grp.GetFpByIndex(this._collectPosition[item]).Height) select item).ToList();
             return positions;
         }
 

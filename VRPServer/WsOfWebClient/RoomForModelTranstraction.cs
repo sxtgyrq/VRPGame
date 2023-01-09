@@ -22,7 +22,7 @@ namespace WsOfWebClient
             //public string mtlText { get; set; }
             //public string imageBase64 { get; set; }
         }
-        internal async static Task<State> receiveState2(State s, LookForBuildings joinType, WebSocket webSocket)
+        internal static State receiveState2(State s, LookForBuildings joinType, WebSocket webSocket)
         {
             // try
             {
@@ -36,7 +36,7 @@ namespace WsOfWebClient
                         key = s.Key
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-                    await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 }
                 if (CommonClass.Format.IsModelID(joinType.selectObjName))
                 {
@@ -46,7 +46,7 @@ namespace WsOfWebClient
                         modelID = joinType.selectObjName
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
-                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                     if (string.IsNullOrEmpty(info))
                     {
                         return s;
@@ -70,11 +70,10 @@ namespace WsOfWebClient
                                 author = obj.author,
                             };
                             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(r);
-                            var sendData = Encoding.UTF8.GetBytes(returnMsg);
-                            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                            CommonF.SendData(returnMsg, webSocket);
                             addr = obj.bussinessAddress;
                         }
-                        var tdr = await getTradeDetail(s, webSocket, addr);
+                        var tdr = getTradeDetail(s, webSocket, addr);
                         return tdr;
                     }
                 }
@@ -91,7 +90,7 @@ namespace WsOfWebClient
         }
 
 
-        internal static async Task<State> getTradeDetail(State s, WebSocket webSocket, string addr)
+        internal static State getTradeDetail(State s, WebSocket webSocket, string addr)
         {
             Dictionary<string, long> tradeDetail;
             {
@@ -102,7 +101,7 @@ namespace WsOfWebClient
                 };
                 var index = rm.Next(0, roomUrls.Count);
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-                var data = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var data = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 tradeDetail = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, long>>(data);
             }
 
@@ -129,8 +128,7 @@ namespace WsOfWebClient
                         index = i.ToString(),
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                    var sendData = Encoding.UTF8.GetBytes(msg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(msg, webSocket);
                 }
             }
             if (sumValue == 0)
@@ -146,7 +144,7 @@ namespace WsOfWebClient
                 };
                 var index = rm.Next(0, roomUrls.Count);
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-                var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var json = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
 
                 char[] SplitChars = new char[4] { ':', '-', '@', '>' };
@@ -169,8 +167,7 @@ namespace WsOfWebClient
                             index = i.ToString(),
                         };
                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                        var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                        await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                        CommonF.SendData(sendMsg, webSocket);
                     }
                 }
             }
@@ -244,13 +241,12 @@ namespace WsOfWebClient
                         percentValue = percentValue
                     };
                     var passMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj3);
-                    var sendData = Encoding.UTF8.GetBytes(passMsg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(passMsg, webSocket);
                 }
             }
             return s;
         }
-        private static async Task<string> drawRoad(string roadCode, Random rm)
+        private static string drawRoad(string roadCode, Random rm)
         {
             var index = rm.Next(0, roomUrls.Count);
             var roomUrl = roomUrls[index];
@@ -259,11 +255,11 @@ namespace WsOfWebClient
                 c = "DrawRoad",
                 roadCode = roadCode
             });
-            var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             return json;
         }
 
-        static async Task<string[]> initialize(Random rm, string amID)
+        static string[] initialize(Random rm, string amID)
         {
             string[] result = new string[3] { "", "", "" };
             var index = rm.Next(0, roomUrls.Count);
@@ -274,7 +270,7 @@ namespace WsOfWebClient
                     c = "GetAbtractModels",
                     amID = amID
                 });
-            var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<abtractmodelsPassData>(json);
             result[0] = obj.imageBase64;
             result[1] = obj.objText;
@@ -292,7 +288,7 @@ namespace WsOfWebClient
                 )
             {
                 int indexNumber = 0;
-                indexNumber = await GetIndexOfTrade(ga.addrBussiness, ga.addrFrom);
+                indexNumber = GetIndexOfTrade(ga.addrBussiness, ga.addrFrom);
                 if (indexNumber >= 0)
                 {
                     //var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.DrawRoad()
@@ -302,7 +298,7 @@ namespace WsOfWebClient
                     //});
                     //var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
-                    var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{ga.tranNum * 100000000}Satoshi";
+                    var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{Convert.ToInt32(Math.Round(ga.tranNum * 100000000))}Satoshi";
                     var passObj = new
                     {
                         agreement = agreement,
@@ -316,7 +312,7 @@ namespace WsOfWebClient
             //throw new NotImplementedException();
         }
 
-        private static async Task<int> GetIndexOfTrade(string addrBussiness, string addrFrom)
+        private static int GetIndexOfTrade(string addrBussiness, string addrFrom)
         {
             var ti = new TradeIndex()
             {
@@ -326,11 +322,11 @@ namespace WsOfWebClient
             };
             var index = rm.Next(0, roomUrls.Count);
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ti);
-            var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
             return Convert.ToInt32(info);
         }
 
-        internal static async Task ModelTransSignF(State s, WebSocket webSocket, ModelTransSign mts)
+        internal static void ModelTransSignF(State s, WebSocket webSocket, ModelTransSign mts)
         {
             try
             {
@@ -351,7 +347,7 @@ namespace WsOfWebClient
                             var passCoinStr = parameter[4];
                             if (passCoinStr.Substring(passCoinStr.Length - 7, 7) == "Satoshi")
                             {
-                                var trDetail = await getValueOfAddr(addrBussiness);
+                                var trDetail = getValueOfAddr(addrBussiness);
                                 var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
                                 if (passCoin > 0)
                                 {
@@ -370,47 +366,60 @@ namespace WsOfWebClient
                                                 passCoin = passCoin,
                                                 sign = mts.sign,
                                             };
-                                            var index = rm.Next(0, roomUrls.Count);
+                                            int index;
+                                            if (s.Ls == LoginState.OnLine && s.roomIndex >= 0)
+                                            {
+                                                /*
+                                                 * 此处的目的，是为了在线操作的时候，地址与实时Player所在的房间(HouseManager4_0程序)对应。
+                                                 */
+
+                                                index = s.roomIndex;
+                                            }
+                                            else
+                                            {
+                                                index = rm.Next(0, roomUrls.Count);
+                                            }
+
                                             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
-                                            var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                                            var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                                             var resultObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TradeCoin.Result>(info);
-                                            await NotifyMsg(webSocket, resultObj.msg);
+                                            NotifyMsg(webSocket, resultObj.msg);
 
                                             if (resultObj.success)
                                             {
-                                                var ok = await clearInfomation(webSocket);
+                                                var ok = clearInfomation(webSocket);
                                                 if (ok)
-                                                    s = await getTradeDetail(s, webSocket, addrBussiness);
+                                                    s = getTradeDetail(s, webSocket, addrBussiness);
                                             }
                                         }
                                         else
                                         {
                                             var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                            await NotifyMsg(webSocket, notifyMsg);
+                                            NotifyMsg(webSocket, notifyMsg);
                                         }
                                     }
                                     else
                                     {
                                         var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                        await NotifyMsg(webSocket, notifyMsg);
+                                        NotifyMsg(webSocket, notifyMsg);
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            await NotifyMsg(webSocket, "无效的签名!");
+                            NotifyMsg(webSocket, "无效的签名!");
                         }
                     }
                 }
             }
             catch
             {
-                await NotifyMsg(webSocket, "交易失败!");
+                NotifyMsg(webSocket, "交易失败!");
             }
         }
 
-        internal static async Task PublicReward(State s, WebSocket webSocket, RewardPublicSign rewardPub)
+        internal static void PublicReward(State s, WebSocket webSocket, RewardPublicSign rewardPub)
         {
             var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
             var firstIndex = rewardPub.msg.IndexOf('@');
@@ -436,10 +445,10 @@ namespace WsOfWebClient
                         var addrTo = parameter[3];
                         if (addrTo == "SetAsReward")
                         {
-                            var indexV = await GetIndexOfTrade(addrBussiness, addrFrom);
+                            var indexV = GetIndexOfTrade(addrBussiness, addrFrom);
                             if (indexV < 0)
                             {
-                                await NotifyMsg(webSocket, $"错误的addrBussiness:{addrBussiness}");
+                                NotifyMsg(webSocket, $"错误的addrBussiness:{addrBussiness}");
                             }
                             else if (tradeIndex == indexV)
                             {
@@ -450,7 +459,7 @@ namespace WsOfWebClient
                                     var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
                                     if (passCoin > 0)
                                     {
-                                        var trDetail = await getValueOfAddr(addrBussiness);
+                                        var trDetail = getValueOfAddr(addrBussiness);
                                         if (trDetail.ContainsKey(addrFrom))
                                         {
                                             if (trDetail[addrFrom] >= passCoin)
@@ -468,31 +477,30 @@ namespace WsOfWebClient
                                                 };
                                                 var index = rm.Next(0, roomUrls.Count);
                                                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
-                                                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                                                var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
 
                                                 var resultObj = Newtonsoft.Json.JsonConvert.DeserializeObject<TradeSetAsReward.Result>(info);
                                                 {
-                                                    await NotifyMsg(webSocket, resultObj.msg);
+                                                    NotifyMsg(webSocket, resultObj.msg);
                                                 }
                                             }
                                             else
                                             {
                                                 var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                                await NotifyMsg(webSocket, notifyMsg);
+                                                NotifyMsg(webSocket, notifyMsg);
                                             }
                                         }
                                         else
                                         {
                                             var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                            await NotifyMsg(webSocket, notifyMsg);
+                                            NotifyMsg(webSocket, notifyMsg);
                                         }
                                     }
                                 }
-
                             }
                             else
                             {
-                                await NotifyMsg(webSocket, $"错误的tradeIndex:{tradeIndex}");
+                                NotifyMsg(webSocket, $"错误的tradeIndex:{tradeIndex}");
                             }
 
                         }
@@ -573,7 +581,7 @@ namespace WsOfWebClient
                         //var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                         //var f = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(info);
 
-                        var trDetail = await getValueOfAddr(asa.bAddr);
+                        var trDetail = getValueOfAddr(asa.bAddr);
                         foreach (var i in trDetail)
                         {
                             //       Console.WriteLine($"{i.Key},{i.Value}");
@@ -605,7 +613,7 @@ namespace WsOfWebClient
       )
                     {
                         int indexNumber = 0;
-                        indexNumber = await GetIndexOfTrade(ga.addrBussiness, ga.addrFrom);
+                        indexNumber = GetIndexOfTrade(ga.addrBussiness, ga.addrFrom);
                         if (indexNumber >= 0)
                         {
                             //var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.MapEditor.DrawRoad()
@@ -644,7 +652,7 @@ namespace WsOfWebClient
                     r = r.GetHashCode().ToString();
                     var index = rm.Next(0, roomUrls.Count);
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ti);
-                    var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                     var f = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(info);
                     for (int i = 0; i < f.Count; i++)
                     {
@@ -663,7 +671,7 @@ namespace WsOfWebClient
             }
             return r;
         }
-        internal static async Task RewardPublicSignF(State s, WebSocket webSocket, RewardPublicSign rewardPub)
+        internal static void RewardPublicSignF(State s, WebSocket webSocket, RewardPublicSign rewardPub)
         {
             //var parameter = rewardPub.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
             //var firstIndex = rewardPub.msg.IndexOf('@');
@@ -690,7 +698,7 @@ namespace WsOfWebClient
                         var addrTo = parameter[3];
                         if (addrTo == "SetAsReward")
                         {
-                            if (tradeIndex == await GetIndexOfTrade(addrBussiness, addrFrom))
+                            if (tradeIndex == GetIndexOfTrade(addrBussiness, addrFrom))
                             {
                                 var passCoinStr = parameter[4];
 
@@ -699,7 +707,7 @@ namespace WsOfWebClient
                                     var passCoin = Convert.ToInt64(passCoinStr.Substring(0, passCoinStr.Length - 7));
                                     if (passCoin > 0)
                                     {
-                                        var trDetail = await getValueOfAddr(addrBussiness);
+                                        var trDetail = getValueOfAddr(addrBussiness);
                                         if (trDetail.ContainsKey(addrFrom))
                                         {
                                             if (trDetail[addrFrom] >= passCoin)
@@ -717,28 +725,28 @@ namespace WsOfWebClient
                                                 };
                                                 var index = rm.Next(0, roomUrls.Count);
                                                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(tc);
-                                                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                                                var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                                                 if (string.IsNullOrEmpty(info))
                                                 {
-                                                    var ok = await clearInfomation(webSocket);
+                                                    var ok = clearInfomation(webSocket);
                                                     if (ok)
-                                                        s = await getTradeDetail(s, webSocket, addrBussiness);
+                                                        s = getTradeDetail(s, webSocket, addrBussiness);
                                                 }
                                                 else
                                                 {
-                                                    await NotifyMsg(webSocket, info);
+                                                    NotifyMsg(webSocket, info);
                                                 }
                                             }
                                             else
                                             {
                                                 var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                                await NotifyMsg(webSocket, notifyMsg);
+                                                NotifyMsg(webSocket, notifyMsg);
                                             }
                                         }
                                         else
                                         {
                                             var notifyMsg = $"{addrFrom}没有足够的余额。";
-                                            await NotifyMsg(webSocket, notifyMsg);
+                                            NotifyMsg(webSocket, notifyMsg);
                                         }
                                     }
                                 }
@@ -884,7 +892,7 @@ namespace WsOfWebClient
         //    }
         //}
 
-        static async Task<bool> clearInfomation(WebSocket webSocket)
+        static bool clearInfomation(WebSocket webSocket)
         {
             // var notifyMsg = info;
             var passObj = new
@@ -892,13 +900,14 @@ namespace WsOfWebClient
                 c = "ClearTradeInfomation"
             };
             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-            var sendData = Encoding.UTF8.GetBytes(returnMsg);
-            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-            var ok = await CheckRespon(webSocket, "ClearTradeInfomation");
+            CommonF.SendData(returnMsg, webSocket);
+            //var sendData = Encoding.UTF8.GetBytes(returnMsg);
+            //await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            var ok = CheckRespon(webSocket, "ClearTradeInfomation");
             return ok;
         }
 
-        private static async Task NotifyMsg(WebSocket webSocket, string info)
+        private static void NotifyMsg(WebSocket webSocket, string info)
         {
             var notifyMsg = info;
             var passObj = new
@@ -907,11 +916,10 @@ namespace WsOfWebClient
                 c = "ShowAgreementMsg"
             };
             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-            var sendData = Encoding.UTF8.GetBytes(returnMsg);
-            await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            CommonF.SendData(returnMsg, webSocket);
         }
 
-        internal static async Task<State> GetAllModelPositionF(State s, WebSocket webSocket)
+        internal static State GetAllModelPositionF(State s, WebSocket webSocket)
         {
             var gfma = new GetAllModelPosition()
             {
@@ -920,7 +928,7 @@ namespace WsOfWebClient
             };
             var index = rm.Next(0, roomUrls.Count);
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(gfma);
-            var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
             if (string.IsNullOrEmpty(info))
             {
                 return s;
@@ -960,10 +968,10 @@ namespace WsOfWebClient
             }
         }
 
-        internal async static Task<Dictionary<string, long>> getValueOfAddr(string addr)
+        internal static Dictionary<string, long> getValueOfAddr(string addr)
         {
             // BitCoin.Transtraction.TradeInfo t = new BitCoin.Transtraction.TradeInfo(addr);
-            var tradeDetail = await ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr);
+            var tradeDetail = ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr);
 
             List<string> list;
             {
@@ -974,14 +982,14 @@ namespace WsOfWebClient
                 };
                 var index = rm.Next(0, roomUrls.Count);
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-                var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var json = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(json);
             }
             var r = ConsoleBitcoinChainApp.GetData.SetTrade(ref tradeDetail, list);
             return r;
         }
 
-        internal static async Task<string> GetResistanceF(State s, GetResistance gr)
+        internal static string GetResistanceF(State s, GetResistance gr)
         {
             var grn = new CommonClass.GetResistanceObj()
             {
@@ -992,11 +1000,11 @@ namespace WsOfWebClient
             };
             var index = s.roomIndex;
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-            var respon = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            var respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
             return respon;
         }
 
-        internal static async Task GetRewardInfomation(WebSocket webSocket, RewardInfomation gra)
+        internal static void GetRewardInfomation(WebSocket webSocket, RewardInfomation gra)
         {
             var date = DateTime.Now;
             if (gra.Page > 52)
@@ -1012,7 +1020,7 @@ namespace WsOfWebClient
             {
                 date = date.AddDays(-1);
             }
-            var objGet = await exitPageF(date.ToString("yyyyMMdd"));
+            var objGet = exitPageF(date.ToString("yyyyMMdd"));
 
             if (objGet == null)
             {
@@ -1022,18 +1030,15 @@ namespace WsOfWebClient
                     title = $"{date.ToString("yyyyMMdd")}期"
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-
+                CommonF.SendData(sendMsg, webSocket);
             }
             else
             {
-                var passObj = await getResultObj(objGet, date);
+                var passObj = getResultObj(objGet, date);
                 if (passObj != null)
                 {
                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                    var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(sendMsg, webSocket);
                 }
                 //int indexNumber = 0;
                 //indexNumber = await GetIndexOfTrade(objGet.bussinessAddr, objGet.tradeAddress);
@@ -1110,10 +1115,10 @@ namespace WsOfWebClient
             }
         }
 
-        static async Task<RewardInfoHasResultObj> getResultObj(tradereward objGet, DateTime date)
+        static RewardInfoHasResultObj getResultObj(tradereward objGet, DateTime date)
         {
             int indexNumber = 0;
-            indexNumber = await GetIndexOfTrade(objGet.bussinessAddr, objGet.tradeAddress);
+            indexNumber = GetIndexOfTrade(objGet.bussinessAddr, objGet.tradeAddress);
             List<CommonClass.databaseModel.traderewardapply> list;
             {
                 var grn = new CommonClass.ModelTranstraction.RewardInfomation()
@@ -1124,7 +1129,7 @@ namespace WsOfWebClient
                 var index = rm.Next(0, roomUrls.Count);
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
                 Console.WriteLine(msg);
-                var respon = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 Console.WriteLine(respon);
                 list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CommonClass.databaseModel.traderewardapply>>(respon);
             }
@@ -1210,15 +1215,15 @@ namespace WsOfWebClient
             public List<RewardApplyInDB> list { get; set; }
             public int indexNumber { get; set; }
         }
-        internal static async Task GiveAward(WebSocket webSocket, AwardsGiving ag)
+        internal static void GiveAward(WebSocket webSocket, AwardsGiving ag)
         {
-            var objGet = await exitPageF(ag.time);
+            var objGet = exitPageF(ag.time);
             if (objGet == null) { }
             else
             {
                 var startInt = objGet.startDate;
                 var dt = new DateTime(startInt / 10000, (startInt / 100) % 100, startInt % 100);
-                var r = await getResultObj(objGet, dt);
+                var r = getResultObj(objGet, dt);
                 if (r == null)
                 { }
                 else
@@ -1255,7 +1260,7 @@ namespace WsOfWebClient
                         };
                         var index = rm.Next(0, roomUrls.Count);
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(awardsGivingPass);
-                        var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                        var json = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                     }
                 }
             }
@@ -1263,7 +1268,7 @@ namespace WsOfWebClient
             // throw new NotImplementedException();
         }
 
-        internal static async Task<bool> BindWordInfoF(IntroState iState, WebSocket webSocket, CommonClass.ModelTranstraction.BindWordInfo bwi)
+        internal static bool BindWordInfoF(IntroState iState, WebSocket webSocket, CommonClass.ModelTranstraction.BindWordInfo bwi)
         {
             if (bwi.verifyCodeValue != null && iState.randomValue.Trim().ToLower() == bwi.verifyCodeValue.Trim().ToLower())
             {
@@ -1277,41 +1282,41 @@ namespace WsOfWebClient
                     {
                         var index = rm.Next(0, roomUrls.Count);
                         var msg = Newtonsoft.Json.JsonConvert.SerializeObject(bwi);
-                        var msgRequested = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                        var msgRequested = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                         if (!string.IsNullOrEmpty(msgRequested))
                         {
                             var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.BindWordInfo.Result>(msgRequested);
                             if (requestObj.success)
                             {
-                                await NotifyMsg(webSocket, $"绑定成功！{requestObj.msg}");
+                                NotifyMsg(webSocket, $"绑定成功！{requestObj.msg}");
                             }
                             else
                             {
-                                await NotifyMsg(webSocket, $"绑定失败！{requestObj.msg}");
+                                NotifyMsg(webSocket, $"绑定失败！{requestObj.msg}");
                             }
                         }
                         else
                         {
-                            await NotifyMsg(webSocket, "程序异常！");
+                            NotifyMsg(webSocket, "程序异常！");
                         }
                         iState.randomCharacterCount = 4;
                         iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                        await Room.setRandomPic(iState, webSocket);
+                        Room.setRandomPic(iState, webSocket);
                     }
                     else
                     {
                         iState.randomCharacterCount++;
                         iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                        await Room.setRandomPic(iState, webSocket);
-                        await NotifyMsg(webSocket, "绑定词，您的签名错误，绑定失败！");
+                        Room.setRandomPic(iState, webSocket);
+                        NotifyMsg(webSocket, "绑定词，您的签名错误，绑定失败！");
                     }
                 }
                 else
                 {
                     iState.randomCharacterCount++;
                     iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                    await Room.setRandomPic(iState, webSocket);
-                    await NotifyMsg(webSocket, "绑定词，须由2-10个汉字组成！");
+                    Room.setRandomPic(iState, webSocket);
+                    NotifyMsg(webSocket, "绑定词，须由2-10个汉字组成！");
                 }
                 return true;
             }
@@ -1319,53 +1324,53 @@ namespace WsOfWebClient
             {
                 iState.randomCharacterCount++;
                 iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                await Room.setRandomPic(iState, webSocket);
-                await NotifyMsg(webSocket, "验证码输入错误");
+                Room.setRandomPic(iState, webSocket);
+                NotifyMsg(webSocket, "验证码输入错误");
                 return false;
             }
         }
 
 
-        internal static async Task<bool> LookForBindInfoF(IntroState iState, WebSocket webSocket, CommonClass.ModelTranstraction.LookForBindInfo lbi)
+        internal static bool LookForBindInfoF(IntroState iState, WebSocket webSocket, CommonClass.ModelTranstraction.LookForBindInfo lbi)
         {
             if (lbi.verifyCodeValue != null && iState.randomValue.Trim().ToLower() == lbi.verifyCodeValue.Trim().ToLower())
             {
                 var index = rm.Next(0, roomUrls.Count);
                 lbi.infomation = lbi.infomation.Trim();
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(lbi);
-                var msgRequested = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var msgRequested = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 if (!string.IsNullOrEmpty(msgRequested))
                 {
                     var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.LookForBindInfo.Result>(msgRequested);
                     if (requestObj.success)
                     {
-                        await NotifyMsg(webSocket, $"{requestObj.msg}");
+                        NotifyMsg(webSocket, $"{requestObj.msg}");
                     }
                     else
                     {
-                        await NotifyMsg(webSocket, $"没有查询到绑定关系");
+                        NotifyMsg(webSocket, $"没有查询到绑定关系");
                     }
                 }
                 else
                 {
-                    await NotifyMsg(webSocket, "程序异常！");
+                    NotifyMsg(webSocket, "程序异常！");
                 }
                 iState.randomCharacterCount = 4;
                 iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                await Room.setRandomPic(iState, webSocket);
+                Room.setRandomPic(iState, webSocket);
                 return true;
             }
             else
             {
                 iState.randomCharacterCount++;
                 iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                await Room.setRandomPic(iState, webSocket);
-                await NotifyMsg(webSocket, "验证码输入错误");
+                Room.setRandomPic(iState, webSocket);
+                NotifyMsg(webSocket, "验证码输入错误");
                 return false;
             }
         }
 
-        internal static async Task RewardApply(WebSocket webSocket, RewardApply rA)
+        internal static void RewardApply(WebSocket webSocket, RewardApply rA)
         {
             var date = DateTime.Now;
             while (date.DayOfWeek != DayOfWeek.Monday)
@@ -1379,50 +1384,34 @@ namespace WsOfWebClient
                 {
                     var index = rm.Next(0, roomUrls.Count);
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(rA);
-                    var msgRequested = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                    var msgRequested = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                     if (!string.IsNullOrEmpty(msgRequested))
                     {
                         var requestObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardApply.Result>(msgRequested);
                         //  Console.WriteLine(msgRequested);
                         if (requestObj.success)
                         {
-                            await NotifyMsg(webSocket, requestObj.msg);
+                            NotifyMsg(webSocket, requestObj.msg);
                         }
                         else
                         {
-                            await NotifyMsg(webSocket, requestObj.msg);
+                            NotifyMsg(webSocket, requestObj.msg);
                         }
                     }
                     else
-                        await NotifyMsg(webSocket, "系统错误");
+                        NotifyMsg(webSocket, "系统错误");
                 }
                 else
                 {
-                    await NotifyMsg(webSocket, "错误的签名");
+                    NotifyMsg(webSocket, "错误的签名");
                 }
             }
             else
             {
-                await NotifyMsg(webSocket, $"现在只能申请{date.ToString("yyyyMMdd")}期奖励。");
+                NotifyMsg(webSocket, $"现在只能申请{date.ToString("yyyyMMdd")}期奖励。");
             }
-            //if(rA.msgNeedToSign)
-
-            //var grn = new CommonClass.ModelTranstraction.RewardInfomation()
-            //{
-            //    c = "RewardInfomation",
-            //    startDate = Convert.ToInt32(v)
-            //};
-            //var index = rm.Next(0, roomUrls.Count);
-            //var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-            //var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
-            //if (string.IsNullOrEmpty(json))
-            //{
-            //    return null;
-            //}
-            //return Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.databaseModel.tradereward>(json);
-
         }
-        private async static Task<CommonClass.databaseModel.tradereward> exitPageF(string v)
+        private static CommonClass.databaseModel.tradereward exitPageF(string v)
         {
             var grn = new CommonClass.ModelTranstraction.RewardInfomation()
             {
@@ -1431,7 +1420,7 @@ namespace WsOfWebClient
             };
             var index = rm.Next(0, roomUrls.Count);
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(grn);
-            var json = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+            var json = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
             if (string.IsNullOrEmpty(json))
             {
                 return null;
@@ -1442,20 +1431,19 @@ namespace WsOfWebClient
 
     public partial class Room
     {
-        internal async static Task<int> RewardBuildingShowF(State s, WebSocket webSocket, RewardBuildingShow rbs)
+        internal static int RewardBuildingShowF(State s, WebSocket webSocket, RewardBuildingShow rbs)
         {
             // try
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var msg = Newtonsoft.Json.JsonConvert.SerializeObject(rbs);
-                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                var info = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
                 List<string> list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(info);
 
                 for (int i = 0; i < list.Count; i++)
                 {
                     var dataItem = list[i].Trim();
-                    var sendData = Encoding.UTF8.GetBytes(dataItem);
-                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                    CommonF.SendData(dataItem, webSocket);
                 }
                 return list.Count;
             }

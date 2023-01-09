@@ -124,7 +124,7 @@ namespace WsOfWebClient.MapEditor
 
             public string mtlText { get; private set; }
 
-            internal async Task initialize(Random rm)
+            internal void initialize(Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 var roomUrl = roomUrls[index];
@@ -134,7 +134,7 @@ namespace WsOfWebClient.MapEditor
                         c = "GetAbtractModels",
                         amID = this.amID
                     });
-                var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
                 var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<abtractmodelsPassData>(json);
                 this.imageBase64 = obj.imageBase64;
                 this.objText = obj.objText;
@@ -183,7 +183,7 @@ namespace WsOfWebClient.MapEditor
 
 
 
-        private static async Task<CommonClass.MapEditor.Position> getPreviousCross(Position firstRoad, Random rm)
+        private static CommonClass.MapEditor.Position getPreviousCross(Position firstRoad, Random rm)
         {
             var index = rm.Next(0, roomUrls.Count);
             var roomUrl = roomUrls[index];
@@ -195,7 +195,7 @@ namespace WsOfWebClient.MapEditor
                 anotherRoadCode = firstRoad.anotherRoadCode,
                 anotherRoadOrder = firstRoad.anotherRoadOrder
             });
-            var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             if (string.IsNullOrEmpty(json))
             {
                 return null;
@@ -206,7 +206,7 @@ namespace WsOfWebClient.MapEditor
                 return obj;
             }
         }
-        private static async Task<CommonClass.MapEditor.Position> getNextCross(Position firstRoad, Random rm)
+        private static CommonClass.MapEditor.Position getNextCross(Position firstRoad, Random rm)
         {
             var index = rm.Next(0, roomUrls.Count);
             var roomUrl = roomUrls[index];
@@ -218,7 +218,7 @@ namespace WsOfWebClient.MapEditor
                 anotherRoadCode = firstRoad.anotherRoadCode,
                 anotherRoadOrder = firstRoad.anotherRoadOrder
             });
-            var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             if (string.IsNullOrEmpty(json))
             {
                 return null;
@@ -289,7 +289,7 @@ namespace WsOfWebClient.MapEditor
                 c = "DrawRoad",
                 roadCode = roadCode
             });
-            var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             return json;
         }
 
@@ -297,7 +297,7 @@ namespace WsOfWebClient.MapEditor
         {
             get { return Room.roomUrls; }
         }
-        private static async Task<CommonClass.MapEditor.Position> getFirstRoad(Random rm)
+        private static CommonClass.MapEditor.Position getFirstRoad(Random rm)
         {
             var index = rm.Next(0, roomUrls.Count);
             var roomUrl = roomUrls[index];
@@ -305,7 +305,7 @@ namespace WsOfWebClient.MapEditor
             {
                 c = "GetFirstRoad",
             });
-            var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
             var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.Position>(json);
             return obj;
         }

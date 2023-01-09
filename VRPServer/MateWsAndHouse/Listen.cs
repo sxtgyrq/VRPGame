@@ -12,7 +12,7 @@ namespace MateWsAndHouse
             var dealWith = new TcpFunction.WithResponse.DealWith(DealWith);
             TcpFunction.WithResponse.ListenIpAndPort(hostIP, tcpPort, dealWith);
         }
-        private static async Task<string> DealWith(string notifyJson, int tcpPort)
+        private static string DealWith(string notifyJson, int tcpPort)
         {
             //Consol.WriteLine($"notify receive:{notifyJson}");
             //File.AppendAllText("log/d.txt", $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}-{notifyJson}{Environment.NewLine}");
@@ -57,7 +57,7 @@ namespace MateWsAndHouse
                                 WebSocketID = teamCreate.WebSocketID,
                                 PlayerName = teamCreate.PlayerName
                             };
-                            var msg = await sendMsg(teamCreate.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(teamCreateFinish));
+                            var msg = sendMsg(teamCreate.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(teamCreateFinish));
                             //await (prot)
                             // await sendInmationToUrl(addItem.FromUrl, notifyJson);
 
@@ -103,7 +103,7 @@ namespace MateWsAndHouse
                                     };
                                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(teamNumWithSecret);
                                     var url = t.member[i].FromUrl;
-                                    var msg = await sendMsg(url, json);
+                                    var msg = sendMsg(url, json);
                                     Console.WriteLine(msg);
 
                                     hash += msg.GetHashCode();
@@ -182,7 +182,7 @@ namespace MateWsAndHouse
                                             PlayerName = teamJoin.PlayerName,
                                             WebSocketID = t.captain.WebSocketID
                                         };
-                                        await sendMsg(t.captain.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(addInfomation));
+                                        sendMsg(t.captain.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(addInfomation));
                                     }
                                     teamJoinFinish.PlayerNames.Add(t.captain.PlayerName);
                                     for (var i = 0; i < t.member.Count; i++)
@@ -200,11 +200,11 @@ namespace MateWsAndHouse
                                                 PlayerName = teamJoin.PlayerName,
                                                 WebSocketID = t.member[i].WebSocketID
                                             };
-                                            await sendMsg(t.member[i].FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(addInfomation));
+                                            sendMsg(t.member[i].FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(addInfomation));
                                         }
                                     }
 
-                                    await sendMsg(teamJoin.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(teamJoinFinish));
+                                    sendMsg(teamJoin.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(teamJoinFinish));
                                     outPut = "ok";
                                     //  await context.Response.WriteAsync("ok");
                                     // t.captain.
@@ -224,10 +224,12 @@ namespace MateWsAndHouse
             }
         }
 
-        private static async Task<string> sendMsg(string fromUrl, string json)
+        private static string sendMsg(string fromUrl, string json)
         {
-            var r = await Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(fromUrl, json));
-            return r;
+            // var r = await Task.Run<string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(fromUrl, json));
+            var t = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(fromUrl, json);
+
+            return t.GetAwaiter().GetResult();
         }
     }
 }

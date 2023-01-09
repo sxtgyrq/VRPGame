@@ -1,4 +1,5 @@
 ﻿using CommonClass;
+//using HouseManager4_0.interfaceOfHM;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -796,8 +797,15 @@ namespace HouseManager4_0.RoomMainF
             if (reg.IsMatch(bwi.bindWordMsg))
                 if (BitCoin.Sign.checkSign(bwi.bindWordSign, bwi.bindWordMsg, bwi.bindWordAddr))
                 {
+
                     bool success;
                     string msg = DalOfAddress.BindWordInfo.Add(bwi.bindWordSign, bwi.bindWordMsg, bwi.bindWordAddr, out success);
+
+                    if (success)
+                    {
+                        var items = DalOfAddress.TaskCopy.GetALLItem(bwi.bindWordAddr);
+                        this.taskM.BindWordInfoF(taskM, items);
+                    }
                     ModelTranstraction.BindWordInfo.Result r = new ModelTranstraction.BindWordInfo.Result()
                     {
                         success = success,
@@ -1025,13 +1033,22 @@ namespace HouseManager4_0.RoomMainF
 
         static Dictionary<string, long> getValueOfAddr(string addr)
         {
-            var tradeDetail = Task.Run(() => ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr)).Result;
+
+            var tradeDetail = ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr);
+            //t1.Wait();
+            //var tradeDetail = t1.GetAwaiter().GetResult();
+            //var tradeDetail = await ConsoleBitcoinChainApp.GetData.GetTradeInfomationFromChain(addr);
+
             var list = DalOfAddress.TradeRecord.GetAll(addr);
             var r = ConsoleBitcoinChainApp.GetData.SetTrade(ref tradeDetail, list);
             return r;
         }
 
         public string TradeCoinF(ModelTranstraction.TradeCoin tc)
+        {
+            return TradeCoinF(tc, false);
+        }
+        public string TradeCoinF(ModelTranstraction.TradeCoin tc, bool bySystem)
         {
             var parameter = tc.msg.Split(new char[] { '@', '-', '>', ':' }, StringSplitOptions.RemoveEmptyEntries);
             //  var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->{ga.addrTo}:{ga.tranNum * 100000000}Satoshi";
@@ -1065,7 +1082,35 @@ namespace HouseManager4_0.RoomMainF
                                         string notifyMsg;
                                         if (tc.addrTo.Trim() != tc.addrBussiness.Trim())
                                         {
-                                            var r = DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
+                                            bool r;
+                                            if (bySystem)
+                                                r = DalOfAddress.TradeRecord.AddBySystem(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
+                                            else
+                                            {
+                                                r = DalOfAddress.TradeRecord.Add(tc.tradeIndex, tc.addrFrom, tc.addrBussiness, tc.sign, tc.msg, tc.passCoin, out notifyMsg);
+                                                {
+                                                    List<Player> playerOperatings = new List<Player>();
+                                                    foreach (var item in this._Players)
+                                                    {
+                                                        if (item.Value.playerType == RoleInGame.PlayerType.player)
+                                                        {
+                                                            var player = (Player)item.Value;
+                                                            if (player.BTCAddress == addrFrom)
+                                                            {
+                                                                playerOperatings.Add(player);
+                                                            }
+                                                        }
+                                                    }
+                                                    {
+                                                        /*
+                                                         * 由于这里没有采用传输Key,WsOfWebClient传输的对象不固定，
+                                                         * 
+                                                         */
+                                                        var data = DalOfAddress.TaskCopy.GetALLItem(addrFrom);
+                                                        this.taskM.TradeCoinF(playerOperatings.ToArray(), tc.addrBussiness, tc.addrTo, tc.passCoin, data);
+                                                    }
+                                                }
+                                            }
                                             var objR = new ModelTranstraction.TradeCoin.Result()
                                             {
                                                 msg = notifyMsg,
@@ -1226,7 +1271,10 @@ namespace HouseManager4_0.RoomMainF
             {
                 var chargingValue = Convert.ToInt32(chargingObj.ChargingNum * 100m) * 500;
                 DalOfAddress.MoneyAdd.AddMoney(bitcoinAddr, chargingValue);
-
+                {
+                    var copyTasks = DalOfAddress.TaskCopy.GetALLItem(bitcoinAddr);
+                    this.taskM.ChargingF(copyTasks, chargingValue);
+                }
                 r = new Finance.Charging.Result()
                 {
                     msg = $"写入成功，但{chargingObj.ChargingWord}对应的地址{bitcoinAddr}充值{chargingValue}",

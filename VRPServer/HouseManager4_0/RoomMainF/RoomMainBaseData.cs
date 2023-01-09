@@ -210,5 +210,6 @@ namespace HouseManager4_0.RoomMainF
         public Manager_Resistance modelR;
         public Manager_Connection modelC;
         public Manager_Level modelL;
+        public Manager_TaskCopy taskM;
     }
 }

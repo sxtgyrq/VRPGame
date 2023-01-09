@@ -97,7 +97,7 @@ namespace WsOfWebClient
             TcpFunction.WithResponse.ListenIpAndPort(ConnectInfo.HostIP, ConnectInfo.tcpServerPort, dealWithF);
         }
         //private async void startTcp()
-        async Task<string> StartTcpDealWithF(string notifyJson, int tcpPort)
+        string StartTcpDealWithF(string notifyJson, int tcpPort)
         {
             try
             {
@@ -166,14 +166,15 @@ namespace WsOfWebClient
                                     {
 
                                         //ws.
-                                        var sendData = Encoding.UTF8.GetBytes(notifyJson);
+                                        //  var sendData = Encoding.UTF8.GetBytes(notifyJson);
 
                                         switch (c.c)
                                         {
                                             case "": { }; break;
                                             default:
                                                 {
-                                                    await ws.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                                                    CommonF.SendData(notifyJson, ws);
+                                                    //await ws.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
                                                 }; break;
                                         }
 
@@ -219,7 +220,7 @@ namespace WsOfWebClient
                 {
                     // throw new NotImplementedException();
                     var pathValue = context.Request.Path.Value;
-                    //Console.Write($" {context.Request.Path.Value}");
+                    //Consoe.Write($" {context.Request.Path.Value}");
                     var regex = new System.Text.RegularExpressions.Regex("^/[a-zA-Z0-9]{32}/[np]{1}[xyz]{1}.jpg$");
                     if (regex.IsMatch(pathValue))
                     {
@@ -232,7 +233,7 @@ namespace WsOfWebClient
                             indexOfCall++;
                             indexOfCall = indexOfCall % Room.roomUrls.Count;
                             var fileName = pathValue.Split('/').Last();
-                            var dataGetFromDB = await Room.getImg(indexOfCall, pathValue.Split('/')[1], fileName);
+                            var dataGetFromDB = Room.getImg(indexOfCall, pathValue.Split('/')[1], fileName);
                             if (dataGetFromDB.Length > 0)
                             {
                                 await getImage(dataGetFromDB, context.Response);
@@ -302,10 +303,10 @@ namespace WsOfWebClient
                     try
                     {
 
-                        var returnResult = await ReceiveStringAsync(webSocket, webWsSize);
+                        var returnResult = ReceiveStringAsync(webSocket, webWsSize);
 
                         wResult = returnResult.wr;
-                        Console.WriteLine(returnResult.result);
+                        // Consoe.WriteLine(returnResult.result);
                         CommonClass.Command c = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Command>(returnResult.result);
                         switch (c.c)
                         {
@@ -322,16 +323,16 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.empty)
                                     {
                                         CheckSession checkSession = Newtonsoft.Json.JsonConvert.DeserializeObject<CheckSession>(returnResult.result);
-                                        var checkResult = await BLL.CheckSessionBLL.checkIsOK(checkSession, s);
+                                        var checkResult = BLL.CheckSessionBLL.checkIsOK(checkSession, s);
                                         if (checkResult.CheckOK)
                                         {
                                             s.Key = checkResult.Key;
                                             s.roomIndex = checkResult.roomIndex;
-                                            s = await Room.setOnLine(s, webSocket);
+                                            s = Room.setOnLine(s, webSocket);
                                         }
                                         else
                                         {
-                                            s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                            s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
                                         }
                                     }
                                 }; break;
@@ -340,7 +341,7 @@ namespace WsOfWebClient
                                     JoinGameSingle joinType = Newtonsoft.Json.JsonConvert.DeserializeObject<JoinGameSingle>(returnResult.result);
                                     if (s.Ls == LoginState.selectSingleTeamJoin)
                                     {
-                                        s = await Room.GetRoomThenStart(s, webSocket, playerName, joinType.RefererAddr);
+                                        s = Room.GetRoomThenStart(s, webSocket, playerName, joinType.RefererAddr);
 
                                     }
 
@@ -349,7 +350,7 @@ namespace WsOfWebClient
                                 {
                                     if (s.Ls == LoginState.selectSingleTeamJoin)
                                     {
-                                        s = await Room.setState(s, webSocket, LoginState.QueryReward);
+                                        s = Room.setState(s, webSocket, LoginState.QueryReward);
                                     }
                                 }; break;
                             case "RewardBuildingShow":
@@ -357,18 +358,14 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.QueryReward)
                                     {
                                         CommonClass.ModelTranstraction.RewardBuildingShow rbs = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.RewardBuildingShow>(returnResult.result);
-                                        var dataCount = await Room.RewardBuildingShowF(s, webSocket, rbs);
-                                        if (s.GetHashCode() == dataCount)
-                                        {
-                                            Console.WriteLine($"${dataCount}");
-                                        }
+                                        var dataCount = Room.RewardBuildingShowF(s, webSocket, rbs);
                                     }
                                 }; break;
                             case "QueryRewardCancle":
                                 {
                                     if (s.Ls == LoginState.QueryReward)
                                     {
-                                        s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                        s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
                                     }
                                 }; break;
                             case "CreateTeam":
@@ -380,21 +377,21 @@ namespace WsOfWebClient
                                             string command_start;
                                             CommonClass.TeamResult team;
                                             {
-                                                s = await Room.setState(s, webSocket, LoginState.WaitingToStart);
+                                                s = Room.setState(s, webSocket, LoginState.WaitingToStart);
                                             }
                                             {
                                                 //
                                                 command_start = CommonClass.Random.GetMD5HashFromStr(s.WebsocketID.ToString() + s.WebsocketID);
-                                                team = await Team.createTeam2(s.WebsocketID, playerName, command_start);
+                                                team = Team.createTeam2(s.WebsocketID, playerName, command_start);
                                             }
                                             {
                                                 //var command_start = CommonClass.Random.GetMD5HashFromStr(s.WebsocketID.ToString() + s.WebsocketID); 
-                                                returnResult = await ReceiveStringAsync(webSocket, webWsSize);
+                                                returnResult = ReceiveStringAsync(webSocket, webWsSize);
 
                                                 wResult = returnResult.wr;
                                                 if (returnResult.result == command_start)
                                                 {
-                                                    s = await Room.GetRoomThenStartAfterCreateTeam(s, webSocket, team, playerName, ct.RefererAddr);
+                                                    s = Room.GetRoomThenStartAfterCreateTeam(s, webSocket, team, playerName, ct.RefererAddr);
                                                 }
                                                 else
                                                 {
@@ -413,15 +410,15 @@ namespace WsOfWebClient
                                             string command_start;
                                             {
                                                 //将状态设置为等待开始和等待加入
-                                                s = await Room.setState(s, webSocket, LoginState.WaitingToGetTeam);
+                                                s = Room.setState(s, webSocket, LoginState.WaitingToGetTeam);
                                             }
                                             {
-                                                returnResult = await ReceiveStringAsync(webSocket, webWsSize);
+                                                returnResult = ReceiveStringAsync(webSocket, webWsSize);
 
                                                 wResult = returnResult.wr;
                                                 var teamID = returnResult.result;
                                                 command_start = CommonClass.Random.GetMD5HashFromStr(s.WebsocketID.ToString() + s.WebsocketID + DateTime.Now.ToString());
-                                                var result = await Team.findTeam2(s.WebsocketID, playerName, command_start, teamID);
+                                                var result = Team.findTeam2(s.WebsocketID, playerName, command_start, teamID);
 
                                                 if (result == "ok")
                                                 {
@@ -429,27 +426,27 @@ namespace WsOfWebClient
                                                 }
                                                 else if (result == "game has begun")
                                                 {
-                                                    s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
-                                                    await Room.Alert(webSocket, $"他们已经开始了！");
+                                                    s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                                    Room.Alert(webSocket, $"他们已经开始了！");
                                                 }
                                                 else if (result == "is not number")
                                                 {
-                                                    s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
-                                                    await Room.Alert(webSocket, $"请输入数字");
+                                                    s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                                    Room.Alert(webSocket, $"请输入数字");
                                                 }
                                                 else if (result == "not has the team")
                                                 {
-                                                    s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
-                                                    await Room.Alert(webSocket, $"没有该队伍({teamID})");
+                                                    s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                                    Room.Alert(webSocket, $"没有该队伍({teamID})");
                                                 }
                                                 else if (result == "team is full")
                                                 {
-                                                    s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
-                                                    await Room.Alert(webSocket, "该队伍已满员");
+                                                    s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                                    Room.Alert(webSocket, "该队伍已满员");
                                                 }
                                                 else
                                                 {
-                                                    s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                                    s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
                                                 }
                                             }
                                         }
@@ -464,18 +461,18 @@ namespace WsOfWebClient
                                         string refererAddr;
                                         if (Room.CheckSecret(returnResult.result, command_start, out roomIndex, out refererAddr))
                                         {
-                                            Console.WriteLine("secret 正确");
-                                            s = await Room.GetRoomThenStartAfterJoinTeam(s, webSocket, roomIndex, playerName, refererAddr);
+                                            //   Consoe.WriteLine("secret 正确");
+                                            s = Room.GetRoomThenStartAfterJoinTeam(s, webSocket, roomIndex, playerName, refererAddr);
                                         }
                                         else
                                         {
-                                            Console.WriteLine("secret 不正确");
+                                            //   Consoe.WriteLine("secret 不正确");
                                             return;
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("错误的状态");
+                                        //Consoe.WriteLine("错误的状态");
                                         return;
                                     }
                                 }; break;
@@ -502,8 +499,8 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.OnLine)
                                     {
 
-                                        s = await Room.setState(s, webSocket, LoginState.LookForBuildings);
-                                        s = await Room.receiveState2(s, joinType, webSocket);
+                                        s = Room.setState(s, webSocket, LoginState.LookForBuildings);
+                                        s = Room.receiveState2(s, joinType, webSocket);
                                         // s = await Room.GetAllModelPosition(s, webSocket);
                                         // s = await Room.receiveState(s, webSocket);
                                     }
@@ -527,7 +524,7 @@ namespace WsOfWebClient
 
                                     if (s.Ls == LoginState.LookForBuildings)
                                     {
-                                        s = await Room.setState(s, webSocket, LoginState.OnLine);
+                                        s = Room.setState(s, webSocket, LoginState.OnLine);
                                     }
                                 }; break;
                             case "GetCarsName":
@@ -688,7 +685,7 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.OnLine)
                                     {
                                         Skill2 s2 = Newtonsoft.Json.JsonConvert.DeserializeObject<Skill2>(returnResult.result);
-                                        await Room.magic(s, s2);
+                                        Room.magic(s, s2);
                                     }
                                 }; break;
                             case "ViewAngle":
@@ -710,13 +707,16 @@ namespace WsOfWebClient
                                 }; break;
                             case "ModelTransSign":
                                 {
-                                    ModelTransSign mts = Newtonsoft.Json.JsonConvert.DeserializeObject<ModelTransSign>(returnResult.result);
-                                    await Room.ModelTransSignF(s, webSocket, mts);
+                                    // if (s.Ls == LoginState.OnLine)
+                                    {
+                                        ModelTransSign mts = Newtonsoft.Json.JsonConvert.DeserializeObject<ModelTransSign>(returnResult.result);
+                                        Room.ModelTransSignF(s, webSocket, mts);
+                                    }
                                 }; break;
                             case "RewardPublicSign":
                                 {
                                     RewardPublicSign rps = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardPublicSign>(returnResult.result);
-                                    await Room.PublicReward(s, webSocket, rps);
+                                    Room.PublicReward(s, webSocket, rps);
                                 }; break;
                             case "CheckCarState":
                                 {
@@ -727,7 +727,7 @@ namespace WsOfWebClient
                             case "GetResistance":
                                 {
                                     GetResistance gr = Newtonsoft.Json.JsonConvert.DeserializeObject<GetResistance>(returnResult.result);
-                                    await Room.GetResistanceF(s, gr);
+                                    Room.GetResistanceF(s, gr);
                                 }; break;
                             case "TakeApart":
                                 {
@@ -745,7 +745,7 @@ namespace WsOfWebClient
                                 {
                                     RewardSet rs = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardSet>(returnResult.result);
                                     var r = await Room.GetAllBusinessAddr(webSocket, rs);
-                                    Console.WriteLine(r);
+                                    //  Consoe.WriteLine(r);
                                 }; break;
                             case "AllStockAddr":
                                 {
@@ -760,25 +760,25 @@ namespace WsOfWebClient
                             case "RewardInfomation":
                                 {
                                     RewardInfomation gra = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardInfomation>(returnResult.result);
-                                    await Room.GetRewardInfomation(webSocket, gra);
+                                    Room.GetRewardInfomation(webSocket, gra);
                                 }; break;
                             case "RewardApply":
                                 {
                                     RewardApply rA = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardApply>(returnResult.result);
-                                    await Room.RewardApply(webSocket, rA);
+                                    Room.RewardApply(webSocket, rA);
                                 }; break;
                             case "AwardsGiving":
                                 {
                                     CommonClass.ModelTranstraction.AwardsGiving ag = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.AwardsGiving>(returnResult.result);
-                                    await Room.GiveAward(webSocket, ag);
+                                    Room.GiveAward(webSocket, ag);
                                 }; break;
                             case "Guid":
                                 {
                                     if (s.Ls == LoginState.selectSingleTeamJoin)
                                     {
                                         iState.randomValue = Room.GetRandom(iState.randomCharacterCount);
-                                        await Room.setRandomPic(iState, webSocket);
-                                        s = await Room.setState(s, webSocket, LoginState.Guid);
+                                        Room.setRandomPic(iState, webSocket);
+                                        s = Room.setState(s, webSocket, LoginState.Guid);
 
                                     }
                                 }; break;
@@ -786,7 +786,7 @@ namespace WsOfWebClient
                                 {
                                     if (s.Ls == LoginState.Guid)
                                     {
-                                        s = await Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+                                        s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
                                     }
                                 }; break;
                             case "BindWordInfo":
@@ -794,7 +794,7 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.Guid)
                                     {
                                         CommonClass.ModelTranstraction.BindWordInfo bwi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.BindWordInfo>(returnResult.result);
-                                        await Room.BindWordInfoF(iState, webSocket, bwi);
+                                        Room.BindWordInfoF(iState, webSocket, bwi);
                                     }
                                 }; break;
                             case "LookForBindInfo":
@@ -802,7 +802,33 @@ namespace WsOfWebClient
                                     if (s.Ls == LoginState.Guid)
                                     {
                                         CommonClass.ModelTranstraction.LookForBindInfo lbi = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.LookForBindInfo>(returnResult.result);
-                                        await Room.LookForBindInfoF(iState, webSocket, lbi);
+                                        Room.LookForBindInfoF(iState, webSocket, lbi);
+                                    }
+                                }; break;
+                            case "GetFightSituation":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        s = await Room.GetFightSituation(s, webSocket);
+                                    }
+                                }; break;
+                            case "GetTaskCopy":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        s = await Room.GetTaskCopy(s, webSocket);
+                                    }
+                                }; break;
+                            case "RemoveTaskCopy":
+                                {
+                                    if (s.Ls == LoginState.OnLine)
+                                    {
+                                        WsOfWebClient.RemoveTaskCopy rtc = Newtonsoft.Json.JsonConvert.DeserializeObject<WsOfWebClient.RemoveTaskCopy>(returnResult.result);
+                                        var r = await Room.RemoveTaskCopy(s, rtc);
+                                        if (rtc.c == r + "aa")
+                                        {
+                                            Console.WriteLine("");
+                                        }
                                     }
                                 }; break;
                         }
@@ -835,9 +861,10 @@ namespace WsOfWebClient
 
         //private static List<WebsocketClient> _clients = new List<WebsocketClient>();
         //static Dictionary<string, ClientWebSocket> _sockets = new Dictionary<string, ClientWebSocket>();
-        public static async Task<string> sendInmationToUrlAndGetRes(string roomUrl, string sendMsg)
+        public static string sendInmationToUrlAndGetRes(string roomUrl, string sendMsg)
         {
-            return await Task.Run(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(roomUrl, sendMsg));
+            var t1 = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(roomUrl, sendMsg);
+            return t1.GetAwaiter().GetResult();
         }
 
         private static void removeWs(int websocketID)
@@ -894,11 +921,11 @@ namespace WsOfWebClient
         }
 
 
-        public static async Task<ReceiveObj> ReceiveStringAsync(System.Net.WebSockets.WebSocket socket, CancellationToken ct = default(CancellationToken))
+        public static ReceiveObj ReceiveStringAsync(System.Net.WebSockets.WebSocket socket, CancellationToken ct = default(CancellationToken))
         {
-            return await ReceiveStringAsync(socket, webWsSize, ct);
+            return ReceiveStringAsync(socket, webWsSize, ct);
         }
-        public static async Task<ReceiveObj> ReceiveStringAsync(System.Net.WebSockets.WebSocket socket, int size, CancellationToken ct = default(CancellationToken))
+        public static ReceiveObj ReceiveStringAsync(System.Net.WebSockets.WebSocket socket, int size, CancellationToken ct = default(CancellationToken))
         {
             var buffer = new ArraySegment<byte>(new byte[size]);
             WebSocketReceiveResult result;
@@ -909,7 +936,8 @@ namespace WsOfWebClient
                     // ct.IsCancellationRequested
                     ct.ThrowIfCancellationRequested();
 
-                    result = await socket.ReceiveAsync(buffer, ct);
+                    var t1 = socket.ReceiveAsync(buffer, ct);
+                    result = t1.GetAwaiter().GetResult();
 
                     ms.Write(buffer.Array, buffer.Offset, result.Count);
                 }
@@ -926,7 +954,9 @@ namespace WsOfWebClient
                 }
                 using (var reader = new StreamReader(ms, Encoding.UTF8))
                 {
-                    var strValue = await reader.ReadToEndAsync();
+                    var t2 = reader.ReadToEndAsync();
+
+                    var strValue = t2.GetAwaiter().GetResult();//await reader.ReadToEndAsync();
                     return new ReceiveObj()
                     {
                         result = strValue,

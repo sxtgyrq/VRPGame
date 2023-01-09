@@ -34,8 +34,7 @@
                 <td>
                    隐藏 <input name="modelOnOff" type="radio" value="off" />
                 </td>
-            </tr>
-
+            </tr> 
         </table>
 
         <div style="background: yellowgreen;
