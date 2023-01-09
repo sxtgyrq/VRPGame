@@ -439,6 +439,10 @@ namespace CommonClass
         public string Check { get; set; }
         public int WebSocketID { get; set; }
         public string PlayerName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RefererAddr { get; set; }
     }
 
     public class GetFrequency : Command
@@ -617,6 +621,7 @@ namespace CommonClass
     public class TeamNumWithSecret : CommandNotify
     {
         public string Secret { get; set; }
+        public string RefererAddr { get; set; }
     }
     public class TeamResult : Command
     {

@@ -44,18 +44,18 @@ namespace HouseManager4_0
                                                     }; break;
                                                 case MileResultReason.CanNotReach:
                                                     {
-                                                        actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                        actionDo.failedThenDo(car, player, c, grp, ref notifyMsg);
                                                         this.WebNotify(player, "小车不能到达目的地，被安排返回！");
                                                     }
                                                     break;
                                                 case MileResultReason.CanNotReturn:
                                                     {
-                                                        actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                        actionDo.failedThenDo(car, player, c, grp, ref notifyMsg);
                                                         this.WebNotify(player, "小车到达目的地后不能返回，在当前地点安排返回！");
                                                     }; break;
                                                 case MileResultReason.MoneyIsNotEnougt:
                                                     {
-                                                        actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                        actionDo.failedThenDo(car, player, c, grp, ref notifyMsg);
                                                     }; break;
                                                 case MileResultReason.NearestIsMoneyWhenPromote: { }; break;
                                                 case MileResultReason.NearestIsMoneyWhenAttack:
@@ -64,7 +64,7 @@ namespace HouseManager4_0
                                                         {
                                                             if (player.playerType == RoleInGame.PlayerType.NPC)
                                                             {
-                                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                                actionDo.failedThenDo(car, player, c, grp, ref notifyMsg);
                                                             }
                                                             // this.WebNotify(player, $"离宝石最近的是钱，不是你的车。请离宝石再近点儿！");
                                                         }
@@ -75,7 +75,7 @@ namespace HouseManager4_0
                                         {
                                             if (player.playerType == RoleInGame.PlayerType.NPC)
                                             {
-                                                actionDo.failedThenDo(car, player, c, ref notifyMsg);
+                                                actionDo.failedThenDo(car, player, c, grp, ref notifyMsg);
                                             };
                                             // 
                                         }
@@ -299,7 +299,7 @@ namespace HouseManager4_0
             car.setAnimateData(player, ref notifyMsgs, animations, DateTime.Now);
         }
 
-        protected void carDoActionFailedThenMustReturn(Car car, RoleInGame player, ref List<string> notifyMsg)
+        protected void carDoActionFailedThenMustReturn(Car car, RoleInGame player, GetRandomPos grp, ref List<string> notifyMsg)
         {
 
             if (car.state == CarState.waitOnRoad)
@@ -316,7 +316,7 @@ namespace HouseManager4_0
                     key = player.Key,
                     returningOjb = returnPath_Record,
                     target = from
-                });
+                }, grp);
             }
         }
 

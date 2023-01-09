@@ -33,12 +33,12 @@ namespace HouseManager4_0
                 throw new Exception($"数据传输错误！(传出类型为{c.c})");
             }
         }
-        public void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg)
+        public void failedThenDo(Car car, RoleInGame player, Command c, GetRandomPos grp, ref List<string> notifyMsg)
         {
             if (c.c == "SetAttack")
             {
                 SetAttack sa = (SetAttack)c;
-                this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
+                this.carDoActionFailedThenMustReturn(car, player, grp, ref notifyMsg);
                 if (car.state == CarState.waitAtBaseStation)
                 {
                     /*
@@ -307,7 +307,7 @@ namespace HouseManager4_0
                     List<string> notifyMsg = new List<string>();
                     car.setState(player, ref notifyMsg, CarState.working);
                     this.sendMsg(notifyMsg);
-                    this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro);
+                    this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro, grp);
                 }
               );
             return this.contact(player, car, ao, grp, ref notifyMsg, out Mrr);
@@ -322,18 +322,18 @@ namespace HouseManager4_0
                   List<string> notifyMsg = new List<string>();
                   car.setState(player, ref notifyMsg, CarState.working);
                   this.sendMsg(notifyMsg);
-                  this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro);
+                  this.SetAttackArrivalThread(startT, 0, player, car, sa, goMile, goPath, ro, grp);
               }
             );
             return this.randomWhenConfused(player, boss, car, ao, grp, ref notifyMsg, out Mrr);
         }
-        private void SetAttackArrivalThread(int startT, int step, RoleInGame player, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro)
+        private void SetAttackArrivalThread(int startT, int step, RoleInGame player, Car car, SetAttack sa, int goMile, Node goPath, commandWithTime.ReturningOjb ro, GetRandomPos grp)
         {
 
             System.Threading.Thread th = new System.Threading.Thread(() =>
             {
                 if (step >= goPath.path.Count - 1)
-                    that.debtE.setDebtT(startT, car, sa, goMile, ro);
+                    that.debtE.setDebtT(startT, car, sa, goMile, ro, grp);
                 //this.startNewThread(startT, new commandWithTime.defenseSet()
                 //{
                 //    c = command,
@@ -359,7 +359,7 @@ namespace HouseManager4_0
                                 car.setState(player, ref notifyMsg, CarState.working);
                                 this.sendMsg(notifyMsg);
                                 //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                                SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro);
+                                SetAttackArrivalThread(newStartT, step, player, car, sa, goMile, goPath, ro, grp);
                             };
                     loop(selectionIsRight, step, startT, player, goPath);
                 }

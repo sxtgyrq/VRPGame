@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using static CommonClass.ModelTranstraction;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Runtime.Intrinsics.X86;
+using System.Net.Http.Headers;
 
 namespace WsOfWebClient
 {
@@ -223,7 +225,7 @@ namespace WsOfWebClient
                     {
                         tradeDetailList2.Add(item.Key);
                         tradeDetailList2.Add($"{item.Value / 100000000}.{(item.Value % 100000000).ToString("D8")}");
-                        tradeDetailList2.Add($"{(item.Value * 10000 / sumValue) / 100}.{ ((item.Value * 10000 / sumValue) % 100).ToString("D2")}%");
+                        tradeDetailList2.Add($"{(item.Value * 10000 / sumValue) / 100}.{((item.Value * 10000 / sumValue) % 100).ToString("D2")}%");
                     }
 
                 }
@@ -613,7 +615,7 @@ namespace WsOfWebClient
                             //});
                             //var json = await Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
 
-                            var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->SetAsReward:{ga.tranNum }Satoshi";
+                            var agreement = $"{indexNumber}@{ga.addrFrom}@{ga.addrBussiness}->SetAsReward:{ga.tranNum}Satoshi";
                             var passObj = new
                             {
                                 agreement = agreement,
@@ -1231,7 +1233,7 @@ namespace WsOfWebClient
                         for (int i = 0; i < r.list.Count; i++)
                         {
 
-                            var msg = $"{r.indexNumber + i}@{objGet.tradeAddress}@{objGet.bussinessAddr}->{r.list[i].applyAddr}:{ r.list[i].satoshiShouldGet}Satoshi";
+                            var msg = $"{r.indexNumber + i}@{objGet.tradeAddress}@{objGet.bussinessAddr}->{r.list[i].applyAddr}:{r.list[i].satoshiShouldGet}Satoshi";
                             var signature = ag.list[i];
                             if (BitCoin.Sign.checkSign(signature, msg, objGet.tradeAddress))
                             { }
@@ -1435,6 +1437,28 @@ namespace WsOfWebClient
                 return null;
             }
             return Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.databaseModel.tradereward>(json);
+        }
+    }
+
+    public partial class Room
+    {
+        internal async static Task<int> RewardBuildingShowF(State s, WebSocket webSocket, RewardBuildingShow rbs)
+        {
+            // try
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(rbs);
+                var info = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[index], msg);
+                List<string> list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(info);
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var dataItem = list[i].Trim();
+                    var sendData = Encoding.UTF8.GetBytes(dataItem);
+                    await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                return list.Count;
+            }
         }
     }
 }

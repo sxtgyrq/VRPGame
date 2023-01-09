@@ -4,6 +4,7 @@ using HouseManager4_0.interfaceOfEngine;
 using HouseManager4_0.RoomMainF;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using static HouseManager4_0.Car;
 using static HouseManager4_0.RoomMainF.RoomMain;
 using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
@@ -26,7 +27,7 @@ namespace HouseManager4_0
             }
 
 
-            public long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMain that)
+            public long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMain that, GetRandomPos grp)
             {
                 return percentValue;
             }
@@ -180,13 +181,13 @@ namespace HouseManager4_0
             }
         }
 
-        public void newThreadDo(baseC bObj)
+        public void newThreadDo(baseC bObj, GetRandomPos grp)
         {
             if (bObj.c == "debtOwner")
             {
                 var dOwner = (commandWithTime.debtOwner)bObj;
                 var at = new attackTool();
-                this.setDebt(dOwner, at);
+                this.setDebt(dOwner, at, grp);
             }
             //throw new NotImplementedException();
         }
@@ -195,7 +196,7 @@ namespace HouseManager4_0
             attack,
             magic
         }
-        internal void setDebtT(int startT, Car car, SetAttack sa, int goMile, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro)
+        internal void setDebtT(int startT, Car car, SetAttack sa, int goMile, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro, GetRandomPos grp)
         {
             this.startNewThread(startT, new commandWithTime.debtOwner()
             {
@@ -208,12 +209,12 @@ namespace HouseManager4_0
                 victim = sa.targetOwner,
                 costMile = goMile,
                 returningOjb = ro
-            }, this);
+            }, this, grp);
             //Thread th = new Thread(() => setDebt(startT,);
             //th.Start();
         }
 
-        internal void setDebt(commandWithTime.debtOwner dOwner, interfaceOfHM.AttackT at)
+        internal void setDebt(commandWithTime.debtOwner dOwner, interfaceOfHM.AttackT at, GetRandomPos grp)
         {
             List<string> notifyMsg = new List<string>();
             //  bool needUpdatePlayers = false;
@@ -245,7 +246,7 @@ namespace HouseManager4_0
                             if (!victim.Bust)
                             {
                                 var percentValue = getAttackPercentValue(player, victim);
-                                percentValue = at.DealWithPercentValue(percentValue, player, victim, this.that);
+                                percentValue = at.DealWithPercentValue(percentValue, player, victim, this.that, grp);
                                 //if(victim.Money*100/ car.ability.Business)
                                 long reduceSum = 0;
                                 var m = victim.Money - reduceSum;
@@ -261,7 +262,7 @@ namespace HouseManager4_0
                                 }
                                 if (at.isMagic)
                                 {
-                                    that.magicE.AmbushSelf(victim, at, ref notifyMsg, ref reduceSum);
+                                    that.magicE.AmbushSelf(victim, at, grp, ref notifyMsg, ref reduceSum);
                                     at.MagicAnimateShow(player, victim, ref notifyMsg);
                                 }
 
@@ -277,6 +278,8 @@ namespace HouseManager4_0
                                 {
                                     ((NPC)victim).BeingAttackedF(dOwner.key, ref notifyMsg, Program.rm, Program.dt);
                                 }
+                                if (player.playerType == RoleInGame.PlayerType.player)
+                                    ((Player)player).RefererCount++;
                             }
                             else
                             {
@@ -303,7 +306,7 @@ namespace HouseManager4_0
                                 target = dOwner.target,
                                 changeType = dOwner.changeType,
                                 returningOjb = dOwner.returningOjb
-                            });
+                            }, grp);
 
                         }
                         //else

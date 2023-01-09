@@ -168,7 +168,9 @@ namespace HouseManager4_0.RoomMainF
                             {"volume",0 },
                             {"speed",0 }
                         },
-                        positionInStation = this.rm.Next(0, 5)
+                        positionInStation = this.rm.Next(0, 5),
+                        RefererAddr = addItem.RefererAddr,
+                        RefererCount = 0
                     };
                     this._Players.Add(addItem.Key, newPlayer);
                     this._Players[addItem.Key].initializeCar(this, cf);

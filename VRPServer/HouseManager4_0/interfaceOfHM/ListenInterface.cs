@@ -96,7 +96,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="ots"></param>
         void OrderToSubsidize(OrderToSubsidize ots);
-        void OrderToUpdateLevel(OrderToUpdateLevel oul);
+      //  void OrderToUpdateLevel(OrderToUpdateLevel oul);
         /// <summary>
         /// 发送消息
         /// </summary>
@@ -108,7 +108,6 @@ namespace HouseManager4_0.interfaceOfHM
         string CheckCarStateF(CheckCarState ccs);
         void SystemBradcast(SystemBradcast sb);
         string Statictis(ServerStatictis ss);
-
     }
 
     interface MapEditor
@@ -160,7 +159,8 @@ namespace HouseManager4_0.interfaceOfHM
         string LookForBindInfoF(ModelTranstraction.LookForBindInfo lfbi, Data dt);
         string ChargingF(Finance.Charging chargingObj, Data dt);
         string ChargingLookForF(Finance.ChargingLookFor condition);
-        string ChargingMax();
+        string ChargingMax(); 
+        string RewardBuildingShowF(ModelTranstraction.RewardBuildingShow rbs);
     }
 
     interface Resistance

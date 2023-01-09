@@ -1250,5 +1250,40 @@ namespace HouseManager4_0.RoomMainF
         {
             return DalOfAddress.Charging.GetMaxIndexNum().ToString();
         }
+
+        public string RewardBuildingShowF(ModelTranstraction.RewardBuildingShow rbs)
+        {
+            List<string> result = new List<string>();
+            Regex r = new Regex("^[0-9]{8}$");
+            if (r.IsMatch(rbs.Title))
+            {
+                var obj = DalOfAddress.TradeReward.GetByStartDate(Convert.ToInt32(rbs.Title));
+                if (obj != null)
+                    if (!string.IsNullOrEmpty(obj.bussinessAddr))
+                    {
+                        var model = DalOfAddress.detailmodel.GetByAddr(obj.bussinessAddr);
+                        this.goodsM.GetModelByAddr(obj.bussinessAddr, ref result);
+                        var keys = Program.dt.GetRoadNearby(model.x, model.z);
+                        for (int i = 0; i < keys.Count; i++)
+                        {
+                            var roadCode = keys[i];
+                            this.DrawSingleRoadF(roadCode, ref result);
+                        }
+                    }
+                return Newtonsoft.Json.JsonConvert.SerializeObject(result);
+            }
+            else
+            {
+                return Newtonsoft.Json.JsonConvert.SerializeObject(new List<string>());
+            }
+            //if (obj == null)
+            //{
+            //    return "";
+            //}
+            //else
+            //{
+            //    return Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            //}
+        }
     }
 }

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>畅玩游戏，赢取比特币！</title>
+</head>
+<body style="width:100%;height:100%;overflow:hidden;">
+    <div>
+        <button onclick="testGenerate();">随机产生私钥</button>
+        <textarea id="privateKeyV"></textarea>
+    </div>
+
+    <div>
+        <button onclick="testGenerate();">签名</button>
+        <textarea id="signV"></textarea>
+    </div>
+
+    <script src="bitcoin/signandverify_simple_min.js"></script>
+    <script type="text/javascript">
+        var testGenerate = function () {
+            var private = yrqGetRandomPrivateKey();
+            console.log('private', private);
+            yrqCheckPrivateKey(private);
+            yrqSign(private, "你好", true);
+            yrqSign(private, "你好", false);
+        }
+        var testSign = function () {
+            //  document.getElementById('privateKeyV').value = yrqGetRandomPrivateKey();
+        }
+    </script>
+    <!--<script src="mainf.js"></script>-->
+</body>
+</html>

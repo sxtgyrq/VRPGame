@@ -207,7 +207,7 @@
     },
     'page': 0,
     'htmlHasDataDOMID': 'rewardHasDataPage',
-    'htmlHasData': `  <div  class="tableOfReward"  style="width: 100%;
+    'htmlHasData': `  <div id="rewardHasDataPage" class="tableOfReward"  style="width: 100%;
         height: 100%;
         background-color: rgba(56,60,67,.15);
         position: absolute;
@@ -233,14 +233,19 @@
                 <div style="text-align:center;margin-top:2em;">
                     <button id="useLevelToApplyRewardBtn">申请</button>
                 </div>
+                <div style="text-align:center;margin-top:2em;">
+                    <button id="lookRewardBuildingStockDetailBtn">查看</button>
+                </div>
                 <table border="1" style="text-align:center;">
                     <tr>
                         <th>代签名消息</th>
                         <th>奖励</th>
+                        <th>状态</th>
                     </tr>
                     <tr>
                         <td id="rewardMsgNeedToSign">20220928</td>
                         <td id="rewardPublishiMoney">40000Santoshi</td>
+                        <td id="rewardPublishState"></td>
                     </tr>
                 </table>
                 <div id="rewardAppleItemContainer"></div> 
@@ -280,6 +285,17 @@
             document.getElementById('rewardMsgNeedToSign').innerText = data.startDate + '';
             document.getElementById('rewardPublishiMoney').innerText = data.passCoin + '聪';
             document.getElementById('rewardInfomationMsg').innerText = data.orderMessage;
+            if (document.getElementById('rewardPublishState') != null) {
+                if (data.waitingForAddition == 0) {
+                    document.getElementById('rewardHasDataPage').style.backgroundColor = 'orange';
+                    document.getElementById('rewardPublishState').innerText = '已颁发';
+                }
+                else if (data.waitingForAddition == 1) {
+                    document.getElementById('rewardHasDataPage').style.backgroundColor = 'green';
+                    document.getElementById('rewardPublishState').innerText = '未颁发';
+                }
+
+            }
             document.getElementById('rewardInfomationBuildingAddrSign').innerText = data.signOfBussinessAddr;
             document.getElementById('rewardInfomationRewardAddrSign').innerText = data.signOfTradeAddress;
 
@@ -301,14 +317,14 @@
                     </tr>
                     <tr>
                         <td style="word-break:break-all;word-wrap:anywhere;">${list[i].applyAddr}</td>
-                        <td>${list[i].applyLevel}级</td>
-                        <td>${list[i].satoshiShouldGet}satoshi</td>
-                        <td>${list[i].percentStr}</td>
+                        <td style="word-break:break-all;word-wrap:anywhere;">${list[i].applyLevel}级</td>
+                        <td style="word-break:break-all;word-wrap:anywhere;">${list[i].satoshiShouldGet}satoshi</td>
+                        <td style="word-break:break-all;word-wrap:anywhere;">${list[i].percentStr}</td>
                     </tr>
                     <tr>
-                        <th colspan="1">消息→</th>
-                        <td colspan="2">${list[i].startDate}</td>
-                        <th colspan="1">↓签名↓</th>
+                        <th colspan="1" style="word-break:break-all;word-wrap:anywhere;">消息→</th>
+                        <td colspan="2" style="word-break:break-all;word-wrap:anywhere;">${list[i].startDate}</td>
+                        <th colspan="1" style="word-break:break-all;word-wrap:anywhere;">↓签名↓</th>
                     </tr>
                     <tr>
                         <td colspan="4" style="word-break:break-all;word-wrap:anywhere;">${list[i].applySign}</td>
@@ -323,11 +339,17 @@
                 var domObj = document.createRange().createContextualFragment(that.dialogToApplyRewardHtml);
                 domObj.id = that.applyDialogID;
                 document.getElementById('rootContainer').appendChild(domObj);
-
                 document.getElementById("msgNeedToSignForRewardApply").innerText = document.getElementById('rewardMsgNeedToSign').innerText;
-                //  alert('申请按钮');
-                //that.page++;
-                //objMain.ws.send(JSON.stringify({ 'c': 'RewardInfomation', 'Page': that.page }));
+            };
+            document.getElementById('lookRewardBuildingStockDetailBtn').onclick = function () {
+                var title = document.getElementById('rewardMsgNeedToSign').innerText;
+                QueryReward.draw3D();
+                objMain.ws.send(JSON.stringify(
+                    {
+                        'c': 'RewardBuildingShow',
+                        'Title': title
+                    }));
+                QueryReward.drawToolBar(title);
             };
             that.msgsToTransferSshares = [];
             for (var i = 0; i < list.length; i++) {
@@ -402,12 +424,17 @@
             </div>
             <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="reward.apply();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="reward.apply();">
                 申请
             </div>
             <div style="background: yellowgreen;
+        margin-bottom: 0.25em;
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="reward.onlineSign();">
+                在线签名
+            </div>
+            <div style="background: orange;
         margin-bottom: 1.25em;
-        margin-top: 0.25em;" onclick="reward.applyCancle();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="reward.applyCancle();">
                 取消
             </div>
         </div>`,
@@ -505,6 +532,27 @@
             document.getElementById('rewardTimeMsgToNotify').innerText = msg;
             document.getElementById('rewardTimeMsgToNotify').style.color = 'green';
         }
+    },
+    onlineSign: function () {
+        reward.applyCancle();
+        PrivateSignPanelObj.show(
+            function () {
+                return true;// return document.getElementById('agreementText').value != '';
+            },
+            function () {
+                $.notify('协议为空', 'info');
+            }, function (addr, sign) {
+                var that = reward;
+                var domObj = document.createRange().createContextualFragment(that.dialogToApplyRewardHtml);
+                domObj.id = that.applyDialogID;
+                document.getElementById('rootContainer').appendChild(domObj);
+                document.getElementById('bitcoinAddressInputForRewardApply').value = addr;
+                document.getElementById('signatureInputTextAreaForRewardApply').value = sign;
+                document.getElementById("msgNeedToSignForRewardApply").innerText = document.getElementById('rewardMsgNeedToSign').innerText;
+            },
+            document.getElementById('rewardMsgNeedToSign').innerText)
+        // PrivateSignPanelObj
+
     }
 }
 

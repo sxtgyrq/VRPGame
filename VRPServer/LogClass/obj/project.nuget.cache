@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "obLC3gEELydEVTdx52J2NGnSG9ZEL1eNw5lhdpmZi7wsCwAv6001wIBoO1NLb5/fKorXu3On+dlku/sRCUlGaQ==",
+  "dgSpecHash": "aGxkFbxPD5Rygx3unr+HEEK+Tn8QLlIUT+R6cRCjOkZ1gKb/I1fsFG7C4bA02IyucMLyvi51GJuu3WbN+KSyFQ==",
   "success": true,
   "projectFilePath": "E:\\Project\\VRPGame\\VRPServer\\LogClass\\LogClass.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.31\\microsoft.netcore.app.runtime.win-x64.3.1.31.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.31\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.31.nupkg.sha512",
-    "C:\\Users\\sxtgy\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.31\\microsoft.aspnetcore.app.runtime.win-x64.3.1.31.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

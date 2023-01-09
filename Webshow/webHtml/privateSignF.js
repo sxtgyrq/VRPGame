@@ -34,17 +34,17 @@
        
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="PrivateSignPanelObj.sign();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="PrivateSignPanelObj.sign();">
             签名
         </div>
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.getPrivateKey();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="subsidizeSys.getPrivateKey();">
             获取私钥
         </div>
-        <div style="background: yellowgreen;
+        <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="PrivateSignPanelObj.show();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="PrivateSignPanelObj.show();">
             取消
         </div>
     </div>`,

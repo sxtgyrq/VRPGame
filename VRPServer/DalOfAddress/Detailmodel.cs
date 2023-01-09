@@ -750,6 +750,58 @@ ORDER BY
             }
             return result;
         }
+
+        public static ModelTranstraction.GetModelByID.Result GetByAddr(string bussinessAddr)
+        {
+            ModelTranstraction.GetModelByID.Result r;
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+
+                        {
+                            string sQL = $@"SELECT  A.x,A.y,A.z ,A.amodel,A.rotatey,A.bussinessAddress,A.modelID,
+B.author
+FROM detailmodel A 
+LEFT JOIN abtractmodels B ON A.amodel=B.amID
+WHERE locked=1 AND dmState=1 AND A.bussinessAddress='{bussinessAddr}';";
+                            // long moneycount;
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    if (reader.Read())
+                                    {
+                                        r = new ModelTranstraction.GetModelByID.Result()
+                                        {
+                                            x = Convert.ToDouble(reader["x"]),
+                                            y = Convert.ToDouble(reader["y"]),
+                                            z = Convert.ToDouble(reader["z"]),
+                                            amodel = Convert.ToString(reader["amodel"]).Trim(),
+                                            rotatey = Convert.ToDouble(reader["rotatey"]),
+                                            bussinessAddress = Convert.ToString(reader["bussinessAddress"]).Trim(),
+                                            modelID = Convert.ToString(reader["modelID"]).Trim(),
+                                            author = Convert.ToString(reader["author"]).Trim(),
+                                        };
+                                    }
+                                    else
+                                        r = null;
+                                }
+                            }
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+            return r;
+        }
         //        public static CommonClass.ModelTranstraction.GetFirstModelAddr.Result GetFirst()
         //        {
         //            int index = 0;

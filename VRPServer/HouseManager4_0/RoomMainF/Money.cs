@@ -78,7 +78,7 @@ namespace HouseManager4_0.RoomMainF
                     if (this._Players[saveMoney.Key].Bust) { }
                     else
                     {
-                        var player = this._Players[saveMoney.Key];
+                        var role = this._Players[saveMoney.Key];
                         switch (saveMoney.dType)
                         {
                             case "half":
@@ -87,7 +87,7 @@ namespace HouseManager4_0.RoomMainF
                                     if (money > 0)
                                     {
                                         //  doSaveMoney = true;
-                                        player.MoneySet(player.Money - money, ref notifyMsg);
+                                        role.MoneySet(role.Money - money, ref notifyMsg);
                                     }
                                 }; break;
                             case "all":
@@ -96,9 +96,23 @@ namespace HouseManager4_0.RoomMainF
                                     if (money > 0)
                                     {
                                         //  doSaveMoney = true;
-                                        player.MoneySet(player.Money - money, ref notifyMsg);
+                                        role.MoneySet(role.Money - money, ref notifyMsg);
                                     }
                                 }; break;
+                        }
+                        if (role.playerType == RoleInGame.PlayerType.player)
+                        {
+                            var player = (Player)role;
+                            if (player.RefererCount > 0)
+                            {
+                                if (BitCoin.CheckAddress.CheckAddressIsUseful(player.RefererAddr))
+                                {
+                                    DalOfAddress.MoneyRefererAdd.AddMoney(player.RefererAddr, player.RefererCount * 100);
+                                    player.RefererCount = 0;
+                                }
+
+
+                            }
                         }
                     }
                 }
@@ -128,48 +142,47 @@ namespace HouseManager4_0.RoomMainF
             List<string> notifyMsg = new List<string>();
             if (BitCoin.Sign.checkSign(ots.signature, ots.Key, ots.address))
             {
-
                 lock (this.PlayerLock)
                     if (this._Players.ContainsKey(ots.Key))
                     {
                         if (!this._Players[ots.Key].Bust)
                         {
-                            this.modelL.OrderToUpdateLevel(ots.Key, ots.address, ots.signature);
-                            long subsidizeGet, subsidizeLeft;
-                            DalOfAddress.MoneyGet.GetSubsidizeAndLeft(ots.address, ots.value, out subsidizeGet, out subsidizeLeft);
-
-                            var player = this._Players[ots.Key];
-                            ((Player)player).BTCAddress = ots.address;
-                            player.MoneySet(player.Money + subsidizeGet, ref notifyMsg);
-                            //  player.setSupportToPlayMoney(player.SupportToPlayMoney + subsidizeGet, ref notifyMsg);
-                            if (player.playerType == RoleInGame.PlayerType.player)
-                                this.SendLeftMoney((Player)player, subsidizeLeft, ots.address, ref notifyMsg);
-                            //player.SupportToPlay.
-
+                            var success = this.modelL.OrderToUpdateLevel(ots.Key, ots.address, ots.signature);
+                            if (success)
+                            {
+                                var Referer = DalOfAddress.MoneyRefererAdd.GetMoney(ots.address);
+                                if (Referer > 0)
+                                {
+                                    DalOfAddress.MoneyRefererGet.GetSubsidizeAndLeft(ots.address, Referer);
+                                }
+                                {
+                                    long subsidizeGet, subsidizeLeft;
+                                    DalOfAddress.MoneyGet.GetSubsidizeAndLeft(ots.address, ots.value, out subsidizeGet, out subsidizeLeft);
+                                    var player = this._Players[ots.Key];
+                                    ((Player)player).BTCAddress = ots.address;
+                                    player.MoneySet(player.Money + subsidizeGet + Referer, ref notifyMsg);
+                                    if (Referer > 0)
+                                    {
+                                        this.WebNotify(player, $"您的热心分享使您获得了额外的{Referer / 100}.{(Referer % 100) / 10}{(Referer % 100) % 10}积分。");
+                                    }
+                                    //  player.setSupportToPlayMoney(player.SupportToPlayMoney + subsidizeGet, ref notifyMsg);
+                                    if (player.playerType == RoleInGame.PlayerType.player)
+                                        this.SendLeftMoney((Player)player, subsidizeLeft, ots.address, ref notifyMsg);
+                                }
+                            }
                         }
                     }
             }
             else
             {
-                //Consol.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
+                //这里在web前台进行校验。
             }
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
                 var sendMsg = notifyMsg[i + 1];
-                //Consol.WriteLine($"url:{url}");
                 Startup.sendMsg(url, sendMsg);
             }
-        }
-
-        public void OrderToUpdateLevel(OrderToUpdateLevel ots)
-        {
-            /*
-             *            
-             */
-            // this.modelL.OrderToUpdateLevel(ots);
-            return;
-
         }
 
         private void SendLeftMoney(Player player, long subsidizeLeft, string address, ref List<string> notifyMsg)

@@ -62,12 +62,12 @@ namespace HouseManager4_0
             return this.updateAction(this, sp, grp, sp.Key);
         }
 
-        public void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg)
+        public void failedThenDo(Car car, RoleInGame player, Command c, GetRandomPos grp, ref List<string> notifyMsg)
         {
             if (c.c == "SetPromote")
             {
                 // SetAttack sa = (SetAttack)c;
-                this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
+                this.carDoActionFailedThenMustReturn(car, player, grp, ref notifyMsg);
                 //this.carsAttackFailedThenMustReturn(car, player, sa, ref notifyMsg);
             }
             //throw new NotImplementedException();
@@ -165,7 +165,7 @@ namespace HouseManager4_0
                                                 this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
 
                                                 RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
-                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
+                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath, grp);
                                                 //  getAllCarInfomations(sp.Key, ref notifyMsg);
                                                 mrr = MileResultReason.Abundant;
                                                 return ro;
@@ -218,7 +218,7 @@ namespace HouseManager4_0
                                                 this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
 
                                                 RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
-                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
+                                                that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath, grp);
                                                 mrr = MileResultReason.Abundant;
                                                 return ro;
                                             }
@@ -298,7 +298,7 @@ namespace HouseManager4_0
                                             int startT;
                                             this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
                                             RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
-                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
+                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath, grp);
                                             //  getAllCarInfomations(sp.Key, ref notifyMsg);
                                             mrr = MileResultReason.Abundant;
                                             return ro;
@@ -355,7 +355,7 @@ namespace HouseManager4_0
                                             this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
 
                                             RoomMainF.RoomMain.commandWithTime.ReturningOjb ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
-                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath);
+                                            that.diamondOwnerE.StartDiamondOwnerThread(startT, 0, player, car, sp, ro, goMile, goPath, grp);
                                             mrr = MileResultReason.Abundant;
                                             return ro;
                                         }

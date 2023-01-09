@@ -40,6 +40,26 @@ namespace HouseManager4_0
             }
         }
 
+        internal void setModels(List<Data.detailmodel> cloesdMaterial, ref List<string> notifyMsgs)
+        {
+
+            {
+                for (int i = 0; i < cloesdMaterial.Count; i++)
+                {
+                    {
+                        if (Program.dt.material.ContainsKey(cloesdMaterial[i].amodel))
+                        {
+                            var m1 = Program.dt.material[cloesdMaterial[i].amodel];
+                            var m2 = cloesdMaterial[i];
+                            this.that.DrawObj3DModelF(m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
+                            // player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
+                        } 
+                    }
+                }
+            }
+        }
+
+
         internal string GetRewardFromBuildingF(GetRewardFromBuildingM m)
         {
             //Program.dt.models.con
@@ -220,7 +240,7 @@ namespace HouseManager4_0
                                                     }
                                                     player.canGetReward = false;
                                                 }
-                                                else 
+                                                else
                                                 {
                                                     WebNotify(player, "离得太远了！");
                                                 }

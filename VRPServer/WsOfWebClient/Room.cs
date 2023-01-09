@@ -51,7 +51,7 @@ namespace WsOfWebClient
         }
         private static System.Random rm = new System.Random(DateTime.Now.GetHashCode());
 
-        internal static async Task<PlayerAdd_V2> getRoomNum(int websocketID, string playerName, string[] carsNames)
+        internal static async Task<PlayerAdd_V2> getRoomNum(int websocketID, string playerName, string refererAddr)
         {
             int roomIndex = 0;
             {
@@ -92,6 +92,7 @@ namespace WsOfWebClient
                 WebSocketID = websocketID,
                 Check = CommonClass.Random.GetMD5HashFromStr(key + roomUrl + CheckParameter),
                 PlayerName = playerName,
+                RefererAddr = refererAddr
             };
             // throw new NotImplementedException();
         }
@@ -108,7 +109,7 @@ namespace WsOfWebClient
             return int.Parse(result);
         }
 
-        private static PlayerAdd_V2 getRoomNumByRoom(int websocketID, int roomIndex, string playerName, string[] carsNames)
+        private static PlayerAdd_V2 getRoomNumByRoom(int websocketID, int roomIndex, string playerName, string refererAddr)
         {
             var key = CommonClass.Random.GetMD5HashFromStr(ConnectInfo.HostIP + websocketID + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ConnectInfo.tcpServerPort + "_" + ConnectInfo.webSocketPort);
             var roomUrl = roomUrls[roomIndex];
@@ -120,7 +121,8 @@ namespace WsOfWebClient
                 RoomIndex = roomIndex,
                 WebSocketID = websocketID,
                 Check = CommonClass.Random.GetMD5HashFromStr(key + roomUrl + CheckParameter),
-                PlayerName = playerName
+                PlayerName = playerName,
+                RefererAddr = refererAddr
             };
         }
 
@@ -133,13 +135,13 @@ namespace WsOfWebClient
             return playerCheck.Check == check;
         }
 
-        public static async Task<State> GetRoomThenStart(State s, System.Net.WebSockets.WebSocket webSocket, string playerName, string[] carsNames)
+        public static async Task<State> GetRoomThenStart(State s, System.Net.WebSockets.WebSocket webSocket, string playerName, string refererAddr)
         {
             /*
              * 单人组队下
              */
             int roomIndex;
-            var roomInfo = await Room.getRoomNum(s.WebsocketID, playerName, carsNames);
+            var roomInfo = await Room.getRoomNum(s.WebsocketID, playerName, refererAddr);
             roomIndex = roomInfo.RoomIndex;
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
@@ -1547,13 +1549,13 @@ namespace WsOfWebClient
             return result;
         }
 
-        public static async Task<State> GetRoomThenStartAfterCreateTeam(State s, System.Net.WebSockets.WebSocket webSocket, TeamResult team, string playerName, string[] carsNames)
+        public static async Task<State> GetRoomThenStartAfterCreateTeam(State s, System.Net.WebSockets.WebSocket webSocket, TeamResult team, string playerName, string refererAddr)
         {
             /*
              * 组队，队长状态下，队长点击了开始
              */
             int roomIndex;
-            var roomInfo = await Room.getRoomNum(s.WebsocketID, playerName, carsNames);
+            var roomInfo = await Room.getRoomNum(s.WebsocketID, playerName, refererAddr);
             roomIndex = roomInfo.RoomIndex;
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
@@ -1580,9 +1582,9 @@ namespace WsOfWebClient
             //  return true;
         }
 
-        internal static async Task<State> GetRoomThenStartAfterJoinTeam(State s, WebSocket webSocket, int roomIndex, string playerName, string[] carsNames)
+        internal static async Task<State> GetRoomThenStartAfterJoinTeam(State s, WebSocket webSocket, int roomIndex, string playerName, string refererAddr)
         {
-            var roomInfo = Room.getRoomNumByRoom(s.WebsocketID, roomIndex, playerName, carsNames);
+            var roomInfo = Room.getRoomNumByRoom(s.WebsocketID, roomIndex, playerName, refererAddr);
             s.Key = roomInfo.Key;
             var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
             var receivedMsg = await Startup.sendInmationToUrlAndGetRes(Room.roomUrls[roomIndex], sendMsg);
@@ -1625,7 +1627,7 @@ namespace WsOfWebClient
             await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
-        internal static bool CheckSecret(string result, string key, out int roomIndex)
+        internal static bool CheckSecret(string result, string key, out int roomIndex, out string refererAddr)
         {
             try
             {
@@ -1635,18 +1637,21 @@ namespace WsOfWebClient
                 //Consol.WriteLine($"sec:{ss}");
                 if (ss[0] == "team")
                 {
+                    refererAddr = passObj.RefererAddr;
                     roomIndex = int.Parse(ss[1]);
                     return true;
                 }
                 else
                 {
                     roomIndex = -1;
+                    refererAddr = "";
                     return false;
                 }
             }
             catch
             {
                 roomIndex = -1;
+                refererAddr = "";
                 return false;
             }
         }

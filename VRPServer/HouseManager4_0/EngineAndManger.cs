@@ -12,16 +12,16 @@ namespace HouseManager4_0
         {
             get { return this.roomMain; }
         }
-        public void startNewThread(int startT, baseC dOwner, interfaceOfEngine.startNewThread objNeedToStartNewThread)
+        public void startNewThread(int startT, baseC dOwner, interfaceOfEngine.startNewThread objNeedToStartNewThread, GetRandomPos grp)
         {
-            Thread th = new Thread(() => newThreadDoBefore(startT, dOwner, objNeedToStartNewThread));
+            Thread th = new Thread(() => newThreadDoBefore(startT, dOwner, objNeedToStartNewThread, grp));
             th.Start();
             //  throw new NotImplementedException();
         }
-        public void newThreadDoBefore(int startT, baseC dOwner, interfaceOfEngine.startNewThread objNeedToStartNewThread)
+        public void newThreadDoBefore(int startT, baseC dOwner, interfaceOfEngine.startNewThread objNeedToStartNewThread, GetRandomPos grp)
         {
             Thread.Sleep(startT);
-            objNeedToStartNewThread.newThreadDo(dOwner);
+            objNeedToStartNewThread.newThreadDo(dOwner, grp);
         }
         public void WebNotify(RoleInGame player, string Msg)
         {
@@ -69,7 +69,7 @@ namespace HouseManager4_0
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
                 var url = notifyMsg[i];
-                var sendMsg = notifyMsg[i + 1]; 
+                var sendMsg = notifyMsg[i + 1];
                 if (!string.IsNullOrEmpty(url))
                 {
                     result.Add(this.sendMsg(url, sendMsg));

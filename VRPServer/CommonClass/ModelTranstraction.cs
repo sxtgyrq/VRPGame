@@ -153,5 +153,9 @@ namespace CommonClass
                 public string msg { get; set; }
             }
         }
+        public class RewardBuildingShow : CommonClass.Command
+        {
+            public string Title { get; set; }
+        }
     }
 }

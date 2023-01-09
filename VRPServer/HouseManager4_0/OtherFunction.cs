@@ -14,7 +14,7 @@ namespace HouseManager4_0
             var lon = double.Parse(content.Split(',')[0]);
             var lat = double.Parse(content.Split(',')[1]);
             double x, y, z;
-            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(lon, lat, 0 ,out x, out y, out z);
+            CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(lon, lat, 0, out x, out y, out z);
             //Consol.WriteLine($"x:{x},y:{y}");
             //Consol.WriteLine($"E退出，任意键继续");
             if (Console.ReadLine().ToUpper() == "E")
@@ -52,12 +52,11 @@ namespace HouseManager4_0
         }
         internal static void sign()
         {
-            Console.WriteLine("拖入密钥地址文件路径");
-            var path = Console.ReadLine();
-            var privateKey = File.ReadAllText(path);
+            Console.WriteLine("输入密钥");
+            var privateKey = Console.ReadLine();
 
             Console.WriteLine("拖入要加密内容路径");
-            path = Console.ReadLine();
+            var path = Console.ReadLine();
             var content = File.ReadAllText(path);
             var oI = Newtonsoft.Json.JsonConvert.DeserializeObject<ObjInput>(content);
             ObjOutput oo = new ObjOutput()

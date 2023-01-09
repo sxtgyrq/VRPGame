@@ -15,14 +15,14 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        internal void SetReturnT(int t, commandWithTime.returnning returnning)
+        internal void SetReturnT(int t, commandWithTime.returnning returnning, GetRandomPos grp)
         {
-            this.startNewThread(t + 1, returnning, this);
+            this.startNewThread(t + 1, returnning, this, grp);
             //Thread th = new Thread(() => setReturn(t, returnning));
             //th.Start();
         }
 
-        void setReturn(commandWithTime.returnning rObj)
+        void setReturn(commandWithTime.returnning rObj, GetRandomPos grp)
         {
             List<string> notifyMsg = new List<string>();
             lock (that.PlayerLock)
@@ -30,7 +30,7 @@ namespace HouseManager4_0
                 var player = that._Players[rObj.key];
                 var car = that._Players[rObj.key].getCar();
                 car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
-                ReturnThenSetComeBack(player, car, rObj, ref notifyMsg);
+                ReturnThenSetComeBack(player, car, rObj, grp, ref notifyMsg);
             }
             for (var i = 0; i < notifyMsg.Count; i += 2)
             {
@@ -40,20 +40,20 @@ namespace HouseManager4_0
             }
         }
 
-        private void ReturnThenSetComeBack(RoleInGame player, Car car, commandWithTime.returnning cmp, ref List<string> notifyMsg)
+        private void ReturnThenSetComeBack(RoleInGame player, Car car, commandWithTime.returnning cmp, GetRandomPos grp, ref List<string> notifyMsg)
         {
             if (cmp.returningOjb.NeedToReturnBoss)
             {
-                ReturnToBoss(player, car, cmp, ref notifyMsg);
+                ReturnToBoss(player, car, cmp, grp, ref notifyMsg);
 
             }
             else
             {
-                ReturnToSelf(player, car, cmp, ref notifyMsg);
+                ReturnToSelf(player, car, cmp, grp, ref notifyMsg);
             }
         }
 
-        private void ReturnToSelf(RoleInGame player, Car car, returnning cmp, ref List<string> notifyMsg)
+        private void ReturnToSelf(RoleInGame player, Car car, returnning cmp, GetRandomPos grp, ref List<string> notifyMsg)
         {
             var privateKeys = BitCoin.GamePathEncryption.PathEncryption.MainC.GetPrivateKeys(ref Program.rm.rm, cmp.returningOjb.returnToSelfAddrPath.path.Count);
             List<AnimateDataItem> animations = new List<AnimateDataItem>();
@@ -130,12 +130,12 @@ namespace HouseManager4_0
                         c = "comeBack",
                         //car = cmp.car,
                         key = cmp.key
-                    }, this);
+                    }, this, grp);
                 }, player);
 
         }
 
-        private void ReturnToBoss(RoleInGame player, Car car, returnning cmp, ref List<string> notifyMsg)
+        private void ReturnToBoss(RoleInGame player, Car car, returnning cmp, GetRandomPos grp, ref List<string> notifyMsg)
         {
             switch (cmp.changeType)
             {
@@ -195,7 +195,7 @@ namespace HouseManager4_0
                                 c = "comeBack",
                                 //car = cmp.car,
                                 key = cmp.key
-                            }, this);
+                            }, this, grp);
                         }, self);
 
                     }; break;
@@ -270,7 +270,7 @@ namespace HouseManager4_0
                                 key = cmp.key,
                                 target = cmp.target,
                                 returningOjb = cmp.returningOjb
-                            });
+                            }, grp);
                         }, boss);
                         //startNewThread(startT,)
 
@@ -378,7 +378,7 @@ namespace HouseManager4_0
 
 
 
-        private void setBack(commandWithTime.comeBack comeBack)
+        private void setBack(commandWithTime.comeBack comeBack, GetRandomPos grp)
         {
             List<string> notifyMsg = new List<string>();
             lock (that.PlayerLock)
@@ -409,7 +409,7 @@ namespace HouseManager4_0
                     car.ability.Refresh(player, car, ref notifyMsg);
                     car.Refresh(player, ref notifyMsg);
 
-                    if (that.driverM.controlledByMagic(player, car, ref notifyMsg))
+                    if (that.driverM.controlledByMagic(player, car, grp, ref notifyMsg))
                     {
 
                     }
@@ -496,7 +496,7 @@ namespace HouseManager4_0
                                                 key = player.Key,
                                                 returningOjb = player.returningOjb,
                                                 target = car.targetFpIndex
-                                            });
+                                            }, grp);
                                         }
                                     }; break;
                             }
@@ -535,12 +535,12 @@ namespace HouseManager4_0
                 key = otr.Key,
                 returningOjb = player.returningOjb,
                 target = car.targetFpIndex
-            });
+            }, grp);
             mrr = MileResultReason.Abundant;
             return player.returningOjb;
         }
 
-        public void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg)
+        public void failedThenDo(Car car, RoleInGame player, Command c, GetRandomPos grp, ref List<string> notifyMsg)
         {
         }
 
@@ -568,9 +568,9 @@ namespace HouseManager4_0
             return car.state == CarState.waitOnRoad;
         }
 
-        internal void SetReturnFromBoss(int v, RoleInGame boss, returnning returnning)
+        internal void SetReturnFromBoss(int v, RoleInGame boss, returnning returnning, GetRandomPos grp)
         {
-            this.startNewThread(v, returnning, this);
+            this.startNewThread(v, returnning, this, grp);
             //this.newt
             //returnning returnningObj = new returnning()
             //{
@@ -583,17 +583,17 @@ namespace HouseManager4_0
             //throw new NotImplementedException();
         }
 
-        public void newThreadDo(baseC dObj)
+        public void newThreadDo(baseC dObj, GetRandomPos grp)
         {
             if (dObj.c == "returnning")
             {
                 returnning obj = (returnning)dObj;
-                this.setReturn(obj);
+                this.setReturn(obj, grp);
             }
             else if (dObj.c == "comeBack")
             {
                 comeBack obj = (comeBack)dObj;
-                this.setBack(obj);
+                this.setBack(obj, grp);
             }
             //throw new NotImplementedException();
         }

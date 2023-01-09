@@ -62,7 +62,7 @@ namespace HouseManager4_0.interfaceOfHM
         // long getVolumeOrBussiness(Manager_Driver.ConfuseManger.AmbushInfomation ambushInfomation);
         bool CheckCarState(HouseManager4_0.Car car);
         public long ImproveAttack(RoleInGame role, long attackMoney, ref List<string> notifyMsgs);
-        long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMainF.RoomMain that);
+        long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMainF.RoomMain that, GetRandomPos grp);
         void MagicAnimateShow(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
         //bool Ignore(ref RoleInGame role, ref System.Random rm);
         //long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, Engine_DebtEngine engine_DebtEngine);
@@ -75,7 +75,7 @@ namespace HouseManager4_0.interfaceOfHM
     interface ControlExpand : AttackIgnore, SkillDouble
     {
         bool DealWith();
-        void SetReturn(bool success, ref List<string> notifyMsg);
+        void SetReturn(bool success, GetRandomPos grp, ref List<string> notifyMsg);
         // void ReduceDefend(ref List<string> notifyMsg);
         void Ignore(ref Random rm);
         void ReduceIgnore();

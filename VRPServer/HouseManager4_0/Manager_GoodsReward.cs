@@ -1,5 +1,10 @@
-﻿using HouseManager4_0.RoomMainF;
+﻿//using HouseManager4_0.interfaceOfHM;
+using HouseManager4_0.RoomMainF;
+using System;
 using System.Collections.Generic;
+using static HouseManager4_0.Engine;
+using System.Reflection;
+//using HouseManager4_0.interfaceOfHM;
 
 namespace HouseManager4_0
 {
@@ -108,6 +113,54 @@ namespace HouseManager4_0
                 }
             }
             return modelsNeedToShow;
+        }
+
+        internal void GetModelByAddr(string bussinessAddr, ref List<string> notifyMsg)
+        {
+            //List<Data.detailmodel> modelsNeedToShow = new List<Data.detailmodel>();
+            //var models = Program.dt.models;
+            ////var fp = Program.dt.GetFpByIndex(target);
+            //Dictionary<string, double> minLength = new Dictionary<string, double>();
+            //foreach (var model in models)
+            //{
+            //    if (Program.dt.material[model.amodel].modelType.Trim() == "building")
+            //    {
+            //        Program.dt.material[model.amodel].b
+            //    }
+            //}
+            //{
+            //    var fp = Program.dt.GetFpByIndex(startFPIndex);
+            //    {
+            //        foreach (var model in models)
+            //        {
+            //            if (Program.dt.material[model.amodel].modelType.Trim() == "building")
+            //            {
+            //                var length = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, model.lat, model.lon, 0);
+            //                // model.
+            //                if (length < minLength[model.modelID])
+            //                    //if(  model.amodel)
+            //                    modelsNeedToShow.Add(model);
+            //            }
+            //        }
+            //    }
+            //}
+            //return modelsNeedToShow;
+            List<Data.detailmodel> modelsNeedToShow = new List<Data.detailmodel>();
+            var models = Program.dt.models;
+            var mItem = DalOfAddress.detailmodel.GetByAddr(bussinessAddr);
+            List<Data.detailmodel> modelsNeedToSelect = new List<Data.detailmodel>();
+            {
+                foreach (var model in models)
+                {
+                    if (model.modelID == mItem.modelID)
+                    {
+                        modelsNeedToShow.Add(model);
+                    }
+                }
+            }
+            Program.rm.modelM.setModels(modelsNeedToShow, ref notifyMsg);
+            //return notifyMsg;
+            // Program.rm.modelM.setModels(player, modelsNeedToShow, ref notifyMsg);
         }
     }
 }

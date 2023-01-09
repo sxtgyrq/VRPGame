@@ -116,17 +116,17 @@
         </table>
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="resistance.cancle();resistance.bindData2('${obj.KeyLookfor}');">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="resistance.cancle();resistance.bindData2('${obj.KeyLookfor}');">
             抗性
         </div>
 <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="dialogSys.toBeMyBoss('${obj.KeyLookfor}');">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="dialogSys.toBeMyBoss('${obj.KeyLookfor}');">
             认作老大
         </div>
-        <div style="background: yellowgreen;
+        <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="resistance.cancle();">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="resistance.cancle();">
             取消
         </div>
     </div>`;

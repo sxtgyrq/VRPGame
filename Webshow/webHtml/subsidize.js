@@ -45,42 +45,44 @@
         <table style="width:100%">
             <tr>
                 <td style="width:50%">
-                    <div style="background: yellowgreen; width:90%;margin-left:5%;" onclick="subsidizeSys.subsidize(50000)" >
+                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.subsidize(50000)" >
                         资助500
                     </div>
                 </td>
                 <td style="width: 50%">
-                    <div style="background: yellowgreen; width:90%;margin-left:5%;"  onclick="subsidizeSys.subsidize(100000)" >
+                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;"  onclick="subsidizeSys.subsidize(100000)" >
                         资助1000
                     </div>
                 </td>
             </tr>
             <tr>
                 <td style="width:50%">
-                    <div style="background: yellowgreen; width:90%;margin-left:5%;" onclick="subsidizeSys.subsidize(200000)" >
+                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.subsidize(200000)" >
                         资助2000
                     </div>
                 </td>
                 <td style="width: 50%">
-                    <div style="background: yellowgreen; width:90%;margin-left:5%;" onclick="subsidizeSys.subsidize(500000)">
+                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.subsidize(500000)">
                         资助5000
                     </div>
                 </td>
             </tr> 
-        </table>
-        <div style="background: yellowgreen;
+            <tr>
+                <td style="width:50%">
+                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.updateLevel();" >
+                        同步等级
+                    </div>
+                </td>
+                <td style="width: 50%">
+                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.signOnline();">
+                        线上私钥签名
+                    </div>
+                </td>
+            </tr>
+        </table> 
+        <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.updateLevel();">
-            同步等级
-        </div>
-         <div style="background: yellowgreen;
-        margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.signOnline();">
-            线上私钥签名
-        </div>
-        <div style="background: yellowgreen;
-        margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.add();">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.add();">
             取消
         </div>
     </div>`,
@@ -130,6 +132,7 @@
                 objMain.ws.send(JSON.stringify({ c: 'GetSubsidize', signature: signature, address: bitcoinAddress, value: subsidizeValue }));
                 subsidizeSys.operateAddress = bitcoinAddress;
                 subsidizeSys.signInfoMatiion = [signature, bitcoinAddress];
+                //  nyrqUrl.set(bitcoinAddress);
             }
             else {
                 document.getElementById('signatureInputTextArea').style.background = 'rgba(255, 127, 127, 0.9)';
@@ -181,17 +184,17 @@
        
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.sign();">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.sign();">
             签名
         </div>
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.getPrivateKey();">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.getPrivateKey();">
             获取私钥
         </div>
-        <div style="background: yellowgreen;
+        <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="subsidizeSys.add2();">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.add2();">
             取消
         </div>
     </div>`,
@@ -265,6 +268,7 @@
                 objMain.ws.send(JSON.stringify({ c: 'GetSubsidize', signature: signature, address: bitcoinAddress, value: 0 }));
                 subsidizeSys.operateAddress = bitcoinAddress;
                 subsidizeSys.signInfoMatiion = [signature, bitcoinAddress];
+                // nyrqUrl.set(bitcoinAddress);
             }
             else {
                 document.getElementById('signatureInputTextArea').style.background = 'rgba(255, 127, 127, 0.9)';

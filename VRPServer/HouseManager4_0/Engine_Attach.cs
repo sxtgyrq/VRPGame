@@ -74,7 +74,7 @@ namespace HouseManager4_0
 
         }
 
-        public void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg)
+        public void failedThenDo(Car car, RoleInGame player, Command c, GetRandomPos grp, ref List<string> notifyMsg)
         {
             // throw new NotImplementedException();
         }

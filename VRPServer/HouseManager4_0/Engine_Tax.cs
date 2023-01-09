@@ -12,22 +12,22 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        public void newThreadDo(baseC dObj)
+        public void newThreadDo(baseC dObj, GetRandomPos grp)
         {
             if (dObj.c == "taxSet")
             {
                 var taxSet = (taxSet)dObj;
-                this.collectTaxT(taxSet, new notifyMsg());
+                this.collectTaxT(taxSet, grp, new notifyMsg());
             }
             //throw new NotImplementedException();
         }
 
-        internal void CollectTax(int startT, taxSet taxSet)
+        internal void CollectTax(int startT, taxSet taxSet, GetRandomPos grp)
         {
-            this.startNewThread(startT + 1, taxSet, this);
+            this.startNewThread(startT + 1, taxSet, this, grp);
         }
 
-        void collectTaxT(taxSet taxSet, notifyMsg n)
+        void collectTaxT(taxSet taxSet, GetRandomPos grp, notifyMsg n)
         {
             var player = that._Players[taxSet.key];
             lock (that.PlayerLock)
@@ -123,7 +123,7 @@ namespace HouseManager4_0
                     key = taxSet.key,
                     returningOjb = taxSet.returningOjb,
                     target = boss.StartFPIndex
-                });
+                }, grp);
             }
             n.send(this);
         }

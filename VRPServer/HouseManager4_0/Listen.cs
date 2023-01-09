@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using static CommonClass.ModelTranstraction;
 
 namespace HouseManager4_0
 {
@@ -293,6 +294,9 @@ namespace HouseManager4_0
                         }; break;
                     case "GetTransctionFromChain":
                         {
+                            /*
+                             * 从区块链获取数据
+                             */
                             CommonClass.ModelTranstraction.GetTransctionFromChain gtfc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.ModelTranstraction.GetTransctionFromChain>(notifyJson);
                             outPut = objI.GetTransctionFromChainF(gtfc);
                         }; break;
@@ -424,7 +428,12 @@ namespace HouseManager4_0
                         {
                             outPut = objI.ChargingMax();
                         }; break;
-
+                    case "RewardBuildingShow":
+                        {
+                            RewardBuildingShow rbs = Newtonsoft.Json.JsonConvert.DeserializeObject<RewardBuildingShow>(notifyJson);
+                            outPut = objI.RewardBuildingShowF(rbs);
+                          //  objI.nea
+                        }; break;
                 }
             }
             {

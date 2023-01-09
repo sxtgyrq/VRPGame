@@ -12,7 +12,7 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        public void OrderToUpdateLevel(string key, string addr, string signature)
+        public bool OrderToUpdateLevel(string key, string addr, string signature)
         {
             // ots.
             List<string> notifyMsg = new List<string>();
@@ -37,8 +37,8 @@ namespace HouseManager4_0
                                 }
                                 else
                                 {
-                                    this.WebNotify(player, $"只能设置一次荣誉地址，且你的荣誉地址为{player.levelObj.BtcAddr}");
-                                    return;
+                                    this.WebNotify(player, $"只能设置一次积分存储地址，且你的积分存储地址为{player.levelObj.BtcAddr}");
+                                    return false;
                                 }
                                 this.synchronize(player, ref notifyMsg);
                             }
@@ -47,6 +47,7 @@ namespace HouseManager4_0
             }
             else
             {
+                return false;
                 //Consol.WriteLine($"检验签名失败,{ots.Key},{ots.signature},{ots.address}");
             }
             for (var i = 0; i < notifyMsg.Count; i += 2)
@@ -56,6 +57,7 @@ namespace HouseManager4_0
                 //Consol.WriteLine($"url:{url}");
                 Startup.sendMsg(url, sendMsg);
             }
+            return true;
         }
 
         private void synchronize(Player player, ref List<string> notifyMsg)
@@ -71,10 +73,10 @@ namespace HouseManager4_0
             {
                 WebNotify(player, "等级更新失败");
             }
-            else if (remarkI == DalOfAddress.LevelForSave.UpdateResultInDB.LevelHasUsedForRewad) 
+            else if (remarkI == DalOfAddress.LevelForSave.UpdateResultInDB.LevelHasUsedForRewad)
             {
                 WebNotify(player, "等级更新失败，是不是已经用于领奖了？");
-            } 
+            }
         }
 
         public void OrderToUpdateLevel(RoleInGame role, ref List<string> notifyMsgs)

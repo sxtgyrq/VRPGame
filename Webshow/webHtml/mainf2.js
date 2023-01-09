@@ -968,7 +968,7 @@ var objMain =
                     if (objMain.receivedState == 'WaitingToGetTeam') {
                         console.log('secret', received_msg);
                         // var obj = JSON.parse(
-                        var objPass = { 'Secret': received_obj.Secret, 'WebSocketID': received_obj.WebSocketID, 'c': 'TeamNumWithSecret' }
+                        var objPass = { 'Secret': received_obj.Secret, 'WebSocketID': received_obj.WebSocketID, 'c': 'TeamNumWithSecret', 'RefererAddr': nyrqUrl.get() }
                         objMain.ws.send(JSON.stringify(objPass));
                     }
                 }; break;
@@ -1397,6 +1397,7 @@ var objMain =
             case 'LeftMoneyInDB':
                 {
                     subsidizeSys.LeftMoneyInDB[received_obj.address] = received_obj.Money;
+                    nyrqUrl.set(received_obj.address);
                     subsidizeSys.updateMoneyOfSumSubsidizing();
                 }; break;
             case 'SupportNotify':
@@ -1779,6 +1780,7 @@ var objMain =
                 {
                     var modelDataShow = received_obj;
                     BuildingModelObj.f(modelDataShow);
+                    QueryReward.lookAt();
                     //if (modelDataShow.existed) {
 
                     //}
@@ -2041,40 +2043,7 @@ function animate() {
                 {
                     var lengthOfCC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
                     var deltaYOfSelectObj = 0;
-
-                    {
-                        if (objMain.camaraAnimateData != null) {
-                            if (objMain.camaraAnimateData.newT.t < Date.now()) {
-                                objMain.camaraAnimateData = null;
-                            }
-                            else {
-                                var percent1 = (Date.now() - objMain.camaraAnimateData.old.t) / 3000 * Math.PI;
-                                var percent2 = (Math.sin(percent1 - Math.PI / 2) + 1) / 2;
-                                var x = objMain.camaraAnimateData.old.x + (objMain.camaraAnimateData.newT.x - objMain.camaraAnimateData.old.x) * percent2;
-                                var y = objMain.camaraAnimateData.old.y + (objMain.camaraAnimateData.newT.y - objMain.camaraAnimateData.old.y) * percent2;
-                                var z = objMain.camaraAnimateData.old.z + (objMain.camaraAnimateData.newT.z - objMain.camaraAnimateData.old.z) * percent2;
-                                objMain.controls.target.set(x, y, z);
-                                var angle = objMain.controls.getPolarAngle();
-                                //if(
-                                var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
-                                var distance = lengthOfCC;
-                                var unitY = Math.abs(distance * Math.cos(angle));
-                                var unitZX = distance * Math.sin(angle);
-
-                                var angleOfCamara = objMain.controls.getAzimuthalAngle();
-                                var unitX = unitZX * Math.sin(angleOfCamara);
-                                var unitZ = unitZX * Math.cos(angleOfCamara);
-                                //var unitX = unitZX * Math.sin(-complexV.toAngle() - Math.PI / 2);
-                                //var unitZ = unitZX * Math.cos(-complexV.toAngle() - Math.PI / 2);
-
-                                objMain.camera.position.set(x + unitX, y + unitY, z + unitZ);
-                                objMain.camera.lookAt(x, y, z);
-                                console.log('camara', x, y, z, x + unitX, y + unitY, z + unitZ);
-                                deltaYOfSelectObj = y;
-                            }
-                        }
-                    }
-
+                    deltaYOfSelectObj = animateDetailF.moveCamara(lengthOfCC);
                     for (var i = 0; i < objMain.collectGroup.children.length; i++) {
                         /*
                          * 初始化人民币的大小
@@ -2813,7 +2782,7 @@ function animate() {
                     theLagestHoderKey.animate();
                     objMain.renderer.render(objMain.scene, objMain.camera);
                     objMain.labelRenderer.render(objMain.scene, objMain.camera);
-                    objMain.light1.position.set(objMain.camera.position.x + 10, objMain.camera.position.y, objMain.camera.position.z + 10);
+                    objMain.light1.position.set(objMain.camera.position.x + lengthOfCC / 3, objMain.camera.position.y, objMain.camera.position.z + lengthOfCC / 3);
                     if (objMain.directionGroup.visible) {
                         var minAngle = Math.PI / 20;
                         var selectIndex = -1;
@@ -2844,7 +2813,20 @@ function animate() {
                     objMain.light1.position.set(objMain.camera.position.x, objMain.camera.position.y, objMain.camera.position.z);
 
                 }; break;
-            case 'QueryReward': { }; break;
+            case 'QueryReward':
+                {
+                    if (objMain.renderer != null)
+                        objMain.renderer.render(objMain.scene, objMain.camera);
+                    if (objMain.labelRenderer != null)
+                        objMain.labelRenderer.render(objMain.scene, objMain.camera);
+                    if (objMain.renderer != null) {
+                        var lengthOfCC = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                        // var deltaYOfSelectObj = 0;
+                        animateDetailF.moveCamara(lengthOfCC);
+                        objMain.light1.position.set(objMain.camera.position.x + lengthOfCC / 3, objMain.camera.position.y, objMain.camera.position.z + lengthOfCC / 3);
+                    }
+
+                }; break;
         }
         //if (objMain.state == 'OnLine') {
 
@@ -2862,6 +2844,42 @@ function animate() {
     }
 }
 animate();
+
+var animateDetailF =
+{
+    moveCamara: function (lengthOfCC) {
+        if (objMain.camaraAnimateData != null) {
+            if (objMain.camaraAnimateData.newT.t < Date.now()) {
+                objMain.camaraAnimateData = null;
+                return 0;
+            }
+            else {
+                var percent1 = (Date.now() - objMain.camaraAnimateData.old.t) / 3000 * Math.PI;
+                var percent2 = (Math.sin(percent1 - Math.PI / 2) + 1) / 2;
+                var x = objMain.camaraAnimateData.old.x + (objMain.camaraAnimateData.newT.x - objMain.camaraAnimateData.old.x) * percent2;
+                var y = objMain.camaraAnimateData.old.y + (objMain.camaraAnimateData.newT.y - objMain.camaraAnimateData.old.y) * percent2;
+                var z = objMain.camaraAnimateData.old.z + (objMain.camaraAnimateData.newT.z - objMain.camaraAnimateData.old.z) * percent2;
+                objMain.controls.target.set(x, y, z);
+                var angle = objMain.controls.getPolarAngle();
+                //if(
+                //var dCal = objMain.mainF.getLength(objMain.camera.position, objMain.controls.target);
+                var distance = lengthOfCC;
+                var unitY = Math.abs(distance * Math.cos(angle));
+                var unitZX = distance * Math.sin(angle);
+
+                var angleOfCamara = objMain.controls.getAzimuthalAngle();
+                var unitX = unitZX * Math.sin(angleOfCamara);
+                var unitZ = unitZX * Math.cos(angleOfCamara);
+
+                objMain.camera.position.set(x + unitX, y + unitY, z + unitZ);
+                objMain.camera.lookAt(x, y, z);
+                return y;
+            }
+        }
+        else return 0;
+    }
+};
+
 var selectSingleTeamJoinHtml = function () {
     document.getElementById('rootContainer').innerHTML = selectSingleTeamJoinHtmlF.drawHtml();
 }
@@ -2870,12 +2888,12 @@ var buttonClick = function (v) {
         switch (v) {
             case 'single':
                 {
-                    objMain.ws.send(JSON.stringify({ c: 'JoinGameSingle' }));
+                    objMain.ws.send(JSON.stringify({ c: 'JoinGameSingle', RefererAddr: nyrqUrl.get() }));
                     objMain.receivedState = '';
                 }; break;
             case 'team':
                 {
-                    objMain.ws.send(JSON.stringify({ c: 'CreateTeam' }));
+                    objMain.ws.send(JSON.stringify({ c: 'CreateTeam', RefererAddr: nyrqUrl.get() }));
                     objMain.receivedState = '';
                 }; break;
             case 'join':
@@ -2919,35 +2937,16 @@ var buttonClick = function (v) {
 var QueryReward =
 {
     draw3D: function () {
-        //var text = "";
-        //text += "  <div>";
-        //text += "            3D界面";
-        //text += "        </div>";
-        //document.getElementById('rootContainer').innerHTML = text;
         document.getElementById('rootContainer').innerHTML = '';
-
-        //<div id="mainC" class="container" onclick="testTop();">
-        //    <!--<img />-->
-        //    <!--<a href="DAL/MapImage.ashx">DAL/MapImage.ashx</a>-->
-        //    <img src="Pic/11.png" />
-        //</div>
         var mainC = document.createElement('div');
         mainC.id = 'mainC';
 
-        mainC.className = 'container_Show';
+        mainC.className = 'container';
         document.getElementById('rootContainer').appendChild(mainC);
-        document.getElementById('rootContainer').style.overflow = 'scroll';
         objMain.scene = new THREE.Scene();
-        //objMain.scene.background = new THREE.Color(0x7c9dd4);
-        //objMain.scene.fog = new THREE.FogExp2(0x7c9dd4, 0.2);
 
         var cubeTextureLoader = new THREE.CubeTextureLoader();
         cubeTextureLoader.setPath('Pic/');
-        //var cubeTexture = cubeTextureLoader.load([
-        //    "xi_r.jpg", "dong_r.jpg",
-        //    "ding_r.jpg", "di_r.jpg",
-        //    "nan_r.jpg", "bei_r.jpg"
-        //]);
         var cubeTexture = cubeTextureLoader.load([
             "px.jpg", "nx.jpg",
             "py.jpg", "ny.jpg",
@@ -2958,14 +2957,14 @@ var QueryReward =
         objMain.renderer = new THREE.WebGLRenderer({ alpha: true });
         objMain.renderer.setClearColor(0x000000, 0); // the default
         objMain.renderer.setPixelRatio(window.devicePixelRatio);
-        objMain.renderer.setSize(300, 300);
-        objMain.renderer.domElement.className = 'renderDom_Trans';
+        objMain.renderer.setSize(window.innerWidth, window.innerHeight);
+        objMain.renderer.domElement.className = 'renderDom';
         document.getElementById('mainC').appendChild(objMain.renderer.domElement);
         //  document.body
 
         objMain.labelRenderer = new THREE.CSS2DRenderer();
-        objMain.labelRenderer.setSize(300, 300);
-        objMain.labelRenderer.domElement.className = 'labelRenderer_Trans';
+        objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        objMain.labelRenderer.domElement.className = 'labelRenderer';
         //objMain.labelRenderer.domElement.style.curs
         document.getElementById('mainC').appendChild(objMain.labelRenderer.domElement);
 
@@ -3072,11 +3071,76 @@ var QueryReward =
 
         objMain.labelRenderer.domElement.addEventListener('touchstart', operateStart, false);
         objMain.labelRenderer.domElement.addEventListener('touchend', operateEnd, false);
-        //scope.domElement.removeEventListener('touchstart', onTouchStart, false);
-        //scope.domElement.removeEventListener('touchend', onTouchEnd, false);
-        //drawCarBtnsFrame();
-        //objNotify.carNotifyShow();
+
         window.addEventListener('resize', onWindowResize, false);
+        onWindowResize();
+    },
+    lookAt: function () {
+        if (objMain.state == 'QueryReward') {
+            var selectBuilding = objMain.buildingGroup.children[0];
+            var animationData =
+            {
+                old: {
+                    x: objMain.controls.target.x,
+                    y: objMain.controls.target.y,
+                    z: objMain.controls.target.z,
+                    t: Date.now()
+                },
+                newT:
+                {
+                    x: selectBuilding.position.x,
+                    y: selectBuilding.position.y,
+                    z: selectBuilding.position.z,
+                    t: Date.now() + 3000
+                }
+            };
+            objMain.camaraAnimateData = animationData;
+        }
+    },
+    drawToolBar: function (title) {
+        if (objMain.state == 'QueryReward') {
+            while (document.getElementById('sysOperatePanel') != null) {
+                document.getElementById('sysOperatePanel').remove();
+            }
+            var divSysOperatePanel = document.createElement('div');
+            divSysOperatePanel.id = 'sysOperatePanel';
+            divSysOperatePanel.style.position = 'absolute';
+            divSysOperatePanel.style.zIndex = '7';
+            divSysOperatePanel.style.top = 'calc(100% - 2.5em - 8px)';
+            divSysOperatePanel.style.left = '8px';
+            divSysOperatePanel.style.width = 'calc(100% - 16px)';
+            {
+                var img = document.createElement('img');
+                img.id = 'QueryRewardExit';
+                img.src = 'Pic/settingIcon.png';
+                img.classList.add('chatdialog');
+                img.style.border = 'solid 1px orange';
+                img.style.borderRadius = '5px';
+                img.style.height = 'calc(2.5em - 2px)';
+                img.style.width = 'auto';
+                img.style.marginLeft = 'calc(100% - 2.5em - 2px)';
+                // img.style.right = '0.5em';
+
+                img.onclick = function () {
+                    while (document.getElementById('sysOperatePanel') != null) {
+                        document.getElementById('sysOperatePanel').remove();
+                    }
+                    objMain.mainF.removeF.clearGroup(objMain.roadGroup);
+                    MapData.meshPoints = [];
+                    objMain.mainF.removeF.clearGroup(objMain.buildingGroup);
+
+                    objMain.renderer = null;
+                    objMain.labelRenderer = null;
+                    document.getElementById('rootContainer').innerHTML = '';
+                    objMain.ws.send(JSON.stringify({ 'c': 'RewardInfomation', 'Page': reward.page }));
+                    //alert(title);
+                };
+
+                divSysOperatePanel.appendChild(img);
+            }
+            document.body.appendChild(divSysOperatePanel);
+        }
+
     },
 }
 
@@ -3464,21 +3528,31 @@ var set3DHtml = function () {
     window.addEventListener('resize', onWindowResize, false);
 }
 function onWindowResize() {
-    if (objMain.state == 'OnLine') {
-        objMain.camera.aspect = window.innerWidth / window.innerHeight;
-        objMain.camera.updateProjectionMatrix();
+    switch (objMain.state) {
+        case 'OnLine':
+            {
+                objMain.camera.aspect = window.innerWidth / window.innerHeight;
+                objMain.camera.updateProjectionMatrix();
 
-        objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        objMain.renderer.setSize(window.innerWidth, window.innerHeight);
-        carAbility.refreshPosition();
-    }
-    else if (objMain.state == 'LookForBuildings') {
-        objMain.camera.aspect = 1;
-        objMain.camera.updateProjectionMatrix();
+                objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+                objMain.renderer.setSize(window.innerWidth, window.innerHeight);
+                carAbility.refreshPosition();
+            }; break;
+        case 'LookForBuildings':
+            {
+                objMain.camera.aspect = 1;
+                objMain.camera.updateProjectionMatrix();
 
-        objMain.labelRenderer.setSize(300, 300);
-        objMain.renderer.setSize(300, 300);
-        //  carAbility.refreshPosition();
+                objMain.labelRenderer.setSize(300, 300);
+                objMain.renderer.setSize(300, 300);
+            }; break;
+        case 'QueryReward': {
+            objMain.camera.aspect = window.innerWidth / window.innerHeight;
+            objMain.camera.updateProjectionMatrix();
+
+            objMain.labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            objMain.renderer.setSize(window.innerWidth, window.innerHeight);
+        }; break;
     }
 }
 
@@ -5497,13 +5571,7 @@ var sceneYUpdate = function (deltaY) {
     }
 }
 
-var urlSet = function ()
-{
-    const url = new URL(window.location.href);
-    url.searchParams.set('param1', 'val1');
-    url.searchParams.delete('param2');
-    window.history.replaceState(null, null, url);
-};
+
 
 //////////
 /*
@@ -5600,6 +5668,6 @@ Complex.parse = function (s) {
 Complex.parseRegExp = /^\{([\d\s]+[^,]*),([\d\s]+[^}]*)\}$/;
 window.c = Complex;
 // console.log(/^\{([\d\s]+[^,]*),([\d\s]+[^}]*)\}$/.exec('{2,3}'));
-// 示例代码 
+// 示例代码
 
 ////////////

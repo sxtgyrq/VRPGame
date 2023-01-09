@@ -15,17 +15,17 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        public void newThreadDo(commandWithTime.baseC dObj)
+        public void newThreadDo(commandWithTime.baseC dObj, GetRandomPos grp)
         {
             if (dObj.c == "diamondOwner")
             {
                 commandWithTime.diamondOwner dOwner = (commandWithTime.diamondOwner)dObj;
-                this.setDiamondOwner(dOwner);
+                this.setDiamondOwner(dOwner, grp);
             }
             //throw new NotImplementedException();
         }
 
-        internal void StartDiamondOwnerThread(int startT, int step, RoleInGame player, Car car, SetPromote sp, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro, int goMile, Node goPath)
+        internal void StartDiamondOwnerThread(int startT, int step, RoleInGame player, Car car, SetPromote sp, RoomMainF.RoomMain.commandWithTime.ReturningOjb ro, int goMile, Node goPath, GetRandomPos grp)
         {
 
             System.Threading.Thread th = new System.Threading.Thread(() =>
@@ -40,7 +40,7 @@ namespace HouseManager4_0
                         costMile = goMile,
                         returningOjb = ro,
                         diamondType = sp.pType
-                    }, this);
+                    }, this, grp);
                 //that.debtE.setDebtT(startT, car, sa, goMile, ro);
                 //this.startNewThread(startT, new commandWithTime.defenseSet()
                 //{
@@ -67,7 +67,7 @@ namespace HouseManager4_0
                             car.setState(player, ref notifyMsg, CarState.working);
                             this.sendMsg(notifyMsg);
                             //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                            StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath);
+                            StartDiamondOwnerThread(newStartT, step, player, car, sp, ro, goMile, goPath, grp);
 
                         };
                     this.loop(p, step, startT, player, goPath);
@@ -86,7 +86,7 @@ namespace HouseManager4_0
         /// </summary>
         /// <param name="startT"></param>
         /// <param name="dor"></param>
-        private void setDiamondOwner(commandWithTime.diamondOwner dor)
+        private void setDiamondOwner(commandWithTime.diamondOwner dor, GetRandomPos grp)
         {
             List<string> notifyMsg = new List<string>();
             bool needUpdatePromoteState = false;
@@ -114,7 +114,7 @@ namespace HouseManager4_0
                                 key = dor.key,
                                 returningOjb = dor.returningOjb,
                                 target = dor.target
-                            });
+                            }, grp);
                         }
                         else if (dor.target == that.getPromoteState(dor.diamondType))
                         {
@@ -153,12 +153,14 @@ namespace HouseManager4_0
                                 key = dor.key,
                                 returningOjb = dor.returningOjb,
                                 target = dor.target
-                            });
+                            }, grp);
                             that._Players[dor.key].returningOjb = dor.returningOjb;
+                            if (player.playerType == RoleInGame.PlayerType.player)
+                                ((Player)player).RefererCount++;
                         }
                         else
                         {
-                            WebNotify(player, "车来迟了，宝石被别人买走啦！");
+                            WebNotify(player, "车来迟了，宝石被别人取走啦！");
                             carParkOnRoad(dor.target, ref car, player, ref notifyMsg);
                             car.setState(player, ref notifyMsg, CarState.waitOnRoad);
                             that._Players[dor.key].returningOjb = dor.returningOjb;

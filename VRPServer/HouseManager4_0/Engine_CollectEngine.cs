@@ -89,10 +89,10 @@ namespace HouseManager4_0
             }
         }
 
-        public void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg)
+        public void failedThenDo(Car car, RoleInGame player, Command c, GetRandomPos grp, ref List<string> notifyMsg)
         {
             if (c.c == "SetCollect")
-                this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
+                this.carDoActionFailedThenMustReturn(car, player, grp, ref notifyMsg);
         }
 
         public commandWithTime.ReturningOjb maindDo(RoleInGame player, Car car, Command c, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason mrr)
@@ -195,8 +195,8 @@ namespace HouseManager4_0
                     var from = this.GetFromWhenUpdateCollect(that._Players[sc.Key], sc.cType, car);
                     var to = getCollectPositionTo(sc.collectIndex);//  this.promoteMilePosition;
                     var fp1 = grp.GetFpByIndex(from);
-                    var fp2 = grp.GetFpByIndex(to);
-                    var fbBase = grp.GetFpByIndex(player.StartFPIndex);
+                    //var fp2 = grp.GetFpByIndex(to);
+                    //var fbBase = grp.GetFpByIndex(player.StartFPIndex);
                     //var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
                     //var goPath = Program.dt.GetAFromB(from, to);
                     var goPath = that.GetAFromB_v2(from, to, player, grp, ref notifyMsg);
@@ -212,7 +212,7 @@ namespace HouseManager4_0
                         var ro = commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
                         //  Thread th=new Thread() { }
                         car.setState(player, ref notifyMsg, CarState.working);
-                        StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);
+                        StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath, grp);
                         //if (player.playerType == RoleInGame.PlayerType.NPC)
                         //    StartArriavalThread(startT, car, sc, ro, goMile);
                         //else
@@ -267,7 +267,7 @@ namespace HouseManager4_0
         //    //Thread th = new Thread(() => setArrive(startT, ));
         //    //th.Start();
         //}
-        private void StartArriavalThread(int startT, int step, RoleInGame player, Car car, SetCollect sc, commandWithTime.ReturningOjb ro, int goMile, Node goPath)
+        private void StartArriavalThread(int startT, int step, RoleInGame player, Car car, SetCollect sc, commandWithTime.ReturningOjb ro, int goMile, Node goPath, GetRandomPos grp)
         {
             System.Threading.Thread th = new System.Threading.Thread(() =>
             {
@@ -281,7 +281,7 @@ namespace HouseManager4_0
                         returningOjb = ro,
                         target = car.targetFpIndex,
                         costMile = goMile
-                    }, this);
+                    }, this, grp);
                 else
                 {
                     Action p = () =>
@@ -296,7 +296,7 @@ namespace HouseManager4_0
 
                         car.setState(player, ref notifyMsg, CarState.working);
                         this.sendMsg(notifyMsg);
-                        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath);
+                        StartArriavalThread(newStartT, step, player, car, sc, ro, goMile, goPath, grp);
                     };
                     this.loop(p, step, startT, player, goPath);
                     //if (step == 0)
@@ -434,6 +434,8 @@ namespace HouseManager4_0
                     that.GetMusic((Player)role, ref notifyMsg);
                 if (role.playerType == RoleInGame.PlayerType.player)
                     that.GetBackground((Player)role, ref notifyMsg);
+                if (role.playerType == RoleInGame.PlayerType.player)
+                    ((Player)role).RefererCount++;
             }
             else
             {
@@ -461,6 +463,23 @@ namespace HouseManager4_0
             if (role.playerType == RoleInGame.PlayerType.player)
             {
                 that.goodsM.ShowConnectionModels(role, pa.target, ref notifyMsg);
+            }
+            if (role.playerType == RoleInGame.PlayerType.player)
+            {
+                var player = (Player)role;
+                if (string.IsNullOrEmpty(player.BTCAddress))
+                {
+                    this.WebNotify(player, "您还没有登录！");
+                }
+                else
+                {
+                    if (that.rm.Next(100) < player.SendTransmitMsg)
+                    {
+                        this.WebNotify(player, "转发，能获得转发奖励！");
+                        player.SendTransmitMsg = player.SendTransmitMsg / 3;
+                    }
+                }
+                //that.goodsM.ShowConnectionModels(role, pa.target, ref notifyMsg);
             }
         }
 
@@ -586,7 +605,7 @@ namespace HouseManager4_0
                     this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
                     var ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossPath, returnToSelfPath, boss);
                     car.setState(player, ref notifyMsg, CarState.working);
-                    StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath);
+                    StartArriavalThread(startT, 0, player, car, sc, ro, goMile, goPath, grp);
                     //  getAllCarInfomations(sc.Key, ref notifyMsg);
                     mrr = MileResultReason.Abundant;//返回原因
                     return ro;
@@ -613,12 +632,8 @@ namespace HouseManager4_0
             }
         }
 
-        private void ActionInBoss(int from, int to)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void newThreadDo(commandWithTime.baseC dObj)
+        public void newThreadDo(commandWithTime.baseC dObj, GetRandomPos grp)
         {
             if (dObj.c == "placeArriving")
             {

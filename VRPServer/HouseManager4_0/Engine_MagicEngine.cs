@@ -362,12 +362,12 @@ namespace HouseManager4_0
             return false;
         }
 
-        public void failedThenDo(Car car, RoleInGame player, Command c, ref List<string> notifyMsg)
+        public void failedThenDo(Car car, RoleInGame player, Command c, GetRandomPos grp, ref List<string> notifyMsg)
         {
             if (c.c == "MagicSkill")
             {
                 MagicSkill ms = (MagicSkill)c;
-                this.carDoActionFailedThenMustReturn(car, player, ref notifyMsg);
+                this.carDoActionFailedThenMustReturn(car, player, grp, ref notifyMsg);
             }
         }
 
@@ -426,15 +426,15 @@ namespace HouseManager4_0
                 {
                     case CommonClass.driversource.SkillEnum.Electic:
                         {
-                            return electicMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                            return electicMagic(player, car, ms, skill, grp, ref notifyMsg, out Mrr);
                         };
                     case CommonClass.driversource.SkillEnum.Water:
                         {
-                            return waterMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                            return waterMagic(player, car, ms, skill, grp, ref notifyMsg, out Mrr);
                         };
                     case SkillEnum.Fire:
                         {
-                            return fireMagic(player, car, ms, skill, ref notifyMsg, out Mrr);
+                            return fireMagic(player, car, ms, skill, grp, ref notifyMsg, out Mrr);
                         };
                     case SkillEnum.Confusion:
                         {
@@ -490,7 +490,7 @@ namespace HouseManager4_0
             attackSet,
             speedSet
         }
-        private void StartArriavalThread(startArriavalThreadCommand command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro)
+        private void StartArriavalThread(startArriavalThreadCommand command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro, GetRandomPos grp)
         {
             System.Threading.Thread th = new System.Threading.Thread(() =>
             {
@@ -510,7 +510,7 @@ namespace HouseManager4_0
                                     returningOjb = ro,
                                     target = car.targetFpIndex,
                                     beneficiary = ms.targetOwner
-                                }, this);
+                                }, this, grp);
                             }; break;
                         case startArriavalThreadCommand.attackSet:
                             {
@@ -523,7 +523,7 @@ namespace HouseManager4_0
                                     returningOjb = ro,
                                     target = car.targetFpIndex,
                                     beneficiary = ms.targetOwner
-                                }, this);
+                                }, this, grp);
                             }; break;
                         case startArriavalThreadCommand.speedSet:
                             {
@@ -536,7 +536,7 @@ namespace HouseManager4_0
                                     returningOjb = ro,
                                     target = car.targetFpIndex,
                                     beneficiary = ms.targetOwner
-                                }, this);
+                                }, this, grp);
                             }; break;
                     }
 
@@ -555,7 +555,7 @@ namespace HouseManager4_0
                                car.setState(player, ref notifyMsg, CarState.working);
                                this.sendMsg(notifyMsg);
                                //string command, int startT, int step, RoleInGame player, Car car, MagicSkill ms, int goMile, Node goPath, commandWithTime.ReturningOjb ro
-                               StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro);
+                               StartArriavalThread(command, newStartT, step, player, car, ms, goMile, goPath, ro, grp);
                            };
                     this.loop(p, step, startT, player, goPath);
                 }
@@ -573,7 +573,7 @@ namespace HouseManager4_0
                 List<string> notifyMsg = new List<string>();
                 car.setState(player, ref notifyMsg, CarState.working);
                 this.sendMsg(notifyMsg);
-                this.StartArriavalThread(startArriavalThreadCommand.defenseSet, startT, 0, player, car, ms2, goMile, goPath, ro);
+                this.StartArriavalThread(startArriavalThreadCommand.defenseSet, startT, 0, player, car, ms2, goMile, goPath, ro, grp);
                 //this.startNewThread(startT, new commandWithTime.defenseSet()
                 //{
                 //    c = "defenseSet",
@@ -595,7 +595,7 @@ namespace HouseManager4_0
                 List<string> notifyMsg = new List<string>();
                 car.setState(player, ref notifyMsg, CarState.working);
                 this.sendMsg(notifyMsg);
-                this.StartArriavalThread(startArriavalThreadCommand.attackSet, startT, 0, player, car, ms1, goMile, goPath, ro);
+                this.StartArriavalThread(startArriavalThreadCommand.attackSet, startT, 0, player, car, ms1, goMile, goPath, ro, grp);
                 //beneficiary 
                 //this.startNewThread(startT, new commandWithTime.attackSet()
                 //{
@@ -735,7 +735,7 @@ namespace HouseManager4_0
                 List<string> notifyMsg = new List<string>();
                 car.setState(player, ref notifyMsg, CarState.working);
                 this.sendMsg(notifyMsg);
-                this.StartArriavalThread(startArriavalThreadCommand.speedSet, startT, 0, player, car, ms2, goMile, goPath, ro);
+                this.StartArriavalThread(startArriavalThreadCommand.speedSet, startT, 0, player, car, ms2, goMile, goPath, ro, grp);
             });
             return this.contact(player, car, so, grp, ref notifyMsg, out Mrr);
         }
@@ -869,7 +869,7 @@ namespace HouseManager4_0
                 {
                     Mrr = MileResultReason.NearestIsMoneyWhenAttack;
                     that.ViewPosition(player, fpResult, ref notifyMsg);
-                    this.WebNotify(player, $"离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，{ ct.GetName()}失败！");
+                    this.WebNotify(player, $"离【{victim.PlayerName}】最近的是[{fpResult.FastenPositionName}]处的钱，不是你的车，{ct.GetName()}失败！");
                     return player.returningOjb;
                 }
             }
@@ -885,27 +885,27 @@ namespace HouseManager4_0
             return controlMagic(player, car, ms, ct, ref notifyMsg, out Mrr);
         }
 
-        private commandWithTime.ReturningOjb fireMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb fireMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             attackMagicTool et = new attackMagicTool(skill);
-            return attackMagic(player, car, ms, et, ref notifyMsg, out Mrr);
+            return attackMagic(player, car, ms, et, grp, ref notifyMsg, out Mrr);
         }
 
         //  public partial class 
 
 
-        private commandWithTime.ReturningOjb waterMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb waterMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             attackMagicTool et = new attackMagicTool(skill);
-            return attackMagic(player, car, ms, et, ref notifyMsg, out Mrr);
+            return attackMagic(player, car, ms, et, grp, ref notifyMsg, out Mrr);
         }
 
-        private commandWithTime.ReturningOjb electicMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb electicMagic(RoleInGame player, Car car, MagicSkill ms, Skill skill, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             attackMagicTool et = new attackMagicTool(skill);
-            return attackMagic(player, car, ms, et, ref notifyMsg, out Mrr);
+            return attackMagic(player, car, ms, et, grp, ref notifyMsg, out Mrr);
         }
-        private commandWithTime.ReturningOjb attackMagic(RoleInGame player, Car car, MagicSkill ms, interfaceOfHM.AttackMagic am, ref List<string> notifyMsg, out MileResultReason Mrr)
+        private commandWithTime.ReturningOjb attackMagic(RoleInGame player, Car car, MagicSkill ms, interfaceOfHM.AttackMagic am, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
             if (that._Players.ContainsKey(ms.targetOwner))
             {
@@ -942,7 +942,7 @@ namespace HouseManager4_0
                             returningOjb = player.returningOjb,
                             target = player.getCar().targetFpIndex,
                             victim = ms.targetOwner
-                        }, am);
+                        }, am, grp);
                         Mrr = MileResultReason.Abundant;
                         return player.returningOjb;
                     }
@@ -970,9 +970,9 @@ namespace HouseManager4_0
             }
         }
 
-        internal void AmbushSelf(RoleInGame victim, interfaceOfHM.AttackT at, ref List<string> notifyMsg, ref long reduceSumInput)
+        internal void AmbushSelf(RoleInGame victim, interfaceOfHM.AttackT at, GetRandomPos grp, ref List<string> notifyMsg, ref long reduceSumInput)
         {
-            victim.confuseRecord.AmbushSelf(victim, that, this, ref notifyMsg, at, ref reduceSumInput);
+            victim.confuseRecord.AmbushSelf(victim, that, this, ref notifyMsg, at, grp, ref reduceSumInput);
             //victim.confuseRecord.AmbushSelf(victim, that, this, ref notifyMsg, at, ref reduceSumInput, (int i, ref List<string> notifyMsgPass, RoleInGame attacker, ref long reduceSum, bool protecedByDefendMagic) =>
             // {
 
@@ -1036,7 +1036,7 @@ namespace HouseManager4_0
         public delegate void WaterMagicChanged(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
         public delegate void ElectricMagicChanged(RoleInGame player, RoleInGame victim, ref List<string> notifyMsgs);
 
-        public void newThreadDo(commandWithTime.baseC dObj)
+        public void newThreadDo(commandWithTime.baseC dObj, GetRandomPos grp)
         {
             interfaceOfHM.ImproveT it;
             //  const int startNewReturnThInteview = 50;
@@ -1064,7 +1064,7 @@ namespace HouseManager4_0
                         it = null;
                     }; break;
             }
-            Improved(it);
+            Improved(it, grp);
 
             //if (dObj.c == "speedSet")
             //{
@@ -1303,8 +1303,19 @@ namespace HouseManager4_0
             {
                 return car.state == CarState.waitOnRoad;
             }
-            public long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMain that)
+            public long DealWithPercentValue(long percentValue, RoleInGame player, RoleInGame victim, RoomMain that, GetRandomPos grp)
             {
+                switch (this.skill.skillEnum)
+                {
+                    case SkillEnum.Water:
+                        {
+                            //getCenter(player.StartFPIndex, player.getCar().targetFpIndex, victim.StartFPIndex, that, grp);
+                            //player.GetFPIndex();
+                        }; break;
+                    case SkillEnum.Electic: { }; break;
+                    case SkillEnum.Fire: { }; break;
+                }
+
                 var car = player.getCar();
                 var rank = Program.rm.getPlayerClosestPositionRankNum(player, car, victim);
 
@@ -1314,6 +1325,18 @@ namespace HouseManager4_0
                 }
                 percentValue = Math.Max(1, percentValue);
                 return percentValue;
+            }
+
+            private void getCenter(int index1, int index2, int index3, RoomMain that, GetRandomPos grp)
+            {
+                var fp1 = grp.GetFpByIndex(index1);
+                var fp2 = grp.GetFpByIndex(index2);
+                var fp3 = grp.GetFpByIndex(index3);
+                
+                
+                //grp.GetFpByIndex(index1)
+                //  this.
+                // throw new NotImplementedException();
             }
 
             public Engine_DebtEngine.DebtCondition getCondition()
@@ -1797,7 +1820,7 @@ namespace HouseManager4_0
                     return true;
                 }
             }
-            public override void SetReturn(bool success, ref List<string> notifyMsg)//enemy success
+            public override void SetReturn(bool success, GetRandomPos grp, ref List<string> notifyMsg)//enemy success
             {
                 if (success)
                 {
@@ -1839,7 +1862,7 @@ namespace HouseManager4_0
                     key = this.enemy.Key,
                     returningOjb = this.enemy.returningOjb,
                     target = this.enemy.getCar().targetFpIndex
-                });
+                }, grp);
             }
 
             public void SetHarm(ref long reduceSumInput, ref List<string> notifyMsg)
@@ -1992,7 +2015,7 @@ namespace HouseManager4_0
                 reduceValue = Math.Min(200, reduceValue);
                 role.buildingReward[index] -= reduceValue;
             }
-            public virtual void SetReturn(bool success, ref List<string> notifyMsg)
+            public virtual void SetReturn(bool success, GetRandomPos grp, ref List<string> notifyMsg)
             {
                 // if (success)
                 {
@@ -2005,7 +2028,7 @@ namespace HouseManager4_0
                         key = magicItem.player.Key,
                         returningOjb = magicItem.player.returningOjb,
                         target = enemyCar.targetFpIndex
-                    });
+                    }, grp);
                 }
             }
         }
@@ -2043,7 +2066,7 @@ namespace HouseManager4_0
                 {
                     self.improvementRecord.reduceDefend(self, this.attackMoneyBeforeBeingControled, ref notifyMsg);
                     that.WebNotify(enemy, $"你对【{self.PlayerName}】实施了{name}计谋，被其保护光环阻挡，未能成功！");
-                    that.WebNotify(self, $"【{ enemy.PlayerName}】对你实施了{name}阴谋，被保护光环阻挡，未能成功！");
+                    that.WebNotify(self, $"【{enemy.PlayerName}】对你实施了{name}阴谋，被保护光环阻挡，未能成功！");
                 }
                 else
                 {
@@ -2106,7 +2129,7 @@ namespace HouseManager4_0
                 {
                     self.improvementRecord.reduceDefend(self, this.attackMoneyBeforeBeingControled, ref notifyMsg);
                     that.WebNotify(enemy, $"你对【{self.PlayerName}】实施了{name}计谋，被其保护光环阻挡，未能成功！");
-                    that.WebNotify(self, $"【{ enemy.PlayerName}】对你实施了{name}阴谋，被保护光环阻挡，未能成功！");
+                    that.WebNotify(self, $"【{enemy.PlayerName}】对你实施了{name}阴谋，被保护光环阻挡，未能成功！");
                 }
                 else
                 {
@@ -2139,7 +2162,7 @@ namespace HouseManager4_0
             }
         }
 
-        internal Manager_Driver.ConfuseManger.programResult DealWithControlMagic(interfaceOfHM.ControlExpand ce, ref long reduceSumInput)
+        internal Manager_Driver.ConfuseManger.programResult DealWithControlMagic(interfaceOfHM.ControlExpand ce, GetRandomPos grp, ref long reduceSumInput)
         {
             List<string> notifyMsg = new List<string>();
             var magicDoublePlayed = ce.MagicDouble(ref Program.rm.rm);
@@ -2155,7 +2178,7 @@ namespace HouseManager4_0
                 }
             }
             ce.SetHarm(ref reduceSumInput, ref notifyMsg);
-            ce.SetReturn(success, ref notifyMsg);
+            ce.SetReturn(success, grp, ref notifyMsg);
             if (ce.Ignored())
                 ce.ReduceIgnore();
 
@@ -2545,7 +2568,7 @@ namespace HouseManager4_0
                 };
             }
         }
-        private void Improved(interfaceOfHM.ImproveT ss)
+        private void Improved(interfaceOfHM.ImproveT ss, GetRandomPos grp)
         {
             if (ss == null) { return; }
             const int startNewReturnThInteview = 50;
@@ -2647,7 +2670,7 @@ namespace HouseManager4_0
                                 target = ss.target,
                                 changeType = ss.changeType,
                                 returningOjb = ss.returningOjb
-                            });
+                            }, grp);
 
                         }
                         //else

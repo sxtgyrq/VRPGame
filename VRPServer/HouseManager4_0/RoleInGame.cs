@@ -899,6 +899,32 @@ namespace HouseManager4_0
         public string BTCAddress = "";
 
         public Dictionary<string, bool> backgroundData { get; set; }
+
+        /// <summary>
+        /// 推荐者的比特币地址
+        /// </summary>
+        public string RefererAddr { get; internal set; }
+
+        int refererCountPrivate = 0;
+        public int RefererCount
+        {
+            get
+            {
+                return this.refererCountPrivate;
+            }
+            set
+            {
+                if (BitCoin.CheckAddress.CheckAddressIsUseful(RefererAddr))
+                {
+                    this.refererCountPrivate = value;
+                }
+                else
+                {
+                    this.refererCountPrivate = 0;
+                }
+            }
+        }
+
         public Action ShowCrossAfterWebUpdate = null;
 
 
@@ -944,6 +970,7 @@ namespace HouseManager4_0
         public System.Threading.Thread playerSelectDirectionTh = null;
         //  internal Action NavigationAction = null;
         internal RoomMain.Node NavigationData = null;
+        public int SendTransmitMsg = 100;
     }
     public class NPC : RoleInGame
     {

@@ -17,7 +17,9 @@ namespace WsOfWebClient
 
     public class JoinGameSingle : CommonClass.Command
     {
+        public string RefererAddr { get; set; }
     }
+    
 
     public class CancleLookForBuildings : CommonClass.Command { }
     public class LookForBuildings : CommonClass.Command
@@ -34,6 +36,7 @@ namespace WsOfWebClient
     }
     public class CreateTeam : CommonClass.Command
     {
+        public string RefererAddr { get; set; }
     }
     public class DriverSelect : CommonClass.Command
     {
@@ -203,5 +206,5 @@ namespace WsOfWebClient
     {
 
     }
-   
+
 }

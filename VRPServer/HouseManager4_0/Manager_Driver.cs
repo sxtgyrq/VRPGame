@@ -45,20 +45,27 @@ namespace HouseManager4_0
                             {
                                 player.MoneySet(player.Money - CostMoney, ref notifyMsg);
                                 var recruit = that.driverM.GetRecruit(player.buildingReward[0]);
-                                if (that.rm.Next(100) < recruit)
+                                if (recruit > 0)
                                 {
                                     this.setDriver(player, car, dm.Index, ref notifyMsg);
+                                    this.WebNotify(player, "招聘成功！");
                                 }
                                 else
                                 {
-                                    this.WebNotify(player, "招聘失败！到指定地点祈更多福可以提高成功率");
+                                    if (that.rm.Next(100) < 25)
+                                    {
+                                        this.setDriver(player, car, dm.Index, ref notifyMsg);
+                                    }
+                                    else
+                                    {
+                                        this.WebNotify(player, "招聘失败！到指定地点祈更多福可以提高成功率");
+                                    }
                                 }
                                 that.driverM.SetRecruit(recruit, ref player);
-                                //  that.modelM.get
                             }
                             else
                             {
-                                this.WebNotify(player, "换司机最少要消耗50.00刀！");
+                                this.WebNotify(player, "换司机最少要消耗50.00点积分！");
                             }
 
                     }
@@ -233,14 +240,14 @@ namespace HouseManager4_0
 
         private void SetRecruit(int recruit, ref RoleInGame player)
         {
-            player.buildingReward[0] -= recruit / 2;
+            player.buildingReward[0] -= 2;
             player.buildingReward[0] = Math.Max(0, player.buildingReward[0]);
         }
         internal int GetRecruit(int v)
         {
-            if (v / 3 < 100)
+            if (v / 2 < 100)
             {
-                return v / 3;
+                return v / 2;
             }
             else
             {
@@ -697,7 +704,7 @@ namespace HouseManager4_0
             public Simulate simulate { get; private set; }
             // this.
 
-            bool dealWithItem(RoleInGame self, AmbushInfomation magicItem, RoomMain that, webnotify ex, Car enemyCar, RoleInGame enemy, ref List<string> notifyMsg, out bool protecedByDefendMagic)
+            bool dealWithItem(RoleInGame self, AmbushInfomation magicItem, RoomMain that, webnotify ex, Car enemyCar, RoleInGame enemy, GetRandomPos grp, ref List<string> notifyMsg, out bool protecedByDefendMagic)
             {
 
                 int defensiveOfAmbush;
@@ -734,7 +741,7 @@ namespace HouseManager4_0
                         key = magicItem.player.Key,
                         returningOjb = magicItem.player.returningOjb,
                         target = enemyCar.targetFpIndex
-                    });
+                    }, grp);
                     protecedByDefendMagic = true;
                     return false;
                 }
@@ -756,7 +763,7 @@ namespace HouseManager4_0
                         key = magicItem.player.Key,
                         returningOjb = magicItem.player.returningOjb,
                         target = enemyCar.targetFpIndex
-                    });
+                    }, grp);
                     protecedByDefendMagic = false;
                     return false;
                 }
@@ -772,7 +779,7 @@ namespace HouseManager4_0
                         key = magicItem.player.Key,
                         returningOjb = magicItem.player.returningOjb,
                         target = enemyCar.targetFpIndex
-                    });
+                    }, grp);
                     protecedByDefendMagic = false;
                     return true;
                 }
@@ -803,7 +810,7 @@ namespace HouseManager4_0
                 }
             }
 
-            internal void ControllSelf(RoleInGame self, RoomMain that, ref List<string> notifyMsg, interfaceOfEngine.webnotify ex)
+            internal void ControllSelf(RoleInGame self, RoomMain that, GetRandomPos grp, ref List<string> notifyMsg, interfaceOfEngine.webnotify ex)
             {
                 FastonPosition baseFp = Program.dt.GetFpByIndex(self.StartFPIndex);
                 this.controlInfomations.RemoveAll(item => item.player.Bust);
@@ -825,7 +832,7 @@ namespace HouseManager4_0
 
                             Engine_MagicEngine.confuseMagicTool t = new Engine_MagicEngine.confuseMagicTool(magicItem, self, enemy, that);
                             long v = 0;
-                            var result = that.magicE.DealWithControlMagic(t, ref v);
+                            var result = that.magicE.DealWithControlMagic(t, grp, ref v);
                             if (result == programResult.runContinue)
                                 continue;
                             else
@@ -835,7 +842,7 @@ namespace HouseManager4_0
                         {
                             Engine_MagicEngine.loseMagicTool t = new Engine_MagicEngine.loseMagicTool(magicItem, self, enemy, that);
                             long v = 0;
-                            var result = that.magicE.DealWithControlMagic(t, ref v);
+                            var result = that.magicE.DealWithControlMagic(t, grp, ref v);
                             if (result == programResult.runContinue)
                                 continue;
                             else
@@ -907,7 +914,7 @@ namespace HouseManager4_0
             internal List<AmbushInfomation> ambushInfomations = new List<AmbushInfomation>();
 
             // internal delegate void AmbushAttack(int i, ref List<string> notifyMsg, RoleInGame enemy, ref long reduceSumInput, bool protecedByDefendMagic);
-            internal void AmbushSelf(RoleInGame selfRole, RoomMain that, webnotify ex, ref List<string> notifyMsg, interfaceOfHM.AttackT at, ref long reduceSumInput)
+            internal void AmbushSelf(RoleInGame selfRole, RoomMain that, webnotify ex, ref List<string> notifyMsg, interfaceOfHM.AttackT at, GetRandomPos grp, ref long reduceSumInput)
             {
                 List<AmbushInfomation> newList = new List<AmbushInfomation>();
                 for (int i = 0; i < ambushInfomations.Count; i++)
@@ -933,7 +940,7 @@ namespace HouseManager4_0
                     var enemyCar = this.ambushInfomations[i].player.getCar();
                     var enemy = this.ambushInfomations[i].player;
                     Engine_MagicEngine.ambushMagicTool amt = new Engine_MagicEngine.ambushMagicTool(enemy, selfRole, at, that);
-                    that.magicE.DealWithControlMagic(amt, ref reduceSumInput);//.de(amt, enemy); 
+                    that.magicE.DealWithControlMagic(amt, grp, ref reduceSumInput);//.de(amt, enemy); 
                 }
             }
 
@@ -1283,7 +1290,7 @@ namespace HouseManager4_0
             public Simulate simulate { get; private set; }
         }
 
-        internal bool controlledByMagic(RoleInGame victim, Car car, ref List<string> notifyMsg)
+        internal bool controlledByMagic(RoleInGame victim, Car car, GetRandomPos grp, ref List<string> notifyMsg)
         {
             if (victim.confuseRecord.IsBeingControlled())
             {
@@ -1291,7 +1298,7 @@ namespace HouseManager4_0
             }
             else
             {
-                victim.confuseRecord.ControllSelf(victim, that, ref notifyMsg, this);
+                victim.confuseRecord.ControllSelf(victim, that, grp, ref notifyMsg, this);
                 return victim.confuseRecord.IsBeingControlled();
             }
         }

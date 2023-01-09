@@ -15,24 +15,24 @@
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
 
-            <label>
+            <label   onclick="subsidizeSys.readStr('bitcoinAddressInput');">
                 --↓↓↓输入1或3打头的比特币地址↓↓↓--
             </label>
             <input id="bitcoinAddressInput" type="text" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 1);" />
         </div> 
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;"  onclick="moneyOperator.donate('half');">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;"  onclick="moneyOperator.donate('half');">
             存储一半
         </div>
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;"  onclick="moneyOperator.donate('all');">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;"  onclick="moneyOperator.donate('all');">
             全部存储
         </div> 
         <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="moneyOperator.add();">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="moneyOperator.add();">
             取消
         </div>
     </div>`,

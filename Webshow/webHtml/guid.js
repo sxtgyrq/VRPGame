@@ -10,13 +10,21 @@
     gameIntroHtml: `<div id="GameIntrolPanel" style="background-color:rgba(56, 60, 67, .15);width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
         <div style="text-align:left;">
             <p style="text-align:left;">
-                <h1 style="text-align:left">游戏剧情</h1>
-                &emsp;&emsp;在游戏中，模拟城市交通，通过<a href="javascript:void(null);" onclick="GuidObj.selectDriver.show();">选取司机</a>、<a href="javascript:void(null);" onclick="GuidObj.collectMoney.show();">收集奖励</a>、挑战NPC、收集宝石，获得虚拟股份，然后<a href="javascript:void(null);" onclick="GuidObj.BTC.show();">获得比特币</a>。
+                <h1 style="text-align:left;font-size:xx-large;">游戏剧情</h1>
+                &emsp;&emsp;在游戏中，模拟城市交通，通过<a href="javascript:void(null);" onclick="GuidObj.selectDriver.show();">选取司机</a>、<a href="javascript:void(null);" onclick="GuidObj.collectMoney.show();">收集奖励</a>、<a href="javascript:void(null);" onclick="GuidObj.npcChallenge.show();">挑战NPC</a>、<a href="javascript:void(null);" onclick="GuidObj.getDiamand.show();">收集宝石</a>，<a href="javascript:void(null);" onclick="GuidObj.getReward.show();">获得虚拟股份</a>，然后<a href="javascript:void(null);" onclick="GuidObj.BTC.show();">获得比特币</a>。
             </p>
-            <p style="text-align:left;">
-                <h1 style="text-align:left">开发团队</h1>
+            <p style="text-align:left;margin-top: 1em;">
+                <h1 style="text-align:left;font-size:xx-large;">打赏</h1>
+                &emsp;&emsp;您可以通过<a href="javascript:void(null);" onclick="GuidObj.charging.show();">打赏</a>来提高您的游戏体验。
+            </p>
+            <p style="text-align:left;margin-top: 1em;">
+                <h1 style="text-align:left;font-size:xx-large;">转发</h1>
+                &emsp;&emsp;您可以通过<a href="javascript:void(null);" onclick="GuidObj.transmit.show();">转发</a>来赚取游戏积分。
+            </p>
+            <p style="text-align:left;margin-top: 1em;">
+                <h1 style="text-align:left;font-size:xx-large;">开发团队</h1>
                 &emsp;&emsp;此游戏由<a href="javascript:void(null);" onclick="GuidObj.developTeam.show();">要瑞卿及其团队</a>进行开发并维护。
-            </p>
+            </p> 
         </div>
         <div style="text-align:center;">
             <button onclick="GuidObj.Exit()" style="width: 5em;
@@ -55,20 +63,20 @@
                 &emsp;&emsp;司机总类，分为输出、控制、辅助三种角色。角色之间可以项目配合。
             </p>
             <p>
-                <img style="max-width:80%;width:80%;margin-left:10%" src="Pic/gameintro/guid_selectrole_01.png" />
-                <div style="text-align:center;">
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_selectrole_01.png" />
+                <div style="">
                     <span>1,调整视角</span>
                 </div>
             </p>
             <p>
-                <img style="max-width: 80%; width: 80%; margin-left: 10%" src="Pic/gameintro/guid_selectrole_02.png" />
-                <div style="text-align:center;">
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_selectrole_02.png" />
+                <div style="">
                     <span>2,选择自己的旗帜</span>
                 </div>
             </p>
             <p>
-                <img style="max-width: 80%; width: 80%; margin-left: 10%" src="Pic/gameintro/guid_selectrole_03.png" />
-                <div style="text-align:center;">
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_selectrole_03.png" />
+                <div style="">
                     <span>3,选取角色</span>
                 </div>
             </p>
@@ -771,8 +779,7 @@
             }
         }
     },
-    CopyUrl: function (obj)
-    {
+    CopyUrl: function (obj) {
         var msg = obj.innerText;
         if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
             $.notify('"' + msg + '"\n   已经复制到剪切板', "success");
@@ -781,5 +788,352 @@
         else {
             alert('浏览器设置不支持访问剪切板！');
         }
-    }
+    },
+    npcChallenge:
+    {
+        html: ` <div id="npcChallengePanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+           <h1 style="text-align:left;font-size: x-large;">挑战NPC</h1>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;在<a href="javascript:void(null);" onclick="GuidObj.login.show();">登录游戏</a>后，可以挑战NPC来完成等级的提升。提升等级，可用于<a href="javascript:void(null);" onclick="GuidObj.getReward.show();">申请某地点的虚拟股份</a>，虚拟股份可用于<a href="javascript:void(null);" onclick="GuidObj.BTC.show();">比特币提现</a>与游戏增强。<br />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;1级玩家可挑战2级NPC，2级玩家可挑战3级NPC，依次类推N级玩家可挑战(N+1)级NPC<br />
+                直接攻击，即开始挑战。
+                 <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_npcchallenge_01.jpg" />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;<a href="javascript:void(null);" onclick="GuidObj.transmit.show();">叫上您的小伙伴们</a>，<a href="javascript:void(null);" onclick="GuidObj.createAndJoinTeam.show();">组队</a>组队挑战NPC，更容易。<br />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;<a href="javascript:void(null);" onclick="GuidObj.diamondUse.show();">使用宝石</a>，提升您的实力，挑战NPC，更容易。<br />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;成为某地的股东，法术威力更大，挑战更容易。<br />
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'npcChallengePanel',
+        show: function () {
+            var that = GuidObj.npcChallenge;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    login:
+    {
+        html: `<div id="loginIntroPanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size: x-large;">登录</h1>
+            <p style="text-align:left;">
+                &emsp;&emsp;1.点击左3按钮<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_privatekey_01.jpg" />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;2.输入地址与签名。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_sign_01.jpg" />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;3.点击资助或同步等级完成登录。完成登录后，剩余资助会由“未知”变未数字。<br />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;4.可以采用线上签名或者线下签名。<br />
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'loginIntroPanel',
+        show: function () {
+            var that = GuidObj.login;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    getReward:
+    {
+        html: `  <div id="getRewardIntroPanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size: x-large;">获取荣誉</h1>
+            <p style="text-align:left;">
+                &emsp;&emsp;1.<a href="javascript:void(null);" onclick="GuidObj.npcChallenge.show();">挑战NPC</a>，获取等级。<br />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;2.主界面点击荣誉。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_reward_01.jpg" />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;3.点击选择当前奖励，点击申请。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_reward_02.jpg" />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;4.输入对期数如“20221121”的签名。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_reward_03.jpg" />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;5.下一个周期(下一个星期一)，获得指定地点的荣誉。<br />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;6.下一个周期，获得的荣誉，可以通过求福提升游戏里的能力。<br />
+            </p>
+            <p style="text-align:left;">
+                &emsp;&emsp;7.也可完成<a href="javascript:void(null);" onclick="GuidObj.BTC.show();">比特币提现</a>。<br />
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'getRewardIntroPanel',
+        show: function () {
+            var that = GuidObj.getReward;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    getDiamand:
+    {
+        html: ` <div id="getDiamandPanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size:  xx-large;">收集宝石</h1>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;1.视角对准宝石。<br />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;2.点击寻宝。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_collectdiamond_01.jpg" />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;3.拥有宝石后可以使用与出售。<br /> 
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'getDiamandPanel',
+        show: function () {
+            var that = GuidObj.getDiamand;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    createAndJoinTeam:
+    {
+        html: `<div id="rootContainer" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size:  xx-large;">组队</h1>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;1.队长点击组队创建房间。并将你的房间号告诉你的伙伴。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_team_01.jpg" />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;2.队员点击加入，并输入房间号。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_team_02.jpg" />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;3.队长点击开始，一起开始在一个房间内进行游戏。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_team_03.jpg" />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;4.为了提高辨识度，可以先修改游戏昵称。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_team_04.jpg" />
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'createAndJoinTeamPanel',
+        show: function () {
+            var that = GuidObj.createAndJoinTeam;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    transmit:
+    {
+        html: `<div id="transmitIntroPanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size:  xx-large;">转发</h1>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;1.完成<a href="javascript:void(null);" onclick="GuidObj.login.show();">登录</a>后，可以进行转发。其他玩家通过您的转发链接进入游戏，您可以获得额外的转发奖励。<br />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;2.如登录后，微信转发。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_transmit_01.jpg" />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;3.如登录后，iPhone&emsp;Safari转发。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_transmit_02.jpg" />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;4.如登录后，Android&emsp;Chrome转发<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_transmit_03.jpg" />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;5.建议您使用Safari(IOS、iPhone)与Chrome浏览器(windows、Android)<br /> 
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'transmitIntroPanel',
+        show: function () {
+            var that = GuidObj.transmit;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    diamondUse:
+    {
+        html: `<div id="diamondUseIntroPanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size:  xx-large;">使用宝石</h1>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;1.回到大本营后，视角对准圆柱体，可以使用宝石。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_diamonduse_01.jpg" />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;2.红宝石可以提高续航、绿宝石提高能力、蓝宝石提高套路、黑宝石提高速度。<br /> 
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;3.可以通过<a href="javascript:void(null);" onclick="GuidObj.getDiamand.show();">收集宝石</a>，获取宝石。<br /> 
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;4.也可通过购买，获取宝石。<br />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;5.在使用过程中，有宝石的破碎风险。<br />
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;6.在退出游戏时，可以通过<a href="javascript:void(null);" onclick="GuidObj.diamondReturn.show();">释玉</a>，将能力转化为宝石，然后出售，然后存储资金，以备下一次游戏。<br />
+            </p>
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'diamondUseIntroPanel',
+        show: function () {
+            var that = GuidObj.diamondUse;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
+    diamondReturn:
+    {
+        html: `<div id="diamondReturnIntroPanel" style="width: 100%; height: 100%; overflow-x:hidden;overflow-y:scroll;position:absolute;left:0px;top:0px;">
+        <div style="text-align:left;word-wrap:anywhere;word-break:break-all;">
+            <h1 style="text-align:left;font-size:  xx-large;">释玉</h1>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;1.回到大本营后，视角对准旗帜，可以释放宝石。<br />
+                <img style="max-width:256px;width:80%;margin-left:10%" src="Pic/gameintro/guid_diamondget_01.jpg" />
+            </p>
+            <p style="text-align:left;margin-top:1em;">
+                &emsp;&emsp;2.您的能力，将被降低，但你会获得宝石。<br /> 
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;3.可以将宝石出售，获得积分。<br /> 
+            </p>
+            <p style="text-align: left; margin-top: 1em;">
+                &emsp;&emsp;4.将积分存储，下一次游戏开始时，可以用购买宝石。<br />
+            </p> 
+        </div>
+        <div style="text-align:center;">
+            <button onclick="GuidObj.gameIntroShow();" style="width: 5em;
+        height: 3em;
+        margin-top: 1em;">
+                返回
+            </button>
+        </div>
+    </div>`,
+        id: 'diamondReturnIntroPanel',
+        show: function () {
+            var that = GuidObj.diamondReturn;
+            if (document.getElementById(that.id) == null) {
+                document.getElementById('rootContainer').innerHTML = '';
+                var frag = document.createRange().createContextualFragment(that.html);
+                frag.id = that.id;
+                document.getElementById('rootContainer').appendChild(frag);
+            }
+            else {
+            }
+        }
+    },
 };
