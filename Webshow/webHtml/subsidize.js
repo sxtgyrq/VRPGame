@@ -174,7 +174,7 @@
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
 
-            <label>
+            <label onclick="subsidizeSys.readStr('subsidizePanelPromptPrivateKeyValue');">
                 --↓↓↓输入您珍贵的私钥↓↓↓--
             </label>
           

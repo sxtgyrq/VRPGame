@@ -307,6 +307,29 @@ namespace HouseManager4_0.RoomMainF
             }
         }
 
+
+
+        public void DiamondInCarChanged(Player player, Car car, ref List<string> notifyMsgs, string value)
+        {
+            foreach (var item in this._Players)
+            {
+                if (item.Value.playerType == RoleInGame.PlayerType.player)
+                {
+                    var playerNeedToTold = (Player)item.Value;
+                    var obj = new BradCastPromoteDiamondInCar
+                    {
+                        c = "BradCastPromoteDiamondOnCar",
+                        WebSocketID = playerNeedToTold.WebSocketID,
+                        pType = car.ability.diamondInCar,
+                        roleID = player.Key
+                    };
+                    var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                    notifyMsgs.Add(playerNeedToTold.FromUrl);
+                    notifyMsgs.Add(json);
+                }
+            }
+        }
+
         private BradCastPromoteInfoDetail GetPromoteInfomation(int webSocketID, string resultType)
         {
             switch (resultType)

@@ -86,6 +86,8 @@ namespace HouseManager4_0
                 throw new Exception($"数据传输错误！(传出类型为{c.c})");
             }
         }
+        
+        
         //class PromoteObj : interfaceOfHM.ContactInterface
         //{
         //    public delegate void SetPromoteArrivalThreadM(int startT, Car car, SetPromote sp, int goMile, Node goPath, commandWithTime.ReturningOjb ro);

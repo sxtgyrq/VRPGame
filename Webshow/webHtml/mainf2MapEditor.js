@@ -1092,6 +1092,11 @@ var objMain =
                         //</tr>`;
                     }
                 }; break;
+            case 'LookForTaskCopyResult':
+                {
+                    document.getElementById('taskAddrForSearch').value = received_obj.addr;
+                    document.getElementById('jsonResultForSearchShow').value = received_obj.json;
+                }; break;
         }
     },
 

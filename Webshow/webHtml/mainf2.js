@@ -916,6 +916,18 @@ var objMain =
                                     }; break;
                                 }
                                 objMain.state = objMain.receivedState;
+
+                                {
+                                    var confirmFirst = function () {
+                                        if (confirm("确认离开www.nyrq123.com?")) {
+                                        } else {
+                                            return false;
+                                        }
+                                    }
+                                    window.onbeforeunload = confirmFirst;
+
+
+                                }
                             }; break;
                         case 'WaitingToStart':
                             {
@@ -1994,6 +2006,10 @@ var objMain =
             case 'GetTaskCopyResult':
                 {
                     dialogSys.drawPanelOfTaskCoyp(received_obj.Detail);
+                }; break;
+            case 'BradCastPromoteDiamondOnCar':
+                {
+                    stateSet.diamond.add(received_obj.roleID, received_obj.pType);
                 }; break;
             default:
                 {
@@ -3269,6 +3285,7 @@ var setTransactionHtml =
     },
     cancle: function () {
         transactionBussiness().Cancle();
+        transactionBussiness().notifyMsg(false);
     }
 }
 
@@ -3834,7 +3851,7 @@ var SysOperatePanel =
                 // alert('打开聊天框');
                 dialogSys.show();
             };
-
+            img.classList.add('costomButton');
             divSysOperatePanel.appendChild(img);
         }
         {
@@ -3853,7 +3870,7 @@ var SysOperatePanel =
                 //alert('弹出对话框');
                 moneyOperator.add();
             };
-
+            img.classList.add('costomButton');
             divSysOperatePanel.appendChild(img);
         }
         {
@@ -3873,7 +3890,7 @@ var SysOperatePanel =
                 subsidizeSys.add();
                 //moneyOperator.add();
             };
-
+            img.classList.add('costomButton');
             divSysOperatePanel.appendChild(img);
         }
         {
@@ -3899,7 +3916,7 @@ var SysOperatePanel =
                     resistance.bindData(objMain.indexKey);
                 }
             };
-
+            img.classList.add('costomButton');
             divSysOperatePanel.appendChild(img);
         }
         {
@@ -3922,7 +3939,7 @@ var SysOperatePanel =
                     settingSys.add();
                 }
             };
-
+            img.classList.add('costomButton');
             divSysOperatePanel.appendChild(img);
         }
         document.body.appendChild(divSysOperatePanel);
@@ -4215,6 +4232,7 @@ var operatePanel =
             //  <span id="carASpan">提升续航</span>
 
             div.onclick = function () { clickF(); }
+            div.classList.add('costomButton');
             divTaskOperatingPanel.appendChild(div);
         }
         document.body.appendChild(divTaskOperatingPanel);
@@ -4759,7 +4777,8 @@ var stateSet =
                 meshCopy.scale.z = 2;//3
                 var car = objMain.carGroup.getObjectByName('car_' + carId);
                 if (car)
-                    car.add(meshCopy);
+                    if (!car.getObjectByName(meshCopy.name))
+                        car.add(meshCopy);
             }
         },
         Animate: function (carId) {
@@ -4802,7 +4821,8 @@ var stateSet =
                 meshCopy.scale.set(5, 5, 5);// = 2;//3
                 var car = objMain.carGroup.getObjectByName('car_' + carId);
                 if (car)
-                    car.add(meshCopy);
+                    if (!car.getObjectByName(meshCopy.name))
+                        car.add(meshCopy);
             }
         },
         Animate: function (carId) {
@@ -4855,7 +4875,8 @@ var stateSet =
                         meshCopy.rotateZ(-Math.PI / 2 + i * 2 * Math.PI / 3);
                         O3d.add(meshCopy);
                     }
-                    objMain.shieldGroup.add(O3d);
+                    if (!objMain.shieldGroup.getObjectByName(O3d.name))
+                        objMain.shieldGroup.add(O3d);
                 }
             }
         },
@@ -4904,7 +4925,8 @@ var stateSet =
                         O3d.add(meshCopy);
                     }
                     O3d.userData.animateData = animateData;
-                    objMain.confusePrepareGroup.add(O3d);
+                    if (!objMain.confusePrepareGroup.getObjectByName(O3d.name))
+                        objMain.confusePrepareGroup.add(O3d);
                 }
             }
         },
@@ -4936,14 +4958,6 @@ var stateSet =
                 }
                 objMain.confusePrepareGroup.remove(O3d);
             }
-            //var car = objMain.carGroup.getObjectByName('car_' + carId);
-            //if (car) {
-            //    var name = 'fist_' + carId;
-            //    var fist = car.getObjectByName(name);
-            //    if (fist) {
-            //        car.remove(fist);
-            //    }
-            //}
         }
     },
     confuse:
@@ -4955,7 +4969,8 @@ var stateSet =
             meshCopy.scale.set(5, 5, 5);
             var car = objMain.carGroup.getObjectByName('car_' + carId);
             if (car)
-                car.add(meshCopy);
+                if (!car.getObjectByName(meshCopy.name))
+                    car.add(meshCopy);
         },
         Animate: function (carId) {
             //input Is group
@@ -5006,7 +5021,8 @@ var stateSet =
                         O3d.add(meshCopy);
                     }
                     O3d.userData.animateData = animateData;
-                    objMain.lostPrepareGroup.add(O3d);
+                    if (!objMain.lostPrepareGroup.getObjectByName(O3d.name))
+                        objMain.lostPrepareGroup.add(O3d);
                 }
             }
         },
@@ -5049,7 +5065,8 @@ var stateSet =
             meshCopy.scale.set(1, 1, 1);
             var car = objMain.carGroup.getObjectByName('car_' + carId);
             if (car)
-                car.add(meshCopy);
+                if (!car.getObjectByName(meshCopy.name))
+                    car.add(meshCopy);
         },
         Animate: function (carId) {
             //input Is group
@@ -5098,7 +5115,9 @@ var stateSet =
                         O3d.add(meshCopy);
                     }
                     O3d.userData.animateData = animateData;
-                    objMain.ambushPrepareGroup.add(O3d);
+                    if (!objMain.ambushPrepareGroup.getObjectByName(O3d.name)) {
+                        objMain.ambushPrepareGroup.add(O3d);
+                    }
                 }
             }
         },
@@ -5434,16 +5453,24 @@ var stateSet =
     },
     diamond: {
         add: function (roleID, diamondName) {
-            var diamond = objMain.promoteDiamond.getObjectByName(diamondName);
-            if (diamond) {
-                var diamondOnCar = objMain.promoteDiamond.getObjectByName(diamondName).clone();
-                diamondOnCar.name = 'car_' + diamondName + '_' + roleID;
-                diamondOnCar.position.set(9, 35, 0);
-                diamondOnCar.scale.set(10, 11, 10);
-                var car = objMain.carGroup.getObjectByName('car_' + roleID);
-                if (car)
-                    if (car.getObjectByName(diamondOnCar.name) == null)
-                        car.add(diamondOnCar);
+            if (diamondName == '') {
+                this.clear(roleID, 'mile');
+                this.clear(roleID, 'business');
+                this.clear(roleID, 'volume');
+                this.clear(roleID, 'speed');
+            }
+            else {
+                var diamond = objMain.promoteDiamond.getObjectByName('diamond_' + diamondName);
+                if (diamond) {
+                    var diamondOnCar = objMain.promoteDiamond.getObjectByName('diamond_' + diamondName).clone();
+                    diamondOnCar.name = 'car_' + diamondName + '_' + roleID;
+                    diamondOnCar.position.set(9, 35, 0);
+                    diamondOnCar.scale.set(10, 11, 10);
+                    var car = objMain.carGroup.getObjectByName('car_' + roleID);
+                    if (car)
+                        if (!car.getObjectByName(diamondOnCar.name))
+                            car.add(diamondOnCar);
+                }
             }
         },
         clear: function (roleID, diamondName) {
@@ -5463,6 +5490,7 @@ var DirectionOperator =
     data: null,
     show: function (received_obj) {
         DirectionOperator.data = received_obj;
+        objMain.mainF.removeF.clearGroup(objMain.buildingSelectionGroup);
         objMain.mainF.removeF.clearGroup(objMain.directionGroup);
         var newDirectionModle = objMain.ModelInput.direction.clone();
         newDirectionModle.rotateX(-Math.PI / 2);

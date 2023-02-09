@@ -691,8 +691,8 @@
         </div>
     </div>
 
-    <!--<div id="redPockedGiveOutRecordInputFrame" style="z-index:999;width:calc(100% - 100px);height:100%;position:absolute;top:0;left:0;">
-        <div style="height:2em;left:calc(100% - 100px);">
+    <div id="redPockedGiveOutRecordInputFrame" style="z-index:999;width:calc(100% - 100px);height:100%;position:absolute;top:2em;left:0px;">
+        <div style="height:auto;left:200px;position:absolute;">
             <button id="redPockedGiveOutRecordInputFrameEditBtn">最小化</button>
             <script>
                 var maxWindow3 = function () {
@@ -717,51 +717,58 @@
             </script>
 
         </div>
-        <div>
-            <div><label>支付方式</label></div>
-            <select id="rmbChargingDatalTypes">
-                <option value="alipay">支付宝</option>
-                <option value="wechat" selected>微信打赏</option>
+        <div style="margin-top:2em;">
+            <div><label>任务代码</label></div>
+            <select id="taskCodeSelectCom">
+                <option value="GLSTOCK" selected>GLSTOCK</option>
+                <option value="URLSHARE">URLSHARE</option>
             </select>
         </div>
         <div>
-            <div><label>任务代码</label></div>
-            <input id="taskCodeForSearch" type="text" />
-        </div>
-        <div>
             <div><label>地址</label></div>
-            <input id="btcAddrForSearch" type="text" />
+            <input id="taskAddrForSearch" type="text" style="width:80%;" />
         </div>
         <div>
-            <div><label>任务代码查询结果</label></div>
-            <input id="taskCodeForSearchShow" type="text" readonly />
+            <div><label>任务代码查询结果Json</label></div>
+            <textarea id="jsonResultForSearchShow" readonly style="width:80%;"></textarea>
         </div>
         <div>
-            <div><label>地址查询结果</label></div>
-            <input id="btcAddrForSearchShow" type="text" readonly />元
+            <div><label>任务代码翻译结果</label></div>
+            <textarea id="resultForSearchShow" readonly style="width:80%;"></textarea>
         </div>
         <div>
-            <div><label>校验码查询结果</label></div>
-            <input id="checkCodeForSearchShow" type="text" readonly />元
-        </div>-->
-        <!--<div id="dropImg_zone" style="border:1px solid black;height:50px;width:calc(100% - 10px); background:#ffffffb8">Drop pic here</div>
-        <output id="imgList"></output>-->
-        <!--<script>
-
-        </script>
-
-
-
-        <div>
-
-            <button id="redPocketSearchBtn" onclick="">查询</button>
-            <script>
-
+            <script type="text/javascript">
+                var findContentInServer = function () {
+                    var code = document.getElementById('taskCodeSelectCom').value;
+                    var addr = document.getElementById('taskAddrForSearch').value;
+                    var obj =
+                    {
+                        'c': 'LookForTaskCopy',
+                        'code': code,
+                        'addr': addr
+                    };
+                    objMain.ws.send(JSON.stringify(obj));
+                }
+                var pass = function (pass) {
+                    var code = document.getElementById('taskCodeSelectCom').value;
+                    var addr = document.getElementById('taskAddrForSearch').value;
+                    var obj =
+                    {
+                        'c': 'TaskCopyPassOrNG',
+                        'code': code,
+                        'addr': addr,
+                        'pass': pass
+                    };
+                    objMain.ws.send(JSON.stringify(obj));
+                }
             </script>
+            <button id="redPocketSearchBtn" onclick="findContentInServer();">查询</button>
+            <button id="redPocketRecordBtn" onclick="pass(true);">Pass</button>
+            <button id="redPocketRecordBtn" onclick="pass(false);">NG</button>
         </div>
         <div style="background :black;max-height:calc(50%);overflow-y:scroll;color:antiquewhite;">
-            <button id="redPocketRecordBtn" onclick="">给与</button> 
+
         </div>
-    </div>-->
+    </div>
 </body>
 </html>

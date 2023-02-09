@@ -65,7 +65,7 @@ namespace HouseManager4_0
             return Startup.sendSingleMsg(controllerUrl, json);
         }
 
-        public List<string> sendSeveralMsgs(List<string> notifyMsg)
+        public List<int> sendSeveralMsgs(List<string> notifyMsg)
         {
             return Startup.sendSeveralMsgs(notifyMsg);
         }

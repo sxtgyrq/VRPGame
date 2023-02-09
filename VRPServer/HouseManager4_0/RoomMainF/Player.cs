@@ -229,7 +229,7 @@ namespace HouseManager4_0.RoomMainF
                         {4,0}
                     };
                         ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
-                        ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null;
+                        ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null; 
                     }
                     else
                     {
@@ -252,6 +252,8 @@ namespace HouseManager4_0.RoomMainF
 
             //  throw new NotImplementedException();
         }
+
+        
 
         private void setPlayerOffLineBust()
         {
@@ -383,10 +385,7 @@ namespace HouseManager4_0.RoomMainF
             //  throw new NotImplementedException();
         }
 
-        public void DiamondInCarChanged(Player player, Car car, ref List<string> notifyMsgs, string value)
-        {
-            // throw new NotImplementedException();
-        }
+       
 
         public string UpdatePlayer(PlayerCheck checkItem)
         {

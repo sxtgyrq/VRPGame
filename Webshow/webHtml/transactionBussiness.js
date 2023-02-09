@@ -10,6 +10,8 @@ var transactionBussiness = function () {
         container_Editor.id = 'transtractionEditor';
         container_Editor.className = 'container_Editor';
 
+        this.notifyMsg(true);
+
         /* <label>建筑物账号</label>*/
         var label = document.createElement('label');
         label.innerText = '建筑物账号';
@@ -312,7 +314,20 @@ var transactionBussiness = function () {
                 document.getElementById('signText').value = sign;
             },
             document.getElementById('agreementText').value)
-    }
+    };
+    this.notifyMsg = function (show) {
+        if (show) {
+            var html = ` <div id="msgToNotifyWhenDetail" style="font-size:calc(1.25em - 2px);position: fixed; z-index: 9;width:calc(2.5em - 2px); max-width: 2.5em; text-align: center; right: calc(0.5em + 7px); bottom: calc(2.5em + 8px);">按设置键退出详情模式<span style="width:calc(2.5em - 2px);">↓</span></div>`;
+            var frag = document.createRange().createContextualFragment(html);
+            frag.id = 'msgToNotifyWhenDetail';
+            document.body.appendChild(frag);
+        }
+        else {
+            if (document.getElementById('msgToNotifyWhenDetail') != null) {
+                document.getElementById('msgToNotifyWhenDetail').remove();
+            }
+        }
+    };
     return this;
 }
 

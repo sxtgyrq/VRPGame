@@ -341,16 +341,26 @@ namespace WsOfWebClient.MapEditor
                                         }; break;
                                     case "chargingRefresh":
                                         {
-                                              mm.ChargingRefresh(webSocket, rm);
+                                            mm.ChargingRefresh(webSocket, rm);
                                         }; break;
                                     case "chargingNextPage":
                                         {
-                                            await mm.ChargingNextPage(webSocket, rm);
+                                            mm.ChargingNextPage(webSocket, rm);
                                         }; break;
                                     case "chargingPreviousPage":
                                         {
-                                            await mm.ChargingPreviousPage(webSocket, rm);
+                                            mm.ChargingPreviousPage(webSocket, rm);
                                         }; break;
+                                    case "LookForTaskCopy":
+                                        {
+                                            CommonClass.Finance.LookForTaskCopy lftc = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.LookForTaskCopy>(returnResult.result);
+                                             mm.LookForTaskCopyF(webSocket, lftc, rm);
+                                        }; break;
+                                    case "TaskCopyPassOrNG": 
+                                        {
+                                            CommonClass.Finance.TaskCopyPassOrNG pOrNG= Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Finance.TaskCopyPassOrNG>(returnResult.result);
+                                            mm.TaskCopyPassOrNGF(webSocket, pOrNG, rm);
+                                        };break;
                                 }
 
                             }

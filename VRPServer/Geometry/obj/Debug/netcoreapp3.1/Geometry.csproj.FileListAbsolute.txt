@@ -7,13 +7,3 @@ F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\Geometry\obj\Debu
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.dll
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.pdb
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.csprojAssemblyReference.cache
-E:\Project\VRPGame\VRPServer\Geometry\bin\Debug\netcoreapp3.1\Geometry.deps.json
-E:\Project\VRPGame\VRPServer\Geometry\bin\Debug\netcoreapp3.1\Geometry.dll
-E:\Project\VRPGame\VRPServer\Geometry\bin\Debug\netcoreapp3.1\Geometry.pdb
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.csproj.AssemblyReference.cache
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.GeneratedMSBuildEditorConfig.editorconfig
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.AssemblyInfoInputs.cache
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.AssemblyInfo.cs
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.csproj.CoreCompileInputs.cache
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.dll
-E:\Project\VRPGame\VRPServer\Geometry\obj\Debug\netcoreapp3.1\Geometry.pdb

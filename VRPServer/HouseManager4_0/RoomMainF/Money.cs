@@ -112,6 +112,8 @@ namespace HouseManager4_0.RoomMainF
                                 if (BitCoin.CheckAddress.CheckAddressIsUseful(player.RefererAddr))
                                 {
                                     DalOfAddress.MoneyRefererAdd.AddMoney(player.RefererAddr, player.RefererCount * 100);
+                                    var tasks = DalOfAddress.TaskCopy.GetALLItem(player.RefererAddr);
+                                    this.taskM.AddReferer(player.RefererCount, tasks);
                                     player.RefererCount = 0;
                                 }
 
@@ -121,7 +123,7 @@ namespace HouseManager4_0.RoomMainF
                     }
                 }
             }
-            Startup.sendSeveralMsgs(notifyMsg); 
+            Startup.sendSeveralMsgs(notifyMsg);
 
             if (money > 0)
             {
@@ -155,7 +157,8 @@ namespace HouseManager4_0.RoomMainF
                                     DalOfAddress.MoneyGet.GetSubsidizeAndLeft(ots.address, ots.value, out subsidizeGet, out subsidizeLeft);
                                     var player = this._Players[ots.Key];
                                     ((Player)player).BTCAddress = ots.address;
-                                    this.taskM.Initialize(  ((Player)player));
+                                    this.taskM.Initialize(((Player)player));
+                                    //this.taskM.MoneyRefererAdd(ots.address);
                                     player.MoneySet(player.Money + subsidizeGet + Referer, ref notifyMsg);
                                     if (Referer > 0)
                                     {
@@ -174,7 +177,7 @@ namespace HouseManager4_0.RoomMainF
                 //这里在web前台进行校验。
             }
 
-            Startup.sendSeveralMsgs(notifyMsg); 
+            Startup.sendSeveralMsgs(notifyMsg);
         }
 
         private void SendLeftMoney(Player player, long subsidizeLeft, string address, ref List<string> notifyMsg)

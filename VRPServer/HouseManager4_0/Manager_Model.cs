@@ -97,9 +97,10 @@ namespace HouseManager4_0
                                                 if (models.Count(item => item.modelID == m.selectObjName) > 0)
                                                 {
 
-                                                    var hash = (m.Key + m.selectObjName).GetHashCode();
-                                                    var newRm = new System.Random(hash);
-                                                    hash = newRm.Next(5);
+                                                    var newList = (from item in models orderby CommonClass.Random.GetMD5HashFromStr(item.modelID + m.Key) ascending select item).ToList();
+
+                                                    var hash = newList.FindIndex(item => item.modelID == m.selectObjName);
+                                                    hash = hash % 5;
                                                     int defendLevel = 1;
                                                     string rewardLittleReason;
 
@@ -157,18 +158,29 @@ namespace HouseManager4_0
                                                                 {
                                                                     case 0:
                                                                         {
+                                                                            //bool newProperty = false;
+                                                                            int value = 0;
                                                                             switch (defendLevel)
                                                                             {
-                                                                                case 1: player.buildingReward[hash] = that.rm.Next(1, 30); break;
-                                                                                case 2: player.buildingReward[hash] = that.rm.Next(15, 40); break;
-                                                                                case 3: player.buildingReward[hash] = that.rm.Next(29, 50); break;
-                                                                                case 4: player.buildingReward[hash] = that.rm.Next(43, 60); break;
-                                                                                case 5: player.buildingReward[hash] = that.rm.Next(57, 70); break;
-                                                                                case 6: player.buildingReward[hash] = that.rm.Next(71, 80); break;
-                                                                                case 7: player.buildingReward[hash] = that.rm.Next(85, 90); break;
-                                                                                case 8: player.buildingReward[hash] = that.rm.Next(99, 100); break;
+                                                                                case 1: value = that.rm.Next(1, 30); break;
+                                                                                case 2: value = that.rm.Next(15, 40); break;
+                                                                                case 3: value = that.rm.Next(29, 50); break;
+                                                                                case 4: value = that.rm.Next(43, 60); break;
+                                                                                case 5: value = that.rm.Next(57, 70); break;
+                                                                                case 6: value = that.rm.Next(71, 80); break;
+                                                                                case 7: value = that.rm.Next(80, 85); break;
+                                                                                case 8: value = that.rm.Next(86, 89); break;
                                                                             }
-                                                                            this.WebNotify(player, $"获得了新的招募成功率属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                            if (value > player.buildingReward[hash])
+                                                                            {
+                                                                                player.buildingReward[hash] = value;
+                                                                                this.WebNotify(player, $"获得了新的招募成功率属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                player.buildingReward[hash] = value;
+                                                                                this.WebNotify(player, $"未能获得了新的招募成功率属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                            }
                                                                         }; break;
                                                                 }
                                                             }
@@ -193,17 +205,28 @@ namespace HouseManager4_0
                                                                 //}
                                                                 //else
                                                                 player.buildingReward[hash] = 0;
+                                                                int value = 0;
+                                                                string prefix = "";
                                                                 {
                                                                     switch (defendLevel)
                                                                     {
-                                                                        case 1: player.buildingReward[hash] = that.rm.Next(2, 26); break;
-                                                                        case 2: player.buildingReward[hash] = that.rm.Next(12, 33); break;
-                                                                        case 3: player.buildingReward[hash] = that.rm.Next(22, 40); break;
-                                                                        case 4: player.buildingReward[hash] = that.rm.Next(32, 47); break;
-                                                                        case 5: player.buildingReward[hash] = that.rm.Next(42, 54); break;
-                                                                        case 6: player.buildingReward[hash] = that.rm.Next(52, 61); break;
-                                                                        case 7: player.buildingReward[hash] = that.rm.Next(62, 68); break;
-                                                                        case 8: player.buildingReward[hash] = that.rm.Next(72, 75); break;
+                                                                        case 1: value = that.rm.Next(2, 26); break;
+                                                                        case 2: value = that.rm.Next(12, 33); break;
+                                                                        case 3: value = that.rm.Next(22, 40); break;
+                                                                        case 4: value = that.rm.Next(32, 47); break;
+                                                                        case 5: value = that.rm.Next(42, 54); break;
+                                                                        case 6: value = that.rm.Next(52, 61); break;
+                                                                        case 7: value = that.rm.Next(62, 68); break;
+                                                                        case 8: value = that.rm.Next(72, 75); break;
+                                                                    }
+                                                                    if (player.buildingReward[hash] < value)
+                                                                    {
+                                                                        player.buildingReward[hash] = value;
+                                                                        prefix = "";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        prefix = "未能";
                                                                     }
                                                                     // player.buildingReward[hash] += defendLevel;
                                                                     switch (player.getCar().ability.driver.race)
@@ -214,19 +237,19 @@ namespace HouseManager4_0
                                                                                 {
                                                                                     case 1:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的法术狂暴属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的法术狂暴属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 2:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的忽视雷抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的忽视雷抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 3:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的忽视火抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的忽视火抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 4:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的忽视水抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的忽视水抗属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                 };
                                                                             }; break;
@@ -236,20 +259,20 @@ namespace HouseManager4_0
                                                                                 {
                                                                                     case 1:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的故技重施属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的故技重施属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                             // this.WebNotify(player, $"故技重施+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 2:
                                                                                         {
-                                                                                            this.WebNotify(player, $"忽视抗混+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得新的忽视抗混属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 3:
                                                                                         {
-                                                                                            this.WebNotify(player, $"忽视抗迷+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得新的忽视抗迷属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 4:
                                                                                         {
-                                                                                            this.WebNotify(player, $"忽视潜伏+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得新的忽视抗潜伏属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                 };
                                                                             }; break;
@@ -259,21 +282,21 @@ namespace HouseManager4_0
                                                                                 {
                                                                                     case 1:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的忽视物理属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的忽视物理属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 2:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的加速提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的加速提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                             // this.WebNotify(player, $"加速强化+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 3:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的加防提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的加防提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                             //this.WebNotify(player, $"加防强化+{defendLevel}{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                     case 4:
                                                                                         {
-                                                                                            this.WebNotify(player, $"获得了新的红牛提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
+                                                                                            this.WebNotify(player, $"{prefix}获得了新的红牛提升属性{(string.IsNullOrEmpty(rewardLittleReason) ? "" : rewardLittleReason)}");
                                                                                         }; break;
                                                                                 };
                                                                             }; break;

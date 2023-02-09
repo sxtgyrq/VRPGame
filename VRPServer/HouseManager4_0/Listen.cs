@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static CommonClass.Finance;
 using static CommonClass.ModelTranstraction;
 
 namespace HouseManager4_0
@@ -67,7 +68,7 @@ namespace HouseManager4_0
 
                                 Startup.sendSingleMsg(GPResult.FromUrl, Newtonsoft.Json.JsonConvert.SerializeObject(notify));
                                 var notifyMsgs = GPResult.NotifyMsgs;
-                                Startup.sendSeveralMsgs(notifyMsgs); 
+                                Startup.sendSeveralMsgs(notifyMsgs);
                             }
                             outPut = "ok";
                         }; break;
@@ -452,6 +453,16 @@ namespace HouseManager4_0
                         {
                             RemoveTaskCopyM gtd = Newtonsoft.Json.JsonConvert.DeserializeObject<RemoveTaskCopyM>(notifyJson);
                             outPut = objI.RemoveTaskCopyF(gtd);
+                        }; break;
+                    case "LookForTaskCopy":
+                        {
+                            LookForTaskCopy lftc = Newtonsoft.Json.JsonConvert.DeserializeObject<LookForTaskCopy>(notifyJson);
+                            outPut = objI.LookForTaskCopyF(lftc);
+                        }; break;
+                    case "TaskCopyPassOrNG":
+                        {
+                            TaskCopyPassOrNG pOrNG = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskCopyPassOrNG>(notifyJson);
+                            outPut = objI.TaskCopyPassOrNGF(pOrNG);
                         }; break;
                         //case "CopyTaskDisplay": 
                         //    {

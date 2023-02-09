@@ -323,6 +323,11 @@ namespace CommonClass
         public int count { get; set; }
         public string pType { get; set; }
     }
+    public class BradCastPromoteDiamondInCar : CommandNotify
+    {
+        public string pType { get; set; }
+        public string roleID { get; set; }
+    }
     public class SelectionIsWrong : CommandNotify
     {
         public long reduceValue { get; set; }
@@ -836,15 +841,15 @@ namespace CommonClass
         }
     }
 
-    public class GetTaskCopyDetail : Command 
+    public class GetTaskCopyDetail : Command
     {
         public string Key { get; set; }
         public class GetTaskCopyResult : Command
         {
-            public string[] Detail { get; set; } 
+            public string[] Detail { get; set; }
         }
     }
-    public class RemoveTaskCopyM : Command 
+    public class RemoveTaskCopyM : Command
     {
         public string Key { get; set; }
         public string Code { get; set; }

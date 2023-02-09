@@ -21,6 +21,7 @@ namespace HouseManager4_0
     public partial class Manager_TaskCopy : Manager
     {
         StockTC st = null;
+        Share sha = null;
         public Manager_TaskCopy(RoomMain roomMain)
         {
             try
@@ -28,15 +29,13 @@ namespace HouseManager4_0
                 this.roomMain = roomMain;
                 try
                 {
-
-
-
-
                     this.st = new StockTC(this.roomMain);
+                    this.sha = new Share(this.roomMain);
                 }
                 catch
                 {
                     this.st = null;
+                    this.sha = null;
                 }
             }
             catch { }
@@ -57,6 +56,10 @@ namespace HouseManager4_0
                             f = this.st;
 
                         }; break;
+                    case Share.TaskCode:
+                        {
+                            f = this.sha;
+                        }; break;
                 }
                 if (f != null)
                 {
@@ -74,7 +77,35 @@ namespace HouseManager4_0
                 return false;
             }
         }
+        internal void Pass(List<taskcopy> taskCopys)
+        {
+            try
+            {
+                for (int i = 0; i < taskCopys.Count; i++)
+                {
+                    var Item = taskCopys[i];
+                    var Code = Item.taskCopyCode;
+                    TaskCopyCallF f = null;
+                    switch (Code)
+                    {
+                        case StockTC.TaskCode:
+                            {
+                                f = this.st;
+                            }; break;
+                        case Share.TaskCode:
+                            {
+                                f = this.sha;
+                            }; break;
 
+                    }
+                    if (f != null)
+                    {
+                        f.Pass(Item);
+                    }
+                }
+            }
+            catch { }
+        }
         internal void BindWordInfoF(Manager_TaskCopy taskM, List<taskcopy> taskCopys)
         {
             try
@@ -103,9 +134,10 @@ namespace HouseManager4_0
             catch { }
         }
 
-        public List<string> Display(Player player, List<taskcopy> taskCopys)
+        public List<string> Display(Player player)
         {
             player.initializeTaskCopy();
+            List<taskcopy> taskCopys = player.taskCopys;
             List<string> list = new List<string>();
             try
             {
@@ -121,6 +153,10 @@ namespace HouseManager4_0
                         case StockTC.TaskCode:
                             {
                                 f = this.st;
+                            }; break;
+                        case Share.TaskCode:
+                            {
+                                f = this.sha;
                             }; break;
 
                     }
@@ -451,7 +487,13 @@ namespace HouseManager4_0
             {
                 case StockTC.TaskCode:
                     {
-
+                        DalOfAddress.TaskCopy.Del(player.BTCAddress, code);
+                        player.initializeTaskCopy();
+                    }; break;
+                case Share.TaskCode:
+                    {
+                        DalOfAddress.TaskCopy.Del(player.BTCAddress, code);
+                        player.initializeTaskCopy();
                     }; break;
                 default:
                     {
@@ -459,8 +501,7 @@ namespace HouseManager4_0
                         return;
                     }
             }
-            DalOfAddress.TaskCopy.Del(player.BTCAddress, code);
-            player.initializeTaskCopy();
+
 
         }
     }
@@ -541,6 +582,8 @@ namespace HouseManager4_0
             bool BindWordInfoF(taskcopy item);
             void ChargingF(taskcopy item);
             string Detail(taskcopy item);
+            void Pass(taskcopy item);
+            void AddReferer(int refererCount, taskcopy item);
         }
         protected partial class StockTC : TaskChain
         {
@@ -911,7 +954,7 @@ namespace HouseManager4_0
 
                 }
             }
-            int Money = 500;//单位为分
+            int Money = 2000;//单位为分
             public string Detail(taskcopy item)
             {
                 //new SingleTask(TaskCopyType.SelectDriver),//选取司机  0
@@ -948,7 +991,7 @@ namespace HouseManager4_0
                     case 6: return $"将积分进行存储。点击左下角，从左往右第二按钮，点击，然后存储。";
                     case 7: return $"视角对准建筑物，进行一次求福";
                     case 8: return $"挑战一次二级NPC，或者二级以上的NPC";
-                    case 9: return $"将{this.GetTaskHappenPlaceName(item)}的股份，聪{item.btcAddr}转至{this.stockAddr}，至少转1Satoshi。(视角对准{this.GetTaskHappenPlaceName(item)}，点击详情，然后生成转让协议，并用私钥签名)。可查看攻略。";
+                    case 9: return $"将{this.GetTaskHappenPlaceName(item)}的股份（地址对应的比特币地址为{this.GetItemBussinessAddr(item)}），从{item.btcAddr}转至{this.stockAddr}，至少转1Satoshi。(视角对准{this.GetTaskHappenPlaceName(item)}，点击详情，然后生成转让协议，并用私钥签名)。可查看攻略。";
                     case 10:
                         {
                             string bindWord = DalOfAddress.BindWordInfo.GetWordByAddr(item.btcAddr);
@@ -992,7 +1035,6 @@ namespace HouseManager4_0
                                     return $"通过微信赞赏码打赏或支付宝转账。至少打赏0.01元。可获{(moneyValue / 100.00m).ToString("F2")}元红包。记得将备注填写为绑定词({bindWord})。打赏后，管理员会再24小时内确认。";
                                 }
                             }
-
                         };
                     case 12:
                         {
@@ -1012,6 +1054,21 @@ namespace HouseManager4_0
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<StockAddrC>(item.Tag).HappenPlace;
                 //throw new NotImplementedException();
             }
+
+            public void Pass(taskcopy Item)
+            {
+                if (this.GetCurrent(Item) == TaskCopyType.RedLuckyMoneyToPlayer)
+                {
+                    this.DealWithSuccess(ref Item);
+                }
+            }
+
+            public void AddReferer(int refererCount, taskcopy item)
+            {
+                //throw new NotImplementedException();
+            }
         }
     }
+
+
 }

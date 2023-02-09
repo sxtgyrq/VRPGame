@@ -18,9 +18,18 @@ namespace WsOfWebClient
     {
         public static void SendData(string sendMsg, WebSocket webSocket)
         {
-            var sendData = Encoding.UTF8.GetBytes(sendMsg);
-            var t = webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
-            t.GetAwaiter().GetResult();
+            try
+            {
+                var sendData = Encoding.UTF8.GetBytes(sendMsg);
+                var timeOut = new CancellationTokenSource(30000).Token;
+                var t = webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, timeOut);
+                t.GetAwaiter().GetResult();
+                //while (!t.IsCompleted && !timeOut.IsCancellationRequested)
+                //{
+                //    //  await Task.Delay(100).ConfigureAwait(false);
+                //}
+            }
+            catch { }
         }
     }
     public partial class Room { }

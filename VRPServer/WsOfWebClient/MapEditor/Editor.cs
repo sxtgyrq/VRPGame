@@ -34,6 +34,7 @@ namespace WsOfWebClient.MapEditor
             public double MercatorX { get; set; }
             public double MercatorY { get; set; }
         }
+     
         class UseModelObj : CommonClass.Command
         {
             public string name { get; set; }

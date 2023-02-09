@@ -118,24 +118,6 @@ namespace HouseManager4_0
                         }
                         else if (dor.target == that.getPromoteState(dor.diamondType))
                         {
-                            /*
-                             * 这里，整个流程，保证玩家在开始任务的时候，钱是够的。如果不够，要爆异常的。
-                             */
-                            // var needMoney = that.promotePrice[dor.diamondType];
-                            //if (car.ability.SumMoneyCanForPromote < needMoney)
-                            //{
-                            //    /*
-                            //     * 这里，在逻辑上保证了car.ability.SumMoneyCanForPromote >=needMoney
-                            //     * 首先在出发的时候就进行判断
-                            //     * 其次，在promote地点选择的时候，会避免使用玩家的target.
-                            //     * 最后保证了dor.target == this.getPromoteState(dor.changeType) 条件下，
-                            //     * 肯定car.ability.SumMoneyCanForPromote >= needMoney
-                            //     */
-                            //    throw new Exception("钱不够，还让执行setDiamondOwner");
-                            //}
-                            //   $"需要用钱支付"); 
-                            // car.ability.payForPromote(needMoney, player, car, ref notifyMsg);//用汽车上的钱支付
-
                             that.setPromtePosition(dor.diamondType);
                             //this.promoteMilePosition = GetRandomPosition();
                             needUpdatePromoteState = true;
@@ -178,7 +160,7 @@ namespace HouseManager4_0
                 }
 
             }
-            this.sendSeveralMsgs(notifyMsg); 
+            this.sendSeveralMsgs(notifyMsg);
 
             if (needUpdatePromoteState)
             {

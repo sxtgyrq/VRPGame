@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using static HouseManager4_0.Car;
+using static HouseManager4_0.Engine_MagicEngine;
 using static HouseManager4_0.RoomMainF.RoomMain;
 using static HouseManager4_0.RoomMainF.RoomMain.commandWithTime;
 
@@ -174,7 +175,9 @@ namespace HouseManager4_0
             {
                 var driver = role.getCar().ability.driver;
                 if (driver == null) _physicsIsIgnored = false;
-                else if (GetIgnorePhysicsProbability(role) > rm.Next(0, 100)) _physicsIsIgnored = true;
+                else if (GetIgnorePhysicsProbability(role) > rm.Next(0, 100))
+                    if (driver.race == Race.devil) _physicsIsIgnored = true;
+                    else _physicsIsIgnored = false;
                 else _physicsIsIgnored = false;
                 this._role = role;
             }
@@ -344,7 +347,7 @@ namespace HouseManager4_0
                     throw new Exception("car.state == CarState.buying!或者 dor.changeType不是四种类型");
                 }
             }
-            this.sendSeveralMsgs(notifyMsg);  
+            this.sendSeveralMsgs(notifyMsg);
         }
 
         internal long DealWithReduceWhenSimulationWithoutDefendMagic(interfaceOfHM.AttackT at, RoleInGame player, Car car, RoleInGame victim, long percentValue)
@@ -390,9 +393,19 @@ namespace HouseManager4_0
             reduceSum += reduce;
             if (at.Ignored())
             {
-                that.WebNotify(player, $"你忽略了其抵抗{at.GetSkillName()}的能力！");
-                that.WebNotify(victim, $"【{player.PlayerName}】忽略了你的抵抗{at.GetSkillName()}的能力！");
-                at.ReduceIgnore(ref player);
+                if (at.isMagic)
+                {
+                    var amt = (attackMagicTool)at;
+                    that.WebNotify(player, $"你忽略了其抵抗{amt.GetSkillName()}的能力！");
+                    that.WebNotify(victim, $"【{player.PlayerName}】忽略了你的抵抗{amt.GetSkillName()}的能力{amt.IgnoreValue}点！");
+                    at.ReduceIgnore(ref player);
+                }
+                else
+                {
+                    that.WebNotify(player, $"你忽略了其抵抗{at.GetSkillName()}的能力！");
+                    that.WebNotify(victim, $"【{player.PlayerName}】忽略了你的抵抗{at.GetSkillName()}的能力！");
+                    at.ReduceIgnore(ref player);
+                }
             }
             if (improvedV > 0)
             {

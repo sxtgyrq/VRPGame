@@ -15,13 +15,19 @@ namespace ConsoleTestAPP
         }
         static void Main(string[] args)
         {
-            ModelScaleCal.Test();
+
+
+            //   ModelScaleCal.Test();
 
             // BitCoin.Sign.verify_message
             // Task.Run(() => TestYrqObj());
             // Console.WriteLine(a);
             //Console.Read();
             //Console.Read();
+            var c = new CommonClass.Img.Combine("Car_01.png", "105.jpg");
+            var base64 = c.GetBase64();
+            byte[] imageArray = Convert.FromBase64String(base64);
+            File.WriteAllBytes("r.png", imageArray);
             while (Console.ReadLine().ToLower() == "exit")
             {
                 break;

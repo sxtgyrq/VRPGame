@@ -125,6 +125,51 @@ VALUES
             return result;
         }
 
+        public static List<CommonClass.databaseModel.taskcopy> GetALLItem(string address, string code)
+        {
+            List<CommonClass.databaseModel.taskcopy> result = new List<CommonClass.databaseModel.taskcopy>();
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+                        {
+                            string sQL = $"SELECT btcAddr,taskCopyCode,firstRound,secondRound,Tag,Result,ResultDateTime FROM taskcopy WHERE btcAddr='{address}' AND taskCopyCode='{code}'";
+                            // long moneycount;
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        result.Add(new CommonClass.databaseModel.taskcopy()
+                                        {
+                                            btcAddr = Convert.ToString(reader["btcAddr"]).Trim(),
+                                            taskCopyCode = Convert.ToString(reader.GetString("taskCopyCode")).Trim(),
+                                            firstRound = Convert.ToInt32(reader["firstRound"]),
+                                            secondRound = Convert.ToInt32(reader["secondRound"]),
+                                            Tag = reader["Tag"] == DBNull.Value ? "" : Convert.ToString(reader["Tag"]).Trim(),
+                                            Result = reader["Result"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["Result"]),
+                                            ResultDateTime = reader["ResultDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["ResultDateTime"]),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                        throw new Exception("新增错误");
+                    }
+                }
+            }
+            return result;
+        }
+
         public static bool UpdateRoundOfItem(taskcopy tc, int oldFirst, int oldSecond)
         {
             using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
@@ -238,6 +283,51 @@ VALUES
                     }
                 }
             }
+        }
+
+        public static List<CommonClass.databaseModel.taskcopy> GetItem(string code, string addr)
+        {
+            List<CommonClass.databaseModel.taskcopy> result = new List<CommonClass.databaseModel.taskcopy>();
+            using (MySqlConnection con = new MySqlConnection(Connection.ConnectionStr))
+            {
+                con.Open();
+                using (MySqlTransaction tran = con.BeginTransaction())
+                {
+                    try
+                    {
+                        {
+                            string sQL = $"SELECT btcAddr,taskCopyCode,firstRound,secondRound,Tag,Result,ResultDateTime FROM taskcopy WHERE taskCopyCode='{code}' AND btcAddr LIKE'%{addr}%';";
+                            // long moneycount;
+                            using (MySqlCommand command = new MySqlCommand(sQL, con, tran))
+                            {
+
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        result.Add(new CommonClass.databaseModel.taskcopy()
+                                        {
+                                            btcAddr = Convert.ToString(reader["btcAddr"]).Trim(),
+                                            taskCopyCode = Convert.ToString(reader.GetString("taskCopyCode")).Trim(),
+                                            firstRound = Convert.ToInt32(reader["firstRound"]),
+                                            secondRound = Convert.ToInt32(reader["secondRound"]),
+                                            Tag = reader["Tag"] == DBNull.Value ? "" : Convert.ToString(reader["Tag"]).Trim(),
+                                            Result = reader["Result"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["Result"]),
+                                            ResultDateTime = reader["ResultDateTime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["ResultDateTime"]),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                        throw new Exception("新增错误");
+                    }
+                }
+            }
+            return result;
         }
     }
 }

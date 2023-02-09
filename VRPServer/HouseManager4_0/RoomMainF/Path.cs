@@ -1117,7 +1117,7 @@ namespace HouseManager4_0.RoomMainF
                 animateResult.Add(animate1.t);
             }
             // animateResult.Add(animate1);
-             
+
             //  var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
             int interview = 350;
             {
@@ -1288,21 +1288,21 @@ namespace HouseManager4_0.RoomMainF
              * 上道路的速度为10m/s 即36km/h
              */
             // var interview = Convert.ToInt32(CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad) / 10 * 1000);
-            int interview;
-            var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad, fp.Height) / 10 * 1000;
-            if (calInterview < 1e-8)
-            {
-                interview = 0;
-            }
-            else if (calInterview < 1)
-            {
-                interview = 1;
-            }
-            else
-            {
-                interview = Convert.ToInt32(calInterview + 1);
+            int interview = 350;
+            // var calInterview = CommonClass.Geography.getLengthOfTwoPoint.GetDistance(fp.Latitde, fp.Longitude, fp.Height, fp.positionLatitudeOnRoad, fp.positionLongitudeOnRoad, fp.Height) / 10 * 1000;
+            //if (calInterview < 1e-8)
+            //{
+            //    interview = 350;
+            //}
+            //else if (calInterview < 1)
+            //{
+            //    interview = 350;
+            //}
+            //else
+            //{
+            //    interview = 350;
 
-            }
+            //}
             interview = this.magicE.shotTime(interview, speedImproved);
 
             startT1 = startTInput;
@@ -1335,14 +1335,14 @@ namespace HouseManager4_0.RoomMainF
 
             //  startT0 = startTInput;
             //    endT0 = startT0 + 500;
-            startTInput += this.magicE.shotTime(500, speedImproved);
+            startTInput += this.magicE.shotTime(350, speedImproved);
 
             var animate1 = new Data.PathResult4()
             {
                 x = Convert.ToInt32((carPositionX - endX) * 256),
                 y = Convert.ToInt32((carPositionY - endY) * 256),
                 z = 0,
-                t = this.magicE.shotTime(500, speedImproved)
+                t = this.magicE.shotTime(350, speedImproved)
             };
             //var animate1 = new Data.PathResult()
             //{

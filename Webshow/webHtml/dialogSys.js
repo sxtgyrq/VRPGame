@@ -44,7 +44,7 @@
                     if (this.msgs[key].read.length > this.msgs[key].readLength) {
                         divItem.classList.add('friendMsg');
                     }
-                }
+                } 
                 var that = this;
                 divItem.onclick = function () {
                     //   alert(this.CustomTag);

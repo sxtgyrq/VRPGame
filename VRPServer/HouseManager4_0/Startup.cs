@@ -20,14 +20,20 @@ namespace HouseManager4_0
             }
         }
 
-        public static List<string> sendSeveralMsgs(List<string> sendMsgs)
+        public static List<int> sendSeveralMsgs(List<string> sendMsgs)
         {
-            List<Task<string>> tasks = new List<Task<string>>();
+            List<Task<int>> tasks = new List<Task<int>>();
             for (var i = 0; i < sendMsgs.Count; i += 2)
             {
-                var url = sendMsgs[i];
-                var msg = sendMsgs[i + 1];
-                Task<string> t1 = new Task<string>(() => Startup.sendSingleMsg(url, msg));
+                int indexOfMsg = i + 0;
+                Task<int> t1 = new Task<int>(() =>
+                {
+                    var url = Convert.ToString(sendMsgs[indexOfMsg] + "      ").Trim();
+                    var msg = Convert.ToString(sendMsgs[indexOfMsg + 1] + "  ").Trim();
+                    Startup.sendSingleMsg(url, msg);
+                    return indexOfMsg;
+                }
+                );
                 tasks.Add(t1);
             }
             for (int i = 0; i < tasks.Count; i++)
@@ -35,11 +41,21 @@ namespace HouseManager4_0
                 tasks[i].Start();
             }
             Task.WaitAll(tasks.ToArray());
-            List<string> Result = new List<string>();
+            List<int> Result = new List<int>();
             for (int i = 0; i < tasks.Count; i++)
             {
                 Result.Add(tasks[i].Result);
             }
+            while (Result.Count > 1)
+            {
+                var current = Result[0];
+                var next = Result[1];
+                if (current + 2 == next)
+                {
+                    Result.RemoveAt(0);
+                }
+                else throw new Exception("sendSeveralMsgs 方法报异常！");
+            } 
             return Result;
         }
     }

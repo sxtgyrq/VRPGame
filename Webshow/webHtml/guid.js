@@ -196,13 +196,13 @@
         margin-top: 1em;
         background-color:aqua;
         ">
-                                发送
+                                绑定
                             </button>
                             <button onclick="GuidObj.charging.clearBindWordInfo();" style="width: 5em; height: 3em; margin-top: 1em; background-color:transparent;">
                                 清空
                             </button>
                             <button onclick="GuidObj.charging.signOnLine.show();" style="width: 5em; height: 3em; margin-top: 1em; background-color: red;">
-                                签名
+                                在线签名
                             </button>
                         </div>
                     </td>
@@ -292,7 +292,7 @@
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;">
 
-            <label>
+            <label >
                 --↓↓↓输入您珍贵的私钥↓↓↓--
             </label>
           
@@ -318,23 +318,26 @@
     </div>`,
             id: 'guidChargingPrivateKeyPanel',
             show: function () {
-                var rexx = /^[\u4e00-\u9fa5]{2,10}$/;
-                if (rexx.test(document.getElementById('bindWordMsg').value)) {
-                    var that = GuidObj.charging.signOnLine;
-                    if (document.getElementById(that.id) == null) {
-                        var frag = document.createRange().createContextualFragment(that.html);
-                        frag.id = that.id;
-                        document.body.appendChild(frag);
-                    }
-                    else {
-                        document.getElementById(that.id).remove();
-                    }
+                if (document.getElementById(PrivateSignPanelObj.PrivateSignPanelObj) == null) {
+                    PrivateSignPanelObj.show(
+                        function () {
+                            var rexx = /^[\u4e00-\u9fa5]{2,10}$/;
+                            return rexx.test(document.getElementById('bindWordMsg').value);
+                        },
+                        function () {
+                            $.notify('绑定词得是2至10个汉字', 'info');
+                        }, function (addr, sign) {
+                            document.getElementById('bindWordAddr').value = addr;
+                            document.getElementById('bindWordSign').value = sign;
+                        },
+                        document.getElementById('bindWordMsg').value);
                 }
                 else {
-                    GuidObj.charging.showNotifyMsg('绑定词需要至少两汉字，至多十汉字');
+                    document.getElementById(that.id).remove();
                 }
-
             },
+
+
             sign: function () {
                 var privateKey = document.getElementById('subsidizePanelPromptPrivateKeyValue').value;
                 var signMsg = document.getElementById('bindWordMsg').value;

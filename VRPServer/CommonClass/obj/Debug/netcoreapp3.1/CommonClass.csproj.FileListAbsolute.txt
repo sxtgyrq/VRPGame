@@ -10,16 +10,3 @@ F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CommonClass\obj\D
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.csproj.CopyComplete
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.dll
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.pdb
-E:\Project\VRPGame\VRPServer\CommonClass\bin\Debug\netcoreapp3.1\CommonClass.deps.json
-E:\Project\VRPGame\VRPServer\CommonClass\bin\Debug\netcoreapp3.1\CommonClass.dll
-E:\Project\VRPGame\VRPServer\CommonClass\bin\Debug\netcoreapp3.1\CommonClass.pdb
-E:\Project\VRPGame\VRPServer\CommonClass\bin\Debug\netcoreapp3.1\Model.dll
-E:\Project\VRPGame\VRPServer\CommonClass\bin\Debug\netcoreapp3.1\Model.pdb
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.csproj.AssemblyReference.cache
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.GeneratedMSBuildEditorConfig.editorconfig
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.AssemblyInfoInputs.cache
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.AssemblyInfo.cs
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.csproj.CoreCompileInputs.cache
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.csproj.CopyComplete
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.dll
-E:\Project\VRPGame\VRPServer\CommonClass\obj\Debug\netcoreapp3.1\CommonClass.pdb

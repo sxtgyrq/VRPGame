@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static CommonClass.Finance;
 using static HouseManager4_0.RoomMainF.RoomMain;
 
 namespace HouseManager4_0.interfaceOfHM
@@ -101,7 +102,7 @@ namespace HouseManager4_0.interfaceOfHM
         /// </summary>
         /// <param name="ots"></param>
         void OrderToSubsidize(OrderToSubsidize ots);
-      //  void OrderToUpdateLevel(OrderToUpdateLevel oul);
+        //  void OrderToUpdateLevel(OrderToUpdateLevel oul);
         /// <summary>
         /// 发送消息
         /// </summary>
@@ -116,6 +117,7 @@ namespace HouseManager4_0.interfaceOfHM
         string GetFightSituationF(GetFightSituation fs);
         string GetTaskCopyDetailF(GetTaskCopyDetail gtd);
         string RemoveTaskCopyF(RemoveTaskCopyM gtd);
+        
     }
 
     interface MapEditor
@@ -142,7 +144,9 @@ namespace HouseManager4_0.interfaceOfHM
         string GetUnLockedModel(CommonClass.MapEditor.GetUnLockedModel gulm);
         void UpdateModelStock(ModelStock sa);
         string GetBG(SetCrossBG ss);
-        string GetHeightAtPositionF(CommonClass.MapEditor.GetHeightAtPosition gh, Data dt);
+        string GetHeightAtPositionF(CommonClass.MapEditor.GetHeightAtPosition gh, Data dt); 
+        string LookForTaskCopyF(LookForTaskCopy lftc);
+        string TaskCopyPassOrNGF(TaskCopyPassOrNG pOrNG);
     }
 
     interface ModelTranstractionI
@@ -167,7 +171,7 @@ namespace HouseManager4_0.interfaceOfHM
         string LookForBindInfoF(ModelTranstraction.LookForBindInfo lfbi, Data dt);
         string ChargingF(Finance.Charging chargingObj, Data dt);
         string ChargingLookForF(Finance.ChargingLookFor condition);
-        string ChargingMax(); 
+        string ChargingMax();
         string RewardBuildingShowF(ModelTranstraction.RewardBuildingShow rbs);
     }
 

@@ -709,6 +709,45 @@ namespace HouseManager4_0.RoomMainF
             };
             return Newtonsoft.Json.JsonConvert.SerializeObject(r);
         }
+
+        public string LookForTaskCopyF(Finance.LookForTaskCopy lftc)
+        {
+            var items = DalOfAddress.TaskCopy.GetItem(lftc.code, lftc.addr);
+            if (items.Count > 0)
+            {
+                Finance.LookForTaskCopy.LookForTaskCopyResult r = new Finance.LookForTaskCopy.LookForTaskCopyResult()
+                {
+                    addr = items[0].btcAddr,
+                    c = "LookForTaskCopyResult",
+                    code = items[0].taskCopyCode,
+                    json = Newtonsoft.Json.JsonConvert.SerializeObject(items[0])
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+            else
+            {
+                Finance.LookForTaskCopy.LookForTaskCopyResult r = new Finance.LookForTaskCopy.LookForTaskCopyResult()
+                {
+                    addr = lftc.addr,
+                    c = "LookForTaskCopyResult",
+                    code = lftc.code,
+                    json = "{}"
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+        }
+
+        public string TaskCopyPassOrNGF(Finance.TaskCopyPassOrNG pOrNG)
+        {
+            var items = DalOfAddress.TaskCopy.GetALLItem(pOrNG.addr, pOrNG.code);
+            this.taskM.Pass(items);
+            return LookForTaskCopyF(new Finance.LookForTaskCopy()
+            {
+                addr = pOrNG.addr,
+                c = "LookForTaskCopy",
+                code = pOrNG.code,
+            }); 
+        }
     }
 
     public partial class RoomMain : interfaceOfHM.ModelTranstractionI

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using static CommonClass.MapEditor;
 using System.Drawing;
+using MySqlX.XDevAPI.Relational;
 
 namespace WsOfWebClient.MapEditor
 {
@@ -837,7 +838,7 @@ namespace WsOfWebClient.MapEditor
                 }
             }
 
-            internal async Task ChargingNextPage(WebSocket webSocket, Random rm)
+            internal void ChargingNextPage(WebSocket webSocket, Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 this.chargingOrder -= 10;
@@ -855,7 +856,7 @@ namespace WsOfWebClient.MapEditor
                     }
                 }
             }
-            internal async Task ChargingPreviousPage(WebSocket webSocket, Random rm)
+            internal void ChargingPreviousPage(WebSocket webSocket, Random rm)
             {
                 var index = rm.Next(0, roomUrls.Count);
                 this.chargingOrder += 10;
@@ -867,6 +868,32 @@ namespace WsOfWebClient.MapEditor
                     {
                         showItemOfCharging(webSocket, row, indexOfData, index);
                     }
+                }
+            }
+
+
+            internal void LookForTaskCopyF(WebSocket webSocket, CommonClass.Finance.LookForTaskCopy lftc, Random rm)
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(lftc);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                if (string.IsNullOrEmpty(json)) { }
+                else
+                {
+                    CommonF.SendData(json, webSocket);
+                }
+            }
+            internal void TaskCopyPassOrNGF(WebSocket webSocket, CommonClass.Finance.TaskCopyPassOrNG pOrNG, Random rm)
+            {
+                var index = rm.Next(0, roomUrls.Count);
+                var roomUrl = roomUrls[index];
+                var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(pOrNG);
+                var json = Startup.sendInmationToUrlAndGetRes(roomUrl, sendMsg);
+                if (string.IsNullOrEmpty(json)) { }
+                else
+                {
+                    CommonF.SendData(json, webSocket);
                 }
             }
         }

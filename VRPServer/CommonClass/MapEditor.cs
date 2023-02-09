@@ -213,10 +213,10 @@ namespace CommonClass
                 public string msg { get; set; }
                 public int chargingOrder { get; set; }
             }
-            
+
         }
         public class ChargingLookFor : Command
-        { 
+        {
             public int chargingOrder { get; set; }
             public class Result
             {
@@ -239,6 +239,27 @@ namespace CommonClass
 
             }
 
+        }
+        public class LookForTaskCopy : CommonClass.Command
+        {
+            public string code { get; set; }
+            public string addr { get; set; }
+
+            public class LookForTaskCopyResult : LookForTaskCopy
+            {
+                public string json { get; set; }
+            }
+        }
+        public class TaskCopyPassOrNG : CommonClass.Command
+        {
+            public string code { get; set; }
+            public string addr { get; set; }
+            public bool pass { get; set; }
+
+            //public class TaskCopyPassOrNGResult : LookForTaskCopy
+            //{
+            //    public string json { get; set; }
+            //}
         }
     }
 }

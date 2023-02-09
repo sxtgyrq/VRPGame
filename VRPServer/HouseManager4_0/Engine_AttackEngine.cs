@@ -78,7 +78,9 @@ namespace HouseManager4_0
                             };
                         case CarStateForBeAttacked.IsBeingChallenged:
                             {
-                                this.WebNotify(player, "攻击的对象正在被挑战！");
+
+                                // sa.targetOwner
+                                this.WebNotify(player, "攻击的对象正在被挑战！可以加入挑战者队伍攻击NPC或攻击离线玩家，一方落败，刷新NPC。");
                                 return false;
                             };
                         case CarStateForBeAttacked.LevelIsLow:

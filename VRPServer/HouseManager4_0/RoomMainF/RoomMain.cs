@@ -152,7 +152,7 @@ namespace HouseManager4_0.RoomMainF
                 if (role.playerType == RoleInGame.PlayerType.player)
                 {
                     var player = (Player)role;
-                    var list = this.taskM.Display(player, player.taskCopys);
+                    var list = this.taskM.Display(player);
                     var obj = new GetTaskCopyDetail.GetTaskCopyResult()
                     {
                         c = "GetTaskCopyResult",

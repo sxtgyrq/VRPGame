@@ -60,7 +60,7 @@ namespace HouseManager4_0
                                         };
                                     case CarStateForBeMagiced.IsBeingChallenged:
                                         {
-                                            this.WebNotify(player, "施法的对象正在被别的玩家挑战！");
+                                            this.WebNotify(player, "施法的对象正在被别的玩家挑战！可以加入挑战者队伍攻击NPC或攻击离线玩家，一方落败，刷新NPC。");
                                             return false;
                                         };
                                     case CarStateForBeMagiced.HasBeenBust:
@@ -112,7 +112,7 @@ namespace HouseManager4_0
                                         };
                                     case CarStateForBeMagiced.IsBeingChallenged:
                                         {
-                                            this.WebNotify(player, "施法的对象正在被别的玩家挑战！");
+                                            this.WebNotify(player, "施法的对象正在被别的玩家挑战！可以加入挑战者队伍攻击NPC或攻击离线玩家，一方落败，刷新NPC。");
                                             return false;
                                         };
                                     case CarStateForBeMagiced.HasBeenBust:
@@ -1436,7 +1436,7 @@ namespace HouseManager4_0
 
                 var driver = role.getCar().ability.driver;
                 if (driver == null) _electricIsIgnored = false;
-                else if (role.buildingReward[2] > 0) _electricIsIgnored = true;
+                else if (role.buildingReward[2] > 0 && driver.race == Race.immortal) _electricIsIgnored = true;
                 else _electricIsIgnored = false;
             }
             bool _fireIsIgnored = false;
@@ -1448,7 +1448,7 @@ namespace HouseManager4_0
             {
                 var driver = role.getCar().ability.driver;
                 if (driver == null) _fireIsIgnored = false;
-                else if (role.buildingReward[3] > 0) _fireIsIgnored = true;
+                else if (role.buildingReward[3] > 0 && driver.race == Race.immortal) _fireIsIgnored = true;
                 else _fireIsIgnored = false;
             }
             bool _waterIsIgnored = false;
@@ -1460,7 +1460,7 @@ namespace HouseManager4_0
             {
                 var driver = role.getCar().ability.driver;
                 if (driver == null) _waterIsIgnored = false;
-                else if (role.buildingReward[4] > 0) _waterIsIgnored = true;
+                else if (role.buildingReward[4] > 0 && driver.race == Race.immortal) _waterIsIgnored = true;
                 else _waterIsIgnored = false;
             }
             public int MagicImprovedProbabilityAndValue(RoleInGame role, ref System.Random rm)
@@ -1879,6 +1879,7 @@ namespace HouseManager4_0
                 var role = this.enemy;
                 var driver = role.getCar().ability.driver;
                 if (driver == null) _controleMagicIsIgnored = false;
+                else if (driver.race != Race.people) _controleMagicIsIgnored = false;
                 else if (role.buildingReward[index] > 0) _controleMagicIsIgnored = true;
                 else _controleMagicIsIgnored = false;
                 return this._controleMagicIsIgnored;
@@ -1912,7 +1913,7 @@ namespace HouseManager4_0
             }
             public void ReduceIgnore()
             {
-                this.ReduceIgnore(ref this.enemy);
+              //  this.ReduceIgnore(ref this.enemy);
             }
             public void ReduceIgnore(ref RoleInGame role)
             {
@@ -2613,7 +2614,7 @@ namespace HouseManager4_0
                     throw new Exception("car.state == CarState.buying!或者 dor.changeType不是四种类型");
                 }
             }
-            this.sendSeveralMsgs(notifyMsg); 
+            this.sendSeveralMsgs(notifyMsg);
             //List<string> notifyMsg = new List<string>();
             ////  bool needUpdatePlayers = false;
             //lock (that.PlayerLock)
