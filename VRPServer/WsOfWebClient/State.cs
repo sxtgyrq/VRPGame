@@ -20,7 +20,10 @@ namespace WsOfWebClient
 
         public int indexOfModelToTranstract = 0;
 
-
+        /// <summary>
+        /// 队员离开队伍时，用于传递队伍ID参数。
+        /// </summary>
+        internal string teamID = "";
     }
     public class IntroState
     {

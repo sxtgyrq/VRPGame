@@ -1150,8 +1150,18 @@ namespace HouseManager4_0
                         };
                     case SkillEnum.Electic:
                         {
-                            var carPosition = grp.GetFpByIndex(player.getCar().targetFpIndex);
-                            var targetPosition = grp.GetFpByIndex(victim.StartFPIndex);
+                            OssModel.FastonPosition carPosition;
+                            OssModel.FastonPosition targetPosition;
+                            if (player.getCar().DirectAttack)
+                            {
+                                carPosition = grp.GetFpByIndex(player.StartFPIndex);
+                                targetPosition = grp.GetFpByIndex(victim.StartFPIndex);
+                            }
+                            else
+                            {
+                                carPosition = grp.GetFpByIndex(player.getCar().targetFpIndex);
+                                targetPosition = grp.GetFpByIndex(victim.StartFPIndex);
+                            }
                             double carMX, carMY, carMZ;
                             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, 0, out carMX, out carMY, out carMZ);
 
@@ -1222,9 +1232,18 @@ namespace HouseManager4_0
                         };
                     case SkillEnum.Fire:
                         {
-                            var carPosition = grp.GetFpByIndex(player.getCar().targetFpIndex);
-                            //var basePosition = grp.GetFpByIndex(player.StartFPIndex);
-                            var targetPosition = grp.GetFpByIndex(victim.StartFPIndex);
+                            OssModel.FastonPosition carPosition;
+                            OssModel.FastonPosition targetPosition;
+                            if (player.getCar().DirectAttack)
+                            {
+                                carPosition = grp.GetFpByIndex(player.StartFPIndex);
+                                targetPosition = grp.GetFpByIndex(victim.StartFPIndex);
+                            }
+                            else
+                            {
+                                carPosition = grp.GetFpByIndex(player.getCar().targetFpIndex); 
+                                targetPosition = grp.GetFpByIndex(victim.StartFPIndex);
+                            }
                             double carMX, carMY, carMZ;
                             CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(carPosition.Longitude, carPosition.Latitde, 0, out carMX, out carMY, out carMZ);
 
@@ -1913,7 +1932,7 @@ namespace HouseManager4_0
             }
             public void ReduceIgnore()
             {
-              //  this.ReduceIgnore(ref this.enemy);
+                //  this.ReduceIgnore(ref this.enemy);
             }
             public void ReduceIgnore(ref RoleInGame role)
             {

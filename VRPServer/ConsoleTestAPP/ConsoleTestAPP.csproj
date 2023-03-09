@@ -10,6 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NGraphics" Version="0.5.0" />
+    <PackageReference Include="NGraphics.Core" Version="1.0.16" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BitCoinTrasfer\BitCoinTrasfer.csproj" />
     <ProjectReference Include="..\BitCoin\BitCoin.csproj" />
     <ProjectReference Include="..\CityRunFunction\CityRunFunction.csproj" />

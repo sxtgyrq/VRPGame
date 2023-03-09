@@ -16,13 +16,15 @@ namespace WsOfWebClient
             public ConnectInfoDetail(WebSocket webSocket)
             {
                 this.ws = webSocket;
-                this.aModle = new Dictionary<string, bool>();
-                this.msgs = new List<string>();
+                this.BitcoinAddr = "";
+                //this.aModle = new Dictionary<string, bool>();
+                //this.msgs = new List<string>();
             }
 
             public WebSocket ws { get; private set; }
-            public List<string> msgs = new List<string>();
-            public Dictionary<string, bool> aModle { get; private set; }
+            public string BitcoinAddr { get; private set; }
+            //public List<string> msgs = new List<string>();
+            //  public Dictionary<string, bool> aModle { get; private set; }
         }
         public static Dictionary<int, ConnectInfoDetail> connectedWs = new Dictionary<int, ConnectInfoDetail>();
 

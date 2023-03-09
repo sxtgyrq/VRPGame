@@ -137,7 +137,7 @@ namespace HouseManager4_0
         {
             while (true)
             {
-                ;
+                ; 
                 Program.rm.SetReturn(grp);
                 Program.rm.ClearPlayers();
                 Program.rm.SetNPC();

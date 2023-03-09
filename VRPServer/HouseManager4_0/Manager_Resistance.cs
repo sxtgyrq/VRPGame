@@ -1,6 +1,9 @@
 ﻿using CommonClass;
 using HouseManager4_0.RoomMainF;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace HouseManager4_0
@@ -12,7 +15,7 @@ namespace HouseManager4_0
             this.roomMain = roomMain;
         }
 
-        internal void Display(GetResistanceObj r)
+        internal string Display(GetResistanceObj r)
         {
             lock (that.PlayerLock)
             {
@@ -81,6 +84,16 @@ namespace HouseManager4_0
                                     var url = player.FromUrl;
                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
                                     this.sendSingleMsg(url, sendMsg);
+
+                                    var singleName = this.GetSingleName(player);
+                                    ParameterToEditPlayerMaterial parameter = new ParameterToEditPlayerMaterial()
+                                    {
+                                        Key = role.Key,
+                                        Driver = role.getCar().ability.driver == null ? -1 : role.getCar().ability.driver.Index,
+                                        Relation = rd.Relation,
+                                        singleName = singleName
+                                    };
+                                    return Newtonsoft.Json.JsonConvert.SerializeObject(parameter);
                                 }
                                 else
                                 {
@@ -167,6 +180,15 @@ namespace HouseManager4_0
                                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
                                         this.sendSingleMsg(url, sendMsg);
 
+                                        var singleName = this.GetSingleName(role);
+                                        ParameterToEditPlayerMaterial parameter = new ParameterToEditPlayerMaterial()
+                                        {
+                                            Key = role.Key,
+                                            Driver = role.getCar().ability.driver == null ? -1 : role.getCar().ability.driver.Index,
+                                            Relation = rd.Relation,
+                                            singleName = singleName
+                                        };
+                                        return Newtonsoft.Json.JsonConvert.SerializeObject(parameter);
                                     }
                                 }
                             }
@@ -221,7 +243,7 @@ namespace HouseManager4_0
                                         var url = player.FromUrl;
                                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
                                         this.sendSingleMsg(url, sendMsg);
-                                        return;
+                                        return "";
                                     }
                                     else
                                     {
@@ -273,7 +295,7 @@ namespace HouseManager4_0
                                                     var url = player.FromUrl;
                                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
                                                     this.sendSingleMsg(url, sendMsg);
-                                                    return;
+                                                    return "";
                                                 };
                                             case CommonClass.driversource.Race.people:
                                                 {
@@ -317,7 +339,7 @@ namespace HouseManager4_0
                                                     var url = player.FromUrl;
                                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
                                                     this.sendSingleMsg(url, sendMsg);
-                                                    return;
+                                                    return "";
                                                 };
                                             case CommonClass.driversource.Race.immortal:
                                                 {
@@ -365,16 +387,90 @@ namespace HouseManager4_0
                                                     var url = player.FromUrl;
                                                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(rd);
                                                     this.sendSingleMsg(url, sendMsg);
-                                                    return;
+                                                    return "";
                                                 };
                                         }
                                     }
                                 }
                             }
                         }; break;
-                    default: return;
+                    default: return "";
                 }
             }
+            return "";
+        }
+
+        private string GetSingleName(RoleInGame role)
+        {
+            Regex reg = new Regex(@"^[\u4e00-\u9fa5]{0,}$");
+
+            Dictionary<string, int> Characters = new Dictionary<string, int>();
+            foreach (var item in that._Players)
+            {
+                if (item.Key == role.Key)
+                {
+                    continue;
+                }
+                else
+                {
+                    var playerName = item.Value.PlayerName;
+                    for (int i = 0; i < playerName.Length; i++)
+                    {
+                        var c = playerName.Substring(i, 1);
+                        if (reg.IsMatch(c))
+                        {
+                            if (Characters.ContainsKey(c))
+                            {
+                                Characters[c]++;
+                            }
+                            else
+                            {
+                                Characters.Add(c, 1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            int minCount = int.MaxValue;
+            string result = "玩";
+            {
+                var playerName = role.PlayerName;
+                for (int i = 0; i < playerName.Length; i++)
+                {
+                    var c = playerName.Substring(i, 1);
+                    if (reg.IsMatch(c))
+                    {
+                        if (Characters.ContainsKey(c))
+                        {
+                            if (Characters[c] < minCount)
+                            {
+                                minCount = Characters[c];
+                                result = c;
+                            }
+                        }
+                        else
+                        {
+                            minCount = 0;
+                            result = c;
+                        }
+                    }
+                }
+            }
+            return result;
+            //var singleName = role.PlayerName
+            //if (role.PlayerName.Length > 0) { }
+            //else return "";
+            //List<string> NameChracters = new List<string>();
+            //for (int i = 0; i < role.PlayerName.Length; i++)
+            //{
+            //    NameChracters.Add(role.PlayerName.Substring(i, 1));
+            //}
+            //foreach (var item in that._Players)
+            //{
+
+            //}
+            //return "";
         }
     }
 

@@ -29,7 +29,23 @@ namespace HouseManager4_0
             {
                 var player = that._Players[rObj.key];
                 var car = that._Players[rObj.key].getCar();
-                car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
+                //if(rObj.returningOjb.be)
+                //  car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
+                if (player.playerType == RoleInGame.PlayerType.player)
+                {
+                    if (rObj.returningOjb.NeedToReturnBoss)
+                    {
+                        car.targetFpIndexSet(that._Players[rObj.returningOjb.Boss.Key].StartFPIndex, ref notifyMsg);
+                    }
+                    else
+                    {
+                        car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
+                    }
+                }
+                else 
+                {
+                    car.targetFpIndexSet(that._Players[rObj.key].StartFPIndex, ref notifyMsg);
+                }
                 ReturnThenSetComeBack(player, car, rObj, grp, ref notifyMsg);
             }
             this.sendSeveralMsgs(notifyMsg);
@@ -473,7 +489,7 @@ namespace HouseManager4_0
                     }
                 }
 
-                this.sendSeveralMsgs(notifyMsg); 
+                this.sendSeveralMsgs(notifyMsg);
                 return "";
             }
             else

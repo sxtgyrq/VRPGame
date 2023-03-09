@@ -793,7 +793,7 @@ namespace HouseManager4_0
                     }
                     else
                     {
-
+                        this.CollectNearSelf(npc2, grp);
                     }
 
                 }
@@ -809,59 +809,7 @@ namespace HouseManager4_0
             }
             return doNext;
         }
-        //bool waitedFunctionM(NPC npc2, ref List<string> notifyMsgs, string operateKye, GetRandomPos grp)
-        //{
-        //    bool doNext;
-        //    if (!string.IsNullOrEmpty(operateKye))
-        //    {
-        //        if (that._Players.ContainsKey(operateKye))
-        //        {
-        //            var operatePlayer = that._Players[operateKye];
-        //            if (operatePlayer.Bust)
-        //            {
-        //                npc2.SetBust(true, ref notifyMsgs);
-        //            }
-        //            else
-        //            {
-        //                if (this.moneyIsEnoughToAttack(npc2))
-        //                {
-        //                    Model.FastonPosition fp;
-        //                    if (that.theNearestToPlayerIsCarNotMoney(npc2, npc2.getCar(), operatePlayer, Program.dt, out fp))
-        //                    {
-        //                        var sa = new CommonClass.SetAttack()
-        //                        {
-        //                            c = "SetAttack",
-        //                            Key = npc2.Key,
-        //                            target = operatePlayer.StartFPIndex,
-        //                            targetOwner = operatePlayer.Key,
-        //                        };
-        //                        this.startNewCommandThread(200, sa, this, grp);
-        //                        //that.attackE.updateAttack();
-        //                    }
-        //                    else
-        //                    {
-        //                        CollectFp(npc2, fp, ref notifyMsgs, grp);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    this.CollectNearSelf(npc2, grp);
-        //                }
-        //                // CollectNearSelf(npc);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            npc2.SetBust(true, ref notifyMsgs);
-        //        }
-        //        doNext = false;
-        //    }
-        //    else
-        //    {
-        //        doNext = true;
-        //    }
-        //    return doNext;
-        //}
+       
 
         bool moneyIsEnoughToAttack(NPC npc)
         {

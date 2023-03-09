@@ -10,8 +10,8 @@ namespace HouseManager4_0.RoomMainF
     {
         public string GetResistance(GetResistanceObj r)
         {
-            this.modelR.Display(r);
-            return "";
+            var disPlay = this.modelR.Display(r);
+            return disPlay;
             //throw new NotImplementedException();
         }
     }

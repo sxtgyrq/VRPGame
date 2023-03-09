@@ -219,6 +219,10 @@ namespace HouseManager4_0.RoomMainF
                         //  return false;
                     }
                 }
+                if (fp == null)
+                    car.DirectAttack = true;
+                else
+                    car.DirectAttack = false;
                 return fp == null;
             }
             else if (car.state == CarState.waitOnRoad)
@@ -239,6 +243,7 @@ namespace HouseManager4_0.RoomMainF
                         fp = fpTo;
                     }
                 }
+                car.DirectAttack = false;
                 return fp == null;
             }
             else

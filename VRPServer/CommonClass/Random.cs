@@ -78,5 +78,14 @@ namespace CommonClass
                 throw new Exception("GetMD5HashFromFile() fail,error:" + ex.Message);
             }
         }
+
+        public static string getGUID()
+        {
+
+            System.Guid guid = new Guid();
+            guid = Guid.NewGuid();
+            string str = guid.ToString();
+            return str;
+        }
     }
 }

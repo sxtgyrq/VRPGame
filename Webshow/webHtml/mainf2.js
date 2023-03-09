@@ -129,15 +129,19 @@ var objMain =
     {
         drawLineOfFpToRoad: function (fp, group, color, lineName) {
             {
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
-                var lineGeometry = new THREE.Geometry();
-                lineGeometry.vertices.push(start);
-                lineGeometry.vertices.push(end);
-                var lineMaterial = new THREE.LineBasicMaterial({ color: color });
-                var line = new THREE.Line(lineGeometry, lineMaterial);
-                line.name = 'approach_' + lineName;
-                group.add(line);
+                var objName = 'approach_' + lineName;
+                if (group == null || group == undefined) { }
+                else if (group.getObjectByName(objName) == null || group.getObjectByName(objName) == undefined) {
+                    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+                    var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad));
+                    var lineGeometry = new THREE.Geometry();
+                    lineGeometry.vertices.push(start);
+                    lineGeometry.vertices.push(end);
+                    var lineMaterial = new THREE.LineBasicMaterial({ color: color });
+                    var line = new THREE.Line(lineGeometry, lineMaterial);
+                    line.name = objName;
+                    group.add(line);
+                }
             }
         },
         lookAtPosition: function (fp) {
@@ -178,56 +182,58 @@ var objMain =
             }
         },
         initilizeCars: function (fp, color, key, isSelf, postionInStation) {
-            if (isSelf == undefined) {
-                isSelf = true;
-            }
-            var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
-            var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
-            var cc = new Complex(end.x - start.x, end.z - start.z);
-            cc.toOne();
-
-            var positon1 = cc.multiply(new Complex(-0.309016994, 0.951056516));
-            var positon2 = positon1.multiply(new Complex(0.809016994, 0.587785252));
-            var positon3 = positon2.multiply(new Complex(0.809016994, 0.587785252));
-            var positon4 = positon3.multiply(new Complex(0.809016994, 0.587785252));
-            var positon5 = positon4.multiply(new Complex(0.809016994, 0.587785252));
-
-            var positons = [positon1, positon2, positon3, positon4, positon5];
-
-            var names = ['carA', 'carB', 'carC', 'carD', 'carE'];
-            //   console.log('positons', positons);
-            var percentOfPosition = 0.25;
-            //for (var i = 0; i < positons.length; i++)
-            {
-                var i = postionInStation;
-                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
-                var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, start.z + positons[i].i * percentOfPosition);
-                var lineGeometry = new THREE.Geometry();
-                lineGeometry.vertices.push(start);
-                lineGeometry.vertices.push(end);
-                var lineMaterial = new THREE.LineBasicMaterial({ color: color });
-                var line = new THREE.Line(lineGeometry, lineMaterial);
-                line.name = 'carRoad' + '_' + key;
-                if (key === objMain.indexKey) {
+            var carName = 'car' + '_' + key;
+            if (objMain.carGroup == null || objMain.carGroup == undefined) { }
+            else if (objMain.carGroup.getObjectByName(carName) == null || objMain.carGroup.getObjectByName(carName) == undefined) {
+                if (isSelf == undefined) {
                     isSelf = true;
                 }
+                var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
+                var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+                var cc = new Complex(end.x - start.x, end.z - start.z);
+                cc.toOne();
 
-                line.userData = { objectType: 'carRoad', parent: key, };
-                objMain.carGroup.add(line);
-                var model = null;
-                if (isSelf) {
-                    model = objMain.cars[names[i]].clone();
-                }
-                else {
-                    model = objMain.cars['carO'].clone();
-                }
-                model.name = 'car' + '_' + key;
-                model.position.set(end.x, end.y, end.z);
-                model.scale.set(0.002, 0.002, 0.002);
-                model.rotateY(-positons[i].toAngle());
-                model.userData = { objectType: 'car', parent: key, };
-                objMain.carGroup.add(model);
+                var positon1 = cc.multiply(new Complex(-0.309016994, 0.951056516));
+                var positon2 = positon1.multiply(new Complex(0.809016994, 0.587785252));
+                var positon3 = positon2.multiply(new Complex(0.809016994, 0.587785252));
+                var positon4 = positon3.multiply(new Complex(0.809016994, 0.587785252));
+                var positon5 = positon4.multiply(new Complex(0.809016994, 0.587785252));
 
+                var positons = [positon1, positon2, positon3, positon4, positon5];
+
+                var names = ['carA', 'carB', 'carC', 'carD', 'carE'];
+                var percentOfPosition = 0.25;
+                {
+                    var i = postionInStation;
+                    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+                    var end = new THREE.Vector3(start.x + positons[i].r * percentOfPosition, MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, start.z + positons[i].i * percentOfPosition);
+                    var lineGeometry = new THREE.Geometry();
+                    lineGeometry.vertices.push(start);
+                    lineGeometry.vertices.push(end);
+                    var lineMaterial = new THREE.LineBasicMaterial({ color: color });
+                    var line = new THREE.Line(lineGeometry, lineMaterial);
+                    line.name = 'carRoad' + '_' + key;
+                    if (key === objMain.indexKey) {
+                        isSelf = true;
+                    }
+
+                    line.userData = { objectType: 'carRoad', parent: key, };
+                    objMain.carGroup.add(line);
+                    var model = null;
+                    if (isSelf) {
+                        model = objMain.cars[names[i]].clone();
+                    }
+                    else {
+                        model = objMain.cars['carO'].clone();
+                    }
+                    model.name = carName;
+                    model.position.set(end.x, end.y, end.z);
+                    model.scale.set(0.002, 0.002, 0.002);
+                    model.rotateY(-positons[i].toAngle());
+                    model.userData = { objectType: 'car', parent: key, };
+                    objMain.carGroup.add(model);
+
+                }
             }
         },
         lookTwoPositionCenter: function (p1, p2) {
@@ -714,7 +720,7 @@ var objMain =
             SysOperatePanel.draw();
             frequencyShow.show();
             operateStateShow.show();
-        }
+        }, otherData: []
     },
     Tax: {},
     taxGroup: null,
@@ -903,15 +909,7 @@ var objMain =
                                         set3DHtml();
                                         //  objMain.state = objMain.receivedState;
                                         objMain.ws.send('SetOnLine');
-                                        for (var key in objMain.othersBasePoint) {
-                                            var indexKey = key;
-                                            var basePoint = objMain.othersBasePoint[key].basePoint;
-                                            drawPoint('orange', basePoint, indexKey);
-                                            objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'green', indexKey);
-                                            objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, objMain.othersBasePoint[key].positionInStation);
-                                            console.log('哦哦', '出现了预料的情况！！！');
-                                            //alert();
-                                        }
+                                        UpdateOtherBasePoint();
                                         objMain.state = objMain.receivedState;
                                     }; break;
                                 }
@@ -943,6 +941,7 @@ var objMain =
                                     objMain.state = objMain.receivedState;
                                     setTransactionHtml.change();
                                     operatePanel.refresh();
+                                    UpdateOtherBasePoint();
                                 }
                             }; break;
                         case 'QueryReward':
@@ -958,6 +957,12 @@ var objMain =
                                 objMain.state = objMain.receivedState;
                                 GuidObj.gameIntroShow();
                             }; break;
+                        case 'empty':
+                            {
+                                if (objMain.state == 'OnLine') {
+                                    location.reload();
+                                }
+                            }; break;
                     }
                 }; break;
             case 'setSession':
@@ -971,7 +976,7 @@ var objMain =
                     if (objMain.receivedState == 'WaitingToStart') {
                         //{"CommandStart":"182be0c5cdcd5072bb1864cdee4d3d6e","WebSocketID":3,"TeamNum":0,"c":"TeamCreateFinish"}
                         token.CommandStart = received_obj.CommandStart;
-                        createTeam(received_obj)
+                        createTeam(received_obj);
                     }
                     //  sessionStorage['session'] = received_obj.session;
                 }; break;
@@ -992,6 +997,12 @@ var objMain =
                         broadTeamJoin(received_obj);
                     }
                 }; break;
+            case 'TeamJoinRemoveInfo':
+                {
+                    if (objMain.receivedState == 'WaitingToGetTeam' || objMain.receivedState == 'WaitingToStart') {
+                        broadTeamMemberRemove(received_obj);
+                    }
+                }; break;
             case 'TeamNumWithSecret':
                 {
                     if (objMain.receivedState == 'WaitingToGetTeam') {
@@ -999,6 +1010,7 @@ var objMain =
                         // var obj = JSON.parse(
                         var objPass = { 'Secret': received_obj.Secret, 'WebSocketID': received_obj.WebSocketID, 'c': 'TeamNumWithSecret', 'RefererAddr': nyrqUrl.get() }
                         objMain.ws.send(JSON.stringify(objPass));
+
                     }
                 }; break;
             case 'GetOthersPositionNotify_v2':
@@ -1006,8 +1018,8 @@ var objMain =
                     /*
                      * 其他玩家的状态刷新
                      */
-                    console.log(evt.data);
-                    var objInput = JSON.parse(evt.data);
+                    //  console.log(evt.data);
+                    var objInput = received_obj;
 
                     if (objInput.key == objMain.indexKey) { }
                     else {
@@ -1028,33 +1040,12 @@ var objMain =
                             'fPIndex': fPIndex,
                             'isNPC': isNPC,
                             'isPlayer': isPlayer,
-                            'Level': Level
+                            'Level': Level,
+                            'positionInStation': positionInStation
                         };
-                        if (objMain.state == "OnLine") {
-                            drawPoint('orange', basePoint, indexKey);
-                            /*画引线*/
-                            objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'green', indexKey);
-                            //  objMain.mainF.lookAtPosition(objMain.basePoint);
-                            objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, positionInStation);
-                        }
-                        else {
-                            /*
-                             * 两个用户同时刷新，在update websocketID与 setOnline 这段时间可能出现这种情况。
-                             */
-                            //var msg = 'GetPositionNotify出入时，状态为' + objMain.state;
-                            //throw (msg);
-                            //return;
-                        }
-
-                        //    objMain.othersBasePoint[indexKey] = { 'basePoint': basePoint, 'carsNames': carsNames, 'indexKey': indexKey, 'playerName': PlayerName, 'fPIndex': fPIndex };
-                        //if (objMain.receivedState == 'WaitingToGetTeam') {
-                        //    objMain.ws.send(received_msg);
-                        //}
+                        UpdateOtherBasePoint();
                         //小车用 https://threejs.org/examples/#webgl_animation_skinning_morph
-                        //小车用 基地用 https://threejs.org/examples/#webgl_animation_cloth
-                        // drawFlag(); 
-
-                        // drawCarBtns(objMain.carsNames);
+                        //小车用 基地用 https://threejs.org/examples/#webgl_animation_cloth 
                     }
                 }; break;
             case 'GetPositionNotify_v2':
@@ -1556,7 +1547,7 @@ var objMain =
                         //geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3).onUpload(disposeArray));
                         geometry.computeBoundingSphere();
                         //var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors });
-                        var material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                        var material = new THREE.MeshBasicMaterial({ color: 0xff0099 });
                         var mesh = new THREE.Mesh(geometry, material);
 
                         objMain.roadGroup.add(mesh);
@@ -1854,10 +1845,6 @@ var objMain =
                     var modelDataShow = received_obj;
                     BuildingModelObj.f(modelDataShow);
                     QueryReward.lookAt();
-                    //if (modelDataShow.existed) {
-
-                    //}
-
                 }; break;
             case 'ModelDataShow_Whether_Existed':
                 {
@@ -1957,7 +1944,7 @@ var objMain =
                 }; break;
             case 'DrawTarget':
                 {
-                    targetShow.draw(received_obj.x, received_obj.y);
+                    targetShow.draw(received_obj.x, received_obj.y, received_obj.h * objMain.heightAmplify);
                 }; break;
             case 'addOption':
                 {
@@ -2011,6 +1998,55 @@ var objMain =
                 {
                     stateSet.diamond.add(received_obj.roleID, received_obj.pType);
                 }; break;
+            case 'SetParameterIsLogin':
+                {
+                    objMain.stateNeedToChange.isLogin = true;
+                    subsidizeSys.removeBtnsGuid();
+                }; break;
+            case 'SetParameterHasNewTask':
+                {
+                    objMain.stateNeedToChange.HasNewTask = true;
+                    dialogSys.AlertNewTask();
+                }; break;
+            case 'ClearSession':
+                {
+                    if (sessionStorage['session'] == undefined) {
+
+                    }
+                    else {
+                        delete sessionStorage.session;
+                        objMain.ws.send('ClearSession');
+
+                        //location.reload();
+                    }
+
+                    //stateNeedToChange:
+                    //{
+                    //    'isLogin': false,
+                    //        'HasNewTask': false
+                    //}
+                }; break;
+            case 'SetOnLineState':
+                {
+                    dialogSys.dealWithOnLine(received_obj);
+                }; break;
+            case 'SetMaterial':
+                {
+                    var carName = 'car_' + received_obj.Key;
+                    var car = objMain.carGroup.getObjectByName(carName);
+                    if (car != null && car != undefined) {
+                        var material = car.children[0].material;
+                        var newM = material.clone();
+                        var textureData = 'data:image/png;base64,' + received_obj.Base64;
+                        var texture = new THREE.TextureLoader().load(textureData);
+                        newM.map = texture;
+                        for (var i = 0; i < 5; i++) {
+                            car.children[i].material = newM;
+
+                        }
+                        newM.needsUpdate = true;
+                    }
+                }; break;
             default:
                 {
                     console.log('命令未注册', received_obj.c + "__没有注册。");
@@ -2043,7 +2079,12 @@ var objMain =
     animateObj: null,
     pingTime: 0,
     heightAmplify: 5,
-    heightLevel: 0
+    heightLevel: 0,
+    stateNeedToChange:
+    {
+        'isLogin': false,
+        'HasNewTask': false
+    }
 };
 var startA = function () {
     var connected = false;
@@ -2804,6 +2845,7 @@ var animateDetailF =
 };
 
 var selectSingleTeamJoinHtml = function () {
+
     document.getElementById('rootContainer').innerHTML = selectSingleTeamJoinHtmlF.drawHtml();
 }
 var buttonClick = function (v) {
@@ -2847,6 +2889,7 @@ var buttonClick = function (v) {
                 {
                     objMain.ws.send(JSON.stringify({ c: 'Guid' }));
                 }; break;
+
             //case 'lookForBuildings':
             //    {
             //        objMain.ws.send(JSON.stringify({ c: 'LookForBuildings' }));
@@ -3490,66 +3533,99 @@ var MapData =
 {
     roadAndCrossJson: '',
     roadAndCross: null,
-    meshPoints: []
+    meshPoints: [],
+    initialize: function () {
+        this.roadAndCross = '';
+        this.roadAndCross = null;
+        this.meshPoints = [];
+    }
 };
 var drawPoint = function (color, fp, indexKey) {
-    var createFlag = function (color) {
-        var that = this;
-        this.windStrengthDelta = 0;
-        this.DAMPING = 0.03;
-        this.DRAG = 1 - this.DAMPING;
-        this.MASS = 0.1;
-        this.restDistance = 25;
-        this.xSegs = 10;
-        this.ySegs = 10;
-        function plane(width, height) {
+    var flagName = 'flag_' + indexKey;
+    if (objMain.playerGroup == null || objMain.playerGroup == undefined) {
+        return;
+    }
+    else if (objMain.playerGroup.getObjectByName(flagName) == null || objMain.playerGroup.getObjectByName(flagName) == undefined) {
+        var createFlag = function (color) {
+            var that = this;
+            this.windStrengthDelta = 0;
+            this.DAMPING = 0.03;
+            this.DRAG = 1 - this.DAMPING;
+            this.MASS = 0.1;
+            this.restDistance = 25;
+            this.xSegs = 10;
+            this.ySegs = 10;
+            function plane(width, height) {
 
-            return function (u, v, target) {
+                return function (u, v, target) {
 
-                var x = (u - 0.5) * width;
-                var y = (v + 0.5) * height;
-                var z = 0;
+                    var x = (u - 0.5) * width;
+                    var y = (v + 0.5) * height;
+                    var z = 0;
 
-                target.set(x, y, z);
+                    target.set(x, y, z);
 
-            };
+                };
 
-        }
-        var clothFunction = plane(this.restDistance * this.xSegs, this.restDistance * this.ySegs);
-        function Cloth(w, h) {
+            }
+            var clothFunction = plane(this.restDistance * this.xSegs, this.restDistance * this.ySegs);
+            function Cloth(w, h) {
 
-            w = w || 10;
-            h = h || 10;
-            this.w = w;
-            this.h = h;
+                w = w || 10;
+                h = h || 10;
+                this.w = w;
+                this.h = h;
 
-            var particles = [];
-            var constraints = [];
+                var particles = [];
+                var constraints = [];
 
-            // Create particles
-            for (let v = 0; v <= h; v++) {
+                // Create particles
+                for (let v = 0; v <= h; v++) {
 
-                for (let u = 0; u <= w; u++) {
+                    for (let u = 0; u <= w; u++) {
 
-                    particles.push(
-                        new Particle(u / w, v / h, 0, that.MASS)
-                    );
+                        particles.push(
+                            new Particle(u / w, v / h, 0, that.MASS)
+                        );
+
+                    }
 
                 }
 
-            }
+                // Structural
 
-            // Structural
+                for (let v = 0; v < h; v++) {
 
-            for (let v = 0; v < h; v++) {
+                    for (let u = 0; u < w; u++) {
 
-                for (let u = 0; u < w; u++) {
+                        constraints.push([
+                            particles[index(u, v)],
+                            particles[index(u, v + 1)],
+                            that.restDistance
+                        ]);
+
+                        constraints.push([
+                            particles[index(u, v)],
+                            particles[index(u + 1, v)],
+                            that.restDistance
+                        ]);
+
+                    }
+
+                }
+
+                for (let u = w, v = 0; v < h; v++) {
 
                     constraints.push([
                         particles[index(u, v)],
                         particles[index(u, v + 1)],
                         that.restDistance
+
                     ]);
+
+                }
+
+                for (let v = h, u = 0; u < w; u++) {
 
                     constraints.push([
                         particles[index(u, v)],
@@ -3558,269 +3634,246 @@ var drawPoint = function (color, fp, indexKey) {
                     ]);
 
                 }
+                this.particles = particles;
+                this.constraints = constraints;
+
+                function index(u, v) {
+
+                    return u + v * (w + 1);
+
+                }
+
+                this.index = index;
+
+            }
+            var cloth = new Cloth(this.xSegs, this.ySegs);
+            this.cloth = cloth;
+
+            this.GRAVITY = 981 * 1.4;
+            this.gravity = new THREE.Vector3(0, -  this.GRAVITY, 0).multiplyScalar(this.MASS);
+
+            this.TIMESTEP = 18 / 1000;
+            this.TIMESTEP_SQ = this.TIMESTEP * this.TIMESTEP;
+
+            this.pins = [];
+
+            this.windForce = new THREE.Vector3(0, 0, 0);
+
+            //this. ballPosition = new THREE.Vector3(0, - 45, 0);
+            //this. ballSize = 60; //40
+
+            this.tmpForce = new THREE.Vector3();
+
+            function Particle(x, y, z, mass) {
+
+                this.position = new THREE.Vector3();
+                this.previous = new THREE.Vector3();
+                this.original = new THREE.Vector3();
+                this.a = new THREE.Vector3(0, 0, 0); // acceleration
+                this.mass = mass;
+                this.invMass = 1 / mass;
+                this.tmp = new THREE.Vector3();
+                this.tmp2 = new THREE.Vector3();
+
+                // init
+
+                clothFunction(x, y, this.position); // position
+                clothFunction(x, y, this.previous); // previous
+                clothFunction(x, y, this.original);
 
             }
 
-            for (let u = w, v = 0; v < h; v++) {
+            // Force -> Acceleration
 
-                constraints.push([
-                    particles[index(u, v)],
-                    particles[index(u, v + 1)],
-                    that.restDistance
+            Particle.prototype.addForce = function (force) {
 
-                ]);
+                this.a.add(
+                    this.tmp2.copy(force).multiplyScalar(this.invMass)
+                );
+
+            };
+
+
+            // Performs Verlet integration
+
+            Particle.prototype.integrate = function (timesq) {
+
+                var newPos = this.tmp.subVectors(this.position, this.previous);
+                newPos.multiplyScalar(that.DRAG).add(this.position);
+                newPos.add(this.a.multiplyScalar(timesq));
+
+                this.tmp = this.previous;
+                this.previous = this.position;
+                this.position = newPos;
+
+                this.a.set(0, 0, 0);
+
+            };
+
+            this.diff = new THREE.Vector3();
+            function satisfyConstraints(p1, p2, distance) {
+
+                that.diff.subVectors(p2.position, p1.position);
+                var currentDist = that.diff.length();
+                if (currentDist === 0) return; // prevents division by 0
+                var correction = that.diff.multiplyScalar(1 - distance / currentDist);
+                var correctionHalf = correction.multiplyScalar(0.5);
+                p1.position.add(correctionHalf);
+                p2.position.sub(correctionHalf);
 
             }
+            this.simulate = function (now) {
+                //这里进行动画
+                var windStrength = Math.cos(now / 7000) * 20 + 40 + that.windStrengthDelta;
 
-            for (let v = h, u = 0; u < w; u++) {
+                that.windForce.set(Math.sin(now / 2000), Math.cos(now / 3000), Math.sin(now / 1000));
+                that.windForce.normalize();
+                that.windForce.multiplyScalar(windStrength);
 
-                constraints.push([
-                    particles[index(u, v)],
-                    particles[index(u + 1, v)],
-                    that.restDistance
-                ]);
+                // Aerodynamics forces
 
-            }
-            this.particles = particles;
-            this.constraints = constraints;
+                var particles = cloth.particles;
 
-            function index(u, v) {
+                {
 
-                return u + v * (w + 1);
+                    let indx;
+                    var normal = new THREE.Vector3();
+                    var indices = clothGeometry.index;
+                    var normals = clothGeometry.attributes.normal;
 
-            }
+                    for (let i = 0, il = indices.count; i < il; i += 3) {
 
-            this.index = index;
+                        for (let j = 0; j < 3; j++) {
 
-        }
-        var cloth = new Cloth(this.xSegs, this.ySegs);
-        this.cloth = cloth;
+                            indx = indices.getX(i + j);
+                            normal.fromBufferAttribute(normals, indx);
+                            that.tmpForce.copy(normal).normalize().multiplyScalar(normal.dot(that.windForce));
+                            particles[indx].addForce(that.tmpForce);
 
-        this.GRAVITY = 981 * 1.4;
-        this.gravity = new THREE.Vector3(0, -  this.GRAVITY, 0).multiplyScalar(this.MASS);
-
-        this.TIMESTEP = 18 / 1000;
-        this.TIMESTEP_SQ = this.TIMESTEP * this.TIMESTEP;
-
-        this.pins = [];
-
-        this.windForce = new THREE.Vector3(0, 0, 0);
-
-        //this. ballPosition = new THREE.Vector3(0, - 45, 0);
-        //this. ballSize = 60; //40
-
-        this.tmpForce = new THREE.Vector3();
-
-        function Particle(x, y, z, mass) {
-
-            this.position = new THREE.Vector3();
-            this.previous = new THREE.Vector3();
-            this.original = new THREE.Vector3();
-            this.a = new THREE.Vector3(0, 0, 0); // acceleration
-            this.mass = mass;
-            this.invMass = 1 / mass;
-            this.tmp = new THREE.Vector3();
-            this.tmp2 = new THREE.Vector3();
-
-            // init
-
-            clothFunction(x, y, this.position); // position
-            clothFunction(x, y, this.previous); // previous
-            clothFunction(x, y, this.original);
-
-        }
-
-        // Force -> Acceleration
-
-        Particle.prototype.addForce = function (force) {
-
-            this.a.add(
-                this.tmp2.copy(force).multiplyScalar(this.invMass)
-            );
-
-        };
-
-
-        // Performs Verlet integration
-
-        Particle.prototype.integrate = function (timesq) {
-
-            var newPos = this.tmp.subVectors(this.position, this.previous);
-            newPos.multiplyScalar(that.DRAG).add(this.position);
-            newPos.add(this.a.multiplyScalar(timesq));
-
-            this.tmp = this.previous;
-            this.previous = this.position;
-            this.position = newPos;
-
-            this.a.set(0, 0, 0);
-
-        };
-
-        this.diff = new THREE.Vector3();
-        function satisfyConstraints(p1, p2, distance) {
-
-            that.diff.subVectors(p2.position, p1.position);
-            var currentDist = that.diff.length();
-            if (currentDist === 0) return; // prevents division by 0
-            var correction = that.diff.multiplyScalar(1 - distance / currentDist);
-            var correctionHalf = correction.multiplyScalar(0.5);
-            p1.position.add(correctionHalf);
-            p2.position.sub(correctionHalf);
-
-        }
-        this.simulate = function (now) {
-            //这里进行动画
-            var windStrength = Math.cos(now / 7000) * 20 + 40 + that.windStrengthDelta;
-
-            that.windForce.set(Math.sin(now / 2000), Math.cos(now / 3000), Math.sin(now / 1000));
-            that.windForce.normalize();
-            that.windForce.multiplyScalar(windStrength);
-
-            // Aerodynamics forces
-
-            var particles = cloth.particles;
-
-            {
-
-                let indx;
-                var normal = new THREE.Vector3();
-                var indices = clothGeometry.index;
-                var normals = clothGeometry.attributes.normal;
-
-                for (let i = 0, il = indices.count; i < il; i += 3) {
-
-                    for (let j = 0; j < 3; j++) {
-
-                        indx = indices.getX(i + j);
-                        normal.fromBufferAttribute(normals, indx);
-                        that.tmpForce.copy(normal).normalize().multiplyScalar(normal.dot(that.windForce));
-                        particles[indx].addForce(that.tmpForce);
+                        }
 
                     }
 
                 }
 
-            }
+                for (let i = 0, il = particles.length; i < il; i++) {
 
-            for (let i = 0, il = particles.length; i < il; i++) {
+                    var particle = particles[i];
+                    particle.addForce(that.gravity);
 
-                var particle = particles[i];
-                particle.addForce(that.gravity);
-
-                particle.integrate(that.TIMESTEP_SQ);
-
-            }
-
-            // Start Constraints
-
-            var constraints = cloth.constraints;
-            var il = constraints.length;
-
-            for (let i = 0; i < il; i++) {
-
-                var constraint = constraints[i];
-                satisfyConstraints(constraint[0], constraint[1], constraint[2]);
-
-            }
-
-            // Ball Constraints
-
-
-
-
-            // Floor Constraints
-
-            for (let i = 0, il = particles.length; i < il; i++) {
-
-                var particle = particles[i];
-                var pos = particle.position;
-                if (pos.y < - 250) {
-
-                    pos.y = - 250;
+                    particle.integrate(that.TIMESTEP_SQ);
 
                 }
 
+                // Start Constraints
+
+                var constraints = cloth.constraints;
+                var il = constraints.length;
+
+                for (let i = 0; i < il; i++) {
+
+                    var constraint = constraints[i];
+                    satisfyConstraints(constraint[0], constraint[1], constraint[2]);
+
+                }
+
+                // Ball Constraints
+
+
+
+
+                // Floor Constraints
+
+                for (let i = 0, il = particles.length; i < il; i++) {
+
+                    var particle = particles[i];
+                    var pos = particle.position;
+                    if (pos.y < - 250) {
+
+                        pos.y = - 250;
+
+                    }
+
+                }
+
+                // Pin Constraints
+
+                for (let i = 0, il = that.pins.length; i < il; i++) {
+
+                    var xy = that.pins[i];
+                    var p = particles[xy];
+                    p.position.copy(p.original);
+                    p.previous.copy(p.original);
+
+                }
+
+
             }
 
-            // Pin Constraints
+            this.pinsFormation = [];
+            this.pins = [6];
 
-            for (let i = 0, il = that.pins.length; i < il; i++) {
+            this.pinsFormation.push(this.pins);
 
-                var xy = that.pins[i];
-                var p = particles[xy];
-                p.position.copy(p.original);
-                p.previous.copy(p.original);
+            this.pins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            this.pinsFormation.push(this.pins);
+
+            this.pins = [0];
+            this.pinsFormation.push(this.pins);
+
+            this.pins = []; // cut the rope ;)
+            this.pinsFormation.push(this.pins);
+
+            this.pins = [0, cloth.w]; // classic 2 pins
+            this.pinsFormation.push(this.pins);
+
+            this.pins = this.pinsFormation[1];
+
+            function togglePins() {
+
+                pins = pinsFormation[~ ~(Math.random() * pinsFormation.length)];
 
             }
+            this.clothMaterial = new THREE.MeshLambertMaterial({
+                side: THREE.DoubleSide,
+                alphaTest: 0.5,
+                color: color,
+                emissive: color
+            });
+            var clothGeometry = new THREE.ParametricBufferGeometry(clothFunction, cloth.w, cloth.h);
+            this.clothGeometry = clothGeometry;
 
 
+            this.refresh = function () {
+                var p = that.cloth.particles;
+                for (let i = 0, il = p.length; i < il; i++) {
+
+                    var v = p[i].position;
+
+                    that.clothGeometry.attributes.position.setXYZ(i, v.x, v.y, v.z);
+
+                }
+                that.clothGeometry.attributes.position.needsUpdate = true;
+                that.clothGeometry.computeVertexNormals();
+            };
+
+            return this;
         }
+        var objToShow = new createFlag(color);
+        object = new THREE.Mesh(objToShow.clothGeometry, objToShow.clothMaterial);
+        object.userData['animateDataYrq'] = objToShow;
+        object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0.1 + MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
+        object.scale.set(0.0005, 0.0005, 0.0005);
 
-        this.pinsFormation = [];
-        this.pins = [6];
-
-        this.pinsFormation.push(this.pins);
-
-        this.pins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-        this.pinsFormation.push(this.pins);
-
-        this.pins = [0];
-        this.pinsFormation.push(this.pins);
-
-        this.pins = []; // cut the rope ;)
-        this.pinsFormation.push(this.pins);
-
-        this.pins = [0, cloth.w]; // classic 2 pins
-        this.pinsFormation.push(this.pins);
-
-        this.pins = this.pinsFormation[1];
-
-        function togglePins() {
-
-            pins = pinsFormation[~ ~(Math.random() * pinsFormation.length)];
-
-        }
-        this.clothMaterial = new THREE.MeshLambertMaterial({
-            side: THREE.DoubleSide,
-            alphaTest: 0.5,
-            color: color,
-            emissive: color
-        });
-        var clothGeometry = new THREE.ParametricBufferGeometry(clothFunction, cloth.w, cloth.h);
-        this.clothGeometry = clothGeometry;
-
-
-        this.refresh = function () {
-            var p = that.cloth.particles;
-            for (let i = 0, il = p.length; i < il; i++) {
-
-                var v = p[i].position;
-
-                that.clothGeometry.attributes.position.setXYZ(i, v.x, v.y, v.z);
-
-            }
-            that.clothGeometry.attributes.position.needsUpdate = true;
-            that.clothGeometry.computeVertexNormals();
-        };
-
-        return this;
+        var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
+        var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
+        var cc = new Complex(end.x - start.x, end.z - start.z);
+        cc.toOne();
+        object.rotateY(-cc.toAngle() + Math.PI / 2);
+        object.name = flagName;
+        objMain.playerGroup.add(object);
+        return;
     }
-
-    var objToShow = new createFlag(color);
-    object = new THREE.Mesh(objToShow.clothGeometry, objToShow.clothMaterial);
-    object.userData['animateDataYrq'] = objToShow;
-    object.position.set(MercatorGetXbyLongitude(fp.Longitude), 0.1 + MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde));
-    object.scale.set(0.0005, 0.0005, 0.0005);
-    objMain.playerGroup.add(object);
-
-    var start = new THREE.Vector3(MercatorGetXbyLongitude(fp.Longitude), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.Latitde))
-    var end = new THREE.Vector3(MercatorGetXbyLongitude(fp.positionLongitudeOnRoad), MercatorGetZbyHeight(fp.Height) * objMain.heightAmplify, -MercatorGetYbyLatitude(fp.positionLatitudeOnRoad))
-    var cc = new Complex(end.x - start.x, end.z - start.z);
-    cc.toOne();
-    object.rotateY(-cc.toAngle() + Math.PI / 2);
-    object.name = 'flag_' + indexKey;
-    return;
 }
 
 
@@ -3887,10 +3940,14 @@ var SysOperatePanel =
                 // alert('打开聊天框');
                 //      dialogSys.show();
                 //alert('弹出对话框');
+                // var el = img;
                 subsidizeSys.add();
                 //moneyOperator.add();
             };
             img.classList.add('costomButton');
+            if (objMain.stateNeedToChange.isLogin) { }
+            else
+                img.classList.add('msg');
             divSysOperatePanel.appendChild(img);
         }
         {
@@ -3948,9 +4005,18 @@ var SysOperatePanel =
         var element = document.getElementById('msgToNotify');
         element.classList.add('msg');
     },
+    //needToLogin: function ()
+    //{
+
+    //},
     cancelNotifyMsg: function () {
         var element = document.getElementById('msgToNotify');
         element.classList.remove('msg');
+    },
+    remove: function () {
+        while (document.getElementById('sysOperatePanel') != null) {
+            document.getElementById('sysOperatePanel').remove();
+        }
     }
 };
 
@@ -3969,10 +4035,13 @@ var token =
 
 
 var createTeam = function (teamCreateFinish) {
+
+    creatTeamObj.createMain(teamCreateFinish);
+    return;
     document.getElementById('rootContainer').innerHTML = '';
     var div1 = document.createElement('div');
     div1.style.textAlign = 'center';
-    var addDiv = function (title, content) {
+    var addDiv = function (title, content, isSelf) {
         var div = document.createElement('div');
         var label = document.createElement('label');
         var b = document.createElement('b');
@@ -3980,30 +4049,62 @@ var createTeam = function (teamCreateFinish) {
         b.innerText = content;
         div.appendChild(label);
         div.appendChild(b);
+        if (isSelf) {
+            div.style.background = 'green';
+            div.style.color = 'yellow';
+        }
         return div;
     }
     div1.appendChild(addDiv('房间号：', teamCreateFinish.TeamNum));
-    div1.appendChild(addDiv('队长：', teamCreateFinish.PlayerName));
+    div1.appendChild(addDiv(teamCreateFinish.PlayerDetail.Description + '：', teamCreateFinish.PlayerDetail.Name, true));
 
     document.getElementById('rootContainer').appendChild(div1);
 
-    var div2 = document.createElement('div');
-    div2.style.textAlign = 'center';
 
-    var button = document.createElement("button");
-    button.innerText = '开始';
-    button.style.width = "5em";
-    button.style.height = "3em";
-    button.style.marginTop = "1em";
-    button.onclick = function () {
-        objMain.ws.send(token.CommandStart);
-        button.onclick = function () { };
-    };
-    div2.appendChild(button);
-    document.getElementById('rootContainer').appendChild(div2);
+    {
+        var div2 = document.createElement('div');
+        div2.style.textAlign = 'center';
+        var button_Start = document.createElement("button");
+        button_Start.innerText = '开始';
+        button_Start.style.width = "5em";
+        button_Start.style.height = "3em";
+        button_Start.style.marginTop = "1em";
+
+
+
+        var div3 = document.createElement('div');
+        div3.style.textAlign = 'center';
+        var button_Exit = document.createElement("button");
+        button_Exit.innerText = '解散';
+        button_Exit.style.width = "5em";
+        button_Exit.style.height = "3em";
+        button_Exit.style.marginTop = "5em";
+        button_Exit.style.backgroundColor = "orange";
+        button_Exit.onclick = function () {
+            objMain.ws.send(token.CommandStart + 'exit');
+            button_Start.onclick = function () { };
+            button_Exit.onclick = function () { };
+        };
+
+        button_Start.onclick = function () {
+            objMain.ws.send(token.CommandStart);
+            // this.onclick = function () { };
+            button_Start.onclick = function () { };
+            button_Exit.onclick = function () { };
+        };
+
+        div2.appendChild(button_Start);
+        div3.appendChild(button_Exit);
+        document.getElementById('rootContainer').appendChild(div2);
+        document.getElementById('rootContainer').appendChild(div3);
+    }
+
 }
 
 var setWaitingToGetTeam = function () {
+    creatTeamObj.join();
+    return;
+
     document.getElementById('rootContainer').innerHTML = '';
     var div1 = document.createElement('div');
     div1.style.textAlign = 'center';
@@ -4042,11 +4143,13 @@ var setWaitingToGetTeam = function () {
 
 
 var joinTeamDetail = function (teamJoinFinish) {
+    creatTeamObj.joinTeamDetail(teamJoinFinish);
+    return;
     document.getElementById('rootContainer').innerHTML = '';
     var div1 = document.createElement('div');
     div1.style.textAlign = 'center';
 
-    var addDiv = function (title, content) {
+    var addDiv = function (title, content, id, isSelf) {
         var div = document.createElement('div');
         var label = document.createElement('label');
         var b = document.createElement('b');
@@ -4054,13 +4157,23 @@ var joinTeamDetail = function (teamJoinFinish) {
         b.innerText = content;
         div.appendChild(label);
         div.appendChild(b);
+        if (id != undefined && id != null && id != '') div.id = id;
+        if (isSelf) {
+            div.style.background = 'green';
+            div.style.color = 'yellow';
+        }
         return div;
     }
     div1.appendChild(addDiv('房间号：', teamJoinFinish.TeamNum));
-    div1.appendChild(addDiv('队长：', teamJoinFinish.PlayerNames[0]));
+    div1.appendChild(addDiv(teamJoinFinish.Players[0].Description + '：', teamJoinFinish.Players[0].Name, teamJoinFinish.Players[0].GUID));
 
-    for (var i = 1; i < teamJoinFinish.PlayerNames.length; i++) {
-        div1.appendChild(addDiv('队员：', teamJoinFinish.PlayerNames[i]));
+    for (var i = 1; i < teamJoinFinish.Players.length; i++) {
+        div1.appendChild(
+            addDiv(
+                teamJoinFinish.Players[i].Description + '：',
+                teamJoinFinish.Players[i].Name,
+                teamJoinFinish.Players[i].GUID,
+                teamJoinFinish.Players[i].IsSelf));
     }
 
     document.getElementById('rootContainer').appendChild(div1);
@@ -4068,21 +4181,29 @@ var joinTeamDetail = function (teamJoinFinish) {
     var div2 = document.createElement('div');
     div2.style.textAlign = 'center';
 
+    var button = document.createElement("button");
+    button.innerText = '离开房间';
+    button.style.width = "5em";
+    button.style.height = "3em";
+    button.style.marginTop = "5em";
+    button.style.backgroundColor = "orange";
+    button.onclick = function () {
+        objMain.ws.send(JSON.stringify({ c: 'LeaveTeam' }));
+    };
+    div2.appendChild(button);
+
     document.getElementById('rootContainer').appendChild(div2);
 }
 
 var broadTeamJoin = function (teamJoinBroadInfo) {
-    var addDiv = function (title, content) {
-        var div = document.createElement('div');
-        var label = document.createElement('label');
-        var b = document.createElement('b');
-        label.innerText = title;
-        b.innerText = content;
-        div.appendChild(label);
-        div.appendChild(b);
-        return div;
+    creatTeamObj.broadTeamJoin(teamJoinBroadInfo);
+    return;
+}
+
+var broadTeamMemberRemove = function (removeInfo) {
+    while (document.getElementById(removeInfo.Guid) != null) {
+        document.getElementById(removeInfo.Guid).remove();
     }
-    document.getElementById('rootContainer').children[0].appendChild(addDiv('队员：', teamJoinBroadInfo.PlayerName));
 }
 
 var marketOperate =
@@ -5664,8 +5785,62 @@ var sceneYUpdate = function (deltaY) {
     }
 }
 
+var OperateHelp =
+{
+    isOn: true,
+    f: function () {
+        if (this.isOn && objMain.state == 'OnLine') {
+            if (objMain.directionGroup != null) {
+                if (objMain.directionGroup.visible) {
+                    if (this.probability.direction < Math.random()) {
+                        $.notify(
+                            AMsg.directionNotify,
+                            {
+                                autoHide: true,
+                                className: 'info',
+                                autoHideDelay: 20000,
+                            });
+                        this.probability.direction += 0.015;
+                    }
+                }
+            }
 
+            if (objMain.carState.car) {
+                if (objMain.carState.car == 'waitAtBaseStation') {
+                    if (this.probability.waitAtBaseStation < Math.random()) {
+                        $.notify(AMsg.waitAtStationNotify,
+                            {
+                                autoHide: true,
+                                className: 'info',
+                                autoHideDelay: 20000,
+                                position: 'left',
+                            });
+                        this.probability.waitAtBaseStation += 0.015;
+                    }
+                }
+            }
+            //objMain.carState.car
+        }
+    },
+    probability:
+    {
+        direction: 0,
+        waitAtBaseStation: 0
+    }
+};
+setInterval("OperateHelp.f();", 12000);
 
+var UpdateOtherBasePoint = function () {
+    for (var key in objMain.othersBasePoint) {
+        var indexKey = key + '';
+        var basePoint = objMain.othersBasePoint[key].basePoint;
+        drawPoint('orange', basePoint, indexKey);
+        objMain.mainF.drawLineOfFpToRoad(basePoint, objMain.playerGroup, 'orange', indexKey);
+        objMain.mainF.initilizeCars(basePoint, 'orange', indexKey, false, objMain.othersBasePoint[key].positionInStation);
+        //  console.log('哦哦', '出现了预料的情况！！！');
+        //alert();
+    }
+}
 //////////
 /*
  * 手柄类，此游戏只支持单手柄操作。

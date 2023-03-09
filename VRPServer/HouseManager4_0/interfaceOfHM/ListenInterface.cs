@@ -117,7 +117,8 @@ namespace HouseManager4_0.interfaceOfHM
         string GetFightSituationF(GetFightSituation fs);
         string GetTaskCopyDetailF(GetTaskCopyDetail gtd);
         string RemoveTaskCopyF(RemoveTaskCopyM gtd);
-        
+        string ExitF(ExitObj obj);
+        string GetOnLineStateF(GetOnLineState obj);
     }
 
     interface MapEditor

@@ -1,9 +1,13 @@
 ﻿using CommonClass;
+using HouseManager4_0.interfaceOfEngine;
+using HouseManager4_0.interfaceOfHM;
 using Model;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using static CommonClass.ExitObj;
+using static CommonClass.GetOnLineState;
 using static HouseManager4_0.Car;
 
 namespace HouseManager4_0.RoomMainF
@@ -240,7 +244,121 @@ namespace HouseManager4_0.RoomMainF
             //   throw new NotImplementedException();
         }
 
+        public string ExitF(ExitObj obj)
+        {
+            lock (this.PlayerLock)
+            {
+                if (this._Players.ContainsKey(obj.Key))
+                {
+                    var role = this._Players[obj.Key];
+                    if (role.playerType == RoleInGame.PlayerType.player)
+                    {
+                        var player = (Player)role;
+                        var car = player.getCar();
+                        if (string.IsNullOrEmpty(player.BTCAddress))
+                        {
+                            ExitObjResult r = new ExitObjResult()
+                            {
+                                Success = false,
+                            };
+                            this.WebNotify(player, "您还没有登录！");
+                            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                        }
+                        else if (player.MoneyForSave > 0)
+                        {
+                            ExitObjResult r = new ExitObjResult()
+                            {
+                                Success = false,
+                            };
+                            this.WebNotify(player, "你的积分还没有存储！");
+                            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                        }
+                        else if (car.ability.HasDiamond())
+                        {
+                            ExitObjResult r = new ExitObjResult()
+                            {
+                                Success = false,
+                            };
+                            this.WebNotify(player, "还有宝石没有释放！");
+                            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                        }
+                        else
+                        {
+                            ExitObjResult r = new ExitObjResult()
+                            {
+                                Success = true,
+                            };
+                            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+                        }
+                    }
+                }
+            }
+            {
+                ExitObjResult r = new ExitObjResult()
+                {
+                    Success = false,
+                };
+                return Newtonsoft.Json.JsonConvert.SerializeObject(r);
+            }
+        }
 
+        public string GetOnLineStateF(GetOnLineState obj)
+        {
+            List<string> msgs = new List<string>();
+            if (this._Players.ContainsKey(obj.Key))
+            {
+                var self = (Player)this._Players[obj.Key];
+                if (self.playerType == RoleInGame.PlayerType.player)
+                {
+                    var selfPlayer = (Player)self;
+                    foreach (var roleI in _Players)
+                    {
+                        if (roleI.Key == selfPlayer.Key)
+                        {
+
+                        }
+                        else
+                        {
+                            if (roleI.Value.playerType == RoleInGame.PlayerType.player)
+                            {
+                                SetOnLineState sols = new SetOnLineState()
+                                {
+                                    c = "SetOnLineState",
+                                    IsEnemy = false,
+                                    IsNPC = false,
+                                    IsPartner = roleI.Value.TheLargestHolderKey == selfPlayer.TheLargestHolderKey,
+                                    Key = roleI.Key,
+                                    OnLine = ((Player)roleI.Value).IsOnline(),
+                                    WebSocketID = selfPlayer.WebSocketID,
+                                };
+                                msgs.Add(selfPlayer.FromUrl);
+                                msgs.Add(Newtonsoft.Json.JsonConvert.SerializeObject(sols));
+                            }
+                            else if (roleI.Value.playerType == RoleInGame.PlayerType.NPC)
+                            {
+                                var npc = (NPC)roleI.Value;
+                                SetOnLineState sols = new SetOnLineState()
+                                {
+                                    c = "SetOnLineState",
+                                    IsEnemy = this.CheckIsEnemy(npc, selfPlayer),
+                                    IsNPC = true,
+                                    IsPartner = false,
+                                    Key = roleI.Key,
+                                    OnLine = true,
+                                    WebSocketID = selfPlayer.WebSocketID,
+                                };
+                                msgs.Add(selfPlayer.FromUrl);
+                                msgs.Add(Newtonsoft.Json.JsonConvert.SerializeObject(sols));
+                            }
+                        }
+                    }
+                }
+
+            }
+            Startup.sendSeveralMsgs(msgs);
+            return "";
+            // throw new NotImplementedException();
+        }
 
         public class commandWithTime
         {

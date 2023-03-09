@@ -1,7 +1,10 @@
 ﻿using CommonClass;
 using CommonClass.databaseModel;
+using Google.Protobuf.WellKnownTypes;
+using HouseManager4_0.interfaceOfEngine;
 using HouseManager4_0.RoomMainF;
 using Model;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -308,13 +311,20 @@ namespace HouseManager4_0
         {
             this._theLargestHolderKey = this.Key;
         }
+
+        internal void SetTheLargestHolder(RoleInGame boss, ref List<string> notifyMsg)
+        {
+            var child = new List<Player>();
+            SetTheLargestHolder(boss, ref notifyMsg, out child);
+        }
+
         /// <summary>
         /// 设置老大。
         /// </summary>
         /// <param name="boss"></param>
-        internal void SetTheLargestHolder(RoleInGame boss, ref List<string> notifyMsg)
+        internal void SetTheLargestHolder(RoleInGame boss, ref List<string> notifyMsg, out List<Player> child)
         {
-            List<Player> child = new List<Player>();
+            child = new List<Player>();
             foreach (var item in Program.rm._Players)
             {
                 if (item.Value.Key != this.Key && item.Value.TheLargestHolderKey == this.Key && item.Value.playerType == PlayerType.player)
@@ -900,11 +910,25 @@ namespace HouseManager4_0
                 if (string.IsNullOrEmpty(value.Trim())) { }
                 else if (string.IsNullOrEmpty(this.bTCAddressValue))
                 {
-                    this.bTCAddressValue = value;
-
+                    if (BitCoin.CheckAddress.CheckAddressIsUseful(value))
+                    {
+                        this.bTCAddressValue = value;
+                        this.nntl(this);
+                    }
                 }
             }
         }
+        public delegate void NoNeedToLogin(Player player);
+        public NoNeedToLogin nntl { get; set; }
+        public void nntlF()
+        {
+            if (BitCoin.CheckAddress.CheckAddressIsUseful(this.bTCAddressValue))
+            {
+                this.nntl(this);
+            }
+        }
+        public delegate void HasNewTaskToShow(Player player);
+        public HasNewTaskToShow hntts { get; set; }
 
         public Dictionary<string, bool> backgroundData { get; set; }
 
@@ -960,13 +984,15 @@ namespace HouseManager4_0
                 var fp = Program.dt.GetFpByIndex(targetFpIndex);
                 if (fp == null) return;
                 var url = this.FromUrl;
-
+                double x, y, z;
+                CommonClass.Geography.calculatBaideMercatorIndex.getBaiduPicIndex(fp.Longitude, fp.Latitde, fp.Height, out x, out y, out z);
                 DrawTarget dt = new DrawTarget()
                 {
                     c = "DrawTarget",
                     WebSocketID = this.WebSocketID,
-                    x = fp.MacatuoX,
-                    y = fp.MacatuoY
+                    x = x,
+                    y = y,
+                    h = z
                 };
 
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(dt);
@@ -993,6 +1019,7 @@ namespace HouseManager4_0
                 if (addSuccess1 || addSuccess2)
                 {
                     this.taskCopys = DalOfAddress.TaskCopy.GetALLItem(this.BTCAddress);
+                    this.hntts(this);
                 }
             }
         }

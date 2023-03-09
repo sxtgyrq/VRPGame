@@ -56,12 +56,12 @@ namespace HouseManager4_0.RoomMainF
         /// <param name="gp"></param>
         /// <param name="searchName"></param>
         /// <returns></returns>
-        int FindIndexByFpName (GetRandomPos gp,string searchName)
+        int FindIndexByFpName(GetRandomPos gp, string searchName)
         {
-            for (int i = 0; i < gp.GetFpCount(); i++) 
+            for (int i = 0; i < gp.GetFpCount(); i++)
             {
                 var fp = gp.GetFpByIndex(i);
-                if (fp.FastenPositionName.Contains(searchName)) 
+                if (fp.FastenPositionName.Contains(searchName))
                 {
                     return i;
                 }
@@ -177,6 +177,7 @@ namespace HouseManager4_0.RoomMainF
                 sendCarStateAndPurpose(getPosition.Key);
 
                 ((Player)this._Players[getPosition.Key]).getCar().UpdateSelection();//保证前台的3D建立
+                ((Player)this._Players[getPosition.Key]).nntlF();
             }
             return result;
         }

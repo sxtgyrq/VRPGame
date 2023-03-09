@@ -1,8 +1,12 @@
 ﻿using CommonClass;
+using CommonClass.driversource;
 using System;
 using System.Collections.Generic;
+using static HouseManager4_0.Engine_MagicEngine;
+using System.Data;
 using static HouseManager4_0.RoomMainF.RoomMain;
 using OssModel = Model;
+using HouseManager4_0.interfaceOfHM;
 
 namespace HouseManager4_0
 {
@@ -23,8 +27,8 @@ namespace HouseManager4_0
                         var from = this.getFromWhenAction(player, car);
                         var to = ci.target;
                         var fp1 = Program.dt.GetFpByIndex(from);
-                        var fp2 = Program.dt.GetFpByIndex(to);
-                        var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
+                        //var fp2 = Program.dt.GetFpByIndex(to);
+                        //var baseFp = Program.dt.GetFpByIndex(player.StartFPIndex);
 
                         // var goPath = Program.dt.GetAFromB(fp1, fp2.FastenPositionID);
 
@@ -46,6 +50,9 @@ namespace HouseManager4_0
                             this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
                             var ro = commandWithTime.ReturningOjb.ojbWithBoss(returnToBossAddrPath, returnToSelfAddrPath, boss);
                             ci.SetArrivalThread(startT, car, goMile, goPath, ro);
+
+                            DealWithDirectAttack(ref car, ref player, ref victimOrBeneficiary, grp);
+                            
                             mrr = MileResultReason.Abundant;
                             return ro;
                         }
@@ -82,6 +89,23 @@ namespace HouseManager4_0
             }
         }
 
+        private void DealWithDirectAttack(ref Car car, ref RoleInGame player, ref RoleInGame victimOrBeneficiary, GetRandomPos grp)
+        {
+            if (car.DirectAttack)
+            {
+                if (car.ability.driver != null)
+                {
+                    if (car.ability.driver.race == CommonClass.driversource.Race.immortal)
+                    {
+
+                        var driver = car.ability.driver;
+                        attackMagicTool at = new attackMagicTool(driver.skill2, player);
+                        that.debtE.DirectAttackThenMagic(at, player, victimOrBeneficiary, grp);
+                    }
+                }
+                car.DirectAttack = false;
+            }
+        }
 
         public commandWithTime.ReturningOjb randomWhenConfused(RoleInGame player, RoleInGame boss, Car car, interfaceOfHM.ContactInterface ci, GetRandomPos grp, ref List<string> notifyMsg, out MileResultReason Mrr)
         {
@@ -161,7 +185,8 @@ namespace HouseManager4_0
                                 this.EditCarStateWhenActionStartOK(player, ref car, to, fp1, goPath, grp, ref notifyMsg, out startT);
                                 ci.SetArrivalThread(startT, car, goMile, goPath, commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath));
 
-                                // getAllCarInfomations(sa.Key, ref notifyMsg);
+                                DealWithDirectAttack(ref car, ref player, ref victimOrBeneficiary, grp);
+                                 
                                 Mrr = MileResultReason.Abundant;
                                 return commandWithTime.ReturningOjb.ojbWithoutBoss(returnPath);
                             }

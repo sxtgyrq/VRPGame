@@ -1908,7 +1908,7 @@ var set3DHtml = function () {
         objMain.controls.maxPolarAngle = Math.PI / 3;
     }
 
-    
+
     // drawRoadInfomation(Map.roadAndCross.meshPoints);
 }
 
@@ -2066,7 +2066,12 @@ var MapData =
 {
     roadAndCrossJson: '',
     roadAndCross: null,
-    meshPoints: []
+    meshPoints: [],
+    initialize: function () {
+        this.roadAndCross = '';
+        this.roadAndCross = null;
+        this.meshPoints = [];
+    }
 };
 
 
@@ -3545,6 +3550,6 @@ Complex.parse = function (s) {
 };
 Complex.parseRegExp = /^\{([\d\s]+[^,]*),([\d\s]+[^}]*)\}$/;
 // console.log(/^\{([\d\s]+[^,]*),([\d\s]+[^}]*)\}$/.exec('{2,3}'));
-// 示例代码 
+// 示例代码
 
 ////////////

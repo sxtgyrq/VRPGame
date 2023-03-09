@@ -390,7 +390,7 @@ namespace HouseManager4_0
                 }
 
             }
-            this.sendSeveralMsgs(notifyMsg); 
+            this.sendSeveralMsgs(notifyMsg);
             if (needUpdateCollectState)
             {
                 that.CheckAllPlayersCollectState();
@@ -459,7 +459,7 @@ namespace HouseManager4_0
             {
                 if (role.playerType == RoleInGame.PlayerType.player)
                 {
-                    that.goodsM.ShowConnectionModels(role, pa.target, ref notifyMsg);
+                    that.goodsM.ShowConnectionModels((Player)role, pa.target, ref notifyMsg);
                 }
                 else if (role.playerType == RoleInGame.PlayerType.NPC)
                 {

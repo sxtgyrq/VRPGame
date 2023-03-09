@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
@@ -16,12 +17,16 @@ namespace WsOfWebClient
 {
     public class CommonF
     {
-        public static void SendData(string sendMsg, WebSocket webSocket)
+        public static void SendData(string sendMsg, WebSocket webSocket, int outTime)
         {
             try
             {
                 var sendData = Encoding.UTF8.GetBytes(sendMsg);
-                var timeOut = new CancellationTokenSource(30000).Token;
+                CancellationToken timeOut;
+                if (outTime < 60000)
+                    timeOut = new CancellationTokenSource(60000).Token;
+                else
+                    timeOut = new CancellationTokenSource(outTime).Token;
                 var t = webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, timeOut);
                 t.GetAwaiter().GetResult();
                 //while (!t.IsCompleted && !timeOut.IsCancellationRequested)
@@ -246,7 +251,7 @@ namespace WsOfWebClient
                         c = "SetRobot",
                         modelBase64 = ConnectInfo.RobotBase64
                     });
-                    CommonF.SendData(msg, webSocket);
+                    CommonF.SendData(msg, webSocket, 0);
 
                     {
                         #region 校验响应
@@ -305,7 +310,7 @@ namespace WsOfWebClient
                         mtlText = ConnectInfo.DiamondMtl,
                         imageBase64s = ConnectInfo.DiamondJpg
                     });
-                    CommonF.SendData(msg, webSocket);
+                    CommonF.SendData(msg, webSocket, 0);
 
                     {
                         #region 校验响应
@@ -334,7 +339,7 @@ namespace WsOfWebClient
                         Mtl = ConnectInfo.SpeedMtl,
                         Img = ConnectInfo.SpeedIconBase64
                     });
-                    CommonF.SendData(msg, webSocket);
+                    CommonF.SendData(msg, webSocket, 0);
                     {
                         #region 校验响应
                         var checkIsOk = CheckRespon(webSocket, "SetSpeedIcon");
@@ -449,7 +454,7 @@ namespace WsOfWebClient
                     Mtl = mp.GetMtl(),
                     Img = mp.GetImg(),
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
                 {
                     #region 校验响应
                     var checkIsOk = CheckRespon(webSocket, mp.Command);
@@ -793,7 +798,7 @@ namespace WsOfWebClient
                     c = "SetProfileIcon",
                     data = ConnectInfo.ProfileModel,
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             var checkIsOk = CheckRespon(webSocket, "ProfileIcon");
             if (checkIsOk) { return true; }
@@ -828,7 +833,7 @@ namespace WsOfWebClient
                     c = "SetLeaveGameIcon",
                     data = ConnectInfo.LeaveGameModel,
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             var checkIsOk = CheckRespon(webSocket, "SetLeaveGameIcon");
             if (checkIsOk) { return true; }
@@ -848,6 +853,7 @@ namespace WsOfWebClient
         {
             var timeOut = new CancellationTokenSource(1500000).Token;
             var resultAsync = Startup.ReceiveStringAsync(webSocket, timeOut);
+
             if (resultAsync.result == checkValue)
             {
                 return true;
@@ -880,7 +886,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.YuanModel,
                     faceValue = "model"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -913,7 +919,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB100,
                     faceValue = "rmb100"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -946,7 +952,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB50,
                     faceValue = "rmb50"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -979,7 +985,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB20,
                     faceValue = "rmb20"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -1012,7 +1018,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB10,
                     faceValue = "rmb10"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -1045,7 +1051,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB5,
                     faceValue = "rmb5"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -1081,7 +1087,7 @@ namespace WsOfWebClient
                     modelBase64 = ConnectInfo.RMB1,
                     faceValue = "rmb1"
                 });
-                CommonF.SendData(msg, webSocket);
+                CommonF.SendData(msg, webSocket, 0);
             }
             #region 校验响应
             {
@@ -1316,34 +1322,23 @@ namespace WsOfWebClient
             //}
         }
 
-        internal static async Task<string> setCarReturn(State s, SetCarReturn scr)
+        internal static string setCarReturn(State s, SetCarReturn scr)
         {
-
             {
-                //  Regex r = new Regex("^car(?<car>[A-E]{1})_(?<key>[a-f0-9]{32})$");
-                // var m = r.Match(scr.car);
-                // var m_Target = rex_Target.Match(attack.TargetOwner);
-                //   if (m.Success)//&& m_Target.Success)
                 {
-                    //   var targetOwner = m_Target.Groups["target"].Value;
-
-                    //     //Consol.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
-                    //   if (m.Groups["key"].Value == s.Key)
+                    var getPosition = new OrderToReturn()
                     {
-                        var getPosition = new OrderToReturn()
-                        {
-                            c = "OrderToReturn",
-                            Key = s.Key,
-                            //  car = "car" + m.Groups["car"].Value,
-                        };
-                        var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                        Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
-                    }
+                        c = "OrderToReturn",
+                        Key = s.Key,
+                        //  car = "car" + m.Groups["car"].Value,
+                    };
+                    var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
+                    Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
                 }
-                return "";
             }
+            return "";
         }
-        internal static async Task UpdateLevelF(State s, UpdateLevel uL)
+        internal static void UpdateLevelF(State s, UpdateLevel uL)
         {
             Regex r = new Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$");
             if (r.IsMatch(uL.signature))
@@ -1408,7 +1403,7 @@ namespace WsOfWebClient
             return "";
         }
 
-        internal static async Task<string> Donate(State s, Donate donate)
+        internal static string Donate(State s, Donate donate)
         {
             var sm = new SaveMoney()
             {
@@ -1422,7 +1417,7 @@ namespace WsOfWebClient
             return "";
         }
 
-        internal static async Task<string> setCarAbility(State s, Ability a)
+        internal static string setCarAbility(State s, Ability a)
         {
             if (!(a.pType == "mile" || a.pType == "business" || a.pType == "volume" || a.pType == "speed"))
             {
@@ -1456,7 +1451,7 @@ namespace WsOfWebClient
             }
         }
 
-        internal static async Task<string> passMsg(State s, Msg msg)
+        internal static string passMsg(State s, Msg msg)
         {
             var dialogMsg = new DialogMsg()
             {
@@ -1466,10 +1461,8 @@ namespace WsOfWebClient
                 To = msg.To,
             };
             var msgString = Newtonsoft.Json.JsonConvert.SerializeObject(dialogMsg);
-            //Room.roomUrls[s.roomIndex]
             var result = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msgString);
             return result;
-            //var result = await Startup.sendInmationToUrlAndGetRes(s.roomIndex, msg);
         }
 
 
@@ -1492,7 +1485,7 @@ namespace WsOfWebClient
             var result = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
 
         }
-        internal static async Task<string> setToCollectTax(State s, Tax tax)
+        internal static string setToCollectTax(State s, Tax tax)
         {
             //  Regex r = new Regex("^car(?<car>[A-E]{1})_(?<key>[a-f0-9]{32})$");
             //   Regex rex_Target = new Regex("^(?<target>[a-f0-9]{32})$");
@@ -1520,7 +1513,7 @@ namespace WsOfWebClient
             return "";
         }
 
-        internal static async Task<string> setAttack(State s, Attack attack)
+        internal static string setAttack(State s, Attack attack)
         {
             //Regex r = new Regex("^car(?<car>[A-E]{1})_(?<key>[a-f0-9]{32})$");
             Regex rex_Target = new Regex("^(?<target>[a-f0-9]{32})$");
@@ -1560,7 +1553,12 @@ namespace WsOfWebClient
             var result = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             return result;
         }
-
+        internal static State CancelAfterCreateTeam(State s, WebSocket webSocket, TeamResult team, string playerName, string refererAddr)
+        {
+            var receivedMsg = Team.SetToExit(team);
+            s = Room.setState(s, webSocket, LoginState.selectSingleTeamJoin);
+            return s;
+        }
         public static State GetRoomThenStartAfterCreateTeam(State s, System.Net.WebSockets.WebSocket webSocket, TeamResult team, string playerName, string refererAddr)
         {
             /*
@@ -1611,6 +1609,7 @@ namespace WsOfWebClient
                 s.roomIndex = roomIndex;
                 s = setOnLine(s, webSocket);
             }
+
             else
             {
                 NotifyMsg(webSocket, "进入房间失败！");
@@ -1627,23 +1626,57 @@ namespace WsOfWebClient
             roomInfo.FromUrl = "";
             var session = Newtonsoft.Json.JsonConvert.SerializeObject(roomInfo);
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { session = session, c = "setSession" });
-            CommonF.SendData(msg, webSocket);
+            CommonF.SendData(msg, webSocket, 0);
         }
 
         internal static State setState(State s, WebSocket webSocket, LoginState ls)
         {
             s.Ls = ls;
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "setState", state = Enum.GetName(typeof(LoginState), s.Ls) });
-            CommonF.SendData(msg, webSocket);
+            CommonF.SendData(msg, webSocket, 0);
             return s;
         }
 
         internal static void Alert(WebSocket webSocket, string alertMsg)
         {
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new { c = "Alert", msg = alertMsg });
-            CommonF.SendData(msg, webSocket);
+            CommonF.SendData(msg, webSocket, 0);
+        }
+        //CheckSecretIsExit
+        internal static bool CheckSecretIsExit(string result, string key, out string refererAddr)
+        {
+            try
+            {
+                CommonClass.TeamNumWithSecret passObj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.TeamNumWithSecret>(result);
+                var roomNum = CommonClass.AES.AesDecrypt(passObj.Secret, key);
+                var ss = roomNum.Split(':');
+                //Consol.WriteLine($"sec:{ss}");
+                if (ss[0] == "exitTeam")
+                {
+                    refererAddr = passObj.RefererAddr;
+                    return true;
+                }
+                else
+                {
+                    refererAddr = "";
+                    return false;
+                }
+            }
+            catch
+            {
+                refererAddr = "";
+                return false;
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="key"></param>
+        /// <param name="roomIndex">房号</param>
+        /// <param name="refererAddr">推荐者的BTC地址</param>
+        /// <returns></returns>
         internal static bool CheckSecret(string result, string key, out int roomIndex, out string refererAddr)
         {
             try
@@ -1672,45 +1705,74 @@ namespace WsOfWebClient
                 return false;
             }
         }
-        internal static async Task checkCarState(State s, CommonClass.CheckCarState ccs)
+        internal static void checkCarState(State s, CommonClass.CheckCarState ccs)
         {
             ccs.Key = s.Key;
             var msg = Newtonsoft.Json.JsonConvert.SerializeObject(ccs);
             Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
         }
-        internal static async Task<string> setPromote(State s, Promote promote)
+        internal static string setPromote(State s, Promote promote)
         {
             if (promote.pType == "mile" || promote.pType == "business" || promote.pType == "volume" || promote.pType == "speed")
             {
-                // string A = "carA_bb6a1ef1cb8c5193bec80b7752c6d54c";
-                // A = Console.ReadLine();
-                //Regex r = new Regex("^car_(?<key>[a-f0-9]{32})$");
-
-                //var m = r.Match(promote.car);
-                //if (m.Success)
+                var getPosition = new SetPromote()
                 {
-                    // Console.WriteLine($"正则匹配成功：{m.Groups["car"] }+{m.Groups["key"] }");
-                    // if (m.Groups["key"].Value == s.Key)
-                    {
-                        var getPosition = new SetPromote()
-                        {
-                            c = "SetPromote",
-                            Key = s.Key,
-                            pType = promote.pType
-                        };
-                        var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
-                        Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
-                    }
-                }
-
-                //var "carA_bb6a1ef1cb8c5193bec80b7752c6d54c"
-
+                    c = "SetPromote",
+                    Key = s.Key,
+                    pType = promote.pType
+                };
+                var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
+                Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             }
             return "";
         }
+        internal static void GetOnLineState(State s)
+        {
+            var getPosition = new GetOnLineState
+            {
+                c = "GetOnLineState",
+                Key = s.Key
+            };
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(getPosition);
+            Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+        }
+        internal static bool ExitF(ref State s, WebSocket webSocket)
+        {
 
+            var exitObj = new ExitObj()
+            {
+                c = "ExitObj",
+                Key = s.Key,
+            };
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(exitObj);
+            var respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
+            ExitObj.ExitObjResult r = Newtonsoft.Json.JsonConvert.DeserializeObject<ExitObj.ExitObjResult>(respon);
+            if (r.Success)
+            {
+                var obj = new
+                {
+                    c = "ClearSession",
+                    Key = s.Key,
+                };
+                msg = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                CommonF.SendData(msg, webSocket, 0);
+                var checkIsOk = CheckRespon(webSocket, "ClearSession");
+                if (checkIsOk)
+                {
+                    s = Room.setState(s, webSocket, LoginState.empty);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
 
-        internal static async Task<string> setCollect(State s, Collect collect)
+            }
+            else
+                return false;
+        }
+
+        internal static string setCollect(State s, Collect collect)
         {
             if (collect.cType == "findWork")
             {
@@ -1733,7 +1795,7 @@ namespace WsOfWebClient
             return "";
         }
 
-        internal static async Task<State> GetFightSituation(State s, WebSocket webSocket)
+        internal static State GetFightSituation(State s, WebSocket webSocket)
         {
             string respon;
             {
@@ -1746,13 +1808,11 @@ namespace WsOfWebClient
                 respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             }
             {
-                var notifyMsg = respon;
-                var sendData = Encoding.UTF8.GetBytes(notifyMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(respon, webSocket, 0);
                 return s;
             }
         }
-        internal static async Task<string> RemoveTaskCopy(State s, RemoveTaskCopy rtc)
+        internal static string RemoveTaskCopy(State s, RemoveTaskCopy rtc)
         {
             string respon;
             {
@@ -1769,7 +1829,7 @@ namespace WsOfWebClient
 
         }
 
-        internal static async Task<State> GetTaskCopy(State s, WebSocket webSocket)
+        internal static State GetTaskCopy(State s, WebSocket webSocket)
         {
             string respon;
             {
@@ -1782,9 +1842,7 @@ namespace WsOfWebClient
                 respon = Startup.sendInmationToUrlAndGetRes(Room.roomUrls[s.roomIndex], msg);
             }
             {
-                var notifyMsg = respon;
-                var sendData = Encoding.UTF8.GetBytes(notifyMsg);
-                await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+                CommonF.SendData(respon, webSocket, 0);
                 return s;
             }
         }
@@ -1862,6 +1920,37 @@ namespace WsOfWebClient
                 //File.WriteAllText($"{rootPath}\\config\\MarketIP.txt", text);
             }
             //throw new NotImplementedException();
+        }
+
+        internal static bool leaveTeam(string teamID, int websocketID)
+        {
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.LeaveTeam()
+            {
+                WebSocketID = websocketID,
+                c = "LeaveTeam",
+                FromUrl = $"{ConnectInfo.HostIP}:{ConnectInfo.tcpServerPort}",
+                TeamIndex = teamID
+            });
+            string resStr = Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
+            if (resStr == "success")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal static string SetToExit(TeamResult team)
+        {
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(new CommonClass.TeamExit()
+            {
+                c = "TeamExit",
+                TeamNum = team.TeamNumber,
+            });
+            var result = Startup.sendInmationToUrlAndGetRes($"{teamUrl}", msg);
+            return result;
         }
     }
 }

@@ -4,6 +4,9 @@
 
     bindData: function (key) {
         var that = resistance;
+        that.positionF(key);
+        //objMain.othersBasePoint['0703abae622a0ec9cff4b3f85f8de7ff'].basePoint
+
         if (document.getElementById(that.operateID) == null) {
             objMain.ws.send(JSON.stringify({ 'c': 'GetResistance', 'KeyLookfor': key, 'RequestType': 0 }));
         }
@@ -21,6 +24,34 @@
     },
     display: function (obj) {
         var that = resistance;
+        var bgmStr = 'rgba(104, 48, 8, 0.85)';
+        switch (obj.Relation) {
+            case '自己':
+                {
+                    bgmStr = 'rgba(48, 104, 8, 0.85)';
+                }; break;
+            case 'NPC':
+                {
+                    bgmStr = 'rgba(104, 48, 8, 0.85)';
+                }; break;
+            case '玩家':
+                {
+                    bgmStr = 'rgba(8, 48, 104, 0.85)';
+                }; break;
+            case '老大':
+                {
+                    bgmStr = 'rgba(76, 76, 8, 0.85)';
+                }; break;
+            case '队友':
+                {
+                    bgmStr = 'rgba(8, 76, 76, 0.85)';
+                }; break;
+            default:
+                {
+                    bgmStr = 'rgba(104, 48, 8, 0.85)';
+                }
+        };
+
         var html = ` <div id="${that.operateID}" style="position: absolute;
         z-index: 8;
         top: calc(10% - 1px);
@@ -30,7 +61,7 @@
         max-height:calc(90% - 39px);
         border: solid 1px red;
         text-align: center;
-        background: rgba(104, 48, 8, 0.85);
+        background: ${bgmStr};
         color: #ffffff;
         overflow: hidden;
         overflow-y: scroll;
@@ -121,7 +152,7 @@
         </div>
 <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="dialogSys.toBeMyBoss('${obj.KeyLookfor}');">
+        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="dialogSys.toBeMyBoss('${obj.KeyLookfor}');resistance.cancle();">
             认作老大
         </div>  
         <div style="background: orange;
@@ -367,5 +398,28 @@
         else {
             document.getElementById(that.operateID).remove();
         }
+    },
+    positionF: function (key) {
+        var selectObj = objMain.playerGroup.getChildByName('flag_' + key);
+        if (selectObj != null && selectObj != undefined) {
+            var animationData =
+            {
+                old: {
+                    x: objMain.controls.target.x,
+                    y: objMain.controls.target.y,
+                    z: objMain.controls.target.z,
+                    t: Date.now()
+                },
+                newT:
+                {
+                    x: selectObj.position.x,
+                    y: selectObj.position.y,
+                    z: selectObj.position.z,
+                    t: Date.now() + 3000
+                }
+            };
+            objMain.heightLevel = selectObj.position.y;
+            objMain.camaraAnimateData = animationData;
+        }
     }
-};
+}

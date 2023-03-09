@@ -34,18 +34,32 @@
                 <td>
                    隐藏 <input name="modelOnOff" type="radio" value="off" />
                 </td>
-            </tr> 
+            </tr>
+            <tr>
+                <th style="border:solid 1px white">操作提示</th>
+                <td>
+                   提示 <input name="operateNotifyOnOff" type="radio" checked value="on" />
+                </td>
+                <td>
+                   不 <input name="operateNotifyOnOff" type="radio" value="off" />
+                </td>
+            </tr>
         </table>
-
+       
         <div style="background: yellowgreen;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="settingSys.apply();settingSys.add();">
+        margin-top: 2em;padding:0.25em 0 0.25em 0;" onclick="settingSys.apply();settingSys.add();">
             确认
         </div>
-        <div style="background: yellowgreen;
+        <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;" onclick="settingSys.add();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="settingSys.add();">
             取消
+        </div>
+        <div style="background: red;width:6em; margin-left:calc(100% - 6em);
+        margin-bottom: 0.25em;
+        margin-top: 2em;padding:0.25em 0 0.25em 0;" onclick="settingSys.Exit();settingSys.add();">
+            返回主界面
         </div>
     </div>`,
     refresh: function () {
@@ -106,6 +120,16 @@
                     objMain.buildingGroup.visible = false;
                 }; break;
         }
+        switch (this.getValue('operateNotifyOnOff')) {
+            case 'on':
+                {
+                    OperateHelp.isOn = true;
+                }; break;
+            case 'off':
+                {
+                    OperateHelp.isOn = false;
+                }; break;
+        }
     },
     bindData: function () {
         var x = document.getElementById('backGroudMusick');
@@ -117,6 +141,15 @@
             this.setValue('modelOnOff', 'on');
         else
             this.setValue('modelOnOff', 'off');
+
+        if (OperateHelp.isOn) {
+            this.setValue('operateNotifyOnOff', 'on');
+        }
+        else { this.setValue('operateNotifyOnOff', 'off'); }
         //this.setValue
+    },
+    Exit: function () {
+        if (confirm('确认返回主界面？'))
+            objMain.ws.send(JSON.stringify({ c: 'Exit' }));
     }
 };

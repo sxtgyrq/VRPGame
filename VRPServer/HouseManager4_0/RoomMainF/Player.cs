@@ -229,7 +229,9 @@ namespace HouseManager4_0.RoomMainF
                         {4,0}
                     };
                         ((Player)this._Players[addItem.Key]).GetConnectionF = this.GetConnectionF;
-                        ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null; 
+                        ((Player)this._Players[addItem.Key]).playerSelectDirectionTh = null;
+                        ((Player)this._Players[addItem.Key]).nntl = this.NoNeedToLogin;
+                        ((Player)this._Players[addItem.Key]).hntts = this.HasNewTaskToShow;
                     }
                     else
                     {
@@ -385,7 +387,7 @@ namespace HouseManager4_0.RoomMainF
             //  throw new NotImplementedException();
         }
 
-       
+
 
         public string UpdatePlayer(PlayerCheck checkItem)
         {

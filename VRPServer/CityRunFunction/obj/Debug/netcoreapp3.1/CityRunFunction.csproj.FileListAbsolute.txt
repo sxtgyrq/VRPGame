@@ -7,3 +7,13 @@ F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CityRunFunction\o
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.dll
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.pdb
 F:\MyProject\VRPWithZhangkun\MainApp\VRPWithZhangkun\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.csprojAssemblyReference.cache
+E:\Project\VRPGame\VRPServer\CityRunFunction\bin\Debug\netcoreapp3.1\CityRunFunction.deps.json
+E:\Project\VRPGame\VRPServer\CityRunFunction\bin\Debug\netcoreapp3.1\CityRunFunction.dll
+E:\Project\VRPGame\VRPServer\CityRunFunction\bin\Debug\netcoreapp3.1\CityRunFunction.pdb
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.csproj.AssemblyReference.cache
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.GeneratedMSBuildEditorConfig.editorconfig
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.AssemblyInfoInputs.cache
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.AssemblyInfo.cs
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.csproj.CoreCompileInputs.cache
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.dll
+E:\Project\VRPGame\VRPServer\CityRunFunction\obj\Debug\netcoreapp3.1\CityRunFunction.pdb

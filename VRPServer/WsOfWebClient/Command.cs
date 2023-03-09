@@ -44,6 +44,7 @@ namespace WsOfWebClient
     }
     public class JoinTeam : CommonClass.Command
     {
+        //public string RefererAddr { get; set; }
     }
 
     public class SetPlayerName : CommonClass.Command
@@ -210,5 +211,11 @@ namespace WsOfWebClient
     public class RemoveTaskCopy : CommonClass.Command
     {
         public string Code { get; set; }
+    }
+
+    public class SetMaterial : CommonClass.Command
+    {
+        public string Key { get; internal set; }
+        public string Base64 { get; internal set; }
     }
 }

@@ -41,15 +41,15 @@ namespace MateWsAndHouse
             //CreateWebHostBuilder(new string[] { ip }).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-    WebHost.CreateDefaultBuilder(args).Configure(item => item.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
-    })).UseKestrel(options =>
-    {
-        options.AllowSynchronousIO = true;
-    })
-    .UseUrls(args[0])
-        .UseStartup<Startup>();
+    //    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+    //WebHost.CreateDefaultBuilder(args).Configure(item => item.UseForwardedHeaders(new ForwardedHeadersOptions
+    //{
+    //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    //})).UseKestrel(options =>
+    //{
+    //    options.AllowSynchronousIO = true;
+    //})
+    //.UseUrls(args[0])
+    //    .UseStartup<Startup>();
     }
 }

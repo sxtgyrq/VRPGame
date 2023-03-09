@@ -276,5 +276,12 @@
         //        </div>
         //    </div>
         //</div>
+    },
+    clearIcon: function ()
+    {
+        if (document.getElementById('driverIconPanel') == null) { }
+        else {
+            document.getElementById('driverIconPanel').remove();
+        }
     }
 };

@@ -1,4 +1,5 @@
 ﻿using HouseManager4_0.RoomMainF;
+using Microsoft.AspNetCore.Components.RenderTree;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +17,7 @@ namespace HouseManager4_0
             this.ability = new AbilityAndState(roleInGame);
             this._targetFpIndex = -1;
             this.role = roleInGame;
-            this.countStamp = 0;
+            this.countStamp = 2;
         }
         public enum CarState
         {
@@ -69,7 +70,7 @@ namespace HouseManager4_0
                 return this._state;
             }
         }
-        public int countStamp { get; private set; }
+        public int countStamp = 2;
 
         public void setState(RoleInGame player, ref List<string> notifyMsg, CarState s)
         {
@@ -81,7 +82,7 @@ namespace HouseManager4_0
             if (player.playerType == RoleInGame.PlayerType.player)
             {
                 SendStateAndPurpose((Player)player, this, ref notifyMsg);
-                this.countStamp++;
+                // this.countStamp++;
             }
 
             /*
@@ -238,6 +239,17 @@ namespace HouseManager4_0
             //this._Cars.FindIndex(car);
             //throw new NotImplementedException();
         }
+
+        bool _directAttack = false;
+        /// <summary>
+        /// 直接从基地进行攻击
+        /// </summary>
+        public bool DirectAttack
+        {
+            get { return this._directAttack; }
+            set { this._directAttack = value; }
+        }
+
         internal void Refresh(RoleInGame player, ref List<string> notifyMsg)
         {
             this.setState(player, ref notifyMsg, CarState.waitAtBaseStation);

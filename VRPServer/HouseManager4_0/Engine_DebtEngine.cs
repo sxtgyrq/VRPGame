@@ -437,5 +437,93 @@ namespace HouseManager4_0
                 return 100;
             }
         }
+
+        //由于
+        internal void DirectAttackThenMagic(attackMagicTool at, RoleInGame player, RoleInGame victim, GetRandomPos grp)
+        {
+            List<string> notifyMsg = new List<string>();
+            //  bool needUpdatePlayers = false;
+            lock (that.PlayerLock)
+            {
+                //   var player = that._Players[dOwner.key];
+                var car = player.getCar();
+                // car.targetFpIndex = this._Players[dor.key].StartFPIndex;
+                ;
+                if (car.state == CarState.working && car.DirectAttack)//这里要
+                {
+                    {
+                        /*
+                         * 当到达地点时，有可能攻击对象不存在。
+                         * 也有可能攻击对象已破产。
+                         * 还有正常情况。
+                         * 这三种情况都要考虑到。
+                         */
+                        //attackTool at = new attackTool();
+                        // var attackMoney = car.ability.Business;
+                        if (that._Players.ContainsKey(victim.Key))
+                        {
+                            // var victim = that._Players[dOwner.victim];
+                            if (!victim.Bust)
+                            {
+                                var percentValue = getAttackPercentValue(player, victim);
+                                percentValue = at.DealWithPercentValue(percentValue, player, victim, this.that, grp, ref notifyMsg);
+                                //if(victim.Money*100/ car.ability.Business)
+                                long reduceSum = 0;
+                                var m = victim.Money - reduceSum;
+                                long reduce;
+                                if (m > 0)
+                                {
+                                    this.DealWithReduceWhenAttack(at, player, car, victim, percentValue, ref notifyMsg, out reduce, m, ref reduceSum);
+                                }
+                                else
+                                {
+                                    reduceSum = 0;
+                                    reduce = 0;
+                                }
+                                if (at.isMagic)
+                                {
+                                    that.magicE.AmbushSelf(victim, at, grp, ref notifyMsg, ref reduceSum);
+                                    at.MagicAnimateShow(player, victim, ref notifyMsg);
+                                }
+
+                                if (reduceSum > 0)
+                                    victim.MoneySet(victim.Money - reduceSum, ref notifyMsg);
+                                if (reduce > 0)
+                                    this.WebNotify(player, $"你对【{victim.PlayerName}】进行了{at.GetSkillName()}，获得{(reduce / 100.00).ToString("f2")}金币。其还有{(victim.Money / 100.00).ToString("f2")}金币。");
+                                if (victim.Money == 0)
+                                {
+                                    victim.SetBust(true, ref notifyMsg);
+                                }
+                                if (victim.playerType == RoleInGame.PlayerType.NPC)
+                                {
+                                    ((NPC)victim).BeingAttackedF(player.Key, ref notifyMsg, Program.rm, Program.dt);
+                                }
+                                if (player.playerType == RoleInGame.PlayerType.player)
+                                    ((Player)player).RefererCount++;
+                            }
+                            else
+                            {
+                                //这种情况也有可能存在。
+                            }
+
+                        }
+                        else
+                        {
+                            //这种情况有可能存在.
+                        }
+                        /*
+                         * 无论什么情况，直接返回。
+                         */
+
+                        //else
+                        //{
+                        //    car.setState(player, ref notifyMsg, CarState.waitOnRoad);
+                        //}
+                    }
+                }
+
+            }
+            this.sendSeveralMsgs(notifyMsg);
+        }
     }
 }

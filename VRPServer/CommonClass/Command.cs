@@ -20,6 +20,7 @@ namespace CommonClass
     public class CommandNotify : Command
     {
         public int WebSocketID { get; set; }
+        //   public int TimeOut { get; set; }
     }
 
     public class GetPositionNotify : CommandNotify
@@ -201,8 +202,9 @@ namespace CommonClass
     }
     public class DrawTarget : CommandNotify
     {
-        public int x { get; set; }
-        public int y { get; set; }
+        public double x { get; set; }
+        public double y { get; set; }
+        public double h { get; set; }
     }
     public class WMsg : CommandNotify
     {
@@ -610,6 +612,11 @@ namespace CommonClass
         public int RoomIndex { get; set; }
     }
 
+    public class TeamExit : Command
+    {
+        public int TeamNum { get; set; }
+    }
+
     public class TeamJoin : Command
     {
         public string FromUrl { get; set; }
@@ -617,23 +624,42 @@ namespace CommonClass
         public int WebSocketID { get; set; }
         public string PlayerName { get; set; }
         public string TeamIndex { get; set; }
-
+        public string Guid { get; set; }
     }
 
+    public class LeaveTeam : Command
+    {
+        public string FromUrl { get; set; }
+        public int WebSocketID { get; set; }
+        public string TeamIndex { get; set; }
+    }
+    public class TeamDisplayItem
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string GUID { get; set; }
+        public bool IsSelf { get; set; }
+    }
     public class TeamCreateFinish : CommandNotify
     {
         public string CommandStart { get; set; }
         public int TeamNum { get; set; }
-        public string PlayerName { get; set; }
+        public TeamDisplayItem PlayerDetail { get; set; }
     }
     public class TeamJoinBroadInfo : CommandNotify
     {
-        public string PlayerName { get; set; }
+        public TeamDisplayItem Player { get; set; }
+        //public string Guid { get; set; }
     }
+    public class TeamJoinRemoveInfo : CommandNotify
+    {
+        public string Guid { get; set; }
+    }
+
     public class TeamJoinFinish : CommandNotify
     {
         public int TeamNum { get; set; }
-        public List<string> PlayerNames { get; set; }
+        public List<TeamDisplayItem> Players { get; set; }
     }
     public class TeamNumWithSecret : CommandNotify
     {
@@ -680,10 +706,22 @@ namespace CommonClass
         public string Key { get; set; }
         public string selectObjName { get; set; }
     }
+    /// <summary>
+    /// 用于传输对话。
+    /// </summary>
     public class DialogMsg : CommandNotify
     {
+        /// <summary>
+        /// ResponMsg 采用Key的URl与WebsocketID To=表示谁的消息，实际上相当于From
+        /// </summary>
         public string Key { get; set; }
+        /// <summary>
+        /// Reques时，采用To的URl与WebsocketID To=表示谁的消息。To=Self，表示自己的消息。
+        /// </summary>
         public string To { get; set; }
+        /// <summary>
+        /// 消息内容
+        /// </summary>
         public string Msg { get; set; }
     }
     public class PassRoomMd5Check
@@ -764,6 +802,17 @@ namespace CommonClass
         // public long SpeedValue { get; set; }
         // public long SpeedValue { get; set; }
         //  public int 
+    }
+
+    public class ParameterToEditPlayerMaterial
+    {
+        /// <summary>
+        /// 自己，队友，玩家，NPC
+        /// </summary>
+        public string Relation { get; set; }
+        public string singleName { get; set; }
+        public int Driver { get; set; }
+        public string Key { get; set; }
     }
 
     public class ResistanceDisplay2 : CommandNotify
@@ -853,5 +902,36 @@ namespace CommonClass
     {
         public string Key { get; set; }
         public string Code { get; set; }
+    }
+
+    public class SetParameterIsLogin : CommandNotify
+    {
+
+    }
+    public class SetParameterHasNewTask : CommandNotify
+    {
+
+    }
+    public class ExitObj : Command
+    {
+        public string Key { get; set; }
+        public class ExitObjResult
+        {
+            public bool Success { get; set; }
+            public string Msg { get; set; }
+        }
+    }
+
+    public class GetOnLineState : Command
+    {
+        public string Key { get; set; }
+        public class SetOnLineState : CommandNotify
+        {
+            public string Key { get; set; }
+            public bool IsNPC { get; set; }
+            public bool OnLine { get; set; }
+            public bool IsPartner { get; set; }
+            public bool IsEnemy { get; set; }
+        }
     }
 }

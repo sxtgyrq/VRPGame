@@ -79,7 +79,7 @@ namespace WsOfWebClient.MapEditor
                     modelTypes = modelTypes
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sn);
-                CommonF.SendData(sendMsg, webSocket);
+                CommonF.SendData(sendMsg, webSocket, 0);
             }
             public async Task AddModel(aModel m, WebSocket webSocket)
             {
@@ -110,7 +110,7 @@ namespace WsOfWebClient.MapEditor
                     r = dm.rotatey
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sn);
-                CommonF.SendData(sendMsg, webSocket);
+                CommonF.SendData(sendMsg, webSocket, 0);
             }
 
             public void SaveObjF(SaveObj so, WebSocket webSocket, Random rm, string author, bool isAdministartor)
@@ -509,7 +509,7 @@ namespace WsOfWebClient.MapEditor
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sm);
 
-                CommonF.SendData(sendMsg, webSocket);
+                CommonF.SendData(sendMsg, webSocket, 0);
             }
 
 
@@ -726,7 +726,7 @@ namespace WsOfWebClient.MapEditor
                     var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.MapEditor.ModelDetail>(json);
                     obj.c = "DownloadModel";
                     json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                    CommonF.SendData(json, webSocket);
+                    CommonF.SendData(json, webSocket, 0);
                 }
             }
 
@@ -758,7 +758,7 @@ namespace WsOfWebClient.MapEditor
                         };
 
                         sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(sn);
-                        CommonF.SendData(sendMsg, webSocket);
+                        CommonF.SendData(sendMsg, webSocket, 0);
 
                         ShowOBJFile sf = new ShowOBJFile()
                         {
@@ -813,7 +813,7 @@ namespace WsOfWebClient.MapEditor
                         row = row
                     };
                     json = Newtonsoft.Json.JsonConvert.SerializeObject(objWeb);
-                    CommonF.SendData(json, webSocket);
+                    CommonF.SendData(json, webSocket, 0);
                 }
             }
 
@@ -881,7 +881,7 @@ namespace WsOfWebClient.MapEditor
                 if (string.IsNullOrEmpty(json)) { }
                 else
                 {
-                    CommonF.SendData(json, webSocket);
+                    CommonF.SendData(json, webSocket, 0);
                 }
             }
             internal void TaskCopyPassOrNGF(WebSocket webSocket, CommonClass.Finance.TaskCopyPassOrNG pOrNG, Random rm)
@@ -893,7 +893,7 @@ namespace WsOfWebClient.MapEditor
                 if (string.IsNullOrEmpty(json)) { }
                 else
                 {
-                    CommonF.SendData(json, webSocket);
+                    CommonF.SendData(json, webSocket, 0);
                 }
             }
         }

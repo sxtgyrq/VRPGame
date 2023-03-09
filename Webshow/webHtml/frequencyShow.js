@@ -22,7 +22,13 @@
     updateFrequency: function () {
         var that = frequencyShow;
         document.getElementById(that.operateID).innerText = (objMain.FrequencyOfCollectReward / 100).toFixed(2);
-    }
+    },
+    clear: function () {
+        var that = frequencyShow;
+        if (document.getElementById(that.operateID) != null) {
+            document.getElementById(that.operateID).remove();
+        }
+    },
 };
 
 var moneyShow =
@@ -49,7 +55,13 @@ var moneyShow =
     updateMoneyShow: function () {
         var that = moneyShow;
         document.getElementById(that.operateID).innerText = (objMain.Money / 100).toFixed(2);
-    }
+    },
+    clear: function () {
+        var that = moneyShow;
+        if (document.getElementById(that.operateID) != null) {
+            document.getElementById(that.operateID).remove();
+        }
+    },
 };
 
 var operateStateShow =
@@ -85,5 +97,11 @@ var operateStateShow =
                     document.getElementById(that.operateID).innerText = '移动';
                 }; break;
         } 
-    }
+    },
+    clear: function () {
+        var that = operateStateShow;
+        if (document.getElementById(that.operateID) != null) {
+            document.getElementById(that.operateID).remove();
+        }
+    },
 };

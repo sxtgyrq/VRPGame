@@ -77,7 +77,9 @@ namespace WsOfWebClient
                 c = "VerifyCodePic"
             };
             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-            CommonF.SendData(returnMsg, webSocket);
+            CommonF.SendData(returnMsg, webSocket, 0);
         }
+
+        
     }
 }

@@ -3,8 +3,67 @@
     startT: 0,
     copyModel: function (sum) {
         // sum = sum * 2 + 1;
+        //m = objMain.rmbModel['rmb1'].clone();
+        var rmb = 'rmb1';
         if (sum < 1) {
             sum = 1;
+            rmb = 'rmb1';
+        }
+        else if (sum < 10) {
+            sum = 2;
+            rmb = 'rmb1';
+        }
+        else if (sum < 20) {
+            sum = 3;
+            rmb = 'rmb5';
+        }
+        else if (sum < 50) {
+            sum = 4;
+            rmb = 'rmb5';
+        }
+        else if (sum < 100) {
+            sum = 5;
+            rmb = 'rmb5';
+        }
+        else if (sum < 200) {
+            sum = 6;
+            rmb = 'rmb10';
+        }
+        else if (sum < 500) {
+            sum = 7;
+            rmb = 'rmb10';
+        }
+        else if (sum < 1000) {
+            sum = 8;
+            rmb = 'rmb10';
+        }
+        else if (sum < 2000) {
+            sum = 9;
+            rmb = 'rmb20';
+        }
+        else if (sum < 5000) {
+            sum = 10;
+            rmb = 'rmb20';
+        }
+        else if (sum < 10000) {
+            sum = 11;
+            rmb = 'rmb20';
+        }
+        else if (sum < 20000) {
+            sum = 12;
+            rmb = 'rmb50';
+        }
+        else if (sum < 50000) {
+            sum = 13;
+            rmb = 'rmb50';
+        }
+        else if (sum < 100000) {
+            sum = 14;
+            rmb = 'rmb50';
+        }
+        else {
+            sum = 15;
+            rmb = 'rmb100';
         }
         var indexOfModel = 0;
         var obj = [];
@@ -33,7 +92,7 @@
             //else
             //if (sum >= 0)
             //{
-            m = objMain.rmbModel['rmb1'].clone();
+            m = objMain.rmbModel[rmb].clone();
 
             // }
             var selfCar = objMain.carGroup.getObjectByName('car_' + objMain.indexKey);
@@ -45,7 +104,7 @@
                 indexOfModel++;
                 obj.push(m);
             }
-            sum -= 100;
+            sum -= 1;
         }
         for (var i = 0; i < obj.length; i++) {
             obj[i].userData['sum'] = indexOfModel;

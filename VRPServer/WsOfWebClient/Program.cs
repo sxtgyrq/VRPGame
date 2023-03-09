@@ -46,6 +46,8 @@ B.地图编辑器WebSocket服务");
             }
             else
             {
+                var data = CommonClass.Img.DrawFont.FontCodeResult.Data.Get(Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.Img.DrawFont.FontCodeResult.Data.objTff2>);
+                CommonClass.Img.DrawFont.Initialize(data);
                 Team.Config();
                 //  Room.SetWhenStart();
                 Console.WriteLine("你好！此服务为网页端的webSocket服务！20220702");

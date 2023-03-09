@@ -7,21 +7,24 @@ namespace HouseManager4_0.RoomMainF
 {
     public partial class RoomMain : interfaceOfHM.Car
     {
-        
+
         public void SendStateOfCar(Player player, HouseManager4_0.Car car, ref List<string> notifyMsg)
         {
-            var carIndexStr = car.IndexString;
-            var obj = new BradCarState
+            // lock (car.countStamp)
             {
-                c = "BradCarState",
-                WebSocketID = player.WebSocketID,
-                State = car.state.ToString(),
-                carID = carIndexStr,
-                countStamp = car.countStamp
-            };
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-            notifyMsg.Add(player.FromUrl);
-            notifyMsg.Add(json);
+                var carIndexStr = car.IndexString;
+                var obj = new BradCarState
+                {
+                    c = "BradCarState",
+                    WebSocketID = player.WebSocketID,
+                    State = car.state.ToString(),
+                    carID = carIndexStr,
+                    countStamp = car.countStamp++
+                };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                notifyMsg.Add(player.FromUrl);
+                notifyMsg.Add(json);
+            }
         }
 
         public void SetAnimateStepChanged(RoleInGame player, Car car, ref List<string> notifyMsg)
@@ -476,7 +479,7 @@ namespace HouseManager4_0.RoomMainF
                 if (player.playerType == RoleInGame.PlayerType.player)
                     SendPurposeOfCar((Player)player, car, ref notifyMsg);
             }
-            Startup.sendSeveralMsgs(notifyMsg); 
+            Startup.sendSeveralMsgs(notifyMsg);
         }
 
         void SendPurposeOfCar(Player player, Car car, ref List<string> notifyMsg)

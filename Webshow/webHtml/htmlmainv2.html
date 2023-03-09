@@ -279,41 +279,58 @@
 
         .costomButton:active {
             background: gold;
-            transform: scale(0.6);
+            transform: scale(1.1);
             box-shadow: 0.1em 0.2em 0.5em 1px rgba(0, 0, 0, 0.24);
+            border: solid 2px;
         }
 
         .costomButton:focus {
             background: gold;
-            transform: scale(0.6);
+            transform: scale(1.1);
             box-shadow: 0.1em 0.2em 0.5em 1px rgba(0, 0, 0, 0.24);
+            border: solid 2px;
+        }
+
+        .needToClick {
+            animation: mymove 1.9s infinite;
+            -webkit-animation: mymove 1.9s infinite;
         }
     </style>
     <link href="css/selectSingleTeamJoinHtml.css" rel="stylesheet" />
-    <script src="ThreeJs/three.js"></script>
-    <script src="fire.js"></script>
-    <script src="ThreeJs/CSS2DRenderer.js"></script>
-    <script src="Geometry/GetMapDetail.js"></script>
-    <script src="ThreeJs/OrbitControls.js"></script>
-    <script src="ThreeJs/WebGL.js"></script>
-    <!--<script src="ThreeJs/GLTFBase64Loader.js"></script>-->
-    <script src="ThreeJs/MTLLoader.js"></script>
+    <!--<script src="ThreeJs/three.js"></script>-->
+    <script src="ThreeJs/three-min.js"></script><!--626kb-->
+    <script src="fire.js"></script><!--24kb-->
+    <script src="ThreeJs/CSS2DRenderer.js"></script><!--4kb-->
+    <script src="Geometry/GetMapDetail.js"></script><!--5kb-->
+    <!--<script src="ThreeJs/OrbitControls.js"></script>--><!--33kb-->
 
-    <script src="ThreeJs/OBJLoader.js"></script>
-    <script src="ThreeJs/LightningStrike.js"></script>
-    <script src="ThreeJs/EffectComposer.js"></script>
-    <script src="ThreeJs/ShaderPass.js"></script>
-    <script src="ThreeJs/CopyShader.js"></script>
-    <script src="ThreeJs/RenderPass.js"></script>
-    <script src="ThreeJs/SimplexNoise.js"></script>
-    <script src="ThreeJs/OutlinePass.js"></script>
+    <script src="ThreeJs/OrbitControls.min.js"></script><!--13kb-->
+    <script src="ThreeJs/WebGL.js"></script><!--2kb-->
+    <!--<script src="ThreeJs/GLTFBase64Loader.js"></script>-->
+    <!--<script src="ThreeJs/MTLLoader.js"></script>--><!--27kb-->
+    <script src="ThreeJs/MTLLoader-min.js"></script><!--10kb-->
+    <!--<script src="ThreeJs/OBJLoader.js"></script>--><!--26kb-->
+    <script src="ThreeJs/OBJLoader-min.js"></script><!--9kb-->
+    <!--<script src="ThreeJs/LightningStrike.js"></script>--><!--34kb-->
+    <script src="ThreeJs/LightningStrike.min.js"></script><!--19kb-->
+    <script src="ThreeJs/EffectComposer.js"></script><!--5kb-->
+    <script src="ThreeJs/ShaderPass.js"></script><!--2kb-->
+    <script src="ThreeJs/CopyShader.js"></script><!--1kb-->
+    <script src="ThreeJs/RenderPass.js"></script><!--2kb-->
+    <!--<script src="ThreeJs/SimplexNoise.js"></script>--><!--14kb-->
+    <script src="ThreeJs/SimplexNoise.min.js"></script><!--6kb-->
+    <!--<script src="ThreeJs/OutlinePass.js"></script>--><!--21kb-->
+    <script src="ThreeJs/OutlinePass.min.js"></script><!--17kb-->
+
     <link href="css/ChatHtml.css" rel="stylesheet" />
     <link href="css/mainSet.css" rel="stylesheet" />
     <link href="css/driver.css" rel="stylesheet" />
-    <script src="Scripts/jquery-3.5.1.js"></script>
+    <!--<script src="Scripts/jquery-3.5.1.js"></script>-->
+    <script src="Scripts/jquery-3.5.1.min.js"></script>
     <script src="Scripts/notify.min.js"></script>
     <script src="transactionBussiness.js"></script>
-    <script src="Scripts/qrcode.js"></script>
+    <!--<script src="Scripts/qrcode.js"></script>--><!--33kb-->
+    <script src="Scripts/qrcode.min.js"></script><!--24kb-->
 </head>
 <body style="width: 100%; height: 100%;overflow:hidden;position:absolute;">
     <div style="text-shadow:0 0.1em 0.1em white;color:wheat;"></div>
@@ -340,8 +357,8 @@
     <script src="dialogSys.js"></script>
     <script src="notify.js"></script>
     <script src="driver.js"></script>
-    <script src="mainf2.js?xx=22"></script>
-
+    <!--<script src="mainf2.js?xx=22"></script>-->
+    <script src="mainf2.js?xx=55"></script>
     <script src="Decrypt.js"></script>
     <script src="animation.js"></script>
     <script src="moneyAbsorb.js"></script>
@@ -350,6 +367,8 @@
     <script src="guid.js"></script>
     <script src="privateSignF.js"></script>
     <script src="nyrqUrl.js"></script>
+    <script src="AMsg.js"></script>
+    <script src="createTeamObj.js"></script>
     <!--<div id="dialog" class="dialog show">
         <div class="dialogPanel1">
             <header id="panelHeader-5" class="dialogPanelheader">

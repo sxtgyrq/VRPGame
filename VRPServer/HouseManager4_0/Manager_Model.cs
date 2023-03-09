@@ -20,29 +20,27 @@ namespace HouseManager4_0
         {
             this.roomMain = roomMain;
         }
-        internal void setModels(RoleInGame roleInGame, List<Data.detailmodel> cloesdMaterial, ref List<string> notifyMsgs)
+        internal bool setModel(Player player, Data.detailmodel cloesdMaterial, ref List<string> notifyMsgs)
         {
-            if (roleInGame.playerType == RoleInGame.PlayerType.player)
+            if (player.modelHasShowed.ContainsKey(cloesdMaterial.modelID))
             {
-                var player = (Player)roleInGame;
-                for (int i = 0; i < cloesdMaterial.Count; i++)
+                return false;
+            }
+            else
+            {
+                if (Program.dt.material.ContainsKey(cloesdMaterial.amodel))
                 {
-                    if (player.modelHasShowed.ContainsKey(cloesdMaterial[i].modelID)) { }
-                    else
-                    {
-                        if (Program.dt.material.ContainsKey(cloesdMaterial[i].amodel))
-                        {
-                            var m1 = Program.dt.material[cloesdMaterial[i].amodel];
-                            var m2 = cloesdMaterial[i];
-                            player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
-                        }
-                        else
-                        { }
-                        player.modelHasShowed.Add(cloesdMaterial[i].modelID, true);
-                    }
+                    var m1 = Program.dt.material[cloesdMaterial.amodel];
+                    var m2 = cloesdMaterial;
+                    player.DrawObj3DModelF(player, m2.modelID, m2.x, m2.y, m2.z, m2.amodel, m1.modelType, m2.rotatey, false, m1.imageBase64, m1.objText, m1.mtlText, ref notifyMsgs);
                 }
+                else
+                { }
+                player.modelHasShowed.Add(cloesdMaterial.modelID, true);
+                return true;
             }
         }
+
 
         internal void setModels(List<Data.detailmodel> cloesdMaterial, ref List<string> notifyMsgs)
         {
@@ -93,11 +91,11 @@ namespace HouseManager4_0
                                     {
                                         case CarState.waitOnRoad:
                                             {
-                                                var models = that.goodsM.GetConnectionModels(player.getCar().targetFpIndex);
+                                                var models = that.goodsM.GetConnectionModels(player.getCar().targetFpIndex, player);
                                                 if (models.Count(item => item.modelID == m.selectObjName) > 0)
                                                 {
 
-                                                    var newList = (from item in models orderby CommonClass.Random.GetMD5HashFromStr(item.modelID + m.Key) ascending select item).ToList();
+                                                    var newList = (from item in Program.dt.models orderby CommonClass.Random.GetMD5HashFromStr(item.modelID + m.Key) ascending select item).ToList();
 
                                                     var hash = newList.FindIndex(item => item.modelID == m.selectObjName);
                                                     hash = hash % 5;
@@ -216,7 +214,7 @@ namespace HouseManager4_0
                                                                         case 4: value = that.rm.Next(32, 47); break;
                                                                         case 5: value = that.rm.Next(42, 54); break;
                                                                         case 6: value = that.rm.Next(52, 61); break;
-                                                                        case 7: value = that.rm.Next(62, 68); break;
+                                                                        case 7: value = that.rm.Next(62, 71); break;
                                                                         case 8: value = that.rm.Next(72, 75); break;
                                                                     }
                                                                     if (player.buildingReward[hash] < value)
@@ -360,10 +358,14 @@ namespace HouseManager4_0
                             {
                                 case CarState.waitOnRoad:
                                     {
-                                        var models = that.goodsM.GetConnectionModels(npc.getCar().targetFpIndex);
+                                        var models = that.goodsM.GetConnectionModels(npc.getCar().targetFpIndex, npc);
 
                                         if (models.Count > 0)
                                         {
+                                            // var newList = (from item in models orderby CommonClass.Random.GetMD5HashFromStr(item.modelID + m.Key) ascending select item).ToList();
+
+                                            //var hash = newList.FindIndex(item => item.modelID == m.selectObjName);
+                                            //hash = hash % 5;
                                             models = (from item in models orderby item.x + item.y select item).ToList();
                                             var hash = (npc.Key + npc.PlayerName + models[0].modelID).GetHashCode();
                                             var newRm = new System.Random(hash);
@@ -382,16 +384,26 @@ namespace HouseManager4_0
                                                 defendLevel = 8;
                                             }
                                             int randomValue = 0;
+
+                                            //              case 1: value = that.rm.Next(2, 26); break;
+                                            //case 2: value = that.rm.Next(12, 33); break;
+                                            //case 3: value = that.rm.Next(22, 40); break;
+                                            //case 4: value = that.rm.Next(32, 47); break;
+                                            //case 5: value = that.rm.Next(42, 54); break;
+                                            //case 6: value = that.rm.Next(52, 61); break;
+                                            //case 7: value = that.rm.Next(62, 68); break;
+                                            //case 8:
+                                            //    value = that.rm.Next(72, 75); break;
                                             switch (defendLevel)
                                             {
-                                                case 1: randomValue = that.rm.Next(1, 30); break;
-                                                case 2: randomValue = that.rm.Next(15, 40); break;
-                                                case 3: randomValue = that.rm.Next(29, 50); break;
-                                                case 4: randomValue = that.rm.Next(43, 60); break;
-                                                case 5: randomValue = that.rm.Next(57, 70); break;
-                                                case 6: randomValue = that.rm.Next(71, 80); break;
-                                                case 7: randomValue = that.rm.Next(85, 90); break;
-                                                case 8: randomValue = that.rm.Next(99, 100); break;
+                                                case 1: randomValue = that.rm.Next(2, 26); break;
+                                                case 2: randomValue = that.rm.Next(12, 33); break;
+                                                case 3: randomValue = that.rm.Next(22, 40); break;
+                                                case 4: randomValue = that.rm.Next(32, 47); break;
+                                                case 5: randomValue = that.rm.Next(42, 54); break;
+                                                case 6: randomValue = that.rm.Next(52, 61); break;
+                                                case 7: randomValue = that.rm.Next(62, 71); break;
+                                                case 8: randomValue = that.rm.Next(72, 75); break;
                                             }
                                             if (npc.buildingReward[hash] < randomValue)
                                                 npc.buildingReward[hash] = randomValue;

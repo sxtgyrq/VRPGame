@@ -44,7 +44,7 @@
                     if (this.msgs[key].read.length > this.msgs[key].readLength) {
                         divItem.classList.add('friendMsg');
                     }
-                } 
+                }
                 var that = this;
                 divItem.onclick = function () {
                     //   alert(this.CustomTag);
@@ -60,6 +60,10 @@
             this.updatePanel();
         }
         this.dealWithRoleState();
+
+        var obj = { 'c': 'GetOnLineState' };
+        objMain.ws.send(JSON.stringify(obj));
+        //document.getElementById('friendsList')
     },
     show: function () {
         if (document.getElementById('friendsList') != null) {
@@ -67,6 +71,7 @@
             if (document.getElementById('roleStatePanel') != null) {
                 document.getElementById('roleStatePanel').remove();
             }
+            this.AlertNewTask();
             return;
         }
         this.cancleTask();
@@ -121,10 +126,14 @@
         while (document.getElementById('msgDialog') != null) {
             document.getElementById('msgDialog').remove();
         }
-
+        if (document.getElementById('roleStatePanel') != null) {
+            document.getElementById('roleStatePanel').remove();
+        }
         var dialog = document.createElement('div');
         dialog.id = 'msgDialog';
         dialog.indexKey = data.indexKey;
+
+        resistance.positionF(data.indexKey);
         //  dialog.classList.add
         dialog.classList.add('dialog');
         dialog.classList.add('show');
@@ -281,6 +290,9 @@
         //}
     },
     dealWithMsg: function (msg) {
+        /*
+         * 对应后台DialogMsg
+         */
         console.log('msg', msg);
         if (objMain.indexKey == msg.Key) {
             if (this.msgs[msg.To] == undefined) {
@@ -473,7 +485,7 @@
             fightSituationBtnName = '查看态势';
         }
         var html = `<div id="roleStatePanel" style="position: absolute; z-index: 8; top: calc(100% - 60px - 5.25em); left: calc(12em + 20px); width: 6em; height: 5.25em; border: solid 1px red; text-align: center; background: rgba(104, 48, 8, 0.85); color: #83ffff;">
-        <div style="background: yellowgreen; 
+        <div id="taskShowBtnToDisplayPanel" style="background: yellowgreen; 
         margin-top: 0.25em;
         padding:0.5em 0 0.5em 0;" onclick="dialogSys.RefreshTaskCopy();">
             任务
@@ -488,6 +500,8 @@
         var frag = document.createRange().createContextualFragment(html);
         frag.id = 'roleStatePanel';
         document.body.appendChild(frag);
+        var that = dialogSys;
+        that.AlertNewTask();
     },
     RefreshRoleState: function () {
         while (document.getElementById('roleStatePanel') != null) {
@@ -502,6 +516,8 @@
         }
     },
     RefreshTaskCopy: function () {
+        objMain.stateNeedToChange.HasNewTask = false;
+        this.AlertNewTask();
         objMain.ws.send(JSON.stringify({ 'c': 'GetTaskCopy' }));
         this.show();
     },
@@ -530,6 +546,7 @@
         var frag = document.createRange().createContextualFragment(html);
         frag.id = 'taskCoypPanel';
         document.body.appendChild(frag);
+
     },
     cancleTask: function () {
         while (document.getElementById('taskCoypPanel') != null) {
@@ -544,6 +561,53 @@
         //while (document.getElementById('taskCoypPanel') != null) {
         //    document.getElementById('taskCoypPanel').remove();
         //}
+    },
+    AlertNewTask: function () {
+        if (objMain.stateNeedToChange.HasNewTask) {
+            var taskShowBtnToDisplayPanel = document.getElementById('taskShowBtnToDisplayPanel');
+            if (taskShowBtnToDisplayPanel) {
+                document.getElementById('taskShowBtnToDisplayPanel').classList.add('needToClick');
+            }
+            else {
+                SysOperatePanel.notifyMsg();
+            }
+        }
+    },
+    clear: function () {
+        while (document.getElementById('msgDialog') != null) {
+            document.getElementById('msgDialog').remove();
+        }
+        if (document.getElementById('friendsList') != null) {
+            document.getElementById('friendsList').remove();
+        }
+        if (document.getElementById('roleStatePanel') != null) {
+            document.getElementById('roleStatePanel').remove();
+        }
+    },
+    dealWithOnLine: function (parameter) {
+        var id = 'contact_' + parameter.Key;
+        var operate = document.getElementById(id);
+        if (operate != null) {
+            if (parameter.IsNPC) {
+                if (parameter.IsEnemy) {
+                    operate.style.color = '#FF0000';
+                }
+                else {
+                    operate.style.color = '#FF8800';
+                }
+            }
+            else {
+                if (parameter.IsPartner) {
+                    operate.style.color = '#00FF00';
+                }
+                else {
+                    operate.style.color = '#00FF88';
+                }
+                if (parameter.OnLine) { }
+                else { operate.style.color = '#7F7F7F'; }
+            }
+
+        }
     }
 };
 

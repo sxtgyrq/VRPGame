@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Runtime.Intrinsics.X86;
 using System.Net.Http.Headers;
+using CommonClass;
 
 namespace WsOfWebClient
 {
@@ -70,7 +71,7 @@ namespace WsOfWebClient
                                 author = obj.author,
                             };
                             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(r);
-                            CommonF.SendData(returnMsg, webSocket);
+                            CommonF.SendData(returnMsg, webSocket, 0);
                             addr = obj.bussinessAddress;
                         }
                         var tdr = getTradeDetail(s, webSocket, addr);
@@ -128,7 +129,7 @@ namespace WsOfWebClient
                         index = i.ToString(),
                     };
                     var msg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                    CommonF.SendData(msg, webSocket);
+                    CommonF.SendData(msg, webSocket, 0);
                 }
             }
             if (sumValue == 0)
@@ -167,7 +168,7 @@ namespace WsOfWebClient
                             index = i.ToString(),
                         };
                         var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                        CommonF.SendData(sendMsg, webSocket);
+                        CommonF.SendData(sendMsg, webSocket, 0);
                     }
                 }
             }
@@ -241,12 +242,12 @@ namespace WsOfWebClient
                         percentValue = percentValue
                     };
                     var passMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj3);
-                    CommonF.SendData(passMsg, webSocket);
+                    CommonF.SendData(passMsg, webSocket, 0);
                 }
             }
             return s;
         }
-        private static string drawRoad(string roadCode, Random rm)
+        private static string drawRoad(string roadCode, System.Random rm)
         {
             var index = rm.Next(0, roomUrls.Count);
             var roomUrl = roomUrls[index];
@@ -259,7 +260,7 @@ namespace WsOfWebClient
             return json;
         }
 
-        static string[] initialize(Random rm, string amID)
+        static string[] initialize(System.Random rm, string amID)
         {
             string[] result = new string[3] { "", "", "" };
             var index = rm.Next(0, roomUrls.Count);
@@ -900,7 +901,7 @@ namespace WsOfWebClient
                 c = "ClearTradeInfomation"
             };
             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-            CommonF.SendData(returnMsg, webSocket);
+            CommonF.SendData(returnMsg, webSocket, 0);
             //var sendData = Encoding.UTF8.GetBytes(returnMsg);
             //await webSocket.SendAsync(new ArraySegment<byte>(sendData, 0, sendData.Length), WebSocketMessageType.Text, true, CancellationToken.None);
             var ok = CheckRespon(webSocket, "ClearTradeInfomation");
@@ -916,7 +917,7 @@ namespace WsOfWebClient
                 c = "ShowAgreementMsg"
             };
             var returnMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-            CommonF.SendData(returnMsg, webSocket);
+            CommonF.SendData(returnMsg, webSocket, 0);
         }
 
         internal static State GetAllModelPositionF(State s, WebSocket webSocket)
@@ -1030,7 +1031,7 @@ namespace WsOfWebClient
                     title = $"{date.ToString("yyyyMMdd")}期"
                 };
                 var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                CommonF.SendData(sendMsg, webSocket);
+                CommonF.SendData(sendMsg, webSocket, 0);
             }
             else
             {
@@ -1038,7 +1039,7 @@ namespace WsOfWebClient
                 if (passObj != null)
                 {
                     var sendMsg = Newtonsoft.Json.JsonConvert.SerializeObject(passObj);
-                    CommonF.SendData(sendMsg, webSocket);
+                    CommonF.SendData(sendMsg, webSocket, 0);
                 }
                 //int indexNumber = 0;
                 //indexNumber = await GetIndexOfTrade(objGet.bussinessAddr, objGet.tradeAddress);
@@ -1427,6 +1428,8 @@ namespace WsOfWebClient
             }
             return Newtonsoft.Json.JsonConvert.DeserializeObject<CommonClass.databaseModel.tradereward>(json);
         }
+
+       
     }
 
     public partial class Room
@@ -1443,7 +1446,7 @@ namespace WsOfWebClient
                 for (int i = 0; i < list.Count; i++)
                 {
                     var dataItem = list[i].Trim();
-                    CommonF.SendData(dataItem, webSocket);
+                    CommonF.SendData(dataItem, webSocket, 0);
                 }
                 return list.Count;
             }

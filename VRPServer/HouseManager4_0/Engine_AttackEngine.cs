@@ -137,7 +137,12 @@ namespace HouseManager4_0
                 }
                 else if (that._Players[sa.targetOwner].TheLargestHolderKey != sa.targetOwner)
                 {
-                    if (that._Players[sa.targetOwner].playerType == RoleInGame.PlayerType.NPC)
+                    if (that._Players[sa.Key].playerType == RoleInGame.PlayerType.NPC)
+                    {
+                        reason = "";
+                        return true;
+                    }
+                    else if (that._Players[sa.targetOwner].playerType == RoleInGame.PlayerType.NPC)
                     {
                         reason = "";
                         return true;

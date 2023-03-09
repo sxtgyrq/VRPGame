@@ -69,12 +69,12 @@
             </tr> 
             <tr>
                 <td style="width:50%">
-                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.updateLevel();" >
+                    <div id="bthNeedToUpdateLevel" style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.updateLevel();" >
                         同步等级
                     </div>
                 </td>
                 <td style="width: 50%">
-                    <div style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.signOnline();">
+                    <div id="btnSignOnLineWhenSubsidize" style="background: yellowgreen; width:90%;margin-left:5%;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.signOnline();">
                         线上私钥签名
                     </div>
                 </td>
@@ -98,9 +98,25 @@
             that.updateSignInfomation();
             that.updateMoneyOfSumSubsidized();
             that.updateMoneyOfSumSubsidizing();
+
+            var el = document.getElementById('moneySubsidize');
+            el.classList.remove('msg');
+            if (objMain.stateNeedToChange.isLogin) {
+
+            }
+            else {
+                var bthNeedToUpdateLevel = document.getElementById('bthNeedToUpdateLevel');
+                bthNeedToUpdateLevel.classList.add('needToClick');
+
+            }
         }
         else {
             document.getElementById(that.operateID).remove();
+            if (objMain.stateNeedToChange.isLogin) { }
+            else {
+                var el = document.getElementById('moneySubsidize');
+                el.classList.add('msg');
+            }
         }
     },
     updateMoneyOfSumSubsidizing: function () {
@@ -148,94 +164,43 @@
     signOnline: function () {
         subsidizeSys.add();
         subsidizeSys.add2();
+        if (objMain.stateNeedToChange.isLogin) { }
+        else {
+            var el = document.getElementById('moneySubsidize');
+            el.classList.remove('msg');
+        }
+        PrivateSignPanelObj.subsidizeNotify();
     },
-    operateID2: 'subsidizePanelPromptPrivateKey',
-    html2: ` <div id="subsidizePanelPromptPrivateKey" style="position: absolute;
-        z-index: 8;
-        top: calc(10% - 1px);
-        width: 24em;
-        left: calc(50% - 12em);
-        height: auto;
-        border: solid 1px red;
-        text-align: center;
-        background: rgba(104, 48, 8, 0.85);
-        color: #83ffff;
-        overflow: hidden;
-        max-height: calc(90%);
-">
-<div>
-            <label>
-                p2wpkh-p2sh:
-            </label>
-
-            <input type="checkbox" id="p2wpkhp2sh" />
-        </div>
-        <div style="
-        margin-bottom: 0.25em;
-        margin-top: 0.25em;border:1px solid gray;">
-
-            <label onclick="subsidizeSys.readStr('subsidizePanelPromptPrivateKeyValue');">
-                --↓↓↓输入您珍贵的私钥↓↓↓--
-            </label>
-          
-            
- <textarea id="subsidizePanelPromptPrivateKeyValue" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 0.6);height:4em;overflow:hidden;" onchange="subsidizeSys.privateKeyChanged();"></textarea>
- 
-       
-        <div style="background: yellowgreen;
-        margin-bottom: 0.25em;
-        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.sign();">
-            签名
-        </div>
-        <div style="background: yellowgreen;
-        margin-bottom: 0.25em;
-        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.getPrivateKey();">
-            获取私钥
-        </div>
-        <div style="background: orange;
-        margin-bottom: 0.25em;
-        margin-top: 0.25em;padding:0.5em 0 0.5em 0;" onclick="subsidizeSys.add2();">
-            取消
-        </div>
-    </div>`,
     add2: function () {
-        var that = subsidizeSys;
-        if (document.getElementById(that.operateID2) == null) {
-            // var obj = new DOMParser().parseFromString(that.html, 'text/html');
-            var frag = document.createRange().createContextualFragment(that.html2);
-            frag.id = that.operateID2;
 
-            document.body.appendChild(frag);
-            //that.updateMoney();
+        if (document.getElementById(PrivateSignPanelObj.id) == null) {
+            PrivateSignPanelObj.show(
+                function () {
+                    return true;
+                },
+                function () {
+                    if (!objMain.stateNeedToChange.isLogin) {
+
+                    }
+                }, function (addr, sign) {
+                    var that = subsidizeSys;
+                    that.signInfoMatiion = [sign, addr];
+                    that.add2();
+                    that.add();
+                },
+                JSON.parse(sessionStorage['session']).Key,
+                function () {
+                    if (objMain.stateNeedToChange.isLogin) { }
+                    else {
+                        var el = document.getElementById('moneySubsidize');
+                        el.classList.add('msg');
+
+                    }
+                }
+            );
         }
         else {
-            document.getElementById(that.operateID2).remove();
-        }
-    },
-    privateKeyChanged: function () {
-
-        var privateKey = document.getElementById('subsidizePanelPromptPrivateKeyValue').value;
-        if (yrqCheckPrivateKey(privateKey)) {
-            document.getElementById('subsidizePanelPromptPrivateKeyValue').style.background = 'rgba(127, 255, 127, 0.6)';
-        }
-        else {
-            document.getElementById('subsidizePanelPromptPrivateKeyValue').style.background = 'rgba(255, 127, 127, 0.6)';
-        }
-    },
-    sign: function () {
-        var that = subsidizeSys;
-        var privateKey = document.getElementById('subsidizePanelPromptPrivateKeyValue').value;
-        if (yrqCheckPrivateKey(privateKey)) {
-
-            //document.getElementById('subsidizePanelPromptPrivateKeyValue').style.background = 'rgba(127, 255, 127, 0.6)';
-            var signMsg = JSON.parse(sessionStorage['session']).Key;
-
-            that.signInfoMatiion = yrqSign(privateKey, signMsg, document.getElementById('p2wpkhp2sh').checked);
-            that.add2();
-            that.add();
-        }
-        else {
-            document.getElementById('subsidizePanelPromptPrivateKeyValue').style.background = 'rgba(255, 127, 127, 0.6)';
+            document.getElementById(PrivateSignPanelObj.id).remove();
         }
     },
     signInfoMatiion: null,
@@ -254,6 +219,29 @@
     SupportMoney: 0,
     getPrivateKey: function () {
         document.getElementById('subsidizePanelPromptPrivateKeyValue').value = yrqGetRandomPrivateKey();
+
+        $.notify(`私钥是所有游戏权限与收益的基础
+务必妥善保管私钥，
+私钥如泄露，代表者权限放开，
+收益丢失；
+私钥丢失，无法找回！`,
+            {
+                autoHide: true,
+                className: 'info',
+                autoHideDelay: 60000,
+                position: 'top',
+            });
+        if (objMain.stateNeedToChange.isLogin) { }
+        else {
+            var el1 = document.getElementById('subsidizeBtnSignMsg');
+            el1.classList.add('needToClick');
+
+            var el2 = document.getElementById('subsidizeBtnGetPrivateKey');
+            el2.classList.remove('needToClick');
+
+            var el3 = document.getElementById('labelDivNeedToInputPrivateKey');
+            el3.classList.remove('needToClick');
+        }
     },
     updateLevel: function () {
         var bitcoinAddress = document.getElementById('bitcoinSubsidizeAddressInput').value;
@@ -279,6 +267,15 @@
         }
         else {
             document.getElementById('bitcoinSubsidizeAddressInput').style.background = 'rgba(255, 127, 127, 0.9)';
+            if (objMain.stateNeedToChange.isLogin) { }
+            else {
+                var bthNeedToUpdateLevel = document.getElementById('bthNeedToUpdateLevel');
+                bthNeedToUpdateLevel.classList.remove('needToClick');
+
+
+                var btnSignOnLineWhenSubsidize = document.getElementById('btnSignOnLineWhenSubsidize');
+                btnSignOnLineWhenSubsidize.classList.add('needToClick');
+            }
         }
         //objMain.ws.send(JSON.stringify({ c: 'UpdateLevel', signature: signature, address: bitcoinAddress, value: subsidizeValue }));
     },
@@ -307,6 +304,20 @@
             alert('浏览器设置不支持访问剪切板！');
         }
     },
+    removeBtnsGuid: function () {
+        var el = document.getElementById('moneySubsidize');
+        if (el)
+            el.classList.remove('msg');
+        var bthNeedToUpdateLevel = document.getElementById('bthNeedToUpdateLevel');
+        if (bthNeedToUpdateLevel)
+            bthNeedToUpdateLevel.classList.remove('needToClick');
+        var btnSignOnLineWhenSubsidize = document.getElementById('bthNeedToUpdateLevel');
+        if (btnSignOnLineWhenSubsidize)
+            btnSignOnLineWhenSubsidize.classList.remove('needToClick');
+    },
+    clearInfo: function () {
+        this.signInfoMatiion = null;
+    }
 }
     ;
 var debtInfoSys =

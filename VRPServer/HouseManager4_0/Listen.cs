@@ -464,6 +464,16 @@ namespace HouseManager4_0
                             TaskCopyPassOrNG pOrNG = Newtonsoft.Json.JsonConvert.DeserializeObject<TaskCopyPassOrNG>(notifyJson);
                             outPut = objI.TaskCopyPassOrNGF(pOrNG);
                         }; break;
+                    case "ExitObj":
+                        {
+                            ExitObj obj = Newtonsoft.Json.JsonConvert.DeserializeObject<ExitObj>(notifyJson);
+                            outPut = objI.ExitF(obj);
+                        }; break;
+                    case "GetOnLineState": 
+                        {
+                            GetOnLineState obj = Newtonsoft.Json.JsonConvert.DeserializeObject<GetOnLineState>(notifyJson);
+                            outPut = objI.GetOnLineStateF(obj);
+                        };break;
                         //case "CopyTaskDisplay": 
                         //    {
 

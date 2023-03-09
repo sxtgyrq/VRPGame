@@ -29,6 +29,18 @@ namespace HouseManager4_0
                             switch (car.state)
                             {
                                 case CarState.waitAtBaseStation:
+                                    {
+                                        car.DirectAttack = true;
+                                    }; break;
+                                case CarState.waitOnRoad:
+                                    {
+                                        car.DirectAttack = false;
+                                    }; break;
+                            }
+
+                            switch (car.state)
+                            {
+                                case CarState.waitAtBaseStation:
                                 case CarState.waitOnRoad:
                                     {
                                         if (actionDo.carAbilitConditionsOk(player, car, c, grp))
@@ -431,8 +443,6 @@ namespace HouseManager4_0
 
         }
 
-
-
         protected void StartSelectThreadB(List<Node.direction> selections, Node.pathItem.Postion selectionCenter, Player player, CarState oldState, Action p)
         {
             if (isRight(selections, player.direciton, false) || player.Bust)
@@ -561,7 +571,7 @@ namespace HouseManager4_0
             public List<string> notifyMsgs = new List<string>();
             public void send(Engine e)
             {
-                e.sendSeveralMsgs(this.notifyMsgs); 
+                e.sendSeveralMsgs(this.notifyMsgs);
             }
         }
 

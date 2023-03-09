@@ -22,18 +22,11 @@ namespace HouseManager4_0.RoomMainF
                             {
                                 if (this._Players[dm.To].playerType == RoleInGame.PlayerType.player)
                                 {
-                                    this.attachE.DealWithMsg(dm, Program.dt);
-                                    //notifyMsg.Add(((Player)this._Players[dm.Key]).FromUrl);
-                                    //dm.WebSocketID = ((Player)this._Players[dm.Key]).WebSocketID;
-                                    //dm.Msg = "不可以拜NPC为老大！";
-                                    //notifyMsg.Add(Newtonsoft.Json.JsonConvert.SerializeObject(dm));
+                                    this.attachE.DealWithMsg(dm, Program.dt); 
                                 }
                                 else if (this._Players[dm.To].playerType == RoleInGame.PlayerType.NPC)
                                 {
-                                    notifyMsg.Add(((Player)this._Players[dm.Key]).FromUrl);
-                                    dm.WebSocketID = ((Player)this._Players[dm.Key]).WebSocketID;
-                                    dm.Msg = "不可以拜NPC为老大！";
-                                    notifyMsg.Add(Newtonsoft.Json.JsonConvert.SerializeObject(dm));
+                                    this.WebNotify(this._Players[dm.Key], "玩家不可拜NPC为老大！"); 
                                 }
                             }
                         }
@@ -56,7 +49,10 @@ namespace HouseManager4_0.RoomMainF
                 }
             Startup.sendSeveralMsgs(notifyMsg);
         }
-
+        /// <summary>
+        /// 发送时，采用Key的URL与WebSocekt
+        /// </summary>
+        /// <param name="dm"></param>
         public void ResponMsg(DialogMsg dm)
         {
             List<string> notifyMsg = new List<string>();
@@ -75,6 +71,10 @@ namespace HouseManager4_0.RoomMainF
             Startup.sendSeveralMsgs(notifyMsg);
         }
 
+        /// <summary>
+        /// 发送时，采用DialogMsg dm 中To 参数的WebSocket
+        /// </summary>
+        /// <param name="dm"></param>
         public void RequstMsg(DialogMsg dm)
         {
             List<string> notifyMsg = new List<string>();

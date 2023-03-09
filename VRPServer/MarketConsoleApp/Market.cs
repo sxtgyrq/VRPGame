@@ -130,7 +130,7 @@ namespace MarketConsoleApp
                                 c = "ServerStatictis"
                             });
                     var t = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json);
-                   
+
                     var rResult = t.GetAwaiter().GetResult();
                     // var r = t;
                     //var r =  <string>(() => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
@@ -140,9 +140,9 @@ namespace MarketConsoleApp
                         List<int> count = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(rResult);
                         var fileName = server.Replace('.', '_').Replace(':', '_');
                         fileName = $"log/{fileName}.txt";
-                        var msg = $"{server},{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")},总共:{count[0]},玩家:{count[1]},NPC:{count[2]},在线玩家:{count[3]}";
+                        var msg = $"{server},{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")},总共:{count[0]},玩家:{count[1]},NPC:{count[2]},在线玩家:{count[3]}.{Environment.NewLine}";
                         Console.WriteLine(msg);
-                        File.WriteAllText(fileName, msg);
+                        File.AppendAllText(fileName, msg);
                     }
                 }
                 Thread.Sleep(60 * 1000);
@@ -465,7 +465,7 @@ namespace MarketConsoleApp
                             TradeInfo tradeInfo = new TradeInfo(trant.adress);
                             var t = tradeInfo.GetTradeInfomationFromChain();
                             t.GetAwaiter().GetResult();
-                           
+
                         }
                     }; break;
             }
@@ -615,7 +615,7 @@ namespace MarketConsoleApp
             {
                 var t = TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json);
                 t.GetAwaiter().GetResult();
-                
+
                 //await ) => TcpFunction.WithResponse.SendInmationToUrlAndGetRes(controllerUrl, json));
                 //Consol.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}往{controllerUrl}发送消息--成功！");
             }

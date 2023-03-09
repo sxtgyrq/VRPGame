@@ -22,7 +22,7 @@
 
             <input type="checkbox" id="p2wpkhp2sh" />
         </div>
-        <div style="
+        <div  id="labelDivNeedToInputPrivateKey"  style="
         margin-bottom: 0.25em;
         margin-top: 0.25em;border:1px solid gray;"> 
             <label onclick="subsidizeSys.readStr('subsidizePanelPromptPrivateKeyValue');">
@@ -32,23 +32,23 @@
  <textarea id="subsidizePanelPromptPrivateKeyValue" style="width:calc(90% - 10px);margin-bottom:0.25em;background:rgba(127, 255, 127, 0.6);height:4em;overflow:hidden;" onchange="subsidizeSys.privateKeyChanged();"></textarea>
  
        
-        <div style="background: yellowgreen;
+        <div id="subsidizeBtnSignMsg" style="background: yellowgreen;
         margin-bottom: 0.25em;
         margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="PrivateSignPanelObj.sign();">
             签名
         </div>
-        <div style="background: yellowgreen;
+        <div id="subsidizeBtnGetPrivateKey" style="background: yellowgreen;
         margin-bottom: 0.25em;
         margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="subsidizeSys.getPrivateKey();">
             获取私钥
         </div>
         <div style="background: orange;
         margin-bottom: 0.25em;
-        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="PrivateSignPanelObj.show();">
+        margin-top: 0.25em;padding:0.25em 0 0.25em 0;" onclick="PrivateSignPanelObj.cancel();">
             取消
         </div>
     </div>`,
-    show: function (checkF, fail, success, msg) {
+    show: function (checkF, fail, success, msg, cancle) {
         var that = PrivateSignPanelObj;
         if (checkF != undefined && checkF()) {
             if (document.getElementById(that.id) == null) {
@@ -64,7 +64,8 @@
             fail();
         }
         else {
-            document.getElementById(that.id).remove();
+            if (document.getElementById(that.id))
+                document.getElementById(that.id).remove();
         }
         if (success != undefined) that.success = success;
         else
@@ -73,6 +74,10 @@
             that.msg = msg;
         else
             that.msg = '';
+        if (cancle != undefined) {
+            that.cancelF = cancle;
+        }
+        else that.cancelF = null;
     },
     sign: function () {
         var that = PrivateSignPanelObj;
@@ -97,6 +102,25 @@
         }
     },
     msg: '',
-    success: null
+    success: null,
+    cancelF: null,
+    cancel: function () {
+        var that = PrivateSignPanelObj;
+        document.getElementById(that.id).remove();
+        if (that.cancelF !== undefined && that.cancelF != null) {
+            that.cancelF();
+            that.cancelF = null;
+        }
+    },
+    subsidizeNotify: function () {
+        if (objMain.stateNeedToChange.isLogin) { }
+        else {
+            var el = document.getElementById('subsidizeBtnGetPrivateKey');
+            el.classList.add('needToClick');
 
+            var el = document.getElementById('labelDivNeedToInputPrivateKey');
+            el.classList.add('needToClick');
+        }
+    }
 }
+

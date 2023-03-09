@@ -15,6 +15,9 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using CommonClass;
 using CityRunFunction;
+using DalOfAddress;
+using MySql.Data.MySqlClient;
+using System.Linq;
 
 namespace HouseManager4_0
 {
@@ -44,6 +47,22 @@ namespace HouseManager4_0
         {
             player.initializeTaskCopy();
         }
+        public List<CommonClass.databaseModel.taskcopy> GetALLItem(string address)
+        {
+            var allItem = DalOfAddress.TaskCopy.GetALLItem(address);
+            return allItem.OrderBy(item => getTaskCopyOrder(item.taskCopyCode)).ToList();
+        }
+        int getTaskCopyOrder(string code)
+        {
+            // switch(stock)
+            switch (code)
+            {
+                case StockTC.TaskCode: return 0;
+                case Share.TaskCode: return 1;
+                default: return 99;
+            }
+        }
+
         internal bool Add(string Code, string btcAddr, Player player)
         {
             try
@@ -725,8 +744,12 @@ namespace HouseManager4_0
             {
                 if (this.GetCurrent(Item) == TaskCopyType.SelectDriver)
                 {
-                    this.DealWithSuccess(ref Item);
-                    WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的选取司机！详情查看任务！");
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
+                    {
+                        player.hntts(player);
+                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的选取司机！详情查看任务！");
+                    }
                 }
             }
 
@@ -749,6 +772,7 @@ namespace HouseManager4_0
                     if (success)
                     {
                         WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的宝石收集({Item.secondRound}/{count})！详情查看任务！");
+                        player.hntts(player);
                     }
                 }
             }
@@ -791,8 +815,12 @@ namespace HouseManager4_0
             {
                 if (this.GetCurrent(Item) == TaskCopyType.MagicRelease)
                 {
-                    this.DealWithSuccess(ref Item);
-                    WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的法术释放！详情查看任务！");
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
+                    {
+                        player.hntts(player);
+                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的法术释放！详情查看任务！");
+                    }
                 }
             }
 
@@ -800,8 +828,12 @@ namespace HouseManager4_0
             {
                 if (this.GetCurrent(Item) == TaskCopyType.DiamondUse)
                 {
-                    this.DealWithSuccess(ref Item);
-                    WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的使用宝石！详情查看任务！");
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
+                    {
+                        player.hntts(player);
+                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的使用宝石！详情查看任务！");
+                    }
                 }
             }
 
@@ -809,8 +841,12 @@ namespace HouseManager4_0
             {
                 if (this.GetCurrent(Item) == TaskCopyType.AbilityTakeApart)
                 {
-                    this.DealWithSuccess(ref Item);
-                    WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的释玉！详情查看任务！");
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
+                    {
+                        player.hntts(player);
+                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的释玉！详情查看任务！");
+                    }
                 }
             }
 
@@ -818,8 +854,12 @@ namespace HouseManager4_0
             {
                 if (this.GetCurrent(Item) == TaskCopyType.DiamondSell)
                 {
-                    this.DealWithSuccess(ref Item);
-                    WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的出售宝石！详情查看任务！");
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
+                    {
+                        player.hntts(player);
+                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的出售宝石！详情查看任务！");
+                    }
                 }
             }
 
@@ -827,8 +867,12 @@ namespace HouseManager4_0
             {
                 if (this.GetCurrent(Item) == TaskCopyType.MoneySave)
                 {
-                    this.DealWithSuccess(ref Item);
-                    WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的积分存储！详情查看任务！");
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
+                    {
+                        player.hntts(player);
+                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的积分存储！详情查看任务！");
+                    }
                 }
             }
 
@@ -853,9 +897,13 @@ namespace HouseManager4_0
                     var giveSuccess = StockGive(Item);
                     if (giveSuccess)
                     {
-                        this.DealWithSuccess(ref Item);
-                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的挑战2级以上的NPC任务！");
-                        WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的挑战2级。你获得了太谷鼓楼100聪的股份！");
+                        var s = this.DealWithSuccess(ref Item);
+                        if (s)
+                        {
+                            player.hntts(player);
+                            WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的挑战2级以上的NPC任务！");
+                            WebNotify(player, $"完成【{this.GetTaskName(Item)}】任务中的挑战2级。你获得了太谷鼓楼100聪的股份！");
+                        }
                     }
                     else
                     {
@@ -920,11 +968,15 @@ namespace HouseManager4_0
                     this.stockAddr == addrTo
                     )
                 {
-                    this.DealWithSuccess(ref Item);
-                    for (int i = 0; i < players.Length; i++)
+                    var s = this.DealWithSuccess(ref Item);
+                    if (s)
                     {
-                        players[i].initializeTaskCopy();
-                        webNotify(players[i], $"完成了股权转让！");
+                        for (int i = 0; i < players.Length; i++)
+                        {
+                            players[i].initializeTaskCopy();
+                            webNotify(players[i], $"完成了股权转让！");
+                            players[i].hntts(players[i]);
+                        }
                     }
                 }
             }

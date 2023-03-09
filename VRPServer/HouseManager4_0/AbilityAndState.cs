@@ -392,7 +392,7 @@ namespace HouseManager4_0
                 var selfValue = this.Data["mile"].Count * 7 + 350;
                 if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                 {
-                   // this.role.rm
+                    // this.role.rm
                     if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                     {
                         if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
@@ -551,6 +551,19 @@ namespace HouseManager4_0
             return reduceValue;
         }
 
+        internal bool HasDiamond()
+        {
+            foreach (var item in this.Data)
+            {
+                if (item.Value.Count > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+            // throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 小车能跑的最快速度！
         /// </summary>
@@ -583,7 +596,7 @@ namespace HouseManager4_0
                     var selfValue = driver.improveSpeed(this.Data["speed"].Count * 2 + 50);
                     if (!string.IsNullOrEmpty(role.TheLargestHolderKey))
                     {
-                       // this.role.rm
+                        // this.role.rm
                         if (this.role.rm._Players.ContainsKey(role.TheLargestHolderKey))
                         {
                             if (this.role.rm._Players[role.TheLargestHolderKey].playerType == RoleInGame.PlayerType.player)
